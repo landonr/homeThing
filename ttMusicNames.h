@@ -544,10 +544,6 @@ std::string menuStringForType(MenuStringType stringType) {
 
 std::string newSpeakerGroupMasterName = "";
 
-void drawStatusBar() {
-  id(my_display).image(0, 0, &id(image_statusbar));
-}
-
 int batteryWidth = 24;
 
 void drawPlayPauseIcon() {
@@ -766,16 +762,12 @@ void selectGroup() {
 
 void idleTick() {
   // ESP_LOGD("idle", "idle time %d", id(idle_time));
-  if(id(idle_time) > 0) {
-    // id(my_display).set_update_interval(1000);
-  }
-  if(id(idle_time) == 10) {
+  if(id(idle_time) == 20) {
     if(speakerGroup->playerSearchFinished) {
       idleMenu();
       updateDisplay(true);
     }
     ESP_LOGD("idle", "turning off display");
-    // id(my_display).set_update_interval(60000);
     id(backlight).turn_off();
   }
   if(id(idle_time) > 3600) {
@@ -824,7 +816,6 @@ void drawMenu() {
   // } else if(id(my_display).get_update_interval() != 50) {
   //   id(my_display).set_update_interval(50);
   }
-  // drawStatusBar();
   switch(activeMenuState) {
     case tvNowPlayingMenu:
       drawTVNowPlaying();

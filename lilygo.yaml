@@ -342,9 +342,6 @@ image:
   - file: "images/pause.png"
     id: image_pause
     type: RGB24
-  - file: "images/statusbar.png"
-    id: image_statusbar
-    type: RGB24
 
 time:
   - platform: homeassistant
@@ -365,7 +362,6 @@ display:
     brightness: 100%
     update_interval: 60s
     lambda: |-
-      //ESP_LOGD("update", "update2");
       if (id(idle_time) < 0) {
         ESP_LOGD("drawing menu", "turning on");
         id(backlight).turn_on();
@@ -375,8 +371,7 @@ display:
         id(my_display).set_update_interval(60000);
         return;
       }
-      // it.filled_rectangle(0, 0, it.get_width(), it.get_height(), id(my_white));
-     
+
       drawMenu();
       return;
       
