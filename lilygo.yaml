@@ -1,0 +1,382 @@
+esphome:
+  name: lilygo_display
+  platform: ESP32
+  board: featheresp32
+  includes:
+    - ttMusicNames.h
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ttg Fallback Hotspot"
+    password: !secret wifi_password
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+deep_sleep:
+  id: deep_sleep_1
+
+color:
+  - id: my_red
+    red: 100%
+    green: 0%
+    blue: 0%
+  - id: my_yellow
+    red: 100%
+    green: 100%
+    blue: 0%
+  - id: my_green
+    red: 0%
+    green: 100%
+    blue: 0%
+  - id: my_blue
+    red: 0%
+    green: 59%
+    blue: 84%
+  - id: my_gray
+    red: 50%
+    green: 50%
+    blue: 50%
+  - id: my_black
+    red: 0%
+    green: 0%
+    blue: 0%
+  - id: my_white
+    red: 100%
+    green: 100%
+    blue: 100%
+
+font:
+  - file: "fonts/monaco.ttf"
+    id: helvetica_48
+    size: 48
+    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+  - file: "fonts/monaco.ttf"
+    id: helvetica_24
+    size: 24
+    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+  - file: "fonts/monaco.ttf"
+    id: helvetica_12
+    size: 15
+    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+  - file: "fonts/monaco.ttf"
+    id: helvetica_8
+    size: 14
+    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    
+globals:
+  - id: charging
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: idle_time
+    type: int
+    restore_value: no
+    initial_value: "-2"
+
+custom_component:
+- lambda: |-
+    std::vector<std::string> speakerNames { "media_player.beam", "media_player.kitchen", "media_player.bedroom" };
+    speakerGroup->setup(speakerNames, "media_player.55_tcl_roku_tv");
+    App.register_component(speakerGroup);
+    return {speakerGroup};
+  id: speaker_group_component
+- lambda: |-
+    std::vector<BaseService> scenes { ScriptService("script.colors", "Colors"), ScriptService("script.warm", "Warm"), ScriptService("script.dim_scene_script", "Dim"), ScriptService("script.off", "Lights Off"), SceneService("scene.hell", "Hell") };
+    sceneGroup->setup(scenes);
+    App.register_component(sceneGroup);
+    return {sceneGroup};
+  id: scene_group_component
+  
+sensor:
+  - platform: rotary_encoder
+    filters:
+    - throttle: 0.01s
+    name: "Rotary Encoder"
+    internal: true
+    pin_a:
+      number: 12
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: 13
+      mode:
+        input: true
+        pullup: true
+    id: rotary
+    # on_value:
+    #   - lambda: |-
+    #       if(rotaryPosition < id(rotary).state) {
+    #         buttonPressWakeUpDisplay();
+    #         buttonPressNext();
+    #       } else {
+    #         buttonPressWakeUpDisplay();
+    #         buttonPressPrevious();
+    #       }
+    #       rotaryPosition = id(rotary).state;
+    on_clockwise:
+      - lambda: |-
+          buttonPressWakeUpDisplay();
+          buttonPressNext();
+    on_anticlockwise:
+      - lambda: |-
+          buttonPressWakeUpDisplay();
+          buttonPressPrevious();
+  - platform: adc
+    pin: 34
+    attenuation: auto
+    name: "VBatt"
+    update_interval: 10s
+    id: vcc_adc
+    internal: true
+    on_value:
+      then:
+        lambda: |-
+          if (id(vcc_adc).state > 4) {
+            if (id(charging) == false) {
+              id(charging) = true;
+            }
+          } else {
+            if (id(charging) == true) {
+              id(charging) = false;
+            }
+            id(vcc_adc_avg).publish_state(id(vcc_adc).state);
+          }
+          
+  - platform: template
+    id: vcc_adc_avg
+    filters:
+      - sliding_window_moving_average:
+          window_size: 6
+          send_every: 6
+    on_value :
+      then:
+        - sensor.template.publish:
+            id: batteryVoltage
+            state: !lambda 'return ((id(vcc_adc).state) * 1.77);'
+  - platform: template
+    id: display_update_tick
+    filters:
+      - debounce: 0.02s
+    on_value :
+      then:
+        - lambda: |-
+            if(id(idle_time) < 2) {
+              updateDisplay(true);
+            }
+  - platform: template
+    name: batteryVoltage
+    id: batteryVoltage
+    internal: true
+    unit_of_measurement: 'V'
+    on_value :
+      then:
+        - sensor.template.publish:
+            id: TTGoBatteryPercent
+            state: !lambda 'return (((id(batteryVoltage).state - 3) * 100) / (3.7 - 3));'
+    on_value_range:
+      below: 3.07
+      then:
+        lambda: |-
+          ESP_LOGE("batteryVoltage", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryVoltage).state);
+          id(tt_sleep).turn_on();
+
+  - platform: template
+    name: Battery Percent
+    id: TTGoBatteryPercent
+    unit_of_measurement: '%'
+
+interval:
+  - interval: 1s
+    then:
+    - lambda: |-
+        idleTick();
+
+binary_sensor:
+  - platform: status
+    name: "Node Status"
+    id: system_status
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "T-Display Button Input 0"
+    id: tdisplay_button_input_0
+    internal: true
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressScreenLeft();
+    on_release:
+      then:
+      - lambda: |-
+          buttonReleaseScreenLeft();
+    
+  - platform: gpio
+    pin:
+      number: GPIO35
+      inverted: true
+    name: "T-Display Button Input 1"
+    id: tdisplay_button_input_1
+    internal: true
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressScreenRight();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 21
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw5
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressLeft();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 22
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw4
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressUp();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 17
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw3
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressRight();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 2
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw2
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressDown();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 15
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw1
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressSelect();
+
+# We can still control the backlight independently
+switch:
+  - platform: gpio
+    pin:
+      number: 27
+      inverted: false
+    id: comb
+    internal: true
+  - platform: gpio
+    pin:
+      number: 26
+      inverted: false
+    id: coma
+    internal: true
+  - platform: gpio
+    pin: GPIO4
+    name: "Backlight"
+    id: backlight
+    internal: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: Sleep Toggle
+    id: tt_sleep
+    optimistic: true
+    internal: true
+    on_turn_on:
+      then:
+        - deep_sleep.enter:
+            id: deep_sleep_1
+
+image:
+  - file: "images/play.png"
+    id: image_play
+    type: RGB24
+  - file: "images/pause.png"
+    id: image_pause
+    type: RGB24
+  - file: "images/statusbar.png"
+    id: image_statusbar
+    type: RGB24
+
+time:
+  - platform: homeassistant
+    id: esptime
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+display:
+  - platform: st7789v
+    id: my_display
+    backlight_pin: GPIO4
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    rotation: 90
+    brightness: 100%
+    update_interval: 60s
+    lambda: |-
+      //ESP_LOGD("update", "update2");
+      if (id(idle_time) < 0) {
+        ESP_LOGD("drawing menu", "turning on");
+        id(backlight).turn_on();
+        id(idle_time) = 0;
+      } else if (!id(backlight).state) {
+        ESP_LOGD("drawing menu", "turning off %d", id(idle_time));
+        id(my_display).set_update_interval(60000);
+        return;
+      }
+      // it.filled_rectangle(0, 0, it.get_width(), it.get_height(), id(my_white));
+     
+      drawMenu();
+      return;
+      
