@@ -25,14 +25,19 @@ enum MenuStringType {
   back
 };
 
+enum OptionMenuType {
+  noOptionMenu,
+  volumeOptionMenu,
+  tvOptionMenu
+};
+
 MenuStates activeMenuState = rootMenu;
 int scrollTop = 0;
 int menuIndex = 0;
 int fontSize = 15;
 int marginSize = 4;
 int rotaryPosition = 0;
-bool optionMenuPressed = false;
-// int navButtonHeld = 0;
+OptionMenuType optionMenu = noOptionMenu;
 
 void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
   size_t start;
@@ -131,7 +136,8 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
 
 class SonosSpeakerComponent : public BasePlayerComponent {
  public:
-  std::string speaker_volume = "";
+  double localVolume = -1;
+  double speaker_volume = -1;
   std::string shuffle = "";
   std::string muted = "";
   std::vector<std::string> groupMembers;
@@ -165,7 +171,10 @@ class SonosSpeakerComponent : public BasePlayerComponent {
 
   void speaker_volume_changed(std::string state) {
     ESP_LOGD("speaker", "%s Sonos Speaker volume changed to %s", playerName.c_str(), state.c_str());
-    speaker_volume = state.c_str();
+    speaker_volume =  atof(state.c_str());
+    if(localVolume == -1) {
+      localVolume = atof(state.c_str());
+    }
     updateDisplay(false);
   }
 
@@ -223,34 +232,32 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   double volumeStep = 0.04;
 
   void increaseVolume() {
-    if(speaker_volume == "") {
+    if(speaker_volume == -1) {
       return;
     }
-    double volume = atof(speaker_volume.c_str()) + volumeStep;
-    std::string entityIds = playerName;
-    for (auto &speaker: groupMembers) {
-      entityIds = entityIds + ", " + speaker;
-    }
-    ESP_LOGD("speaker", "%s volume increase", entityIds.c_str());
-    call_homeassistant_service("media_player.volume_set", {
-      {"entity_id", entityIds},
-      {"volume_level", to_string(volume)},
-    });
+    optionMenu = volumeOptionMenu;
+    localVolume = localVolume + volumeStep;
+    updateVolumeLevel();
   }
 
   void decreaseVolume() {
-    if(speaker_volume == "") {
+    if(speaker_volume == -1) {
       return;
     }
-    double volume = atof(speaker_volume.c_str()) - volumeStep;
+    optionMenu = volumeOptionMenu;
+    localVolume = localVolume - volumeStep;
+    //updateVolumeLevel();
+  }
+
+  void updateVolumeLevel() {
     std::string entityIds = playerName;
     for (auto &speaker: groupMembers) {
       entityIds = entityIds + ", " + speaker;
     }
-    ESP_LOGD("speaker", "%s volume increase", entityIds.c_str());
+    ESP_LOGD("speaker", "%s volume update %f", entityIds.c_str(), localVolume);
     call_homeassistant_service("media_player.volume_set", {
       {"entity_id", entityIds},
-      {"volume_level", to_string(volume)},
+      {"volume_level", to_string(localVolume)},
     });
   }
 };
@@ -585,22 +592,27 @@ void drawBattery() {
   }
 }
 
-void drawVolumeLevel() {
-  int xPos = id(my_display).get_width() - batteryWidth - 24;
+double getVolumeLevel() {
   if (speakerGroup->activePlayer->playerType == "TV") {
-    if (speakerGroup->tv->speaker->speaker_volume != "") {
-      double volume = atof(speakerGroup->tv->speaker->speaker_volume.c_str()) * 100;
-      id(my_display).printf(xPos, 0, &id(helvetica_8), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", volume);
+    if (speakerGroup->tv->speaker->speaker_volume != -1) {
+      double volume = speakerGroup->tv->speaker->localVolume * 100;
+      return volume;
     }
   } else {
     SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(speakerGroup->activePlayer);
     if (activeSpeaker != NULL) {
-      if (activeSpeaker->speaker_volume != "") {
-        double volume = atof(activeSpeaker->speaker_volume.c_str()) * 100;
-        id(my_display).printf(xPos, 0, &id(helvetica_8), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", volume);
+      if (activeSpeaker->speaker_volume != -1) {
+        double volume = activeSpeaker->localVolume * 100;
+        return volume;
       }
     }
   }
+  return 0;
+}
+
+void drawVolumeLevel() {
+  int xPos = id(my_display).get_width() - batteryWidth - 24;
+  id(my_display).printf(xPos, 0, &id(helvetica_8), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", getVolumeLevel());
 }
 
 void drawHeader() {
@@ -734,7 +746,7 @@ void topMenu() {
 
 void idleMenu() {
   menuIndex = 0;
-  optionMenuPressed = false;
+  optionMenu = noOptionMenu;
   if (speakerGroup->activePlayer->playerType == "TV") {
     activeMenuState = MenuStates::tvNowPlayingMenu;
   } else {
@@ -762,33 +774,45 @@ void selectGroup() {
 
 void idleTick() {
   // ESP_LOGD("idle", "idle time %d", id(idle_time));
-  if(id(idle_time) == 20) {
+  if(id(idle_time) == 5) {
+    optionMenu = noOptionMenu;
+    updateDisplay(true);
+  } else if(id(idle_time) == 20) {
     if(speakerGroup->playerSearchFinished) {
       idleMenu();
       updateDisplay(true);
     }
     ESP_LOGD("idle", "turning off display");
     id(backlight).turn_off();
-  }
-  if(id(idle_time) > 3600) {
+  } else if(id(idle_time) > 3600) {
     ESP_LOGD("idle", "night night");
     id(tt_sleep).turn_on();
+    return;
   }
   id(idle_time)++;
 }
 
+void drawOptionMenu() {
+  switch(optionMenu) {
+    case tvOptionMenu:
+      id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.2 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Remote Menu");     
+      id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Pause");     
+      id(my_display).printf(id(my_display).get_width() * 0.2, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Back");     
+      id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Home");     
+      id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "TV Power");     
+      return;
+    case volumeOptionMenu:
+      id(my_display).rectangle(16, id(my_display).get_height() - 16, id(my_display).get_width() - 32, 10, id(my_blue));
+      id(my_display).filled_rectangle(18, id(my_display).get_height() - 14, (id(my_display).get_width() - 36) * (getVolumeLevel() / 100), 6, id(my_blue));
+      return;
+    case noOptionMenu:
+      return;
+  }
+}
+
 void drawTVNowPlaying() {
   int yPos = 20;
-  
-  if(optionMenuPressed == true) {
-    id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.2 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Remote Menu");     
-    id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Pause");     
-    id(my_display).printf(id(my_display).get_width() * 0.2, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Back");     
-    id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Home");     
-    id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "TV Power");     
-    return;
-  }
-
+  drawOptionMenu();
   if (speakerGroup->activePlayer->mediaArtist != "") {
     id(my_display).printf(40, yPos + 32 + marginSize, &id(helvetica_24), id(my_white), "%s", speakerGroup->activePlayer->mediaArtist.c_str());     
   }
@@ -796,6 +820,7 @@ void drawTVNowPlaying() {
 
 void drawSpeakerNowPlaying() {
   int yPos = 20;
+  drawOptionMenu();
   if (speakerGroup->activePlayer->mediaArtist != "") {
     id(my_display).printf(8, yPos + marginSize, &id(helvetica_12), id(my_white), "%s", speakerGroup->activePlayer->mediaTitle.c_str());     
   }
@@ -941,8 +966,8 @@ void buttonPressSelect() {
   if(buttonPressWakeUpDisplay()) { return; }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      if(optionMenuPressed) {
-        optionMenuPressed = false;
+      if(optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
         speakerGroup->tv->tvRemoteCommand("power");
         updateDisplay(true);
       } else {
@@ -961,9 +986,11 @@ void buttonPressNext() {
   switch(activeMenuState) {
     case tvNowPlayingMenu:
       speakerGroup->tv->speaker->increaseVolume();
+      debounceUpdateDisplay();
       return;
     case speakerNowPlayingMenu:
       speakerGroup->incraseSpeakerVolume();
+      debounceUpdateDisplay();
       return;
     default:
       break;
@@ -983,9 +1010,11 @@ void buttonPressPrevious() {
   switch(activeMenuState) {
     case tvNowPlayingMenu:
       speakerGroup->tv->speaker->decreaseVolume();
+      debounceUpdateDisplay();
       return;
     case speakerNowPlayingMenu:
       speakerGroup->decreaseSpeakerVolume();
+      debounceUpdateDisplay();
       return;
     default:
       break;
@@ -1002,8 +1031,8 @@ void buttonPressUp() {
   if(buttonPressWakeUpDisplay()) { return; }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      if(optionMenuPressed) {
-        optionMenuPressed = false;
+      if(optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
         topMenu();
         updateDisplay(true);
       } else {
@@ -1021,8 +1050,8 @@ void buttonPressDown() {
   if(buttonPressWakeUpDisplay()) { return; }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      if(optionMenuPressed) {
-        optionMenuPressed = false;
+      if(optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
         speakerGroup->tv->tvRemoteCommand("play");
         updateDisplay(true);
       } else {
@@ -1041,8 +1070,8 @@ void buttonPressLeft() {
   if(buttonPressWakeUpDisplay()) { return; }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      if(optionMenuPressed) {
-        optionMenuPressed = false;
+      if(optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
         speakerGroup->tv->tvRemoteCommand("back");
         updateDisplay(true);
       } else {
@@ -1061,8 +1090,8 @@ void buttonPressRight() {
   if(buttonPressWakeUpDisplay()) { return; }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      if(optionMenuPressed) {
-        optionMenuPressed = false;
+      if(optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
         speakerGroup->tv->tvRemoteCommand("menu");
         updateDisplay(true);
       } else {
@@ -1092,7 +1121,11 @@ void buttonPressScreenLeft() {
   if(buttonPressWakeUpDisplay()) { return; }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      optionMenuPressed = !optionMenuPressed;
+      if(optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+      } else {
+        optionMenu = tvOptionMenu;
+      }
       updateDisplay(true);
       break;
     default:
@@ -1102,6 +1135,7 @@ void buttonPressScreenLeft() {
 
 void buttonPressScreenRight() {
   if(buttonPressWakeUpDisplay()) { return; }
+  optionMenu = noOptionMenu;
   switch(activeMenuState) {
     case tvNowPlayingMenu:
       topMenu();
