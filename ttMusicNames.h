@@ -28,7 +28,8 @@ enum MenuStringType {
 enum OptionMenuType {
   noOptionMenu,
   volumeOptionMenu,
-  tvOptionMenu
+  tvOptionMenu,
+  playingNewSourceMenu
 };
 
 MenuStates activeMenuState = rootMenu;
@@ -38,6 +39,7 @@ int fontSize = 15;
 int marginSize = 4;
 int rotaryPosition = 0;
 OptionMenuType optionMenu = noOptionMenu;
+std::string playingNewSourceText = "";
 
 void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
   size_t start;
@@ -113,6 +115,8 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
 
   void playSource(float index) {
     ESP_LOGD("speaker", "%s playing %f %s", playerName.c_str(), index, sources[index].c_str());
+    playingNewSourceText = sources[index];
+    optionMenu = playingNewSourceMenu;
     call_homeassistant_service("media_player.select_source", {
       {"entity_id", playerName},
       {"source", sources[index].c_str()},
@@ -160,6 +164,10 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   void player_media_title_changed(std::string state) {
     ESP_LOGD("Player", "%s Player media title changed to %s", playerName.c_str(), state.c_str());
     mediaTitle = state.c_str();
+    if(optionMenu == playingNewSourceMenu || playingNewSourceText != "") {
+      playingNewSourceText = "";
+      optionMenu = noOptionMenu;
+    }
     updateDisplay(false);
   }
 
@@ -246,7 +254,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     }
     optionMenu = volumeOptionMenu;
     localVolume = localVolume - volumeStep;
-    //updateVolumeLevel();
+    updateVolumeLevel();
   }
 
   void updateVolumeLevel() {
@@ -773,7 +781,6 @@ void selectGroup() {
 }
 
 void idleTick() {
-  // ESP_LOGD("idle", "idle time %d", id(idle_time));
   if(id(idle_time) == 5) {
     optionMenu = noOptionMenu;
     updateDisplay(true);
@@ -792,35 +799,48 @@ void idleTick() {
   id(idle_time)++;
 }
 
-void drawOptionMenu() {
+bool drawOptionMenuAndStop() {
+  ESP_LOGD("option", "start");
   switch(optionMenu) {
     case tvOptionMenu:
+    ESP_LOGD("option", "tv");
       id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.2 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Remote Menu");     
       id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Pause");     
       id(my_display).printf(id(my_display).get_width() * 0.2, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Back");     
       id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Home");     
       id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "TV Power");     
-      return;
+      return true;
     case volumeOptionMenu:
+    ESP_LOGD("option", "volume");
       id(my_display).rectangle(16, id(my_display).get_height() - 16, id(my_display).get_width() - 32, 10, id(my_blue));
       id(my_display).filled_rectangle(18, id(my_display).get_height() - 14, (id(my_display).get_width() - 36) * (getVolumeLevel() / 100), 6, id(my_blue));
-      return;
+      return false;
     case noOptionMenu:
-      return;
+      return false;
+    case playingNewSourceMenu:
+    ESP_LOGD("option", "new source");
+      id(my_display).printf(8, 20 + marginSize, &id(helvetica_12), id(my_white), "Playing");
+      id(my_display).printf(8, 36 + marginSize, &id(helvetica_24), id(my_white), "%s", playingNewSourceText.c_str());
+      return true;
   }
+  return true;
 }
 
 void drawTVNowPlaying() {
   int yPos = 20;
-  drawOptionMenu();
+  if(drawOptionMenuAndStop()) {
+    return;
+  }
   if (speakerGroup->activePlayer->mediaArtist != "") {
-    id(my_display).printf(40, yPos + 32 + marginSize, &id(helvetica_24), id(my_white), "%s", speakerGroup->activePlayer->mediaArtist.c_str());     
+    id(my_display).printf(8, yPos + 32 + marginSize, &id(helvetica_24), id(my_white), "%s", speakerGroup->activePlayer->mediaArtist.c_str());     
   }
 }
 
 void drawSpeakerNowPlaying() {
   int yPos = 20;
-  drawOptionMenu();
+  if(drawOptionMenuAndStop()) {
+    return;
+  }
   if (speakerGroup->activePlayer->mediaArtist != "") {
     id(my_display).printf(8, yPos + marginSize, &id(helvetica_12), id(my_white), "%s", speakerGroup->activePlayer->mediaTitle.c_str());     
   }
@@ -832,14 +852,9 @@ void drawSpeakerNowPlaying() {
 void drawMenu() {
   if(speakerGroup->playerSearchFinished == false) {
     ESP_LOGD("drawMenu", "draw beep boop");
-    // if(id(my_display).get_update_interval() != 1000) {
-    //   id(my_display).set_update_interval(1000);
-    // }
     id(my_display).printf(40, 40, &id(helvetica_24), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
     speakerGroup->findActivePlayer();
     return;
-  // } else if(id(my_display).get_update_interval() != 50) {
-  //   id(my_display).set_update_interval(50);
   }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
@@ -911,6 +926,7 @@ bool selectRootMenu() {
 }
 
 bool selectMenu() {
+  int menuIndexForSource = menuIndex;
   switch(activeMenuState) {
     case rootMenu:
       return selectRootMenu();
@@ -921,8 +937,9 @@ bool selectMenu() {
       activeMenuState = MenuStates::tvNowPlayingMenu;
       break;
     case sourcesMenu:
-      speakerGroup->activePlayer->playSource(menuIndex);
       idleMenu();
+      speakerGroup->activePlayer->playSource(menuIndexForSource);
+      updateDisplay(true);
       break;
     case groupMenu:
       selectGroup();
@@ -931,7 +948,7 @@ bool selectMenu() {
       selectMediaPlayers();
       break;
     case lightsMenu:
-      if (sceneGroup->selectLights(menuIndex)) {
+      if (sceneGroup->selectLights(menuIndexForSource)) {
         topMenu();
       }
       break;
