@@ -3,7 +3,7 @@ esphome:
   platform: ESP32
   board: featheresp32
   includes:
-    - ttMusicNames.h
+    - esphome-remote.h
 
 wifi:
   ssid: !secret wifi_ssid

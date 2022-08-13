@@ -646,7 +646,7 @@ void drawScrollBar(int menuTitlesCount, int maxItems, double headerHeight) {
     double screenHeight = id(my_display).get_height() - headerHeight;
     double height = maxItems * (screenHeight / menuTitlesCount);
     double yPos = (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 + headerHeight;
-    id(my_display).filled_rectangle(id(my_display).get_width() - 3, yPos, 2, height - 1, id(my_green));
+    id(my_display).filled_rectangle(id(my_display).get_width() - 3, yPos, 2, height - 1, id(my_blue));
   }
 }
 
@@ -670,17 +670,6 @@ void drawMenu(std::vector<std::string> menuTitles) {
       drawTitle(menuState, i, menuTitles[i], ((i - scrollTop) * (fontSize + marginSize)) + headerHeight);
   }
   drawScrollBar(menuTitles.size(), maxItems, headerHeight);
-}
-
-void drawNowPlaying() {
-  int yPos = 200;
-  if (speakerGroup->activePlayer->mediaTitle != "") {
-    id(my_display).printf(id(my_display).get_width() / 2, yPos, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "%s", speakerGroup->activePlayer->mediaTitle.c_str());     
-  }
-  
-  if (speakerGroup->activePlayer->mediaArtist != "") {
-    id(my_display).printf(id(my_display).get_width() / 2, yPos + 12 + marginSize, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "%s", speakerGroup->activePlayer->mediaArtist.c_str());     
-  }
 }
 
 std::vector<std::string> menuToString(std::vector<MenuStringType> menu) {
@@ -826,26 +815,21 @@ bool drawOptionMenuAndStop() {
   return true;
 }
 
-void drawTVNowPlaying() {
-  int yPos = 20;
-  if(drawOptionMenuAndStop()) {
-    return;
-  }
-  if (speakerGroup->activePlayer->mediaArtist != "") {
-    id(my_display).printf(8, yPos + 32 + marginSize, &id(helvetica_24), id(my_white), "%s", speakerGroup->activePlayer->mediaArtist.c_str());     
-  }
-}
-
 void drawSpeakerNowPlaying() {
-  int yPos = 20;
+  int yPos = 24;
   if(drawOptionMenuAndStop()) {
     return;
   }
-  if (speakerGroup->activePlayer->mediaArtist != "") {
-    id(my_display).printf(8, yPos + marginSize, &id(helvetica_12), id(my_white), "%s", speakerGroup->activePlayer->mediaTitle.c_str());     
+  id(my_display).printf(8, yPos, &id(helvetica_12), id(my_white), TextAlign::TOP_LEFT, "Now Playing,");
+  if(speakerGroup->activePlayer->mediaArtist == "" && speakerGroup->activePlayer->mediaTitle == "") {
+    id(my_display).printf(8, yPos + 24 + marginSize, &id(helvetica_24), id(my_white), "Nothing!");
+    return; 
   }
   if (speakerGroup->activePlayer->mediaArtist != "") {
-    id(my_display).printf(8, yPos + 16 + marginSize, &id(helvetica_24), id(my_white), "%s", speakerGroup->activePlayer->mediaArtist.c_str());     
+    id(my_display).printf(8, yPos + 24 + marginSize, &id(helvetica_24), id(my_white), "%s", speakerGroup->activePlayer->mediaArtist.c_str());
+  }
+  if (speakerGroup->activePlayer->mediaTitle != "") {
+    id(my_display).printf(8, yPos + 56 + marginSize, &id(helvetica_12), id(my_white), "%s", speakerGroup->activePlayer->mediaTitle.c_str());
   }
 }
 
@@ -858,7 +842,7 @@ void drawMenu() {
   }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      drawTVNowPlaying();
+      drawSpeakerNowPlaying();
       break;
     case speakerNowPlayingMenu:
       drawSpeakerNowPlaying();
@@ -867,7 +851,6 @@ void drawMenu() {
       drawMenu(activeMenu());
       break;
     default:
-      drawNowPlaying();
       drawMenu(activeMenu());
       break;
   }
