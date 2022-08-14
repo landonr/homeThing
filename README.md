@@ -5,7 +5,7 @@ wifi smart home remote with display
 - wrap text
 - split up files
 - clean up group menu
-- move shuffle to option menu
+- move shuffle and group to option menu
 - volume and shuffle icon in header
 - stopped icon
 - load media players from home assistant

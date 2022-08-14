@@ -3,6 +3,8 @@ esphome:
   platform: ESP32
   board: featheresp32
   includes:
+    - esphome-remote-players.h
+    - DisplayUpdateInterface.h
     - esphome-remote.h
 
 wifi:
@@ -46,9 +48,9 @@ color:
     green: 59%
     blue: 84%
   - id: my_gray
-    red: 50%
-    green: 50%
-    blue: 50%
+    red: 10%
+    green: 10%
+    blue: 10%
   - id: my_black
     red: 0%
     green: 0%
@@ -175,7 +177,7 @@ sensor:
       then:
         - lambda: |-
             if(id(idle_time) < 2) {
-              updateDisplay(true);
+              displayUpdate.updateDisplay(true);
             }
   - platform: template
     name: batteryVoltage
