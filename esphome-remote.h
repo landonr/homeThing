@@ -163,6 +163,8 @@ void drawPlayPauseIcon() {
     id(my_display).image(id(my_display).get_width() - xPos - batteryWidth - 16, 2, &id(image_play));
   } else if (speakerGroup->activePlayer->playerState == "paused") {
     id(my_display).image(id(my_display).get_width() - xPos - batteryWidth - 16, 2, &id(image_pause));
+  } else {
+    id(my_display).image(id(my_display).get_width() - xPos - batteryWidth - 16, 2, &id(image_stop));
   }
 }
 

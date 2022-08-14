@@ -344,6 +344,9 @@ image:
   - file: "images/pause.png"
     id: image_pause
     type: RGB24
+  - file: "images/stop.png"
+    id: image_stop
+    type: RGB24
 
 time:
   - platform: homeassistant
