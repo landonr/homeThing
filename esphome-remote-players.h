@@ -6,6 +6,14 @@
 
 std::string playingNewSourceText = "";
 
+class MenuTitleSwitch {
+  public:
+    MenuTitleSwitch(std::string newFriendlyName, std::string newEntityName, int newToggleState) : friendlyName(newFriendlyName), entityName(newEntityName), toggleState(newToggleState) { }
+    std::string friendlyName;
+    std::string entityName;
+    int toggleState;
+};
+
 void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
   size_t start;
   size_t end = 0;
@@ -317,12 +325,13 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     return output;
   }
 
-  SonosSpeakerComponent* speakerForFriendlyName(std::string speakerFriendlyName) {
+  std::string friendlyNameForPlayerName(std::string speakerPlayerName) {
     for (auto &speaker: speakers) {
-      if (speaker->friendlyName == speakerFriendlyName) {
-        return speaker;
+      if (speaker->playerName == speakerPlayerName) {
+        return speaker->friendlyName;
       }
     }
+    return "";
   }
 
   void on_state_changed(std::string state) {
@@ -411,7 +420,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
   }
 
-  std::string newSpeakerGroupMasterName = "";
+  SonosSpeakerComponent *newSpeakerGroupParent = NULL;
 
   double getVolumeLevel() {
     if (activePlayer->playerType == "TV") {
@@ -431,14 +440,42 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     return 0;
   }
 
+  std::vector<MenuTitleSwitch> groupTitleSwitches() {
+    std::vector<MenuTitleSwitch> out;
+    std::vector<std::string> groupedMembers;
+    if(newSpeakerGroupParent != NULL) {
+      out.push_back(MenuTitleSwitch("Group " + newSpeakerGroupParent->friendlyName, newSpeakerGroupParent->playerName, 0));
+    }
+    for (auto &speaker: speakers) {
+      if (newSpeakerGroupParent->playerName == speaker->playerName) {
+        continue;
+      } else {
+        if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(), newSpeakerGroupParent->playerName) != speaker->groupMembers.end()) {
+          out.push_back(MenuTitleSwitch(speaker->friendlyName, speaker->playerName, 2));
+        } else {
+          out.push_back(MenuTitleSwitch(speaker->friendlyName, speaker->playerName, 1));
+        }
+      }
+    }
+    return out;
+  }
+
   std::vector<std::string> groupTitleString() {
+    std::vector<std::string> groupedMembers;
     std::vector<std::string> out;
     for (auto &speaker: speakers) {
       std::string speakerPlaying = speaker->playerState == "playing" ? " > " : "";
+      if (std::find(groupedMembers.begin(), groupedMembers.end(), speaker->playerName) != groupedMembers.end()) {
+        continue;
+      }
       if (speaker->groupMembers.size() > 0) {
-        out.push_back(speaker->friendlyName + speakerPlaying + " +"); 
-      } else if (newSpeakerGroupMasterName == speaker->playerName) {
-        out.push_back(speaker->friendlyName + speakerPlaying + " +...");
+        std::string speakerTitle = speaker->friendlyName;
+        for (auto &groupedSpeaker: speaker->groupMembers) {
+          groupedMembers.push_back(groupedSpeaker);
+          std::string groupedSpeakerName = friendlyNameForPlayerName(groupedSpeaker);
+          speakerTitle = speakerTitle + ", " + groupedSpeakerName;
+        }
+        out.push_back(speakerTitle); 
       } else {
         out.push_back(speaker->friendlyName + speakerPlaying);
       }
@@ -458,20 +495,30 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
   }
 
   void selectGroup(int menuIndex) {
-    auto speaker = speakers[menuIndex];
-    if (speaker->groupMembers.size() > 0) {
-      speaker->ungroup();
-    } else if (newSpeakerGroupMasterName == "") {
-      for (auto &speakerGroupSpeaker: speakers) {
-        if (speakerGroupSpeaker->groupMembers.size() > 0) {
-          speaker->joinGroup(speakerGroupSpeaker->playerName);
-          return;
-        }
+    if (newSpeakerGroupParent == NULL) {
+      auto speaker = speakers[menuIndex];
+      newSpeakerGroupParent = speaker;
+      return;
+    } else if (menuIndex == 0) {
+      newSpeakerGroupParent = NULL;
+      return;
+    }
+
+    std::vector<SonosSpeakerComponent*> speakerList;
+    for (auto &speaker: speakers) {
+      if(speaker->playerName == newSpeakerGroupParent->playerName) {
+        continue;
       }
-      newSpeakerGroupMasterName = speaker->playerName;
+      speakerList.push_back(speaker);
+    }
+    auto speaker = speakerList[menuIndex-1];
+
+    if (speaker->groupMembers.size() > 0) {
+      if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(), newSpeakerGroupParent->playerName) != speaker->groupMembers.end()) {
+        speaker->ungroup();
+      }
     } else {
-      speaker->joinGroup(newSpeakerGroupMasterName);
-      newSpeakerGroupMasterName = "";
+      speaker->joinGroup(newSpeakerGroupParent->playerName);
     }
   }
 

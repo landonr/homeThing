@@ -209,44 +209,82 @@ void drawHeader() {
   drawVolumeLevel();
 }
 
-void drawTitle(int menuState, int i, std::string title, int yPos) {
-    if(menuState == i) {
-        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width() - 4, fontSize + marginSize, id(my_blue));
-        id(my_display).printf(4, yPos, &id(helvetica_12), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
-    } else {
-        id(my_display).printf(4, yPos, &id(helvetica_12), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
-    }
+void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
+  int xPos = buttonSpace ? 20 : 4;
+  if(menuState == i) {
+      id(my_display).filled_rectangle(0, yPos, id(my_display).get_width() - 4, fontSize + marginSize, id(my_blue));
+      id(my_display).printf(xPos, yPos, &id(helvetica_12), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+  } else {
+      id(my_display).printf(xPos, yPos, &id(helvetica_12), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+  }
 }
 
-void drawScrollBar(int menuTitlesCount, int maxItems, double headerHeight) {
-  if(menuTitlesCount > maxItems + 1) {
+double headerHeight = 16;
+
+int maxItems() {
+  int maxItems = ((id(my_display).get_height() - headerHeight) / (fontSize + marginSize)) - 1;
+  return maxItems;
+}
+
+
+void drawScrollBar(int menuTitlesCount, double headerHeight) {
+  if(menuTitlesCount > maxItems() + 1) {
     double screenHeight = id(my_display).get_height() - headerHeight;
-    double height = maxItems * (screenHeight / menuTitlesCount);
+    double height = maxItems() * (screenHeight / menuTitlesCount);
     double yPos = (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 + headerHeight;
     id(my_display).filled_rectangle(id(my_display).get_width() - 3, yPos, 2, height - 1, id(my_blue));
   }
 }
 
-void drawMenu(std::vector<std::string> menuTitles) {
-  double headerHeight = 16;
-  int maxItems = ((id(my_display).get_height() - headerHeight) / (fontSize + marginSize)) - 1;
+void drawSwitch(bool switchState, int yPos) {
+  id(my_display).circle(8, yPos + (fontSize + marginSize) / 2, 7, id(my_white));
+  if(switchState) {
+    id(my_display).filled_circle(8, yPos + (fontSize + marginSize) / 2, 5, id(my_white));
+  }
+}
+
+void scrollMenuPosition() {
   int menuState = menuIndex;
 
-  if (menuState - maxItems > scrollTop) {
-      scrollTop = menuState - maxItems;
+  if (menuState - maxItems() > scrollTop) {
+      scrollTop = menuState - maxItems();
       // menu down
   } else if (menuState - scrollTop < 0) {
       scrollTop = menuState;
       // menu up
   }
-  // ESP_LOGD("custom", "menuState %d scrollTop %d", menuState, scrollTop);
+}
+
+int activeMenuTitleCount = 0;
+
+void drawMenu(std::vector<std::string> menuTitles) {
+  activeMenuTitleCount = menuTitles.size();
+  scrollMenuPosition();
+  int menuState = menuIndex;
   for(int i = scrollTop; i < menuTitles.size(); i++) {
-      if(i > scrollTop + maxItems) {
+      if(i > scrollTop + maxItems()) {
           break;
       }
-      drawTitle(menuState, i, menuTitles[i], ((i - scrollTop) * (fontSize + marginSize)) + headerHeight);
+      drawTitle(menuState, i, menuTitles[i], ((i - scrollTop) * (fontSize + marginSize)) + headerHeight, 0);
   }
-  drawScrollBar(menuTitles.size(), maxItems, headerHeight);
+  drawScrollBar(menuTitles.size(), headerHeight);
+}
+
+void drawSwitchMenu(std::vector<MenuTitleSwitch> menuTitleSwitches) {
+  activeMenuTitleCount = menuTitleSwitches.size();
+  scrollMenuPosition();
+  int menuState = menuIndex;
+  for(int i = scrollTop; i < menuTitleSwitches.size(); i++) {
+      if(i > scrollTop + maxItems()) {
+          break;
+      }
+      int yPos = ((i - scrollTop) * (fontSize + marginSize)) + headerHeight;
+      drawTitle(menuState, i, menuTitleSwitches[i].friendlyName, yPos, menuTitleSwitches[i].toggleState != 0);
+      if(menuTitleSwitches[i].toggleState != 0) {
+        drawSwitch(menuTitleSwitches[i].toggleState == 2, yPos);
+      }
+  }
+  drawScrollBar(menuTitleSwitches.size(), headerHeight);
 }
 
 std::vector<std::string> menuToString(std::vector<MenuStringType> menu) {
@@ -270,8 +308,6 @@ std::vector<std::string> activeMenu() {
     //   return shortcutStrings;
     case sourcesMenu:
       return speakerGroup->activePlayer->sources;
-    case groupMenu:
-      return speakerGroup->groupTitleString();
     case mediaPlayersMenu:
       return speakerGroup->mediaPlayersTitleString();
     case lightsMenu:
@@ -285,11 +321,14 @@ std::vector<std::string> activeMenu() {
 
 void topMenu() {
   menuIndex = 0;
+  speakerGroup->newSpeakerGroupParent = NULL;
+  optionMenu = noOptionMenu;
   activeMenuState = MenuStates::rootMenu;
 }
 
 void idleMenu() {
   menuIndex = 0;
+  speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
   if (speakerGroup->activePlayer->playerType == "TV") {
     activeMenuState = MenuStates::tvNowPlayingMenu;
@@ -396,6 +435,13 @@ void drawMenu() {
       break;
     case sourcesMenu:
       drawMenu(activeMenu());
+      break;
+    case groupMenu:
+      if(speakerGroup->newSpeakerGroupParent != NULL) {
+        drawSwitchMenu(speakerGroup->groupTitleSwitches());
+        break;
+      }
+      drawMenu(speakerGroup->groupTitleString());
       break;
     default:
       drawMenu(activeMenu());
@@ -535,10 +581,9 @@ void buttonPressNext() {
     default:
       break;
   }
-  auto activeMenuTitles = activeMenu();
-  if (menuIndex < activeMenuTitles.size()-1) {
+  if (menuIndex < activeMenuTitleCount-1) {
     menuIndex++;
-  } else if (menuIndex == activeMenuTitles.size()-1) {
+  } else if (menuIndex == activeMenuTitleCount-1) {
     // menuIndex = 0;
   } else {
     menuIndex = 0;
