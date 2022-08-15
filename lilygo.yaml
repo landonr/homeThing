@@ -3,9 +3,11 @@ esphome:
   platform: ESP32
   board: featheresp32
   includes:
-    - esphome-remote-players.h
+    - MenuTitleSwitch.h
+    - esphomeRemotePlayer.h
+    - esphomeRemoteService.h
     - DisplayUpdateInterface.h
-    - esphome-remote.h
+    - esphomeRemote.h
 
 wifi:
   ssid: !secret wifi_ssid
@@ -94,17 +96,39 @@ globals:
 
 custom_component:
 - lambda: |-
-    std::vector<std::string> speakerNames { "media_player.beam", "media_player.kitchen", "media_player.bedroom" };
+    std::vector<std::string> speakerNames { 
+      "media_player.beam", 
+      "media_player.kitchen", 
+      "media_player.bedroom"
+    };
     speakerGroup->setup(speakerNames, "media_player.55_tcl_roku_tv");
     App.register_component(speakerGroup);
     return {speakerGroup};
   id: speaker_group_component
 - lambda: |-
-    std::vector<BaseService> scenes { ScriptService("script.colors", "Colors"), ScriptService("script.warm", "Warm"), ScriptService("script.dim_scene_script", "Dim"), ScriptService("script.off", "Lights Off"), SceneService("scene.hell", "Hell") };
+    std::vector<BaseService> scenes { 
+      ScriptService("script.colors", "Colors"), 
+      ScriptService("script.warm", "Warm"), 
+      ScriptService("script.dim_scene_script", "Dim"),
+      ScriptService("script.off", "Lights Off"),
+      SceneService("scene.hell", "Hell"),
+      ScriptService("script.feed_cat_single", "Feed cat")
+    };
     sceneGroup->setup(scenes);
     App.register_component(sceneGroup);
     return {sceneGroup};
   id: scene_group_component
+- lambda: |-
+    std::vector<FriendEntity> lights { 
+      FriendEntity("light.bathroom_lights", "Bathroom"), 
+      FriendEntity("light.kitchen_lights", "Kitchen"), 
+      FriendEntity("light.living_room_lights", "Living Room"), 
+      FriendEntity("light.office_lamp", "Office Lamp")
+    };
+    lightGroup->setup(lights);
+    App.register_component(lightGroup);
+    return {lightGroup};
+  id: light_group_component
   
 sensor:
   - platform: rotary_encoder

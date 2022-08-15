@@ -1,5 +1,6 @@
 #include "esphome.h"
-#include "esphome-remote-players.h"
+#include "esphomeRemotePlayer.h"
+#include "esphomeRemoteService.h"
 
 enum MenuStates {
   rootMenu,
@@ -8,6 +9,7 @@ enum MenuStates {
   sourcesMenu,
   groupMenu,
   mediaPlayersMenu,
+  scenesMenu,
   lightsMenu,
   tvNowPlayingMenu,
   speakerNowPlayingMenu
@@ -19,6 +21,7 @@ enum MenuStringType {
   // shortcuts,
   mediaPlayers,
   lights,
+  scenes,
   backlightString,
   sleepString,
   back
@@ -46,10 +49,10 @@ class DisplayUpdateImpl : public DisplayUpdateInterface
     virtual void updateDisplay(bool force) {
     // ESP_LOGD("update", "update");
     if(force) {
+      id(my_display).update();
       if (!id(backlight).state) {
         id(backlight).turn_on();
       }
-      id(my_display).update();
       return;
     }
 
@@ -65,75 +68,10 @@ class DisplayUpdateImpl : public DisplayUpdateInterface
   }
 };
 
-class BaseService: public CustomAPIDevice {
-  public:
-    std::string entityId;
-    std::string friendlyName;
-    std::string serviceType;
-    std::string getEntityId() { return entityId; }
-    std::string getFriendlyName() { return friendlyName; }
-    void callService() {
-      if (serviceType == "script") {
-        call_homeassistant_service(entityId.c_str());
-      } else {
-        call_homeassistant_service("scene.turn_on", {
-          {"entity_id", entityId.c_str()}
-        });
-      }
-    }
-
-    void superSetup(std::string newEntityId, std::string newFriendlyName) {
-      entityId = newEntityId;
-      friendlyName = newFriendlyName;
-    }
-};
-
-class SceneService: public BaseService {
-  public:
-    SceneService(std::string newEntityId, std::string newFriendlyName) {
-      serviceType = "scene";
-      superSetup(newEntityId, newFriendlyName); 
-   }
-};
-
-class ScriptService: public BaseService {
-  public:
-    ScriptService(std::string newEntityId, std::string newFriendlyName) {
-      serviceType = "script";
-      superSetup(newEntityId, newFriendlyName); 
-   }
-};
-
-class SceneGroupComponent : public CustomAPIDevice, public Component {
- public:
-  std::vector<BaseService> services;
-
-  void setup(std::vector<BaseService> newServices) {
-    services = newServices;
-  }
-
-  std::vector<std::string> sceneTitleStrings() {
-    std::vector<std::string> out;
-    for (auto &service: services) {
-      out.push_back(service.getFriendlyName());
-    }
-    return out;
-  }
-
-  bool selectLights(int index) {
-   if(index >= 0 && index < services.size()) {
-      BaseService service = services[index];
-      ESP_LOGD("Scene", "Service called %s", service.getFriendlyName().c_str());
-      service.callService();
-      return false;
-    }
-    return true;
-  }
-};
-
 auto displayUpdate = DisplayUpdateImpl();
 auto *sceneGroup = new SceneGroupComponent();
 auto *speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
+auto *lightGroup = new LightGroupComponent(displayUpdate);
 
 std::string menuStringForType(MenuStringType stringType) {
   switch(stringType) {
@@ -149,6 +87,8 @@ std::string menuStringForType(MenuStringType stringType) {
     return "Media Players";
   case lights:
     return "Lights";
+  case scenes:
+    return "Scenes and Actions";
   default:
     return "DEFAULT";
   }
@@ -312,7 +252,7 @@ std::vector<std::string> menuToString(std::vector<MenuStringType> menu) {
 }
 
 std::vector<MenuStringType> rootMenuTitles() {
-  return { nowPlaying, sources, mediaPlayers, lights, sleepString };
+  return { nowPlaying, sources, mediaPlayers, scenes, lights, sleepString };
 }
 
 std::vector<std::string> activeMenu() {
@@ -326,7 +266,7 @@ std::vector<std::string> activeMenu() {
       return speakerGroup->activePlayer->sources;
     case mediaPlayersMenu:
       return speakerGroup->mediaPlayersTitleString();
-    case lightsMenu:
+    case scenesMenu:
       return sceneGroup->sceneTitleStrings();
     default:
       ESP_LOGD("WARNING", "menu is bad  %d", x);
@@ -452,6 +392,9 @@ void drawMenu() {
     case sourcesMenu:
       drawMenu(activeMenu());
       break;
+    case lightsMenu:
+      drawSwitchMenu(lightGroup->lightTitleSwitches());
+      break;
     case groupMenu:
       if(speakerGroup->newSpeakerGroupParent != NULL) {
         drawSwitchMenu(speakerGroup->groupTitleSwitches());
@@ -496,6 +439,9 @@ bool selectRootMenu() {
     case lights:
       activeMenuState = lightsMenu;
       break;
+    case scenes:
+      activeMenuState = scenesMenu;
+      break;
     case backlightString:
       topMenu();
       id(backlight).turn_off();
@@ -534,8 +480,13 @@ bool selectMenu() {
     case mediaPlayersMenu:
       selectMediaPlayers();
       break;
+    case scenesMenu:
+      if (sceneGroup->selectScene(menuIndexForSource)) {
+        topMenu();
+      }
+      break;
     case lightsMenu:
-      if (sceneGroup->selectLights(menuIndexForSource)) {
+      if (lightGroup->selectLight(menuIndexForSource)) {
         topMenu();
       }
       break;

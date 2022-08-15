@@ -1,18 +1,11 @@
 #include "esphome.h"
 #include "DisplayUpdateInterface.h"
+#include "MenuTitleSwitch.h"
 
 #ifndef REMOTEPLAYERS
 #define REMOTEPLAYERS
 
 std::string playingNewSourceText = "";
-
-class MenuTitleSwitch {
-  public:
-    MenuTitleSwitch(std::string newFriendlyName, std::string newEntityName, int newToggleState) : friendlyName(newFriendlyName), entityName(newEntityName), toggleState(newToggleState) { }
-    std::string friendlyName;
-    std::string entityName;
-    int toggleState;
-};
 
 void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
   size_t start;
