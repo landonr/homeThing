@@ -47,6 +47,10 @@ color:
     red: 0%
     green: 59%
     blue: 84%
+  - id: my_gray_dark
+    red: 40%
+    green: 40%
+    blue: 40%
   - id: my_gray
     red: 10%
     green: 10%
@@ -346,6 +350,12 @@ image:
     type: RGB24
   - file: "images/stop.png"
     id: image_stop
+    type: RGB24
+  - file: "images/shuffle.png"
+    id: image_shuffle
+    type: RGB24
+  - file: "images/shuffleDisabled.png"
+    id: image_shuffle_disabled
     type: RGB24
 
 time:

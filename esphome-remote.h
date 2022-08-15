@@ -156,16 +156,17 @@ std::string menuStringForType(MenuStringType stringType) {
 
 int batteryWidth = 24;
 
-void drawPlayPauseIcon() {
+int drawPlayPauseIcon() {
   int yPos = 2;
-  int xPos = 4;
+  int xPos = id(my_display).get_width() - batteryWidth - 16 - 4;
   if (speakerGroup->activePlayer->playerState == "playing") {
-    id(my_display).image(id(my_display).get_width() - xPos - batteryWidth - 16, 2, &id(image_play));
+    id(my_display).image(xPos, 2, &id(image_play));
   } else if (speakerGroup->activePlayer->playerState == "paused") {
-    id(my_display).image(id(my_display).get_width() - xPos - batteryWidth - 16, 2, &id(image_pause));
+    id(my_display).image(xPos, 2, &id(image_pause));
   } else {
-    id(my_display).image(id(my_display).get_width() - xPos - batteryWidth - 16, 2, &id(image_stop));
+    id(my_display).image(xPos, 2, &id(image_stop));
   }
+  return xPos;
 }
 
 void drawCurrentMediaPlayer() {
@@ -188,25 +189,40 @@ void drawBattery() {
   int yPos = 2;
   int xPos = 4;
   if (id(TTGoBatteryPercent).state < 100) {
-    id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray));
+    id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, (batteryWidth * id(TTGoBatteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
   } else {
-    id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray));
+    id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
   }
 }
 
-void drawVolumeLevel() {
-  int xPos = id(my_display).get_width() - batteryWidth - 24;
+void drawVolumeLevel(int oldXPos) {
+  int xPos = oldXPos - 6;
   id(my_display).printf(xPos, 0, &id(helvetica_8), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup->getVolumeLevel());
+}
+
+int drawShuffle(int oldXPos) {
+  if(speakerGroup->activePlayer->playerType == "TV") {
+    return oldXPos;
+  }
+  if(speakerGroup->activePlayer->playerState == "playing" || speakerGroup->activePlayer->playerState == "paused") {
+    int xPos = oldXPos - 18;
+    if(speakerGroup->mediaShuffling()) {
+      id(my_display).image(xPos, 2, &id(image_shuffle));
+    } else {
+      id(my_display).image(xPos, 2, &id(image_shuffle_disabled));    
+    }
+    return xPos;
+  }
+  return oldXPos;
 }
 
 void drawHeader() {
   id(my_display).rectangle(0, 16, id(my_display).get_width(), 1, id(my_blue));
   drawBattery();
   drawCurrentMediaPlayer();
-  drawPlayPauseIcon();
-  drawVolumeLevel();
+  drawVolumeLevel(drawShuffle(drawPlayPauseIcon()));
 }
 
 void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
