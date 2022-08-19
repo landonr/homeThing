@@ -70,19 +70,19 @@ font:
   - file: "fonts/monaco.ttf"
     id: helvetica_48
     size: 48
-    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/monaco.ttf"
     id: helvetica_24
     size: 24
-    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/monaco.ttf"
     id: helvetica_12
     size: 15
-    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/monaco.ttf"
     id: helvetica_8
     size: 14
-    glyphs: '#>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
     
 globals:
   - id: charging
@@ -121,6 +121,7 @@ custom_component:
 - lambda: |-
     std::vector<FriendEntity> lights { 
       FriendEntity("light.bathroom_lights", "Bathroom"), 
+      FriendEntity("light.bedroom_lights", "Bedroom"), 
       FriendEntity("light.kitchen_lights", "Kitchen"), 
       FriendEntity("light.living_room_lights", "Living Room"), 
       FriendEntity("light.office_lamp", "Office Lamp")
@@ -380,6 +381,12 @@ image:
     type: RGB24
   - file: "images/shuffleDisabled.png"
     id: image_shuffle_disabled
+    type: RGB24
+  - file: "images/volumeLow.png"
+    id: image_volume_low
+    type: RGB24
+  - file: "images/volumeHigh.png"
+    id: image_volume_high
     type: RGB24
 
 time:
