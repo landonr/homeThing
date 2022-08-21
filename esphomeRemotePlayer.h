@@ -1,6 +1,6 @@
 #include "esphome.h"
 #include "DisplayUpdateInterface.h"
-#include "MenuTitleSwitch.h"
+#include "MenuTitle.h"
 
 #ifndef REMOTEPLAYERS
 #define REMOTEPLAYERS
@@ -24,6 +24,7 @@ std::string filter(std::string str) {
   for(size_t i = 0; i < str.size(); ++i) {
     if(i == 0 && str[i] == ' ') continue;
     if(i < str.size() - 3 && str[i] == '\\' && str[i+1] == 'x' && str[i+2] == 'a') {
+      // replace \xa with space
       output += ' ';
       i+=3;
       continue;
@@ -43,7 +44,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     std::string friendlyName = "";
     std::string playerName = "";
     std::string playerType = "";
-    std::vector<std::string> sources;
+    std::vector<MenuTitle> sources;
 
   void superSetup(std::string newPlayerName) {
     playerName = newPlayerName;
@@ -65,11 +66,11 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   }
 
   void playSource(float index) {
-    ESP_LOGD("speaker", "%s playing %f %s", playerName.c_str(), index, sources[index].c_str());
-    playingNewSourceText = sources[index];
+    ESP_LOGD("speaker", "%s playing %f %s", playerName.c_str(), index, sources[index].friendlyName.c_str());
+    playingNewSourceText = sources[index].friendlyName;
     call_homeassistant_service("media_player.select_source", {
       {"entity_id", playerName},
-      {"source", sources[index].c_str()},
+      {"source", sources[index].friendlyName.c_str()},
     });
   }
 
@@ -241,7 +242,7 @@ class TVPlayerComponent : public BasePlayerComponent {
     sources.clear();
     for (auto &state: out) {
       std::string source = filter(state);
-      sources.push_back(source);
+      sources.push_back(MenuTitle(source, "", NoMenuTitleState));
       ESP_LOGD("Player", "%s state %s", playerName.c_str(), source.c_str());
     }
     display.updateDisplay(false);
@@ -337,14 +338,14 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     std::string delim = ", '";
  
     std::vector<std::string> out;
-    std::vector<std::string> sources;
     tokenize(state, delim, out);
 
+    std::vector<MenuTitle> sources;
     for (auto &state: out) {
-        std::string source = filter(state);
-        std::string outSource = source.substr(source.find(" ") + 1);
-        ESP_LOGD("group", "%s", outSource.c_str());
-        sources.push_back(outSource);
+      std::string source = filter(state);
+      std::string outSource = source.substr(source.find(" ") + 1);
+      ESP_LOGD("group", "%s", outSource.c_str());
+      sources.push_back(MenuTitle(outSource, "", NoMenuTitleState));
     }
 
     for(auto &player: speakers) {
@@ -371,15 +372,6 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
     } else {
       tv->speaker->decreaseVolume();
-    }
-  }
-
-
-  std::string sourceTitleString(int x) {
-    if (x < activePlayer->sources.size()) {
-      return activePlayer->sources[x];
-    } else {
-      return "-";
     }
   }
 
@@ -438,29 +430,29 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     return 0;
   }
 
-  std::vector<MenuTitleSwitch> groupTitleSwitches() {
-    std::vector<MenuTitleSwitch> out;
+  std::vector<MenuTitle> groupTitleSwitches() {
+    std::vector<MenuTitle> out;
     std::vector<std::string> groupedMembers;
     if(newSpeakerGroupParent != NULL) {
-      out.push_back(MenuTitleSwitch("Group " + newSpeakerGroupParent->friendlyName, newSpeakerGroupParent->playerName, 0));
+      out.push_back(MenuTitle("Group " + newSpeakerGroupParent->friendlyName, newSpeakerGroupParent->playerName, ArrowMenuTitleState));
     }
     for (auto &speaker: speakers) {
       if (newSpeakerGroupParent->playerName == speaker->playerName) {
         continue;
       } else {
         if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(), newSpeakerGroupParent->playerName) != speaker->groupMembers.end()) {
-          out.push_back(MenuTitleSwitch(speaker->friendlyName, speaker->playerName, 2));
+          out.push_back(MenuTitle(speaker->friendlyName, speaker->playerName, OnMenuTitleState));
         } else {
-          out.push_back(MenuTitleSwitch(speaker->friendlyName, speaker->playerName, 1));
+          out.push_back(MenuTitle(speaker->friendlyName, speaker->playerName, OffMenuTitleState));
         }
       }
     }
     return out;
   }
 
-  std::vector<std::string> groupTitleString() {
+  std::vector<MenuTitle> groupTitleString() {
+    std::vector<MenuTitle> out;
     std::vector<std::string> groupedMembers;
-    std::vector<std::string> out;
     for (auto &speaker: speakers) {
       std::string speakerPlaying = speaker->playerState == "playing" ? " > " : "";
       if (std::find(groupedMembers.begin(), groupedMembers.end(), speaker->playerName) != groupedMembers.end()) {
@@ -473,22 +465,22 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
           std::string groupedSpeakerName = friendlyNameForPlayerName(groupedSpeaker);
           speakerTitle = speakerTitle + ", " + groupedSpeakerName;
         }
-        out.push_back(speakerTitle); 
+        out.push_back(MenuTitle(speakerTitle, "", ArrowMenuTitleState)); 
       } else {
-        out.push_back(speaker->friendlyName + speakerPlaying);
+        out.push_back(MenuTitle(speaker->friendlyName + speakerPlaying, "", ArrowMenuTitleState));
       }
     }
     return out;
   }
 
-  std::vector<std::string> mediaPlayersTitleString() {
-    std::vector<std::string> out;
+  std::vector<MenuTitle> mediaPlayersTitleString() {
+    std::vector<MenuTitle> out;
     for (auto &speaker: speakers) {
       std::string speakerPlaying = speaker->playerState == "playing" ? " > " : "";
-      out.push_back(speaker->friendlyName + speakerPlaying);
+      out.push_back(MenuTitle(speaker->friendlyName + speakerPlaying, "", NoMenuTitleState));
     }
     std::string tvPlaying = tv->playerState == "playing" ? " > " : "";
-    out.push_back(tv->friendlyName + tvPlaying);
+    out.push_back(MenuTitle(tv->friendlyName + tvPlaying, "", NoMenuTitleState));
     return out;
   }
 

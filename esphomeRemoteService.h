@@ -1,6 +1,6 @@
 #include "esphome.h"
 #include "DisplayUpdateInterface.h"
-#include "MenuTitleSwitch.h"
+#include "MenuTitle.h"
 
 #ifndef REMOTESERVICE
 #define REMOTESERVICE
@@ -42,12 +42,12 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
       }
     }
 
-    std::vector<MenuTitleSwitch> lightTitleSwitches() {
-      std::vector<MenuTitleSwitch> out;
+    std::vector<MenuTitle> lightTitleSwitches() {
+      std::vector<MenuTitle> out;
       for (auto &light: lights) {
         ESP_LOGD("Light", "state %d", light->onState);
-        int state = light->onState ? 2 : 1;
-        out.push_back(MenuTitleSwitch(light->friendlyName, light->entityId, state));
+        MenuTitleState state = light->onState ? OnMenuTitleState : OffMenuTitleState;
+        out.push_back(MenuTitle(light->friendlyName, light->entityId, state));
       }
       return out;
     }
@@ -111,10 +111,10 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
     services = newServices;
   }
 
-  std::vector<std::string> sceneTitleStrings() {
-    std::vector<std::string> out;
+  std::vector<MenuTitle> sceneTitleStrings() {
+    std::vector<MenuTitle> out;
     for (auto &service: services) {
-      out.push_back(service.getFriendlyName());
+      out.push_back(MenuTitle(service.getFriendlyName(), "", NoMenuTitleState));
     }
     return out;
   }

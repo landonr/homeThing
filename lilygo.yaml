@@ -3,7 +3,8 @@ esphome:
   platform: ESP32
   board: featheresp32
   includes:
-    - MenuTitleSwitch.h
+    - MenuGlobals.h
+    - MenuTitle.h
     - esphomeRemotePlayer.h
     - esphomeRemoteService.h
     - DisplayUpdateInterface.h

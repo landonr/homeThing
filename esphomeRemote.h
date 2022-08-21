@@ -1,44 +1,7 @@
 #include "esphome.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteService.h"
-
-enum MenuStates {
-  rootMenu,
-  sourcesMenu,
-  groupMenu,
-  mediaPlayersMenu,
-  scenesMenu,
-  lightsMenu,
-  tvNowPlayingMenu,
-  speakerNowPlayingMenu
-};
-
-enum MenuStringType {
-  nowPlaying,
-  sources,
-  mediaPlayers,
-  lights,
-  scenes,
-  backlightString,
-  sleepString,
-  back
-};
-
-enum OptionMenuType {
-  noOptionMenu,
-  volumeOptionMenu,
-  tvOptionMenu,
-  speakerOptionMenu,
-  playingNewSourceMenu
-};
-
-MenuStates activeMenuState = rootMenu;
-int scrollTop = 0;
-int menuIndex = 0;
-int fontSize = 15;
-int marginSize = 4;
-int rotaryPosition = 0;
-OptionMenuType optionMenu = noOptionMenu;
+#include "MenuGlobals.h"
 
 class DisplayUpdateImpl: public DisplayUpdateInterface {
   public: virtual void updateDisplay(bool force) {
@@ -97,28 +60,26 @@ std::string textWrap(std::string text, unsigned per_line) {
   return text;
 }
 
-std::string menuStringForType(MenuStringType stringType) {
+MenuTitle menuTitleForType(MenuStringType stringType) {
   switch (stringType) {
   case nowPlaying:
-    return "Now Playing";
+    return MenuTitle("Now Playing", "", ArrowMenuTitleState);
   case sources:
-    return "Sources";
+    return MenuTitle("Sources", "", ArrowMenuTitleState);
   case backlightString:
-    return "Backlight";
+    return MenuTitle("Backlight", "", NoMenuTitleState);
   case sleepString:
-    return "Sleep";
+    return MenuTitle("Sleep", "", NoMenuTitleState);
   case mediaPlayers:
-    return "Media Players";
+    return MenuTitle("Media Players", "", ArrowMenuTitleState);
   case lights:
-    return "Lights";
+    return MenuTitle("Lights", "", ArrowMenuTitleState);
   case scenes:
-    return "Scenes and Actions";
+    return MenuTitle("Scenes and Actions", "", ArrowMenuTitleState);
   default:
-    return "DEFAULT";
+    return MenuTitle("DEFAULT", "", ArrowMenuTitleState);
   }
 }
-
-int batteryWidth = 24;
 
 int drawPlayPauseIcon() {
   int yPos = 2;
@@ -228,14 +189,12 @@ void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpa
   }
 }
 
-double headerHeight = 16;
-
 int maxItems() {
   int maxItems = ((id(my_display).get_height() - headerHeight) / (fontSize + marginSize)) - 1;
   return maxItems;
 }
 
-void drawScrollBar(int menuTitlesCount, double headerHeight) {
+void drawScrollBar(int menuTitlesCount, int headerHeight) {
   if (menuTitlesCount > maxItems() + 1) {
     double screenHeight = id(my_display).get_height() - headerHeight;
     double height = maxItems() * (screenHeight / menuTitlesCount);
@@ -251,6 +210,12 @@ void drawSwitch(bool switchState, int yPos) {
   }
 }
 
+void drawArrow(int yPos) {
+  int xPos = id(my_display).get_width() - 16;
+  id(my_display).line(xPos, yPos + 4, xPos + 3, yPos + (fontSize + marginSize) / 2, id(my_white));
+  id(my_display).line(xPos, yPos + (fontSize + marginSize) - 4, xPos + 3, yPos + (fontSize + marginSize) / 2, id(my_white));
+}
+
 void scrollMenuPosition() {
   int menuState = menuIndex;
 
@@ -263,9 +228,7 @@ void scrollMenuPosition() {
   }
 }
 
-int activeMenuTitleCount = 0;
-
-void drawMenu(std::vector < std::string > menuTitles) {
+void drawMenu(std::vector <MenuTitle> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
   scrollMenuPosition();
   int menuState = menuIndex;
@@ -273,52 +236,38 @@ void drawMenu(std::vector < std::string > menuTitles) {
     if (i > scrollTop + maxItems()) {
       break;
     }
-    drawTitle(menuState, i, menuTitles[i], ((i - scrollTop) * (fontSize + marginSize)) + headerHeight, 0);
+    int yPos = ((i - scrollTop) * (fontSize + marginSize)) + headerHeight;
+    drawTitle(menuState, i, menuTitles[i].friendlyName, yPos, menuTitles[i].indentLine());
+    switch(menuTitles[i].titleState) {
+      case NoMenuTitleState:
+        break;
+      case OffMenuTitleState:
+      case OnMenuTitleState:
+        drawSwitch(menuTitles[i].titleState == OnMenuTitleState, yPos);
+        break;
+      case ArrowMenuTitleState:
+        if(menuState == i) {
+          drawArrow(yPos);
+        }
+        break;
+    }
   }
   drawScrollBar(menuTitles.size(), headerHeight);
 }
 
-void drawSwitchMenu(std::vector < MenuTitleSwitch > menuTitleSwitches) {
-  activeMenuTitleCount = menuTitleSwitches.size();
-  scrollMenuPosition();
-  int menuState = menuIndex;
-  for (int i = scrollTop; i < menuTitleSwitches.size(); i++) {
-    if (i > scrollTop + maxItems()) {
-      break;
-    }
-    int yPos = ((i - scrollTop) * (fontSize + marginSize)) + headerHeight;
-    drawTitle(menuState, i, menuTitleSwitches[i].friendlyName, yPos, menuTitleSwitches[i].toggleState != 0);
-    if (menuTitleSwitches[i].toggleState != 0) {
-      drawSwitch(menuTitleSwitches[i].toggleState == 2, yPos);
-    }
-  }
-  drawScrollBar(menuTitleSwitches.size(), headerHeight);
-}
-
-std::vector < std::string > menuToString(std::vector < MenuStringType > menu) {
-  std::vector < std::string > out;
+std::vector <MenuTitle> menuTypesToTitles(std::vector <MenuStringType> menu) {
+  std::vector <MenuTitle> out;
   for (auto & menuItem: menu) {
-    out.push_back(menuStringForType(menuItem));
+    out.push_back(menuTitleForType(menuItem));
   }
   return out;
 }
 
-std::vector < MenuStringType > rootMenuTitles() {
-  return {
-    nowPlaying,
-    sources,
-    mediaPlayers,
-    scenes,
-    lights,
-    sleepString
-  };
-}
-
-std::vector < std::string > activeMenu() {
+std::vector <MenuTitle> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
   case rootMenu:
-    return menuToString(rootMenuTitles());
+    return menuTypesToTitles(rootMenuTitles());
   case sourcesMenu:
     return speakerGroup -> activePlayer -> sources;
   case mediaPlayersMenu:
@@ -327,7 +276,7 @@ std::vector < std::string > activeMenu() {
     return sceneGroup -> sceneTitleStrings();
   default:
     ESP_LOGD("WARNING", "menu is bad  %d", x);
-    std::vector < std::string > out;
+    std::vector <MenuTitle> out;
     return out;
   }
 }
@@ -396,7 +345,7 @@ void drawVolumeOptionMenu() {
 }
 
 int drawTextWrapped(int xPos, int yPos, int fontSize, Font * font, Color color, std::string text, int characterLimit) {
-  std::vector < std::string > output;
+  std::vector <std::string> output;
   std::string wrappedTitles = textWrap(text, characterLimit);
   tokenize(wrappedTitles, "\n", output);
   for (int i = 0; i < output.size(); i++) {
@@ -463,11 +412,11 @@ void drawMenu() {
     drawMenu(activeMenu());
     break;
   case lightsMenu:
-    drawSwitchMenu(lightGroup -> lightTitleSwitches());
+    drawMenu(lightGroup -> lightTitleSwitches());
     break;
   case groupMenu:
     if (speakerGroup -> newSpeakerGroupParent != NULL) {
-      drawSwitchMenu(speakerGroup -> groupTitleSwitches());
+      drawMenu(speakerGroup -> groupTitleSwitches());
       break;
     }
     drawMenu(speakerGroup -> groupTitleString());
@@ -490,7 +439,6 @@ void selectMediaPlayers() {
 
 bool selectRootMenu() {
   MenuStringType currentMenu = rootMenuTitles()[menuIndex];
-  ESP_LOGD("menu", "menu  %s", menuStringForType(currentMenu).c_str());
   switch (currentMenu) {
   case sources:
     activeMenuState = sourcesMenu;
