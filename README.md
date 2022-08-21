@@ -27,6 +27,12 @@ ipod style wifi home assistant remote with scroll wheel, directional buttons and
 - toggle lights on and off
 - run scenes and scripts
 
+## includes
+- esphome https://esphome.io/
+- iosevka font https://github.com/be5invis/Iosevka
+- Adafruit ANO Directional Navigation and Scroll Wheel Rotary Encoder https://www.adafruit.com/product/5001
+- LILYGO ESP32 T-Display
+
 ## todo
 - show current playlist
 - mute / unmute

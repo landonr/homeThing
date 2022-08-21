@@ -113,11 +113,13 @@ void drawBattery() {
   int batteryHeight = 12;
   int yPos = 2;
   int xPos = 4;
+  int capHeight = 6;
+  int capWidth = 3;
+  id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
+  id(my_display).rectangle(id(my_display).get_width() - xPos - 1, yPos + (batteryHeight / 2) - (capHeight / 2), capWidth, capHeight, id(my_gray_dark));
   if (id(TTGoBatteryPercent).state < 100) {
-    id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, (batteryWidth * id(TTGoBatteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
   } else {
-    id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
   }
 }
@@ -182,7 +184,7 @@ void drawHeader() {
 void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
   int xPos = buttonSpace ? 20 : 4;
   if (menuState == i) {
-    id(my_display).filled_rectangle(0, yPos, id(my_display).get_width() - 4, fontSize + marginSize, id(my_blue));
+    id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), fontSize + marginSize, id(my_blue));
     id(my_display).printf(xPos, yPos, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
   } else {
     id(my_display).printf(xPos, yPos, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
@@ -199,7 +201,8 @@ void drawScrollBar(int menuTitlesCount, int headerHeight) {
     double screenHeight = id(my_display).get_height() - headerHeight;
     double height = maxItems() * (screenHeight / menuTitlesCount);
     double yPos = (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 + headerHeight;
-    id(my_display).filled_rectangle(id(my_display).get_width() - 3, yPos, 2, height - 1, id(my_blue));
+    id(my_display).filled_rectangle(id(my_display).get_width() - 3, headerHeight, 3, screenHeight, id(my_gray_dark_2));
+    id(my_display).filled_rectangle(id(my_display).get_width() - 2, yPos, 2, height - 1, id(my_blue));
   }
 }
 

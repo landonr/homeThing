@@ -54,6 +54,10 @@ color:
     red: 40%
     green: 40%
     blue: 40%
+  - id: my_gray_dark_2
+    red: 7%
+    green: 7%
+    blue: 7%
   - id: my_gray
     red: 10%
     green: 10%
@@ -68,15 +72,15 @@ color:
     blue: 100%
 
 font:
-  - file: "fonts/monaco.ttf"
+  - file: "fonts/iosevka.ttf"
     id: monaco_24
     size: 24
     glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
-  - file: "fonts/monaco.ttf"
+  - file: "fonts/iosevka.ttf"
     id: monaco_15
     size: 15
     glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
-  - file: "fonts/monaco.ttf"
+  - file: "fonts/iosevka.ttf"
     id: monaco_14
     size: 14
     glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
