@@ -47,8 +47,8 @@ color:
     blue: 0%
   - id: my_blue
     red: 0%
-    green: 59%
-    blue: 84%
+    green: 45%
+    blue: 68%
   - id: my_gray_dark
     red: 40%
     green: 40%
@@ -68,21 +68,17 @@ color:
 
 font:
   - file: "fonts/monaco.ttf"
-    id: helvetica_48
-    size: 48
-    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
-  - file: "fonts/monaco.ttf"
-    id: helvetica_24
+    id: monaco_24
     size: 24
-    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/monaco.ttf"
-    id: helvetica_12
+    id: monaco_15
     size: 15
-    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/monaco.ttf"
-    id: helvetica_8
+    id: monaco_14
     size: 14
-    glyphs: '$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
     
 globals:
   - id: charging
