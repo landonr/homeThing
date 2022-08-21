@@ -297,8 +297,6 @@ std::vector<std::string> activeMenu() {
   switch(activeMenuState) {
     case rootMenu:
       return menuToString(rootMenuTitles());
-    // case shortcuts:
-    //   return shortcutStrings;
     case sourcesMenu:
       return speakerGroup->activePlayer->sources;
     case mediaPlayersMenu:
@@ -362,9 +360,6 @@ void drawSpeakerOptionMenu() {
   id(my_display).circle(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 24, 48, id(my_gray));
   id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.15 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, speakerGroup->shuffleString().c_str());
   id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Group");
-  // id(my_display).printf(id(my_display).get_width() * 0.2, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Back");
-  // id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.5 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "Home");
-  // id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 16, &id(helvetica_8), id(my_white), TextAlign::TOP_CENTER, "TV Power");
 }
 
 void drawVolumeOptionMenu() {
@@ -376,6 +371,16 @@ void drawVolumeOptionMenu() {
   id(my_display).image(id(my_display).get_width() - 14, yPos - 1, &id(image_volume_high));
   id(my_display).rectangle(margin, yPos, id(my_display).get_width() - margin * 2, 10, id(my_blue));
   id(my_display).filled_rectangle(margin + 2, yPos + 2, barWidth, 6, id(my_blue));
+}
+
+int drawTextWrapped(int xPos, int yPos, int fontSize, Font* font, Color color, std::string text, int characterLimit) {
+  std::vector<std::string> output;
+  std::string wrappedTitles = textWrap(text, characterLimit);
+  tokenize(wrappedTitles, "\n", output);
+  for(int i = 0; i < output.size(); i++) {
+    id(my_display).printf(xPos, yPos + (i * fontSize), font, color, TextAlign::TOP_CENTER, output[i].c_str());
+  }
+  return yPos + (output.size() * fontSize);
 }
 
 bool drawOptionMenuAndStop() {
@@ -392,24 +397,14 @@ bool drawOptionMenuAndStop() {
     case noOptionMenu:
       return false;
     case playingNewSourceMenu:
-      id(my_display).printf(8, 20 + marginSize, &id(helvetica_12), id(my_white), "Playing");
-      id(my_display).printf(8, 36 + marginSize, &id(helvetica_24), id(my_white), "%s", playingNewSourceText.c_str());
+      id(my_display).printf(id(my_display).get_width() / 2, 20 + marginSize, &id(helvetica_12), id(my_white), TextAlign::TOP_CENTER, "Playing...");
+      drawTextWrapped(id(my_display).get_width() / 2, 40, 24, &id(helvetica_24), id(my_white), playingNewSourceText.c_str(), 16);
       return true;
   }
   return true;
 }
 
-int drawTextWrapped(int xPos, int yPos, int fontSize, Font* font, Color color, std::string text, int characterLimit) {
-  std::vector<std::string> output;
-  std::string wrappedTitles = textWrap(text, characterLimit);
-  tokenize(wrappedTitles, "\n", output);
-  for(int i = 0; i < output.size(); i++) {
-    id(my_display).printf(xPos, yPos + (i * fontSize), font, color, TextAlign::TOP_CENTER, output[i].c_str());
-  }
-  return yPos + (output.size() * fontSize);
-}
-
-void drawSpeakerNowPlaying() {
+void drawNowPlaying() {
   if(drawOptionMenuAndStop()) {
     return;
   }
@@ -419,7 +414,7 @@ void drawSpeakerNowPlaying() {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, &id(helvetica_24), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
     return; 
   }
-  int artistTextHeight = 0;
+  int artistTextHeight = yPos;
   if (speakerGroup->activePlayer->mediaArtist != "") {
     artistTextHeight = drawTextWrapped(id(my_display).get_width() / 2, yPos, 24, &id(helvetica_24), id(my_white), speakerGroup->activePlayer->mediaArtist, 16);
   }
@@ -433,17 +428,14 @@ void drawSpeakerNowPlaying() {
 
 void drawMenu() {
   if(speakerGroup->playerSearchFinished == false) {
-    ESP_LOGD("drawMenu", "draw beep boop");
     id(my_display).printf(40, 40, &id(helvetica_24), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
     speakerGroup->findActivePlayer();
     return;
   }
   switch(activeMenuState) {
     case tvNowPlayingMenu:
-      drawSpeakerNowPlaying();
-      break;
     case speakerNowPlayingMenu:
-      drawSpeakerNowPlaying();
+      drawNowPlaying();
       break;
     case sourcesMenu:
       drawMenu(activeMenu());
@@ -471,7 +463,6 @@ void selectMediaPlayers() {
   } else if (menuIndex == speakerGroup->speakers.size()) {
     speakerGroup->activePlayer = speakerGroup->tv;
   }
-  ESP_LOGD("media player", "selected  %s %d %d", speakerGroup->activePlayer->friendlyName.c_str(), menuIndex, speakerGroup->speakers.size());
   topMenu();
 }
 

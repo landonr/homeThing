@@ -399,13 +399,13 @@ spi:
 
 display:
   - platform: st7789v
+    model: TTGO TDisplay 135x240
     id: my_display
     backlight_pin: GPIO4
     cs_pin: GPIO5
     dc_pin: GPIO16
     reset_pin: GPIO23
     rotation: 90
-    brightness: 100%
     update_interval: 60s
     lambda: |-
       if (id(idle_time) < 0) {
