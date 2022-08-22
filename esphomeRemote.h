@@ -442,6 +442,10 @@ void drawNowPlaying() {
     return;
   }
   int yPos = 40;
+  if(speakerGroup->activePlayer->playerState == "standby") {
+    id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(monaco_24), id(my_white), TextAlign::TOP_CENTER, "Power Off");
+    return;
+  }
   id(my_display).printf(4, 16, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "Now Playing,");
   if (speakerGroup -> activePlayer -> mediaArtist == "" && speakerGroup -> activePlayer -> mediaTitle == "") {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(monaco_24), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
