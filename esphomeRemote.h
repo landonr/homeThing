@@ -29,6 +29,7 @@ auto displayUpdate = DisplayUpdateImpl();
 auto * sceneGroup = new SceneGroupComponent();
 auto * speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
 auto * lightGroup = new LightGroupComponent(displayUpdate);
+MenuTitle activeMenuTitle = MenuTitle("", "", NoMenuTitleState);
 
 std::string textWrap(std::string text, unsigned per_line) {
   unsigned line_begin = 0;
@@ -84,28 +85,34 @@ MenuTitle menuTitleForType(MenuStringType stringType) {
 int drawPlayPauseIcon() {
   int yPos = 2;
   int xPos = id(my_display).get_width() - batteryWidth - 16 - 4;
-  if (speakerGroup -> activePlayer -> playerState == "playing") {
-    id(my_display).image(xPos, 2, & id(image_play));
-  } else if (speakerGroup -> activePlayer -> playerState == "paused") {
-    id(my_display).image(xPos, 2, & id(image_pause));
-  } else {
-    id(my_display).image(xPos, 2, & id(image_stop));
+  switch(speakerGroup->activePlayer->menuTitlePlayerState()) {
+    case PlayingMenuTitleState:
+      id(my_display).image(xPos, 2, & id(image_play));
+      break;
+    case PausedMenuTitleState:
+      id(my_display).image(xPos, 2, & id(image_pause));
+      break;
+    case StoppedMenuTitleState:
+      id(my_display).image(xPos, 2, & id(image_stop));
+      break;
+    default:
+      break;
   }
   return xPos;
 }
 
 void drawCurrentMediaPlayer() {
-  if (speakerGroup -> activePlayer -> playerName != "") {
-    std::string playerName = speakerGroup -> activePlayer -> friendlyName;
+  if (speakerGroup -> activePlayer -> entityId != "") {
+    std::string entityId = speakerGroup -> activePlayer -> friendlyName;
     if (speakerGroup -> activePlayer -> playerType != "TV") {
       SonosSpeakerComponent * activeSpeaker = static_cast < SonosSpeakerComponent * > (speakerGroup -> activePlayer);
       if (activeSpeaker != NULL) {
         if (activeSpeaker -> groupMembers.size() > 0) {
-          playerName = playerName + " + " + to_string(activeSpeaker -> groupMembers.size());
+          entityId = entityId + " + " + to_string(activeSpeaker -> groupMembers.size());
         }
       }
     }
-    id(my_display).printf(2, 0, & id(monaco_14), id(my_white), "%s", playerName.c_str());
+    id(my_display).printf(2, 0, & id(monaco_14), id(my_white), "%s", entityId.c_str());
   }
 }
 
@@ -197,12 +204,14 @@ int maxItems() {
 }
 
 void drawScrollBar(int menuTitlesCount, int headerHeight) {
+  int scrollBarWidth = 4;
+  int scrollBarMargin = 2;
   if (menuTitlesCount > maxItems() + 1) {
     double screenHeight = id(my_display).get_height() - headerHeight;
     double height = maxItems() * (screenHeight / menuTitlesCount);
     double yPos = (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 + headerHeight;
-    id(my_display).filled_rectangle(id(my_display).get_width() - 3, headerHeight, 3, screenHeight, id(my_gray_dark_2));
-    id(my_display).filled_rectangle(id(my_display).get_width() - 2, yPos, 2, height - 1, id(my_blue));
+    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth - scrollBarMargin, headerHeight, scrollBarWidth + scrollBarMargin, screenHeight, id(my_gray_dark_2));
+    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth, yPos, scrollBarWidth, height - 1, id(my_blue));
   }
 }
 
@@ -214,7 +223,7 @@ void drawSwitch(bool switchState, int yPos) {
 }
 
 void drawArrow(int yPos) {
-  int xPos = id(my_display).get_width() - 16;
+  int xPos = id(my_display).get_width() - 8;
   id(my_display).line(xPos, yPos + 4, xPos + 3, yPos + (fontSize + marginSize) / 2, id(my_white));
   id(my_display).line(xPos, yPos + (fontSize + marginSize) - 4, xPos + 3, yPos + (fontSize + marginSize) / 2, id(my_white));
 }
@@ -231,10 +240,51 @@ void scrollMenuPosition() {
   }
 }
 
+void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
+  int imageHeight = 12;
+  int adjustedYPos = yPos + (fontSize / 4);
+  int xPos = ((characterCount + 1) * (fontSize * 0.6)) + 4;
+  switch(titleState) {
+    case PlayingMenuTitleState:
+      if(selected) {
+        id(my_display).image(xPos, adjustedYPos, &id(image_play_white));
+      } else {
+        id(my_display).image(xPos, adjustedYPos, &id(image_play));
+      }
+      break;
+    case PausedMenuTitleState:
+      if(selected) {
+        id(my_display).image(xPos, adjustedYPos, &id(image_pause_white));
+      } else {
+        id(my_display).image(xPos, adjustedYPos, &id(image_pause));
+      }
+      break;
+    case StoppedMenuTitleState:
+      if(selected) {
+        id(my_display).image(xPos, adjustedYPos, &id(image_stop_white));
+      } else {
+        id(my_display).image(xPos, adjustedYPos, &id(image_stop));
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+void drawGroupedBar(int yPos, bool extend) {
+  int xPos = 8;
+  int width = 8;
+  int lineHeight = extend ? fontSize + marginSize : (fontSize + marginSize) / 2;
+  id(my_display).line(xPos, yPos, xPos, yPos + lineHeight, id(my_white));
+  id(my_display).line(xPos, yPos + (fontSize + marginSize) / 2, xPos + width, yPos + (fontSize + marginSize) / 2, id(my_white));
+}
+
 void drawMenu(std::vector <MenuTitle> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
   scrollMenuPosition();
   int menuState = menuIndex;
+  MenuTitle menuTitleCopy = menuTitles[menuIndex];
+  activeMenuTitle = menuTitleCopy;
   for (int i = scrollTop; i < menuTitles.size(); i++) {
     if (i > scrollTop + maxItems()) {
       break;
@@ -252,6 +302,15 @@ void drawMenu(std::vector <MenuTitle> menuTitles) {
         if(menuState == i) {
           drawArrow(yPos);
         }
+        break;
+      case PlayingMenuTitleState:
+      case PausedMenuTitleState:
+      case StoppedMenuTitleState:
+        drawTitleImage(menuTitles[i].friendlyName.length(), yPos, menuTitles[i].titleState, menuState == i);
+        break;
+      case GroupedMenuTitleState:
+        bool extend = i < menuTitles.size() && menuTitles[i+1].titleState == GroupedMenuTitleState;
+        drawGroupedBar(yPos, extend);
         break;
     }
   }
@@ -286,14 +345,14 @@ std::vector <MenuTitle> activeMenu() {
 
 void topMenu() {
   menuIndex = 0;
-  speakerGroup -> newSpeakerGroupParent = NULL;
+  speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
   activeMenuState = MenuStates::rootMenu;
 }
 
 void idleMenu() {
   menuIndex = 0;
-  speakerGroup -> newSpeakerGroupParent = NULL;
+  speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
   if (speakerGroup -> activePlayer -> playerType == "TV") {
     activeMenuState = MenuStates::tvNowPlayingMenu;
@@ -383,7 +442,7 @@ void drawNowPlaying() {
     return;
   }
   int yPos = 40;
-  id(my_display).printf(2, 16, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "Now Playing,");
+  id(my_display).printf(4, 16, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "Now Playing,");
   if (speakerGroup -> activePlayer -> mediaArtist == "" && speakerGroup -> activePlayer -> mediaTitle == "") {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(monaco_24), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
     return;
@@ -432,10 +491,15 @@ void drawMenu() {
 }
 
 void selectMediaPlayers() {
-  if (menuIndex >= 0 && menuIndex < speakerGroup -> speakers.size()) {
-    speakerGroup -> activePlayer = speakerGroup -> speakers[menuIndex];
-  } else if (menuIndex == speakerGroup -> speakers.size()) {
-    speakerGroup -> activePlayer = speakerGroup -> tv;
+  if(activeMenuTitle.entityId == speakerGroup->tv->entityId) {
+    speakerGroup->activePlayer = speakerGroup->tv;
+  } else {
+    for (auto & speaker: speakerGroup->speakers) {
+      if(speaker->entityId == activeMenuTitle.entityId) {
+        speakerGroup->activePlayer = speaker;
+        break;
+      }
+    }
   }
   topMenu();
 }
@@ -495,7 +559,7 @@ bool selectMenu() {
     displayUpdate.updateDisplay(true);
     break;
   case groupMenu:
-    speakerGroup -> selectGroup(menuIndex);
+    speakerGroup -> selectGroup(&activeMenuTitle);
     break;
   case mediaPlayersMenu:
     selectMediaPlayers();
@@ -617,6 +681,10 @@ void buttonPressUp() {
     if (optionMenu == speakerOptionMenu) {
       speakerGroup -> toggleShuffle();
       optionMenu = noOptionMenu;
+      displayUpdate.updateDisplay(true);
+      return;
+    } else if(speakerGroup->newSpeakerGroupParent != NULL) {
+      speakerGroup->newSpeakerGroupParent = NULL;
       displayUpdate.updateDisplay(true);
       return;
     }

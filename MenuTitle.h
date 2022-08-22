@@ -6,24 +6,28 @@ enum MenuTitleState {
   NoMenuTitleState,
   OffMenuTitleState,
   OnMenuTitleState,
-  ArrowMenuTitleState
+  ArrowMenuTitleState,
+  PlayingMenuTitleState,
+  PausedMenuTitleState,
+  StoppedMenuTitleState,
+  GroupedMenuTitleState
 };
 
 class MenuTitle {
   public:
-    MenuTitle(std::string newFriendlyName, std::string newEntityName, MenuTitleState newTitleState) : friendlyName(newFriendlyName), entityName(newEntityName), titleState(newTitleState) { }
+    MenuTitle(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState) { }
     std::string friendlyName;
-    std::string entityName;
+    std::string entityId;
     MenuTitleState titleState;
     
     bool indentLine() {
       switch (titleState) {
-        case NoMenuTitleState:
-        case ArrowMenuTitleState:
-          return false;
         case OffMenuTitleState:
         case OnMenuTitleState:
+        case GroupedMenuTitleState:
           return true;
+        default:
+          return false;
       }
       return false;
     }

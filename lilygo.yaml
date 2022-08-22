@@ -55,9 +55,9 @@ color:
     green: 40%
     blue: 40%
   - id: my_gray_dark_2
-    red: 7%
-    green: 7%
-    blue: 7%
+    red: 3%
+    green: 3%
+    blue: 3%
   - id: my_gray
     red: 10%
     green: 10%
@@ -368,14 +368,23 @@ switch:
             id: deep_sleep_1
 
 image:
+  - file: "images/playWhite.png"
+    id: image_play_white
+    type: RGB24
   - file: "images/play.png"
     id: image_play
     type: RGB24
   - file: "images/pause.png"
     id: image_pause
     type: RGB24
+  - file: "images/pauseWhite.png"
+    id: image_pause_white
+    type: RGB24
   - file: "images/stop.png"
     id: image_stop
+    type: RGB24
+  - file: "images/stopWhite.png"
+    id: image_stop_white
     type: RGB24
   - file: "images/shuffle.png"
     id: image_shuffle
