@@ -1,7 +1,7 @@
 # esphome-remote
 ipod style wifi home assistant remote with scroll wheel, directional buttons and display
 
-[![Demo video](https://img.youtube.com/watch?v=Tg7Op2hr42o](https://www.youtube.com/watch?v=Tg7Op2hr42o)
+[![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/default.jpg)](https://youtu.be/Tg7Op2hr42o)
 
 ## features
 - ipod classic style menu
