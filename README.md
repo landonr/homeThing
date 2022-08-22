@@ -25,6 +25,7 @@ ipod style wifi home assistant remote with scroll wheel, directional buttons and
 	- change source from list
 - toggle lights on and off
 - run scenes and scripts
+- simple yaml configuration. All of the complicated code is included in other files
 
 ## includes
 - esphome https://esphome.io/
@@ -41,7 +42,6 @@ ipod style wifi home assistant remote with scroll wheel, directional buttons and
 - mute / unmute, repeat/all/single/off
 - marquee long text
 - media duration bar
-- clean up soundbar code
 - case
 - photos
 - demo video

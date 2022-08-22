@@ -17,7 +17,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Ttg Fallback Hotspot"
+    ssid: "ESPHome Remote Fallback Hotspot"
     password: !secret wifi_password
 
 captive_portal:
@@ -102,7 +102,8 @@ custom_component:
       "media_player.kitchen", 
       "media_player.bedroom"
     };
-    speakerGroup->setup(speakerNames, "media_player.55_tcl_roku_tv");
+    TVSetup tvSetup = TVSetup("media_player.55_tcl_roku_tv", "media_player.beam");
+    speakerGroup->setup(speakerNames, tvSetup);
     App.register_component(speakerGroup);
     return {speakerGroup};
   id: speaker_group_component
@@ -120,12 +121,12 @@ custom_component:
     return {sceneGroup};
   id: scene_group_component
 - lambda: |-
-    std::vector<FriendEntity> lights { 
-      FriendEntity("light.bathroom_lights", "Bathroom"), 
-      FriendEntity("light.bedroom_lights", "Bedroom"), 
-      FriendEntity("light.kitchen_lights", "Kitchen"), 
-      FriendEntity("light.living_room_lights", "Living Room"), 
-      FriendEntity("light.office_lamp", "Office Lamp")
+    std::vector<FriendlyNameEntity> lights { 
+      FriendlyNameEntity("light.bathroom_lights", "Bathroom"), 
+      FriendlyNameEntity("light.bedroom_lights", "Bedroom"), 
+      FriendlyNameEntity("light.kitchen_lights", "Kitchen"), 
+      FriendlyNameEntity("light.living_room_lights", "Living Room"), 
+      FriendlyNameEntity("light.office_lamp", "Office Lamp")
     };
     lightGroup->setup(lights);
     App.register_component(lightGroup);
@@ -149,16 +150,6 @@ sensor:
         input: true
         pullup: true
     id: rotary
-    # on_value:
-    #   - lambda: |-
-    #       if(rotaryPosition < id(rotary).state) {
-    #         buttonPressWakeUpDisplay();
-    #         buttonPressNext();
-    #       } else {
-    #         buttonPressWakeUpDisplay();
-    #         buttonPressPrevious();
-    #       }
-    #       rotaryPosition = id(rotary).state;
     on_clockwise:
       - lambda: |-
           buttonPressWakeUpDisplay();

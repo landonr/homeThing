@@ -5,6 +5,14 @@
 #ifndef REMOTEPLAYERS
 #define REMOTEPLAYERS
 
+class TVSetup
+{
+  public:
+    TVSetup(std::string newTVEntityId, std::string newSoundBarEntityId) : tvEntityId(newTVEntityId), soundBarEntityId(newSoundBarEntityId) { }
+    std::string tvEntityId;
+    std::string soundBarEntityId;
+};
+
 std::string playingNewSourceText = "";
 
 void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
@@ -304,12 +312,12 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     display.updateDisplay(true);
   }
 
-  void setup(std::vector<std::string> speakerNames, std::string tvName) {
+  void setup(std::vector<std::string> speakerNames, TVSetup tvSetup) {
     bool first = true;
     playerSearchFinished = false;
 
     auto newTV = new TVPlayerComponent(display);
-    newTV->setup(tvName);
+    newTV->setup(tvSetup.tvEntityId);
     tv = newTV;
     activePlayer = tv;
 
@@ -318,7 +326,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       auto newSpeaker = new SonosSpeakerComponent(display);
       newSpeaker->setup(name);
       speakers.push_back(newSpeaker);
-      if(name == "media_player.beam") {
+      if(name == tvSetup.soundBarEntityId) {
+        ESP_LOGD("speakerGroup", "New sound bar %s", name.c_str());
         tv->speaker = newSpeaker;
       }
     }

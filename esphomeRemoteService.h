@@ -5,6 +5,14 @@
 #ifndef REMOTESERVICE
 #define REMOTESERVICE
 
+class FriendlyNameEntity
+{
+  public:
+    FriendlyNameEntity(std::string newEntityId, std::string newFriendlyName) : entityId(newEntityId), friendlyName(newFriendlyName) { }
+    std::string entityId;
+    std::string friendlyName;
+};
+
 class LightService: public CustomAPIDevice, public Component {
   public:
     LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface& newCallback) : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
@@ -35,7 +43,7 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
     LightGroupComponent(DisplayUpdateInterface& newCallback) : display(newCallback) { }
     std::vector<LightService*> lights;
 
-    void setup(std::vector<FriendEntity> newLights) {
+    void setup(std::vector<FriendlyNameEntity> newLights) {
       for (auto &light: newLights) {
         LightService *newService = new LightService(light.friendlyName, light.entityId, display);
         lights.push_back(newService);
