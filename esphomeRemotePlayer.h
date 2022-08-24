@@ -5,6 +5,18 @@
 #ifndef REMOTEPLAYERS
 #define REMOTEPLAYERS
 
+enum RemotePlayerType {
+  TVRemotePlayerType,
+  SpeakerRemotePlayerType
+};
+
+enum RemotePlayerState {
+  PausedRemoteState,
+  PlayingRemoteState,
+  StoppedRemoteState,
+  PowerOffRemoteState
+};
+
 class TVSetup
 {
   public:
@@ -44,26 +56,42 @@ std::string filter(std::string str) {
 }
 
 class BasePlayerComponent : public CustomAPIDevice, public Component {
+  protected:
+  DisplayUpdateInterface& display;
+
   public:
-    BasePlayerComponent(DisplayUpdateInterface& newCallback) : display(newCallback) { }
-    std::string playerState = "";
+    BasePlayerComponent(
+      DisplayUpdateInterface& newCallback,
+      std::string newEntityId,
+      RemotePlayerType newPlayerType
+    ) : display(newCallback), entityId(newEntityId), playerType(newPlayerType) { }
+    RemotePlayerState playerState = StoppedRemoteState;
     std::string mediaTitle = "";
     std::string mediaArtist = "";
     std::string friendlyName = "";
-    std::string entityId = "";
-    std::string playerType = "";
     std::vector<MenuTitle> sources;
+    std::string entityId;
+    RemotePlayerType playerType;
 
-  void superSetup(std::string newentityId) {
-    entityId = newentityId;
+  void superSetup() {
     ESP_LOGD("Player", "Player subbed %s", entityId.c_str());
-    subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, newentityId.c_str());
-    subscribe_homeassistant_state(&BasePlayerComponent::player_name_changed, newentityId, "friendly_name");
+    subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, entityId.c_str());
+    subscribe_homeassistant_state(&BasePlayerComponent::player_name_changed, entityId, "friendly_name");
   }
 
   void playerState_changed(std::string state) {
     ESP_LOGD("Player", "%s state changed to %s", entityId.c_str(), state.c_str());
-    playerState = state.c_str();
+    if(state.length() == 0) {
+      playerState = StoppedRemoteState;
+    } if(strcmp(state.c_str(), "playing") == 0) {
+      playerState = PlayingRemoteState;
+    } else if(strcmp(state.c_str(), "paused") == 0) {
+      playerState = PausedRemoteState;
+    } else if(strcmp(state.c_str(), "standyby") == 0) {
+      playerState = PowerOffRemoteState;
+    } else {
+      playerState = StoppedRemoteState;
+    }
     display.updateDisplay(false);
   }
 
@@ -98,37 +126,33 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
 
   MenuTitleState menuTitlePlayerState() {
     MenuTitleState titleState = StoppedMenuTitleState;
-    if(playerState == "playing") {
+    if(playerState == PlayingRemoteState) {
       titleState = PlayingMenuTitleState;
-    } else if (playerState == "paused") {
+    } else if (playerState == PausedRemoteState) {
       titleState = PausedMenuTitleState;
     }
     return titleState;
   }
-
-  protected:
-  DisplayUpdateInterface& display;
 };
 
 class SonosSpeakerComponent : public BasePlayerComponent {
  public:
-  SonosSpeakerComponent(DisplayUpdateInterface& newCallback) : BasePlayerComponent { newCallback } { }
+  SonosSpeakerComponent(DisplayUpdateInterface& newCallback, std::string newEntityId) : BasePlayerComponent { newCallback, newEntityId, SpeakerRemotePlayerType } { }
   double localVolume = -1;
   double speaker_volume = -1;
-  std::string shuffle = "";
-  std::string muted = "";
+  bool shuffle = false;
+  bool muted = false;
   std::vector<std::string> groupMembers;
 
-  void setup(std::string newSpeakerName) {
-    ESP_LOGD("speaker", "Sonos Speaker subbed %s", newSpeakerName.c_str());
-    playerType = "Speaker";
-    superSetup(newSpeakerName);
-    subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_volume_changed, newSpeakerName, "volume_level");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_muted_changed, newSpeakerName, "is_volume_muted");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::shuffle_changed, newSpeakerName, "shuffle");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::group_members_changed, newSpeakerName, "group_members");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_title_changed, newSpeakerName, "media_title");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_artist_changed, newSpeakerName, "media_artist");
+  void setup() {
+    ESP_LOGD("speaker", "Sonos Speaker subbed %s", entityId.c_str());
+    superSetup();
+    subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_volume_changed, entityId, "volume_level");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_muted_changed, entityId, "is_volume_muted");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::shuffle_changed, entityId, "shuffle");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::group_members_changed, entityId, "group_members");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_title_changed, entityId, "media_title");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_artist_changed, entityId, "media_artist");
   }
 
   void player_media_title_changed(std::string state) {
@@ -154,13 +178,13 @@ class SonosSpeakerComponent : public BasePlayerComponent {
 
   void speaker_muted_changed(std::string state) {
     ESP_LOGD("speaker", "%s Sonos Speaker muted changed to %s", entityId.c_str(), state.c_str());
-    muted = state.c_str();
+    muted = strcmp(state.c_str(), "on") == 0;
     display.updateDisplay(false);
   }
 
   void shuffle_changed(std::string state) {
     ESP_LOGD("speaker", "%s Sonos Speaker shuffle changed to %s", entityId.c_str(), state.c_str());
-    shuffle = state.c_str();
+    shuffle = strcmp(state.c_str(), "on") == 0;
     display.updateDisplay(false);
   }
 
@@ -199,14 +223,22 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     ESP_LOGD("speaker", "%s toggle shuffle", entityId.c_str());
     call_homeassistant_service("media_player.shuffle_set", {
       {"entity_id", entityId},
-      {"shuffle", shuffle == "on" ? "false" : "true"},
+      {"shuffle", shuffle ? "false" : "true"},
+    });
+  }
+
+  void toggleMute() {
+    ESP_LOGD("speaker", "%s toggle mute", entityId.c_str());
+    call_homeassistant_service("media_player.volume_mute", {
+      {"entity_id", entityId},
+      {"is_volume_muted", muted ? "false" : "true"},
     });
   }
 
   double volumeStep = 0.04;
 
   void increaseVolume() {
-    if(speaker_volume == -1) {
+    if(speaker_volume == -1 || localVolume > 1) {
       return;
     }
     localVolume = localVolume + volumeStep;
@@ -214,7 +246,8 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   }
 
   void decreaseVolume() {
-    if(speaker_volume == -1) {
+    if(speaker_volume == -1 || localVolume < 0) {
+      localVolume = 0;
       return;
     }
     localVolume = localVolume - volumeStep;
@@ -226,6 +259,13 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     for (auto &speaker: groupMembers) {
       entityIds = entityIds + ", " + speaker;
     }
+    if(muted) {
+      // unmute all speakers 
+      call_homeassistant_service("media_player.volume_mute", {
+        {"entity_id", entityIds},
+        {"is_volume_muted", false},
+      });
+    }
     ESP_LOGD("speaker", "%s volume update %f", entityIds.c_str(), localVolume);
     call_homeassistant_service("media_player.volume_set", {
       {"entity_id", entityIds},
@@ -236,15 +276,14 @@ class SonosSpeakerComponent : public BasePlayerComponent {
 
 class TVPlayerComponent : public BasePlayerComponent {
  public:
-  TVPlayerComponent(DisplayUpdateInterface& newCallback) : BasePlayerComponent { newCallback } { }
+  TVPlayerComponent(DisplayUpdateInterface& newCallback, std::string newEntityId) : BasePlayerComponent { newCallback, newEntityId, TVRemotePlayerType } { }
   SonosSpeakerComponent *speaker;
 
-  void setup(std::string newTVName) {
-    ESP_LOGD("PlayerTV", "TV subbed %s", newTVName.c_str());
-    playerType = "TV";
-    superSetup(newTVName);
-    subscribe_homeassistant_state(&TVPlayerComponent::player_media_artist_changed, newTVName, "source");
-    subscribe_homeassistant_state(&TVPlayerComponent::player_source_list_changed, newTVName, "source_list");
+  void setup() {
+    ESP_LOGD("PlayerTV", "TV subbed %s", entityId.c_str());
+    superSetup();
+    subscribe_homeassistant_state(&TVPlayerComponent::player_media_artist_changed, entityId, "source");
+    subscribe_homeassistant_state(&TVPlayerComponent::player_source_list_changed, entityId, "source_list");
   }
 
   void player_media_artist_changed(std::string state) {
@@ -289,19 +328,17 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     if (playerSearchFinished) {
       return;
     }
-    if (tv->playerState == "playing") {
+    if (tv->playerState == PlayingRemoteState) {
       playerSearchFinished = true;
       return;
     }
     for (auto &speaker: speakers) {
-      if (speaker->playerState == "") {
+      if (speaker->playerState == StoppedRemoteState) {
         return;
-      } else if (speaker->playerState == "playing" && speaker->mediaTitle != "") {
+      } else if (speaker->playerState == PlayingRemoteState && speaker->mediaTitle != "") {
         if(speaker->mediaTitle == "TV") {
-          ESP_LOGD("activePlayer", "tv");
           activePlayer = tv;
         } else {
-          ESP_LOGD("activePlayer", "speaker %s", speaker->mediaTitle.c_str());
           activePlayer = speaker;
         }
         playerSearchFinished = true;
@@ -316,15 +353,15 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     bool first = true;
     playerSearchFinished = false;
 
-    auto newTV = new TVPlayerComponent(display);
-    newTV->setup(tvSetup.tvEntityId);
+    auto newTV = new TVPlayerComponent(display, tvSetup.tvEntityId);
+    newTV->setup();
     tv = newTV;
     activePlayer = tv;
 
     for (auto &name: speakerNames) {
       ESP_LOGD("speakerGroup", "New speaker %s", name.c_str());
-      auto newSpeaker = new SonosSpeakerComponent(display);
-      newSpeaker->setup(name);
+      auto newSpeaker = new SonosSpeakerComponent(display, name);
+      newSpeaker->setup();
       speakers.push_back(newSpeaker);
       if(name == tvSetup.soundBarEntityId) {
         ESP_LOGD("speakerGroup", "New sound bar %s", name.c_str());
@@ -373,7 +410,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
   }
 
   void increaseSpeakerVolume() {
-    if(activePlayer->playerType != "TV") {
+    if(activePlayer->playerType != TVRemotePlayerType) {
       SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
       if (activeSpeaker != NULL) {
         activeSpeaker->increaseVolume();
@@ -384,7 +421,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
   }
 
   void decreaseSpeakerVolume() {
-    if(activePlayer->playerType != "TV") {
+    if(activePlayer->playerType != TVRemotePlayerType) {
       SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
       if (activeSpeaker != NULL) {
         activeSpeaker->decreaseVolume();
@@ -394,18 +431,10 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     }
   }
 
-  std::string playString() {
-      if (activePlayer->playerState == "playing") {
-        return "Pause";
-      } else {
-        return "Play";
-      }
-  }
-
   bool mediaShuffling() {
     SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
     if (activeSpeaker != NULL) {
-      if (activeSpeaker->shuffle == "on") {
+      if (activeSpeaker->shuffle) {
         return true;
       } else {
         return false;
@@ -421,6 +450,13 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     }
   }
 
+  void toggleMute() {
+    SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
+    if (activeSpeaker != NULL) {
+      activeSpeaker->toggleMute();
+    }
+  }
+
   std::string shuffleString() {
       if (mediaShuffling()) {
         return "Shfl On";
@@ -429,10 +465,22 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
   }
 
+  std::string muteString() {
+    SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
+    if (activeSpeaker != NULL) {
+      if (activeSpeaker->muted) {
+        return "Unmute";
+      } else {
+        return "Mute";
+      }
+    }
+    return "";
+  }
+
   MenuTitle *newSpeakerGroupParent = NULL;
 
   double getVolumeLevel() {
-    if (activePlayer->playerType == "TV") {
+    if (activePlayer->playerType == TVRemotePlayerType) {
       if (tv->speaker->speaker_volume != -1) {
         double volume = tv->speaker->localVolume * 100;
         return volume;

@@ -16,7 +16,7 @@ ipod style wifi home assistant remote with scroll wheel, directional buttons and
 	- on average 3 days of battery life depending on use
 		- charges by usb c
 - control sonos speakers
-	- play / pause, next track, previous track, toggle shuffle
+	- play / pause, next track, previous track, toggle shuffle and mute
 	- scroll for volume
 	- manage speaker group
 	- change source from sonos favourites list
@@ -24,10 +24,10 @@ ipod style wifi home assistant remote with scroll wheel, directional buttons and
 	- up, down, left, right, select
 	- scroll for volume
 	- power, back, home, pause in second menu
-	- change source from list
+	- change source from tv source list
 - toggle lights on and off
 - run scenes and scripts
-- simple yaml configuration. All of the complicated code is included in other files
+- simple yaml configuration. all of the complicated code is included in other files
 
 ## includes
 - esphome https://esphome.io/
@@ -41,7 +41,7 @@ ipod style wifi home assistant remote with scroll wheel, directional buttons and
 - queue count
 - sensors screen
 - sonos night sound / speach boost
-- mute / unmute, repeat/all/single/off
+- repeat/all/single/off
 - marquee long text
 - media duration bar
 - case

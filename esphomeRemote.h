@@ -104,7 +104,7 @@ int drawPlayPauseIcon() {
 void drawCurrentMediaPlayer() {
   if (speakerGroup -> activePlayer -> entityId != "") {
     std::string entityId = speakerGroup -> activePlayer -> friendlyName;
-    if (speakerGroup -> activePlayer -> playerType != "TV") {
+    if (speakerGroup -> activePlayer -> playerType != TVRemotePlayerType) {
       SonosSpeakerComponent * activeSpeaker = static_cast < SonosSpeakerComponent * > (speakerGroup -> activePlayer);
       if (activeSpeaker != NULL) {
         if (activeSpeaker -> groupMembers.size() > 0) {
@@ -137,10 +137,10 @@ void drawVolumeLevel(int oldXPos) {
 }
 
 int drawShuffle(int oldXPos) {
-  if (speakerGroup -> activePlayer -> playerType == "TV") {
+  if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
     return oldXPos;
   }
-  if (speakerGroup -> activePlayer -> playerState == "playing" || speakerGroup -> activePlayer -> playerState == "paused") {
+  if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
     int xPos = oldXPos - 18;
     if (speakerGroup -> mediaShuffling()) {
       id(my_display).image(xPos, 2, & id(image_shuffle));
@@ -354,7 +354,7 @@ void idleMenu() {
   menuIndex = 0;
   speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
-  if (speakerGroup -> activePlayer -> playerType == "TV") {
+  if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
     activeMenuState = MenuStates::tvNowPlayingMenu;
   } else {
     activeMenuState = MenuStates::speakerNowPlayingMenu;
@@ -393,10 +393,10 @@ void drawSpeakerOptionMenu() {
   id(my_display).circle(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 24, 48, id(my_gray));
   id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.15 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, speakerGroup -> shuffleString().c_str());
   id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "Group");
+  id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.45 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, speakerGroup -> muteString().c_str());
 }
 
 void drawVolumeOptionMenu() {
-  ESP_LOGD("option", "volume");
   int margin = 18;
   int yPos = id(my_display).get_height() - 10;
   int barWidth = (id(my_display).get_width() - (margin * 2) - 2) * (speakerGroup -> getVolumeLevel() / 100);
@@ -442,7 +442,7 @@ void drawNowPlaying() {
     return;
   }
   int yPos = 40;
-  if(speakerGroup->activePlayer->playerState == "standby") {
+  if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(monaco_24), id(my_white), TextAlign::TOP_CENTER, "Power Off");
     return;
   }
@@ -515,7 +515,7 @@ bool selectRootMenu() {
     activeMenuState = sourcesMenu;
     break;
   case nowPlaying:
-    if (speakerGroup -> activePlayer -> playerType == "TV") {
+    if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
       activeMenuState = tvNowPlayingMenu;
     } else {
       activeMenuState = speakerNowPlayingMenu;
@@ -763,7 +763,14 @@ void buttonPressRight() {
     }
     break;
   case speakerNowPlayingMenu:
-    speakerGroup -> activePlayer -> nextTrack();
+    if (optionMenu == speakerOptionMenu) {
+      speakerGroup -> toggleMute();
+      optionMenu = noOptionMenu;
+      displayUpdate.updateDisplay(true);
+      return;
+    } else {
+      speakerGroup -> activePlayer -> nextTrack();
+    }
     return;
   default:
     break;
