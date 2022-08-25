@@ -3,8 +3,17 @@
 #include "esphomeRemoteService.h"
 #include "MenuGlobals.h"
 
+#ifndef ESPHOMEREMOTE
+#define ESPHOMEREMOTE
+
+bool menuDrawing = false;
+
 class DisplayUpdateImpl: public DisplayUpdateInterface {
   public: virtual void updateDisplay(bool force) {
+    if(menuDrawing) {
+      return;
+    }
+    menuDrawing = true;
     if (force) {
       id(my_display).update();
       if (!id(backlight).state) {
@@ -281,6 +290,9 @@ void drawGroupedBar(int yPos, bool extend) {
 
 void drawMenu(std::vector <MenuTitle> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
+  if(menuTitles.size() == 0 ) {
+    return;
+  }
   scrollMenuPosition();
   int menuState = menuIndex;
   MenuTitle menuTitleCopy = menuTitles[menuIndex];
@@ -372,6 +384,7 @@ void idleTick() {
     }
     ESP_LOGD("idle", "turning off display");
     id(backlight).turn_off();
+    // menuDrawing = false;
   } else if (id(idle_time) > 3600) {
     ESP_LOGD("idle", "night night");
     id(tt_sleep).turn_on();
@@ -464,9 +477,12 @@ void drawNowPlaying() {
 }
 
 void drawMenu() {
+  ESP_LOGD("WARNING", "draw menu start");
   if (speakerGroup -> playerSearchFinished == false) {
     id(my_display).printf(40, 40, & id(monaco_24), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
     speakerGroup -> findActivePlayer();
+    ESP_LOGD("WARNING", "draw menu done");
+    menuDrawing = false;
     return;
   }
   switch (activeMenuState) {
@@ -491,7 +507,10 @@ void drawMenu() {
     drawMenu(activeMenu());
     break;
   }
+  ESP_LOGD("WARNING", "draw header done");
   drawHeader();
+  ESP_LOGD("WARNING", "draw menu done");
+  menuDrawing = false;
 }
 
 void selectMediaPlayers() {
@@ -585,12 +604,6 @@ bool selectMenu() {
   return true;
 }
 
-void debounceUpdateDisplay() {
-  if (id(display_update_tick).state != id(rotary).state) {
-    id(display_update_tick).publish_state(id(rotary).state);
-  }
-}
-
 bool buttonPressWakeUpDisplay() {
   if (id(idle_time) != -1) {
     id(idle_time) = 0;
@@ -600,235 +613,10 @@ bool buttonPressWakeUpDisplay() {
   }
   if (!id(backlight).state) {
     id(backlight).turn_on();
+    displayUpdate.updateDisplay(false);
     return true;
   }
   return false;
 }
 
-void buttonPressSelect() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("power");
-      displayUpdate.updateDisplay(true);
-    } else {
-      speakerGroup -> tv -> tvRemoteCommand("select");
-    }
-    return;
-  default:
-    break;
-  }
-  if (selectMenu()) {
-    displayUpdate.updateDisplay(true);
-  }
-}
-
-void buttonPressNext() {
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-  case speakerNowPlayingMenu:
-    speakerGroup -> increaseSpeakerVolume();
-    optionMenu = volumeOptionMenu;
-    debounceUpdateDisplay();
-    return;
-  default:
-    break;
-  }
-  if (menuIndex < activeMenuTitleCount - 1) {
-    menuIndex++;
-  } else if (menuIndex == activeMenuTitleCount - 1) {
-    // menuIndex = 0;
-  } else {
-    menuIndex = 0;
-  }
-  debounceUpdateDisplay();
-}
-
-void buttonPressPrevious() {
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-  case speakerNowPlayingMenu:
-    speakerGroup -> decreaseSpeakerVolume();
-    optionMenu = volumeOptionMenu;
-    debounceUpdateDisplay();
-    return;
-  default:
-    break;
-  }
-  if (menuIndex > 0) {
-    menuIndex--;
-  } else {
-    // topMenu();
-  }
-  debounceUpdateDisplay();
-}
-
-void buttonPressUp() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      topMenu();
-      displayUpdate.updateDisplay(true);
-    } else {
-      speakerGroup -> tv -> tvRemoteCommand("up");
-    }
-    break;
-  default:
-    if (optionMenu == speakerOptionMenu) {
-      speakerGroup -> toggleShuffle();
-      optionMenu = noOptionMenu;
-      displayUpdate.updateDisplay(true);
-      return;
-    } else if(speakerGroup->newSpeakerGroupParent != NULL) {
-      speakerGroup->newSpeakerGroupParent = NULL;
-      displayUpdate.updateDisplay(true);
-      return;
-    }
-    topMenu();
-    displayUpdate.updateDisplay(true);
-    break;
-  }
-}
-
-void buttonPressDown() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("play");
-      displayUpdate.updateDisplay(true);
-    } else {
-      speakerGroup -> tv -> tvRemoteCommand("down");
-    }
-    break;
-  case speakerNowPlayingMenu:
-    if (optionMenu == speakerOptionMenu) {
-      optionMenu = noOptionMenu;
-      activeMenuState = groupMenu;
-      displayUpdate.updateDisplay(true);
-      return;
-    }
-    speakerGroup -> activePlayer -> playPause();
-    return;
-  default:
-    break;
-  }
-}
-
-void buttonPressLeft() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("back");
-      displayUpdate.updateDisplay(true);
-    } else {
-      speakerGroup -> tv -> tvRemoteCommand("left");
-    }
-    break;
-  case speakerNowPlayingMenu:
-    // speakerGroup->activePlayer->back();
-    return;
-  default:
-    break;
-  }
-}
-
-void buttonPressRight() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("menu");
-      displayUpdate.updateDisplay(true);
-    } else {
-      speakerGroup -> tv -> tvRemoteCommand("right");
-    }
-    break;
-  case speakerNowPlayingMenu:
-    if (optionMenu == speakerOptionMenu) {
-      speakerGroup -> toggleMute();
-      optionMenu = noOptionMenu;
-      displayUpdate.updateDisplay(true);
-      return;
-    } else {
-      speakerGroup -> activePlayer -> nextTrack();
-    }
-    return;
-  default:
-    break;
-  }
-}
-
-void buttonReleaseScreenLeft() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    displayUpdate.updateDisplay(true);
-    break;
-  default:
-    break;
-  }
-}
-
-void buttonPressScreenLeft() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-    } else {
-      optionMenu = tvOptionMenu;
-    }
-    displayUpdate.updateDisplay(true);
-    break;
-  case speakerNowPlayingMenu:
-    if (optionMenu == speakerOptionMenu) {
-      optionMenu = noOptionMenu;
-    } else {
-      optionMenu = speakerOptionMenu;
-    }
-    displayUpdate.updateDisplay(true);
-    break;
-  default:
-    break;
-  }
-}
-
-void buttonPressScreenRight() {
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  optionMenu = noOptionMenu;
-  switch (activeMenuState) {
-  case tvNowPlayingMenu:
-    topMenu();
-    displayUpdate.updateDisplay(true);
-    break;
-  default:
-    topMenu();
-    displayUpdate.updateDisplay(true);
-    break;
-  }
-}
+#endif

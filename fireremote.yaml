@@ -1,7 +1,7 @@
 esphome:
-  name: lilygo_display
+  name: fireremote
   platform: ESP32
-  board: featheresp32
+  board: m5stack-fire
   includes:
     - MenuGlobals.h
     - MenuTitle.h
@@ -9,7 +9,7 @@ esphome:
     - esphomeRemoteService.h
     - DisplayUpdateInterface.h
     - esphomeRemote.h
-    - esphomeRemoteRotary.h
+    - esphomeRemoteFire.h
 
 wifi:
   ssid: !secret wifi_ssid
@@ -133,37 +133,12 @@ custom_component:
     App.register_component(lightGroup);
     return {lightGroup};
   id: light_group_component
-  
+
 sensor:
-  - platform: rotary_encoder
-    filters:
-    - throttle: 0.01s
-    name: "Rotary Encoder"
-    internal: true
-    pin_a:
-      number: 12
-      mode:
-        input: true
-        pullup: true
-    pin_b:
-      number: 13
-      mode:
-        input: true
-        pullup: true
+  - platform: template
     id: rotary
-    on_clockwise:
-      - lambda: |-
-          buttonPressWakeUpDisplay();
-          buttonPressNext();
-    on_anticlockwise:
-      - lambda: |-
-          buttonPressWakeUpDisplay();
-          buttonPressPrevious();
-  - platform: adc
-    pin: 34
-    attenuation: auto
+  - platform: template
     name: "VBatt"
-    update_interval: 10s
     id: vcc_adc
     internal: true
     on_value:
@@ -212,7 +187,7 @@ sensor:
             id: TTGoBatteryPercent
             state: !lambda 'return (((id(batteryVoltage).state - 3) * 100) / (3.7 - 3));'
     on_value_range:
-      below: 3.07
+      below: 2.7
       then:
         lambda: |-
           ESP_LOGE("batteryVoltage", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryVoltage).state);
@@ -234,121 +209,35 @@ binary_sensor:
     name: "Node Status"
     id: system_status
   - platform: gpio
+    id: M5_BtnA
     pin:
-      number: GPIO0
+      number: 39
       inverted: true
-      mode:
-        input: true
-        pullup: true
-    name: "T-Display Button Input 0"
-    id: tdisplay_button_input_0
-    internal: true
-    on_press:
+    on_click:
       then:
-      - lambda: |-
-          buttonPressScreenLeft();
-    on_release:
-      then:
-      - lambda: |-
-          buttonReleaseScreenLeft();
-    
+        - lambda: |-
+            buttonPressLeft();
   - platform: gpio
+    id: M5_BtnB
     pin:
-      number: GPIO35
+      number: 38
       inverted: true
-    name: "T-Display Button Input 1"
-    id: tdisplay_button_input_1
-    internal: true
-    on_press:
+    on_click:
       then:
-      - lambda: |-
-          buttonPressScreenRight();
+        - lambda: |-
+            buttonPressSelect();
   - platform: gpio
-    internal: true
+    id: M5_BtnC
     pin:
-      number: 21
+      number: 37
       inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw5
-    on_press:
+    on_click:
       then:
-      - lambda: |-
-          buttonPressLeft();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 22
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw4
-    on_press:
-      then:
-      - lambda: |-
-          buttonPressUp();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 17
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw3
-    on_press:
-      then:
-      - lambda: |-
-          buttonPressRight();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 2
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw2
-    on_press:
-      then:
-      - lambda: |-
-          buttonPressDown();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 15
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw1
-    on_press:
-      then:
-      - lambda: |-
-          buttonPressSelect();
+        - lambda: |-
+            buttonPressRight();
 
 # We can still control the backlight independently
 switch:
-  - platform: gpio
-    pin:
-      number: 27
-      inverted: false
-    id: comb
-    internal: true
-  - platform: gpio
-    pin:
-      number: 26
-      inverted: false
-    id: coma
-    internal: true
-  - platform: gpio
-    pin: GPIO4
-    name: "Backlight"
-    id: backlight
-    internal: true
-    restore_mode: RESTORE_DEFAULT_ON
   - platform: template
     name: Sleep Toggle
     id: tt_sleep
@@ -358,6 +247,11 @@ switch:
       then:
         - deep_sleep.enter:
             id: deep_sleep_1
+  - platform: gpio
+    pin: 32
+    name: "Backlight"
+    id: backlight
+    restore_mode: ALWAYS_ON
 
 image:
   - file: "images/playWhite.png"
@@ -396,19 +290,19 @@ time:
     id: esptime
 
 spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
 
 display:
-  - platform: st7789v
-    model: TTGO TDisplay 135x240
+  - platform: ili9341
+    model: M5STACK
+    cs_pin: 14
+    dc_pin: 27
+    led_pin: 32  ### see note below ###
+    reset_pin: 33
     id: my_display
-    backlight_pin: GPIO4
-    cs_pin: GPIO5
-    dc_pin: GPIO16
-    reset_pin: GPIO23
-    rotation: 90
-    update_interval: 60s
+    update_interval: 10s
     lambda: |-
       if (id(idle_time) < 0) {
         ESP_LOGD("drawing menu", "turning on");
@@ -416,7 +310,7 @@ display:
         id(idle_time) = 0;
       } else if (!id(backlight).state) {
         ESP_LOGD("drawing menu", "turning off %d", id(idle_time));
-        id(my_display).set_update_interval(60000);
+        // id(my_display).set_update_interval(60000);
         return;
       }
 
