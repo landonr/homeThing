@@ -478,11 +478,9 @@ void drawNowPlaying() {
 }
 
 void drawMenu() {
-  ESP_LOGD("WARNING", "draw menu start");
   if (speakerGroup -> playerSearchFinished == false) {
     id(my_display).printf(40, 40, & id(large_font), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
     speakerGroup -> findActivePlayer();
-    ESP_LOGD("WARNING", "draw menu done");
     menuDrawing = false;
     return;
   }
@@ -508,9 +506,7 @@ void drawMenu() {
     drawMenu(activeMenu());
     break;
   }
-  ESP_LOGD("WARNING", "draw header done");
   drawHeader();
-  ESP_LOGD("WARNING", "draw menu done");
   menuDrawing = false;
 }
 
