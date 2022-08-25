@@ -263,7 +263,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
       // unmute all speakers 
       call_homeassistant_service("media_player.volume_mute", {
         {"entity_id", entityIds},
-        {"is_volume_muted", false},
+        {"is_volume_muted", "false"},
       });
     }
     ESP_LOGD("speaker", "%s volume update %f", entityIds.c_str(), localVolume);

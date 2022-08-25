@@ -74,16 +74,16 @@ color:
 
 font:
   - file: "fonts/iosevka.ttf"
-    id: monaco_24
+    id: large_font
     size: 24
     glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
-    id: monaco_15
-    size: 15
+    id: medium_font
+    size: 22
     glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
-    id: monaco_14
-    size: 14
+    id: small_font
+    size: 18
     glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
     
 globals:
@@ -95,6 +95,26 @@ globals:
     type: int
     restore_value: no
     initial_value: "-2"
+  - id: large_font_size
+    type: int
+    restore_value: no
+    initial_value: "24"
+  - id: medium_font_size
+    type: int
+    restore_value: no
+    initial_value: "22"
+  - id: small_font_size
+    type: int
+    restore_value: no
+    initial_value: "18"
+  - id: header_height
+    type: int
+    restore_value: no
+    initial_value: "24"
+  - id: margin_size
+    type: int
+    restore_value: no
+    initial_value: "4"
 
 custom_component:
 - lambda: |-

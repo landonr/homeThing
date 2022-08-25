@@ -92,17 +92,17 @@ MenuTitle menuTitleForType(MenuStringType stringType) {
 }
 
 int drawPlayPauseIcon() {
-  int yPos = 2;
+  int yPos = id(header_height) / 2 - 6;
   int xPos = id(my_display).get_width() - batteryWidth - 16 - 4;
   switch(speakerGroup->activePlayer->menuTitlePlayerState()) {
     case PlayingMenuTitleState:
-      id(my_display).image(xPos, 2, & id(image_play));
+      id(my_display).image(xPos, yPos, & id(image_play));
       break;
     case PausedMenuTitleState:
-      id(my_display).image(xPos, 2, & id(image_pause));
+      id(my_display).image(xPos, yPos, & id(image_pause));
       break;
     case StoppedMenuTitleState:
-      id(my_display).image(xPos, 2, & id(image_stop));
+      id(my_display).image(xPos, yPos, & id(image_stop));
       break;
     default:
       break;
@@ -121,12 +121,12 @@ void drawCurrentMediaPlayer() {
         }
       }
     }
-    id(my_display).printf(2, 0, & id(monaco_14), id(my_white), "%s", entityId.c_str());
+    id(my_display).printf(2, 0, & id(small_font), id(my_white), "%s", entityId.c_str());
   }
 }
 
 void drawBattery() {
-  int batteryHeight = 12;
+  int batteryHeight = id(header_height) - 5;
   int yPos = 2;
   int xPos = 4;
   int capHeight = 6;
@@ -142,7 +142,7 @@ void drawBattery() {
 
 void drawVolumeLevel(int oldXPos) {
   int xPos = oldXPos - 6;
-  id(my_display).printf(xPos, 0, & id(monaco_14), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup -> getVolumeLevel());
+  id(my_display).printf(xPos, 0, & id(small_font), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup -> getVolumeLevel());
 }
 
 int drawShuffle(int oldXPos) {
@@ -151,10 +151,11 @@ int drawShuffle(int oldXPos) {
   }
   if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
     int xPos = oldXPos - 18;
+    int yPos = id(header_height) / 2 - 6;
     if (speakerGroup -> mediaShuffling()) {
-      id(my_display).image(xPos, 2, & id(image_shuffle));
+      id(my_display).image(xPos, yPos, & id(image_shuffle));
     } else {
-      id(my_display).image(xPos, 2, & id(image_shuffle_disabled));
+      id(my_display).image(xPos, yPos, & id(image_shuffle_disabled));
     }
     return xPos;
   }
@@ -162,7 +163,7 @@ int drawShuffle(int oldXPos) {
 }
 
 void drawHeaderTitleWithString(std::string title) {
-  id(my_display).printf(2, 0, & id(monaco_14), id(my_white), title.c_str());
+  id(my_display).printf(2, 0, & id(small_font), id(my_white), title.c_str());
 }
 
 void drawHeaderTitle() {
@@ -191,7 +192,7 @@ void drawHeaderTitle() {
 }
 
 void drawHeader() {
-  id(my_display).rectangle(0, 16, id(my_display).get_width(), 1, id(my_blue));
+  id(my_display).rectangle(0, id(header_height), id(my_display).get_width(), 1, id(my_blue));
   drawBattery();
   drawHeaderTitle();
   drawVolumeLevel(drawShuffle(drawPlayPauseIcon()));
@@ -200,15 +201,15 @@ void drawHeader() {
 void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
   int xPos = buttonSpace ? 20 : 4;
   if (menuState == i) {
-    id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), fontSize + marginSize, id(my_blue));
-    id(my_display).printf(xPos, yPos, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+    id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(my_blue));
+    id(my_display).printf(xPos, yPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
   } else {
-    id(my_display).printf(xPos, yPos, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+    id(my_display).printf(xPos, yPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
   }
 }
 
 int maxItems() {
-  int maxItems = ((id(my_display).get_height() - headerHeight) / (fontSize + marginSize)) - 1;
+  int maxItems = ((id(my_display).get_height() - id(header_height)) / (id(medium_font_size) + id(margin_size))) - 1;
   return maxItems;
 }
 
@@ -225,16 +226,16 @@ void drawScrollBar(int menuTitlesCount, int headerHeight) {
 }
 
 void drawSwitch(bool switchState, int yPos) {
-  id(my_display).circle(8, yPos + (fontSize + marginSize) / 2, 7, id(my_white));
+  id(my_display).circle(8, yPos + (id(medium_font_size) + id(margin_size)) / 2, 7, id(my_white));
   if (switchState) {
-    id(my_display).filled_circle(8, yPos + (fontSize + marginSize) / 2, 5, id(my_white));
+    id(my_display).filled_circle(8, yPos + (id(medium_font_size) + id(margin_size)) / 2, 5, id(my_white));
   }
 }
 
 void drawArrow(int yPos) {
   int xPos = id(my_display).get_width() - 8;
-  id(my_display).line(xPos, yPos + 4, xPos + 3, yPos + (fontSize + marginSize) / 2, id(my_white));
-  id(my_display).line(xPos, yPos + (fontSize + marginSize) - 4, xPos + 3, yPos + (fontSize + marginSize) / 2, id(my_white));
+  id(my_display).line(xPos, yPos + 4, xPos + 3, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
+  id(my_display).line(xPos, yPos + (id(medium_font_size) + id(margin_size)) - 4, xPos + 3, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
 }
 
 void scrollMenuPosition() {
@@ -251,8 +252,8 @@ void scrollMenuPosition() {
 
 void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
   int imageHeight = 12;
-  int adjustedYPos = yPos + (fontSize / 4);
-  int xPos = ((characterCount + 1) * (fontSize * 0.6)) + 4;
+  int adjustedYPos = yPos + (id(medium_font_size) / 4);
+  int xPos = ((characterCount + 1) * (id(medium_font_size) * 0.6)) + 4;
   switch(titleState) {
     case PlayingMenuTitleState:
       if(selected) {
@@ -283,9 +284,9 @@ void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, boo
 void drawGroupedBar(int yPos, bool extend) {
   int xPos = 8;
   int width = 8;
-  int lineHeight = extend ? fontSize + marginSize : (fontSize + marginSize) / 2;
+  int lineHeight = extend ? id(medium_font_size) + id(margin_size) : (id(medium_font_size) + id(margin_size)) / 2;
   id(my_display).line(xPos, yPos, xPos, yPos + lineHeight, id(my_white));
-  id(my_display).line(xPos, yPos + (fontSize + marginSize) / 2, xPos + width, yPos + (fontSize + marginSize) / 2, id(my_white));
+  id(my_display).line(xPos, yPos + (id(medium_font_size) + id(margin_size)) / 2, xPos + width, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
 }
 
 void drawMenu(std::vector <MenuTitle> menuTitles) {
@@ -301,7 +302,7 @@ void drawMenu(std::vector <MenuTitle> menuTitles) {
     if (i > scrollTop + maxItems()) {
       break;
     }
-    int yPos = ((i - scrollTop) * (fontSize + marginSize)) + headerHeight;
+    int yPos = ((i - scrollTop) * (id(medium_font_size) + id(margin_size))) + id(header_height);
     drawTitle(menuState, i, menuTitles[i].friendlyName, yPos, menuTitles[i].indentLine());
     switch(menuTitles[i].titleState) {
       case NoMenuTitleState:
@@ -326,7 +327,7 @@ void drawMenu(std::vector <MenuTitle> menuTitles) {
         break;
     }
   }
-  drawScrollBar(menuTitles.size(), headerHeight);
+  drawScrollBar(menuTitles.size(), id(header_height));
 }
 
 std::vector <MenuTitle> menuTypesToTitles(std::vector <MenuStringType> menu) {
@@ -395,18 +396,18 @@ void idleTick() {
 
 void drawTVOptionMenu() {
   id(my_display).circle(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 24, 48, id(my_gray));
-  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.15 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "Remote Menu");
-  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "Pause");
-  id(my_display).printf(id(my_display).get_width() * 0.2, (id(my_display).get_height() - 16) * 0.45 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "Back");
-  id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.45 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "Home");
-  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "TV Power");
+  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.15 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, "Remote Menu");
+  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, "Pause");
+  id(my_display).printf(id(my_display).get_width() * 0.2, (id(my_display).get_height() - 16) * 0.45 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, "Back");
+  id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.45 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, "Home");
+  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, "TV Power");
 }
 
 void drawSpeakerOptionMenu() {
   id(my_display).circle(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.45 + 24, 48, id(my_gray));
-  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.15 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, speakerGroup -> shuffleString().c_str());
-  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, "Group");
-  id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.45 + 16, & id(monaco_14), id(my_white), TextAlign::TOP_CENTER, speakerGroup -> muteString().c_str());
+  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.15 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, speakerGroup -> shuffleString().c_str());
+  id(my_display).printf(id(my_display).get_width() * 0.5, (id(my_display).get_height() - 16) * 0.75 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, "Group");
+  id(my_display).printf(id(my_display).get_width() * 0.8, (id(my_display).get_height() - 16) * 0.45 + 16, & id(small_font), id(my_white), TextAlign::TOP_CENTER, speakerGroup -> muteString().c_str());
 }
 
 void drawVolumeOptionMenu() {
@@ -424,9 +425,9 @@ int drawTextWrapped(int xPos, int yPos, int fontSize, Font * font, Color color, 
   std::string wrappedTitles = textWrap(text, characterLimit);
   tokenize(wrappedTitles, "\n", output);
   for (int i = 0; i < output.size(); i++) {
-    id(my_display).printf(xPos, yPos + (i * fontSize), font, color, TextAlign::TOP_CENTER, output[i].c_str());
+    id(my_display).printf(xPos, yPos + (i * id(medium_font_size)), font, color, TextAlign::TOP_CENTER, output[i].c_str());
   }
-  return yPos + (output.size() * fontSize);
+  return yPos + (output.size() * id(medium_font_size));
 }
 
 bool drawOptionMenuAndStop() {
@@ -443,8 +444,8 @@ bool drawOptionMenuAndStop() {
   case noOptionMenu:
     return false;
   case playingNewSourceMenu:
-    id(my_display).printf(id(my_display).get_width() / 2, 20 + marginSize, & id(monaco_15), id(my_white), TextAlign::TOP_CENTER, "Playing...");
-    drawTextWrapped(id(my_display).get_width() / 2, 40, 24, & id(monaco_24), id(my_white), playingNewSourceText.c_str(), 16);
+    id(my_display).printf(id(my_display).get_width() / 2, 20 + id(margin_size), & id(medium_font), id(my_white), TextAlign::TOP_CENTER, "Playing...");
+    drawTextWrapped(id(my_display).get_width() / 2, 40, 24, & id(large_font), id(my_white), playingNewSourceText.c_str(), 16);
     return true;
   }
   return true;
@@ -454,22 +455,22 @@ void drawNowPlaying() {
   if (drawOptionMenuAndStop()) {
     return;
   }
-  int yPos = 40;
+  int yPos = id(header_height) + 24;
   if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {
-    id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(monaco_24), id(my_white), TextAlign::TOP_CENTER, "Power Off");
+    id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Power Off");
     return;
   }
-  id(my_display).printf(4, 16, & id(monaco_15), id(my_white), TextAlign::TOP_LEFT, "Now Playing,");
+  id(my_display).printf(4, id(header_height), & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "Now Playing,");
   if (speakerGroup -> activePlayer -> mediaArtist == "" && speakerGroup -> activePlayer -> mediaTitle == "") {
-    id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(monaco_24), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
+    id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
     return;
   }
   int artistTextHeight = yPos;
   if (speakerGroup -> activePlayer -> mediaArtist != "") {
-    artistTextHeight = drawTextWrapped(id(my_display).get_width() / 2, yPos, 24, & id(monaco_24), id(my_white), speakerGroup -> activePlayer -> mediaArtist, 16);
+    artistTextHeight = drawTextWrapped(id(my_display).get_width() / 2, yPos, 24, & id(large_font), id(my_white), speakerGroup -> activePlayer -> mediaArtist, 16);
   }
   if (speakerGroup -> activePlayer -> mediaTitle != "") {
-    drawTextWrapped(id(my_display).get_width() / 2, artistTextHeight + marginSize, 15, & id(monaco_15), id(my_white), speakerGroup -> activePlayer -> mediaTitle, 25);
+    drawTextWrapped(id(my_display).get_width() / 2, artistTextHeight + id(margin_size), 15, & id(medium_font), id(my_white), speakerGroup -> activePlayer -> mediaTitle, 25);
   }
   if (optionMenu == volumeOptionMenu) {
     drawVolumeOptionMenu();
@@ -479,7 +480,7 @@ void drawNowPlaying() {
 void drawMenu() {
   ESP_LOGD("WARNING", "draw menu start");
   if (speakerGroup -> playerSearchFinished == false) {
-    id(my_display).printf(40, 40, & id(monaco_24), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
+    id(my_display).printf(40, 40, & id(large_font), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
     speakerGroup -> findActivePlayer();
     ESP_LOGD("WARNING", "draw menu done");
     menuDrawing = false;

@@ -45,11 +45,8 @@ std::vector <MenuStringType> rootMenuTitles() {
 MenuStates activeMenuState = rootMenu;
 int scrollTop = 0;
 int menuIndex = 0;
-int fontSize = 15;
-int marginSize = 4;
 int rotaryPosition = 0;
 int batteryWidth = 24;
-int headerHeight = 16;
 int activeMenuTitleCount = 0;
 OptionMenuType optionMenu = noOptionMenu;
 
