@@ -76,15 +76,15 @@ font:
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: 24
-    glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: 15
-    glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: 14
-    glyphs: '/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
     
 globals:
   - id: charging
