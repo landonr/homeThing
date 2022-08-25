@@ -28,7 +28,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire and Lilygo T-Display wi
 - run scenes and scripts
 - simple yaml configuration. all of the complicated code is included in other files
 
-# Lilygo T-Display with Scrollwheel
+### Lilygo T-Display with Scrollwheel
 - T-Display with scrollwheel has the same interface as an ipod
 	- scroll to navigate ui and for volume on now playing
 	- up for menu, left for previous track, right for next track, down for pause, center for select
@@ -36,7 +36,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire and Lilygo T-Display wi
 	- charges with usb-c
 	- 900 mah battery
 
-# M5Stack Fire
+### M5Stack Fire
 - M5Stack Fire is supported without any additional hardware
 	- Uses the 3 buttons for navigation
 	- Simpler UI
