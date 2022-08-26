@@ -119,6 +119,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "4"
+  - id: scroll_bar_width
+    type: int
+    restore_value: no
+    initial_value: "6"
 
 custom_component:
 - lambda: |-

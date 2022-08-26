@@ -7,6 +7,8 @@ esphome:
     - MenuTitle.h
     - esphomeRemotePlayer.h
     - esphomeRemoteService.h
+    - esphomeRemoteLight.h
+    - esphomeRemoteSensor.h
     - DisplayUpdateInterface.h
     - esphomeRemote.h
     - esphomeRemoteRotary.h
@@ -115,6 +117,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "4"
+  - id: scroll_bar_width
+    type: int
+    restore_value: no
+    initial_value: "6"
 
 custom_component:
 - lambda: |-
@@ -153,6 +159,18 @@ custom_component:
     App.register_component(lightGroup);
     return {lightGroup};
   id: light_group_component
+- lambda: |-
+    std::vector<FriendlyNameEntity> sensors { 
+      FriendlyNameEntity("sensor.current_time", ""),
+      FriendlyNameEntity("sensor.accuweather_realfeel_temperature", "Temperature"),
+      FriendlyNameEntity("sensor.vancouver_forecast", ""),
+      FriendlyNameEntity("sensor.washing_machine_state", "Washing Machine"),
+      FriendlyNameEntity("sensor.soil_sensor_soil_moisture_2", "Plant Moisture")
+    };
+    sensorGroup->setup(sensors);
+    App.register_component(sensorGroup);
+    return {sensorGroup};
+  id: sensor_group_component
   
 sensor:
   - platform: rotary_encoder

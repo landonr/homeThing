@@ -226,14 +226,14 @@ int maxItems() {
 }
 
 void drawScrollBar(int menuTitlesCount, int headerHeight) {
-  int scrollBarWidth = 4;
-  int scrollBarMargin = 2;
+  int scrollBarMargin = 1;
+  int scrollBarWidth = id(scroll_bar_width);
   if (menuTitlesCount > maxItems() + 1) {
     double screenHeight = id(my_display).get_height() - headerHeight;
     double height = maxItems() * (screenHeight / menuTitlesCount);
     double yPos = (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 + headerHeight;
-    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth - scrollBarMargin, headerHeight, scrollBarWidth + scrollBarMargin, screenHeight, id(my_gray_dark_2));
-    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth, yPos, scrollBarWidth, height - 1, id(my_blue));
+    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth, headerHeight, scrollBarWidth, screenHeight, id(my_gray_dark_2));
+    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth + scrollBarMargin, yPos, scrollBarWidth - scrollBarMargin * 2, height - 1, id(my_blue));
   }
 }
 
@@ -244,8 +244,11 @@ void drawSwitch(bool switchState, int yPos) {
   }
 }
 
-void drawArrow(int yPos) {
+void drawArrow(int yPos, int menuTitlesCount) {
   int xPos = id(my_display).get_width() - 8;
+  if (menuTitlesCount > maxItems() + 1) {
+    xPos = xPos - id(scroll_bar_width);
+  }
   id(my_display).line(xPos, yPos + 4, xPos + 3, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
   id(my_display).line(xPos, yPos + (id(medium_font_size) + id(margin_size)) - 4, xPos + 3, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
 }
@@ -325,7 +328,7 @@ void drawMenu(std::vector <MenuTitle> menuTitles) {
         break;
       case ArrowMenuTitleState:
         if(menuState == i) {
-          drawArrow(yPos);
+          drawArrow(yPos, menuTitles.size());
         }
         break;
       case PlayingMenuTitleState:

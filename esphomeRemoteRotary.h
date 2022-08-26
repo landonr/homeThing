@@ -14,7 +14,7 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-  case tvNowPlayingMenu:
+  case nowPlayingMenu:
     if (optionMenu == tvOptionMenu) {
       optionMenu = noOptionMenu;
       speakerGroup -> tv -> tvRemoteCommand("power");
@@ -50,8 +50,6 @@ void buttonPressNext() {
   }
   if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
-  } else {
-    menuIndex = 0;
   }
   debounceUpdateDisplay();
 }
@@ -88,7 +86,7 @@ void buttonPressUp() {
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
       speakerGroup -> tv -> tvRemoteCommand("up");
-      break;
+      return;
     case SpeakerRemotePlayerType:
       break;
     }

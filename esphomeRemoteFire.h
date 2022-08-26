@@ -49,7 +49,7 @@ void buttonPressSelect() {
 
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("select");
+      speakerGroup -> tv -> tvRemoteCommand("play");
       break;
     case SpeakerRemotePlayerType:
       break;
