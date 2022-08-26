@@ -194,7 +194,6 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     groupMembers.clear();
     for (auto &state: out) {
       std::string newGroupedSpeaker = filter(state);
-      ESP_LOGD("speaker", "%s group %s", entityId.c_str(), newGroupedSpeaker.c_str());
       if(newGroupedSpeaker != entityId) {
         groupMembers.push_back(filter(state));
       }
@@ -300,7 +299,6 @@ class TVPlayerComponent : public BasePlayerComponent {
     for (auto &state: out) {
       std::string source = filter(state);
       sources.push_back(MenuTitle(source, "", NoMenuTitleState));
-      ESP_LOGD("Player", "%s state %s", entityId.c_str(), source.c_str());
     }
     display.updateDisplay(false);
   }
@@ -400,7 +398,6 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     for (auto &state: out) {
       std::string source = filter(state);
       std::string outSource = source.substr(source.find(" ") + 1);
-      ESP_LOGD("group", "%s", outSource.c_str());
       sources.push_back(MenuTitle(outSource, "", NoMenuTitleState));
     }
 

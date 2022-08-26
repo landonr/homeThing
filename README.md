@@ -1,40 +1,58 @@
 # esphome-remote
-iPod style wifi smart home remote. Supports M5Stack Fire and Lilygo T-Display with Adafruit ANO Scrollwheel. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and custom scenes and scripts.
+iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display with Adafruit ANO Scrollwheel. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts.
 
+## Demo Video
 [![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
 
-## features
-- ipod classic style menu for media control
-	- current media player, volume level, play/pause, shuffle, and battery lever are shown in header
-		- change current media player (tv or speaker) from home menu
-		- on boot the current media player is the first speaker found playing music or the tv
-	- scroll bar appears if list extends past the screen. 
-	- screen returns to now playing after idle
-		- display sleeps after 10s of idle
-		- deep sleep after 2h of idle
-	- on average 3 days of battery life depending on use
-	- font and UI size is adjustable in yaml for different screen sizes
-- control sonos speakers
-	- play / pause, next track, previous track, toggle shuffle and mute
-	- scroll for volume (with scroll wheel)
-	- manage speaker group
-	- change source from sonos favourites list
-- control roku tv
-	- remote functions like up, down, left, right, select (with scroll wheel)
-	- scroll for volume (with scroll wheel)
-	- power, back, home, pause in second menu (with scroll wheel)
-	- change source from tv source list
-- toggle lights on and off
-- run scenes and scripts
-- simple yaml configuration. all of the complicated code is included in other files
+## Features
+### iPod classic style menu 
+- Header is always shown at the top with info about the current state
+    - Header left side
+        - The current media player's name is shown on the Now Playing and Home screen
+        - The menu title is shown on other menus
+    - Header right side
+        - The current media player's volume level in %
+        - The play / pause / stop status
+        - For speakers the shuffle status
+        - The battery level is shown as an icon
+- Scroll through list and press center to select
+    - With a scrollwheel the top button goes back
+    - On M5Stack going up past the top of the list will go back
+    - A scroll bar appears if list extends past the screen. 
+- Screen returns to now playing after display sleeps
+	- Display sleeps after 10s of idle
+	- Deep sleep after 2h of idle 💤
+- Font size and UI size is adjustable in yaml 🔨
+- Simple yaml configuration. all of the complicated code is included in other files ⚡️
 
+### Media Control 🔊📺
+- Control Sonos speakers
+	- Play / pause, next track, previous track, toggle shuffle and mute
+	- Scroll for volume (with scroll wheel)
+	- Manage speaker group
+	- Change source from sonos favourites list
+- Control Roku tv
+	- Remote directional buttons up, down, left, right, select (with scroll wheel)
+	- Scroll for volume (with scroll wheel)
+	- Power, back, home, pause in second menu (with scroll wheel)
+	- Change source from tv source list
+- Change current media player (tv or speaker) from home menu
+	- On boot the current media player is the first speaker found playing music or the tv
+
+### Smart Home Control
+- Toggle lights on and off
+- Run scenes and scripts
+	- View sensors from Home Assistant
+
+## Hardware
 ### Lilygo T-Display with Scrollwheel
 - T-Display with scrollwheel has the same interface as an ipod
-	- scroll to navigate ui and for volume on now playing
-	- up for menu, left for previous track, right for next track, down for pause, center for select
+	- Scroll to navigate ui and for volume on now playing
+	- Up for menu, left for previous track, right for next track, down for pause, center for select
 	- 2 additional buttons for home and options menu
-	- charges with usb-c
+	- Charges with usb-c
 	- 900 mah battery
+	- On average 3 days of battery life depending on use
 
 ### M5Stack Fire
 - M5Stack Fire is supported without any additional hardware
@@ -52,7 +70,6 @@ iPod style wifi smart home remote. Supports M5Stack Fire and Lilygo T-Display wi
 ## todo
 - show current playlist
 - queue count
-- sensors screen
 - sonos night sound / speach boost
 - repeat/all/single/off
 - marquee long text

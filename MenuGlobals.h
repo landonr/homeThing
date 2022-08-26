@@ -8,19 +8,10 @@ enum MenuStates {
   mediaPlayersMenu,
   scenesMenu,
   lightsMenu,
-  tvNowPlayingMenu,
-  speakerNowPlayingMenu
-};
-
-enum MenuStringType {
-  nowPlaying,
-  sources,
-  mediaPlayers,
-  lights,
-  scenes,
-  backlightString,
-  sleepString,
-  back
+  nowPlayingMenu,
+  sensorsMenu,
+  backlightMenu,
+  sleepMenu
 };
 
 enum OptionMenuType {
@@ -31,14 +22,15 @@ enum OptionMenuType {
   playingNewSourceMenu
 };
 
-std::vector <MenuStringType> rootMenuTitles() {
+std::vector <MenuStates> rootMenuTitles() {
   return {
-    nowPlaying,
-    sources,
-    mediaPlayers,
-    scenes,
-    lights,
-    sleepString
+    nowPlayingMenu,
+    sourcesMenu,
+    mediaPlayersMenu,
+    scenesMenu,
+    lightsMenu,
+    sensorsMenu,
+    sleepMenu
   };
 }
 

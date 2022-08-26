@@ -39,13 +39,20 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-  case tvNowPlayingMenu:
+  case nowPlayingMenu:
     if (optionMenu == tvOptionMenu) {
       optionMenu = noOptionMenu;
       speakerGroup -> tv -> tvRemoteCommand("power");
       displayUpdate.updateDisplay(true);
-    } else {
+      return;
+    }
+
+    switch (speakerGroup -> activePlayer -> playerType) {
+    case TVRemotePlayerType:
       speakerGroup -> tv -> tvRemoteCommand("select");
+      break;
+    case SpeakerRemotePlayerType:
+      break;
     }
     return;
   default:

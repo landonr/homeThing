@@ -1,6 +1,8 @@
 #include "esphome.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteService.h"
+#include "esphomeRemoteLight.h"
+#include "esphomeRemoteSensor.h"
 #include "MenuGlobals.h"
 
 #ifndef ESPHOMEREMOTE
@@ -36,6 +38,7 @@ class DisplayUpdateImpl: public DisplayUpdateInterface {
 
 auto displayUpdate = DisplayUpdateImpl();
 auto * sceneGroup = new SceneGroupComponent();
+auto * sensorGroup = new SensorGroupComponent();
 auto * speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
 auto * lightGroup = new LightGroupComponent(displayUpdate);
 MenuTitle activeMenuTitle = MenuTitle("", "", NoMenuTitleState);
@@ -70,25 +73,30 @@ std::string textWrap(std::string text, unsigned per_line) {
   return text;
 }
 
-MenuTitle menuTitleForType(MenuStringType stringType) {
+MenuTitle menuTitleForType(MenuStates stringType) {
   switch (stringType) {
-  case nowPlaying:
+  case nowPlayingMenu:
     return MenuTitle("Now Playing", "", ArrowMenuTitleState);
-  case sources:
+  case sourcesMenu:
     return MenuTitle("Sources", "", ArrowMenuTitleState);
-  case backlightString:
+  case backlightMenu:
     return MenuTitle("Backlight", "", NoMenuTitleState);
-  case sleepString:
+  case sleepMenu:
     return MenuTitle("Sleep", "", NoMenuTitleState);
-  case mediaPlayers:
+  case mediaPlayersMenu:
     return MenuTitle("Media Players", "", ArrowMenuTitleState);
-  case lights:
+  case lightsMenu:
     return MenuTitle("Lights", "", ArrowMenuTitleState);
-  case scenes:
+  case scenesMenu:
     return MenuTitle("Scenes and Actions", "", ArrowMenuTitleState);
-  default:
-    return MenuTitle("DEFAULT", "", ArrowMenuTitleState);
+  case rootMenu:
+    return MenuTitle("Home", "", NoMenuTitleState);
+  case groupMenu:
+    return MenuTitle("Speaker Group", "", ArrowMenuTitleState);
+  case sensorsMenu:
+    return MenuTitle("Sensors", "", ArrowMenuTitleState);
   }
+  return MenuTitle("", "", NoMenuTitleState);
 }
 
 int drawPlayPauseIcon() {
@@ -169,8 +177,9 @@ void drawHeaderTitleWithString(std::string title) {
 void drawHeaderTitle() {
   switch (activeMenuState) {
   case rootMenu:
-  case tvNowPlayingMenu:
-  case speakerNowPlayingMenu:
+  case backlightMenu:
+  case sleepMenu:
+  case nowPlayingMenu:
     drawCurrentMediaPlayer();
     break;
   case sourcesMenu:
@@ -187,6 +196,9 @@ void drawHeaderTitle() {
     break;
   case lightsMenu:
     drawHeaderTitleWithString("Lights");
+    break;
+  case sensorsMenu:
+    drawHeaderTitleWithString("Sensors");
     break;
   }
 }
@@ -330,7 +342,7 @@ void drawMenu(std::vector <MenuTitle> menuTitles) {
   drawScrollBar(menuTitles.size(), id(header_height));
 }
 
-std::vector <MenuTitle> menuTypesToTitles(std::vector <MenuStringType> menu) {
+std::vector <MenuTitle> menuTypesToTitles(std::vector <MenuStates> menu) {
   std::vector <MenuTitle> out;
   for (auto & menuItem: menu) {
     out.push_back(menuTitleForType(menuItem));
@@ -349,6 +361,8 @@ std::vector <MenuTitle> activeMenu() {
     return speakerGroup -> mediaPlayersTitleString();
   case scenesMenu:
     return sceneGroup -> sceneTitleStrings();
+  case sensorsMenu:
+    return sensorGroup -> sensorTitles();
   default:
     ESP_LOGD("WARNING", "menu is bad  %d", x);
     std::vector <MenuTitle> out;
@@ -367,11 +381,7 @@ void idleMenu() {
   menuIndex = 0;
   speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
-  if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
-    activeMenuState = MenuStates::tvNowPlayingMenu;
-  } else {
-    activeMenuState = MenuStates::speakerNowPlayingMenu;
-  }
+  activeMenuState = MenuStates::nowPlayingMenu;
 }
 
 void idleTick() {
@@ -485,8 +495,7 @@ void drawMenu() {
     return;
   }
   switch (activeMenuState) {
-  case tvNowPlayingMenu:
-  case speakerNowPlayingMenu:
+  case nowPlayingMenu:
     drawNowPlaying();
     break;
   case sourcesMenu:
@@ -525,35 +534,35 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStringType currentMenu = rootMenuTitles()[menuIndex];
+  MenuStates currentMenu = rootMenuTitles()[menuIndex];
   switch (currentMenu) {
-  case sources:
+  case sourcesMenu:
     activeMenuState = sourcesMenu;
     break;
-  case nowPlaying:
-    if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
-      activeMenuState = tvNowPlayingMenu;
-    } else {
-      activeMenuState = speakerNowPlayingMenu;
-    }
+  case nowPlayingMenu:
+    activeMenuState = nowPlayingMenu;
     break;
-  case mediaPlayers:
+  case mediaPlayersMenu:
     activeMenuState = mediaPlayersMenu;
     break;
-  case lights:
+  case lightsMenu:
     activeMenuState = lightsMenu;
     break;
-  case scenes:
+  case scenesMenu:
     activeMenuState = scenesMenu;
     break;
-  case backlightString:
+  case backlightMenu:
     topMenu();
     id(backlight).turn_off();
     return false;
-  case sleepString:
+  case sleepMenu:
     id(tt_sleep).turn_on();
     return false;
-  default:
+  case sensorsMenu:
+    activeMenuState = sensorsMenu;
+    break;
+  case groupMenu:
+  case rootMenu:
     ESP_LOGD("WARNING", "menu is bad  %d", menuIndex);
     return false;
   }
@@ -566,11 +575,8 @@ bool selectMenu() {
   switch (activeMenuState) {
   case rootMenu:
     return selectRootMenu();
-  case speakerNowPlayingMenu:
-    activeMenuState = MenuStates::speakerNowPlayingMenu;
-    break;
-  case tvNowPlayingMenu:
-    activeMenuState = MenuStates::tvNowPlayingMenu;
+  case nowPlayingMenu:
+    activeMenuState = MenuStates::nowPlayingMenu;
     break;
   case sourcesMenu:
     idleMenu();
