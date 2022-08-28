@@ -79,7 +79,7 @@ color:
 font:
   - file: "fonts/iosevka.ttf"
     id: large_font
-    size: 24
+    size: 26
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
     id: medium_font
@@ -102,7 +102,7 @@ globals:
   - id: large_font_size
     type: int
     restore_value: no
-    initial_value: "24"
+    initial_value: "26"
   - id: medium_font_size
     type: int
     restore_value: no
@@ -340,12 +340,6 @@ light:
     name: "Remote Light"
     restore_mode: ALWAYS_OFF
     default_transition_length: 0s
-    # on_turn_on:
-    # - switch.turn_on:
-    #     id: light_on
-    # on_turn_off:
-    # - switch.turn_off:
-    #     id: light_on
     effects:
       - addressable_rainbow:
           name: Rainbow Effect

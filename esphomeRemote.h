@@ -388,18 +388,18 @@ void idleMenu() {
 }
 
 void idleTick() {
-  if (id(idle_time) == 5) {
+  if (id(idle_time) == 4) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
-  } else if (id(idle_time) == 20) {
+  } else if (id(idle_time) == 16) {
     if (speakerGroup -> playerSearchFinished) {
       idleMenu();
       displayUpdate.updateDisplay(true);
     }
     ESP_LOGD("idle", "turning off display");
     id(backlight).turn_off();
-    // menuDrawing = false;
-  } else if (id(idle_time) > 3600) {
+    menuDrawing = false;
+  } else if (id(idle_time) > 6400) {
     ESP_LOGD("idle", "night night");
     id(tt_sleep).turn_on();
     return;
@@ -468,7 +468,7 @@ void drawNowPlaying() {
   if (drawOptionMenuAndStop()) {
     return;
   }
-  int yPos = id(header_height) + 24;
+  int yPos = id(header_height) + id(medium_font_size) + id(margin_size) * 2;
   if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Power Off");
     return;
@@ -480,10 +480,10 @@ void drawNowPlaying() {
   }
   int artistTextHeight = yPos;
   if (speakerGroup -> activePlayer -> mediaArtist != "") {
-    artistTextHeight = drawTextWrapped(id(my_display).get_width() / 2, yPos, 24, & id(large_font), id(my_white), speakerGroup -> activePlayer -> mediaArtist, 16);
+    artistTextHeight = drawTextWrapped(id(my_display).get_width() / 2, yPos, id(large_font_size), & id(large_font), id(my_white), speakerGroup -> activePlayer -> mediaArtist, 16);
   }
   if (speakerGroup -> activePlayer -> mediaTitle != "") {
-    drawTextWrapped(id(my_display).get_width() / 2, artistTextHeight + id(margin_size), 15, & id(medium_font), id(my_white), speakerGroup -> activePlayer -> mediaTitle, 25);
+    drawTextWrapped(id(my_display).get_width() / 2, artistTextHeight + id(medium_font_size), id(medium_font_size), & id(medium_font), id(my_white), speakerGroup -> activePlayer -> mediaTitle, 25);
   }
   if (optionMenu == volumeOptionMenu) {
     drawVolumeOptionMenu();
