@@ -11,6 +11,7 @@ enum RemotePlayerType {
 };
 
 enum RemotePlayerState {
+  NoRemoteState,
   PausedRemoteState,
   PlayingRemoteState,
   StoppedRemoteState,
@@ -65,9 +66,9 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
       std::string newEntityId,
       RemotePlayerType newPlayerType
     ) : display(newCallback), entityId(newEntityId), playerType(newPlayerType) { }
-    RemotePlayerState playerState = StoppedRemoteState;
     std::string mediaTitle = "";
     std::string mediaArtist = "";
+    RemotePlayerState playerState = NoRemoteState;
     std::string friendlyName = "";
     std::vector<MenuTitle> sources;
     std::string entityId;
@@ -90,7 +91,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     } else if(strcmp(state.c_str(), "standyby") == 0) {
       playerState = PowerOffRemoteState;
     } else {
-      playerState = StoppedRemoteState;
+      playerState = NoRemoteState;
     }
     display.updateDisplay(false);
   }
@@ -125,13 +126,18 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   }
 
   MenuTitleState menuTitlePlayerState() {
-    MenuTitleState titleState = StoppedMenuTitleState;
-    if(playerState == PlayingRemoteState) {
-      titleState = PlayingMenuTitleState;
-    } else if (playerState == PausedRemoteState) {
-      titleState = PausedMenuTitleState;
+    switch (playerState) {
+      case PlayingRemoteState:
+        return PlayingMenuTitleState;
+      case PausedRemoteState:
+        return PausedMenuTitleState;
+      case StoppedRemoteState:
+        return StoppedMenuTitleState;
+      case PowerOffRemoteState:
+      case NoRemoteState:
+        return NoMenuTitleState;
     }
-    return titleState;
+    return NoMenuTitleState;
   }
 };
 
@@ -328,10 +334,11 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     }
     if (tv->playerState == PlayingRemoteState) {
       playerSearchFinished = true;
+      display.updateDisplay(true);
       return;
     }
     for (auto &speaker: speakers) {
-      if (speaker->playerState == StoppedRemoteState) {
+      if (speaker->playerState == NoRemoteState) {
         return;
       } else if (speaker->playerState == PlayingRemoteState && speaker->mediaTitle != "") {
         if(speaker->mediaTitle == "TV") {
@@ -341,6 +348,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
         }
         playerSearchFinished = true;
         display.updateDisplay(true);
+        return;
       }
     }
     playerSearchFinished = true;
