@@ -388,6 +388,7 @@ void idleMenu() {
 }
 
 void idleTick() {
+  speakerGroup->finishSettingUp();
   if (id(idle_time) == 4) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
