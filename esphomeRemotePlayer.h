@@ -90,6 +90,10 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
       playerState = PausedRemoteState;
     } else if(strcmp(state.c_str(), "standyby") == 0) {
       playerState = PowerOffRemoteState;
+      mediaTitle = "";
+      mediaArtist = "";
+    } else if(strcmp(state.c_str(), "idle") == 0) {
+      playerState = StoppedRemoteState;
     } else {
       playerState = NoRemoteState;
     }
@@ -146,9 +150,13 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   SonosSpeakerComponent(DisplayUpdateInterface& newCallback, std::string newEntityId) : BasePlayerComponent { newCallback, newEntityId, SpeakerRemotePlayerType } { }
   double localVolume = -1;
   double speaker_volume = -1;
+  double volumeStep = 0.04;
   bool shuffle = false;
   bool muted = false;
   std::vector<std::string> groupMembers;
+  std::string mediaPlaylist = "";
+  int mediaDuration = -1;
+  int mediaPosition = -1;
 
   void setup() {
     ESP_LOGD("speaker", "Sonos Speaker subbed %s", entityId.c_str());
@@ -159,52 +167,10 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     subscribe_homeassistant_state(&SonosSpeakerComponent::group_members_changed, entityId, "group_members");
     subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_title_changed, entityId, "media_title");
     subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_artist_changed, entityId, "media_artist");
-  }
-
-  void player_media_title_changed(std::string state) {
-    ESP_LOGD("Player", "%s Player media title changed to %s", entityId.c_str(), state.c_str());
-    mediaTitle = state.c_str();
-    display.updateDisplay(false);
-  }
-
-  void player_media_artist_changed(std::string state) {
-    ESP_LOGD("Player", "%s Player artist changed to %s", entityId.c_str(), state.c_str());
-    mediaArtist = state.c_str();
-    display.updateDisplay(false);
-  }
-
-  void speaker_volume_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker volume changed to %s", entityId.c_str(), state.c_str());
-    speaker_volume =  atof(state.c_str());
-    if(localVolume == -1) {
-      localVolume = atof(state.c_str());
-    }
-    display.updateDisplay(false);
-  }
-
-  void speaker_muted_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker muted changed to %s", entityId.c_str(), state.c_str());
-    muted = strcmp(state.c_str(), "on") == 0;
-    display.updateDisplay(false);
-  }
-
-  void shuffle_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker shuffle changed to %s", entityId.c_str(), state.c_str());
-    shuffle = strcmp(state.c_str(), "on") == 0;
-    display.updateDisplay(false);
-  }
-
-  void group_members_changed(std::string state) {
-    std::vector<std::string> out;
-    tokenize(state, ",", out);
-    groupMembers.clear();
-    for (auto &state: out) {
-      std::string newGroupedSpeaker = filter(state);
-      if(newGroupedSpeaker != entityId) {
-        groupMembers.push_back(filter(state));
-      }
-    }
-    display.updateDisplay(false);
+    subscribe_homeassistant_state(&SonosSpeakerComponent::playlist_changed, entityId, "media_playlist");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::playlist_changed, entityId, "media_album_name");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::media_duration_changed, entityId, "media_duration");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::media_position_changed, entityId, "media_position");
   }
 
   void ungroup() {
@@ -240,8 +206,6 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     });
   }
 
-  double volumeStep = 0.04;
-
   void increaseVolume() {
     if(speaker_volume == -1 || localVolume > 1) {
       return;
@@ -276,6 +240,74 @@ class SonosSpeakerComponent : public BasePlayerComponent {
       {"entity_id", entityIds},
       {"volume_level", to_string(localVolume)},
     });
+  }
+
+private:
+  void player_media_title_changed(std::string state) {
+    ESP_LOGD("Player", "%s Player media title changed to %s", entityId.c_str(), state.c_str());
+    if(strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
+      mediaPosition = 0;
+    }
+    mediaTitle = state.c_str();
+    display.updateDisplay(false);
+  }
+
+  void player_media_artist_changed(std::string state) {
+    ESP_LOGD("Player", "%s Player artist changed to %s", entityId.c_str(), state.c_str());
+    mediaArtist = state.c_str();
+    display.updateDisplay(false);
+  }
+
+  void speaker_volume_changed(std::string state) {
+    ESP_LOGD("speaker", "%s Sonos Speaker volume changed to %s", entityId.c_str(), state.c_str());
+    speaker_volume =  atof(state.c_str());
+    if(localVolume == -1) {
+      localVolume = atof(state.c_str());
+    }
+    display.updateDisplay(false);
+  }
+
+  void speaker_muted_changed(std::string state) {
+    ESP_LOGD("speaker", "%s Sonos Speaker muted changed to %s", entityId.c_str(), state.c_str());
+    muted = strcmp(state.c_str(), "on") == 0;
+    display.updateDisplay(false);
+  }
+
+  void shuffle_changed(std::string state) {
+    ESP_LOGD("speaker", "%s Sonos Speaker shuffle changed to %s", entityId.c_str(), state.c_str());
+    shuffle = strcmp(state.c_str(), "on") == 0;
+    display.updateDisplay(false);
+  }
+
+  void playlist_changed(std::string state) {
+    ESP_LOGD("speaker", "%s Sonos Speaker playlist changed to %s", entityId.c_str(), state.c_str());
+    mediaPlaylist = state.c_str();
+    display.updateDisplay(false);
+  }
+
+  void group_members_changed(std::string state) {
+    std::vector<std::string> out;
+    tokenize(state, ",", out);
+    groupMembers.clear();
+    for (auto &state: out) {
+      std::string newGroupedSpeaker = filter(state);
+      if(newGroupedSpeaker != entityId) {
+        groupMembers.push_back(filter(state));
+      }
+    }
+    display.updateDisplay(false);
+  }
+
+  void media_duration_changed(std::string state) {
+    ESP_LOGD("speaker", "%s Sonos Speaker media duration changed to %s", entityId.c_str(), state.c_str());
+    mediaDuration = atof(state.c_str());
+    display.updateDisplay(false);
+  }
+
+  void media_position_changed(std::string state) {
+    ESP_LOGD("speaker", "%s Sonos Speaker media position changed to %s", entityId.c_str(), state.c_str());
+    mediaPosition = atof(state.c_str());
+    display.updateDisplay(false);
   }
 };
 
@@ -586,6 +618,29 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     } else {
       speaker->joinGroup(newSpeakerGroupParent->entityId);
     }
+  }
+
+  bool updateMediaPosition() {
+    bool updateDisplay = false;
+    for (auto &speaker: speakers) {
+      if (
+        speaker->playerState == PlayingRemoteState &&
+        speaker->mediaDuration >= 0 && 
+        speaker->mediaPosition >= 0 && 
+        speaker->mediaPosition < speaker->mediaDuration
+      ) {
+        speaker->mediaPosition++;
+        updateDisplay = true;
+      }
+    }
+    switch (activePlayer->playerType) {
+    case TVRemotePlayerType:
+      updateDisplay = false;
+      break;
+    case SpeakerRemotePlayerType:
+      break;
+    }
+    return updateDisplay;
   }
 
   private:

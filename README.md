@@ -19,6 +19,11 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
     - With a scrollwheel the top button goes back
     - On M5Stack going up past the top of the list will go back
     - A scroll bar appears if list extends past the screen. 
+- Now Playing screen shows the current media player's state
+	- For Speakers the media artist, media title, and playlist or album title are shown
+		- If the text doesn't fit then the playlist/album title will hide
+		- If the text still doesn't fit the media title and media artist are truncated
+	- For TVs the only information available is the current source (eg Youtube) or the power state
 - Screen returns to now playing after display sleeps
 	- Display sleeps after 10s of idle
 	- Deep sleep after 2h of idle 💤
@@ -68,11 +73,9 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - iosevka font https://github.com/be5invis/Iosevka
 
 ## todo
-- show current playlist
 - queue count
 - sonos night sound / speach boost
 - repeat/all/single/off
 - marquee long text
-- media duration bar
 - case
 - photos

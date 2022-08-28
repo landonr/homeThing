@@ -79,7 +79,7 @@ color:
 font:
   - file: "fonts/iosevka.ttf"
     id: large_font
-    size: 26
+    size: 28
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
     id: medium_font
@@ -102,7 +102,7 @@ globals:
   - id: large_font_size
     type: int
     restore_value: no
-    initial_value: "26"
+    initial_value: "28"
   - id: medium_font_size
     type: int
     restore_value: no
@@ -111,6 +111,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "18"
+  - id: font_size_width_ratio
+    type: double
+    restore_value: no
+    initial_value: "0.6"
   - id: header_height
     type: int
     restore_value: no
@@ -228,7 +232,7 @@ sensor:
             id: TTGoBatteryPercent
             state: !lambda 'return (((id(batteryVoltage).state - 3) * 100) / (3.7 - 3));'
     on_value_range:
-      below: 2.7
+      below: 2.5
       then:
         lambda: |-
           ESP_LOGE("batteryVoltage", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryVoltage).state);
@@ -344,7 +348,7 @@ light:
       - addressable_rainbow:
           name: Rainbow Effect
           speed: 20
-          width: 30
+          width: 15
 
 spi:
   clk_pin: 18

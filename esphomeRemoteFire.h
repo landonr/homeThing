@@ -52,6 +52,7 @@ void buttonPressSelect() {
       speakerGroup -> tv -> tvRemoteCommand("play");
       break;
     case SpeakerRemotePlayerType:
+      speakerGroup -> activePlayer -> playPause();
       break;
     }
     return;

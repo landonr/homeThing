@@ -91,16 +91,21 @@ void buttonPressUp() {
       break;
     }
     break;
+  case groupMenu:
+   if(speakerGroup->newSpeakerGroupParent != NULL) {
+      speakerGroup->newSpeakerGroupParent = NULL;
+    } else {
+      activeMenuState = nowPlayingMenu;
+      optionMenu = noOptionMenu;
+    }
+    displayUpdate.updateDisplay(true);
+    return;
   default:
     break;
   }
   if (optionMenu == speakerOptionMenu) {
     speakerGroup -> toggleShuffle();
     optionMenu = noOptionMenu;
-    displayUpdate.updateDisplay(true);
-    return;
-  } else if(speakerGroup->newSpeakerGroupParent != NULL) {
-    speakerGroup->newSpeakerGroupParent = NULL;
     displayUpdate.updateDisplay(true);
     return;
   }

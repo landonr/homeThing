@@ -109,6 +109,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "14"
+  - id: font_size_width_ratio
+    type: double
+    restore_value: no
+    initial_value: "0.6"
   - id: header_height
     type: int
     restore_value: no
