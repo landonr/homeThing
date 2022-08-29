@@ -56,10 +56,10 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 	- On boot the current media player is the first speaker found playing music or the tv
 
 ### Smart Home Control
-- Toggle lights on and off
+- #### Toggle lights on and off
 ![Lights Menu](docs/lightsTDisplay.png)
-- Run scenes and scripts
-- View sensors from Home Assistant
+- #### Run scenes and scripts
+- #### View sensors from Home Assistant
 ![Sensors Menu](docs/sensorsTDisplay.png)
 
 ## Hardware
