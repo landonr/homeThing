@@ -1,7 +1,7 @@
-# esphome-remote
+# esphome-remote 
 iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display with Adafruit ANO Scrollwheel. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts.
 
-## Demo Video
+## Demo Video 🎬
 [![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
 
 ## Features
@@ -21,7 +21,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 2. Volume %
 3. Shuffle state
 4. Play/Pause/Stopped state
-5. Battery level
+5. Battery level 
 6. Playlist or album title
 7. Media artist
 8. Media title
@@ -34,10 +34,10 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - #### Screen returns to now playing after display sleeps
     - Display sleeps after 10s of idle. Device sleeps after 2h of idle 💤
 - #### Font size and UI size is adjustable in yaml 🔨
-- #### Simple yaml configuration. all of the complicated code is included in other files ⚡️
+- #### Simple yaml configuration. all of the complicated code is included in other files 🛠
 
 ## Media Control 🔊📺
-#### 1. Control Sonos speakers
+### 1. Control Sonos speakers
 - #### Play / pause, next track, previous track, toggle shuffle and mute
 ![Shuffle Gif](docs/shuffleTDisplay.gif)
 - #### Scroll for volume (with scroll wheel)
@@ -56,15 +56,15 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - Change current media player (tv or speaker) from home menu
 	- On boot the current media player is the first speaker found playing music or the tv
 
-### Smart Home Control
+## Smart Home Control 🧠🏠
 - #### Toggle lights on and off
 ![Lights Menu](docs/lightsTDisplay.png)
 - #### Run scenes and scripts
 - #### View sensors from Home Assistant
 ![Sensors Menu](docs/sensorsTDisplay.png)
 
-## Hardware
-### Lilygo T-Display with Scrollwheel
+## Hardware 
+### Lilygo T-Display with Scrollwheel ⚙️
 - T-Display with scrollwheel has the same interface as an ipod
 	- Scroll to navigate ui and for volume on now playing
 	- Up for menu, left for previous track, right for next track, down for pause, center for select
@@ -73,7 +73,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 	- 900 mah battery
 	- On average 3 days of battery life depending on use
 
-### M5Stack Fire
+### M5Stack Fire 🔥
 ![Pause Play Fire Demo Gif](docs/pausePlayFire.gif)
 - M5Stack Fire is supported without any additional hardware
 	- Uses the 3 buttons for navigation
@@ -93,4 +93,3 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - repeat/all/single/off
 - marquee long text
 - case
-- photos
