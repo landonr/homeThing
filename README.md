@@ -7,6 +7,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 ## Features
 ### iPod classic style menu 
 ![Scroll Demo Gif](docs/scrollListSelectTDisplay.gif)
+![Scroll List Fire Demo Gif](docs/scrollListSelectFire.gif)
 - #### Scroll through list and press center to select
     - With a scrollwheel the top button goes back
     - On M5Stack going up past the top of the list will go back
@@ -73,7 +74,6 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 	- On average 3 days of battery life depending on use
 
 ### M5Stack Fire
-![Scroll List Fire Demo Gif](docs/scrollListSelectFire.gif)
 ![Pause Play Fire Demo Gif](docs/pausePlayFire.gif)
 - M5Stack Fire is supported without any additional hardware
 	- Uses the 3 buttons for navigation
