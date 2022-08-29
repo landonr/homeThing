@@ -53,8 +53,10 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 
 ### Smart Home Control
 - Toggle lights on and off
+![Lights Menu](docs/lightsTDisplay.gif)
 - Run scenes and scripts
-	- View sensors from Home Assistant
+- View sensors from Home Assistant
+![Sensors Menu](docs/sensorsTDisplay.gif)
 
 ## Hardware
 ### Lilygo T-Display with Scrollwheel
@@ -67,6 +69,8 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 	- On average 3 days of battery life depending on use
 
 ### M5Stack Fire
+![Scroll List Fire Demo Gif](docs/scrollListSelectFire.gif)
+![Pause Play Fire Demo Gif](docs/pausePlayFire.gif)
 - M5Stack Fire is supported without any additional hardware
 	- Uses the 3 buttons for navigation
 	- Simpler UI
