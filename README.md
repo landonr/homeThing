@@ -6,40 +6,44 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 
 ## Features
 ### iPod classic style menu 
-- Header is always shown at the top with info about the current state
-    - Header left side
-        - The current media player's name is shown on the Now Playing and Home screen
-        - The menu title is shown on other menus
-    - Header right side
-        - The current media player's volume level in %
-        - The play / pause / stop status
-        - For speakers the shuffle status
-        - The battery level is shown as an icon
-- Scroll through list and press center to select
 ![Scroll Demo Gif](docs/scrollListSelectTDisplay.gif)
+- #### Scroll through list and press center to select
     - With a scrollwheel the top button goes back
     - On M5Stack going up past the top of the list will go back
     - A scroll bar appears if list extends past the screen. 
-- Now Playing screen shows the current media player's state
-	- For Speakers the media artist, media title, and playlist or album title are shown
-		- If the text doesn't fit then the playlist/album title will hide
-		- If the text still doesn't fit the media title and media artist are truncated
-	- For TVs the only information available is the current source (eg Youtube) or the power state
-- Screen returns to now playing after display sleeps
-	- Display sleeps after 10s of idle
-	- Deep sleep after 2h of idle 💤
-- Font size and UI size is adjustable in yaml 🔨
-- Simple yaml configuration. all of the complicated code is included in other files ⚡️
 
-### Media Control 🔊📺
-### 1. Control Sonos speakers
-#### Play / pause, next track, previous track, toggle shuffle and mute
+- #### Header is always shown at the top with info about the current state
+
+- #### Now Playing screen shows the current media player's state
+![Now Playing Overlay Menu](docs/nowPlayingOverlay.png)
+1. Current media player + # of grouped speakers
+2. Volume %
+3. Shuffle state
+4. Play/Pause/Stopped state
+5. Battery level
+6. Playlist or album title
+7. Media artist
+8. Media title
+9. Media position and playback bar
+10. Media duration
+    - If the text doesn't fit then the playlist/album title will hide
+    - If the text still doesn't fit the media title and media artist are truncated
+    - For TVs the only information available is the current source (eg Youtube) or the power state
+
+- #### Screen returns to now playing after display sleeps
+    - Display sleeps after 10s of idle. Device sleeps after 2h of idle 💤
+- #### Font size and UI size is adjustable in yaml 🔨
+- #### Simple yaml configuration. all of the complicated code is included in other files ⚡️
+
+## Media Control 🔊📺
+#### 1. Control Sonos speakers
+- #### Play / pause, next track, previous track, toggle shuffle and mute
 ![Shuffle Gif](docs/shuffleTDisplay.gif)
-#### Scroll for volume (with scroll wheel)
+- #### Scroll for volume (with scroll wheel)
 ![Scroll Volume Demo Gif](docs/volumeScrollTDisplay.gif)
-#### Manage speaker group 
+- #### Manage speaker group 
 ![Speaker Group Demo Gif](docs/groupTDisplay.gif)
-#### Change source from sonos favourites list
+- #### Change source from sonos favourites list
 ![Source Select Demo Gif](docs/sourceSelectTDisplay.gif)
 
 ### 2. Control Roku tv
@@ -53,10 +57,10 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 
 ### Smart Home Control
 - Toggle lights on and off
-![Lights Menu](docs/lightsTDisplay.gif)
+![Lights Menu](docs/lightsTDisplay.png)
 - Run scenes and scripts
 - View sensors from Home Assistant
-![Sensors Menu](docs/sensorsTDisplay.gif)
+![Sensors Menu](docs/sensorsTDisplay.png)
 
 ## Hardware
 ### Lilygo T-Display with Scrollwheel
@@ -90,13 +94,3 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - marquee long text
 - case
 - photos
-
-- new demo video
-- scroll list gif
-- scroll list select gif
-- scroll list back gif
-	- fire
-	- tdisplay
-- now playing gif
-- toggle lights gif
-- sensors image
