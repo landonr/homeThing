@@ -127,6 +127,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "6"
+  - id: bottom_bar_margin
+    type: int
+    restore_value: no
+    initial_value: "8"
 
 custom_component:
 - lambda: |-

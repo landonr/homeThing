@@ -16,6 +16,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
         - For speakers the shuffle status
         - The battery level is shown as an icon
 - Scroll through list and press center to select
+![Scroll Demo Gif](docs/scrollListSelectTDisplay.gif)
     - With a scrollwheel the top button goes back
     - On M5Stack going up past the top of the list will go back
     - A scroll bar appears if list extends past the screen. 
@@ -31,16 +32,22 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - Simple yaml configuration. all of the complicated code is included in other files ⚡️
 
 ### Media Control 🔊📺
-- Control Sonos speakers
-	- Play / pause, next track, previous track, toggle shuffle and mute
-	- Scroll for volume (with scroll wheel)
-	- Manage speaker group
-	- Change source from sonos favourites list
-- Control Roku tv
-	- Remote directional buttons up, down, left, right, select (with scroll wheel)
-	- Scroll for volume (with scroll wheel)
-	- Power, back, home, pause in second menu (with scroll wheel)
-	- Change source from tv source list
+### 1. Control Sonos speakers
+#### Play / pause, next track, previous track, toggle shuffle and mute
+![Shuffle Gif](docs/shuffleTDisplay.gif)
+#### Scroll for volume (with scroll wheel)
+![Scroll Volume Demo Gif](docs/volumeScrollTDisplay.gif)
+#### Manage speaker group 
+![Speaker Group Demo Gif](docs/groupTDisplay.gif)
+#### Change source from sonos favourites list
+![Source Select Demo Gif](docs/sourceSelectTDisplay.gif)
+
+### 2. Control Roku tv
+- Remote directional buttons up, down, left, right, select (with scroll wheel)
+- Scroll for volume (with scroll wheel)
+- Power, back, home, pause in second menu (with scroll wheel)
+- Change source from tv source list
+
 - Change current media player (tv or speaker) from home menu
 	- On boot the current media player is the first speaker found playing music or the tv
 
@@ -79,3 +86,13 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - marquee long text
 - case
 - photos
+
+- new demo video
+- scroll list gif
+- scroll list select gif
+- scroll list back gif
+	- fire
+	- tdisplay
+- now playing gif
+- toggle lights gif
+- sensors image

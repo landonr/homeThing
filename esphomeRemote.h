@@ -442,7 +442,7 @@ void drawVolumeOptionMenu() {
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
   int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
   int barWidth = totalBarWidth * (speakerGroup -> getVolumeLevel() / 100);
-  int yPos = id(my_display).get_height() - barHeight;
+  int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
 
   id(my_display).image(iconMargin / 2 - imageSize / 4, yPos + 1, & id(image_volume_low));
   id(my_display).image(id(my_display).get_width() - iconMargin / 2 - imageSize / 4, yPos + 1, & id(image_volume_high));
@@ -472,7 +472,7 @@ void drawMediaDuration() {
       barWidth = totalBarWidth * ((double)mediaPosition / (double)mediaDuration);
     }
 
-    int yPos = id(my_display).get_height() - barHeight;
+    int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
     id(my_display).rectangle(textWidth, yPos, totalBarWidth, barHeight, id(my_white));
     id(my_display).filled_rectangle(textWidth + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2, id(my_white));
 
@@ -540,7 +540,7 @@ bool drawOptionMenuAndStop() {
     return false;
   case playingNewSourceMenu:
     id(my_display).printf(id(my_display).get_width() / 2, 20 + id(margin_size), & id(medium_font), id(my_white), TextAlign::TOP_CENTER, "Playing...");
-    auto playingNewSourceWrappedText = getWrappedTitles(id(my_display).get_width() / 2, id(large_font_size), TextAlign::TOP_CENTER, speakerGroup -> activePlayer -> mediaArtist);
+    auto playingNewSourceWrappedText = getWrappedTitles(id(my_display).get_width() / 2, id(large_font_size), TextAlign::TOP_CENTER, playingNewSourceText);
     drawTextWrapped(id(my_display).get_width() / 2, 40, 24, & id(large_font), id(my_white), TextAlign::TOP_CENTER, playingNewSourceWrappedText, 0);
     return true;
   }

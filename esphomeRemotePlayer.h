@@ -88,7 +88,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
       playerState = PlayingRemoteState;
     } else if(strcmp(state.c_str(), "paused") == 0) {
       playerState = PausedRemoteState;
-    } else if(strcmp(state.c_str(), "standyby") == 0) {
+    } else if(strcmp(state.c_str(), "standby") == 0) {
       playerState = PowerOffRemoteState;
       mediaTitle = "";
       mediaArtist = "";
@@ -247,6 +247,12 @@ private:
     ESP_LOGD("Player", "%s Player media title changed to %s", entityId.c_str(), state.c_str());
     if(strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
       mediaPosition = 0;
+    }
+    if(strcmp("TV", mediaTitle.c_str()) != 0) {
+      mediaArtist = "";
+      mediaDuration = -1;
+      mediaPosition = -1;
+      mediaPlaylist = "";
     }
     mediaTitle = state.c_str();
     display.updateDisplay(false);
