@@ -35,6 +35,8 @@ std::vector <MenuStates> rootMenuTitles() {
 }
 
 MenuStates activeMenuState = rootMenu;
+int idleTime = -2;
+bool charging = false;
 int scrollTop = 0;
 int menuIndex = 0;
 int rotaryPosition = 0;

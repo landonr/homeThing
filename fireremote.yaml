@@ -129,14 +129,6 @@ image:
     type: RGB24
     
 globals:
-  - id: charging
-    type: bool
-    restore_value: no
-    initial_value: "false"
-  - id: idle_time
-    type: int
-    restore_value: no
-    initial_value: "-2"
   - id: large_font_size
     type: int
     restore_value: no
@@ -169,6 +161,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "8"
+  - id: boot_device_name
+    type: std::string
+    restore_value: no
+    initial_value: '"M5Stack Fire Remote <3"'
 
 custom_component:
 - lambda: |-
@@ -232,12 +228,12 @@ sensor:
       then:
         lambda: |-
           if (id(vcc_adc).state > 4) {
-            if (id(charging) == false) {
-              id(charging) = true;
+            if (charging == false) {
+              charging = true;
             }
           } else {
-            if (id(charging) == true) {
-              id(charging) = false;
+            if (charging == true) {
+              charging = false;
             }
             id(vcc_adc_avg).publish_state(id(vcc_adc).state);
           }
@@ -260,7 +256,7 @@ sensor:
     on_value :
       then:
         - lambda: |-
-            if(id(idle_time) < 2) {
+            if(idleTime < 2) {
               displayUpdate.updateDisplay(true);
             }
   - platform: template
@@ -376,12 +372,12 @@ display:
     update_interval: 10s
     lambda: |-
       manageLight();
-      if (id(idle_time) < 0) {
+      if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");
         id(backlight).turn_on();
-        id(idle_time) = 0;
+        idleTime = 0;
       } else if (!id(backlight).state) {
-        ESP_LOGD("drawing menu", "turning off %d", id(idle_time));
+        ESP_LOGD("drawing menu", "turning off %d", idleTime);
         // id(my_display).set_update_interval(60000);
         return;
       }

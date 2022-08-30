@@ -16,8 +16,8 @@ class DisplayUpdateImpl: public DisplayUpdateInterface {
       ESP_LOGD("WARNING", "menu already drawing");
       return;
     }
-    menuDrawing = true;
     if (force) {
+      menuDrawing = true;
       id(my_display).update();
       if (!id(backlight).state) {
         id(backlight).turn_on();
@@ -30,6 +30,7 @@ class DisplayUpdateImpl: public DisplayUpdateInterface {
       case sourcesMenu:
         return;
       default:
+        menuDrawing = true;
         id(my_display).update();
         break;
       }
@@ -400,10 +401,10 @@ void idleMenu() {
 }
 
 void idleTick() {
-  if (id(idle_time) == 4) {
+  if (idleTime == 4) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
-  } else if (id(idle_time) == 16) {
+  } else if (idleTime == 16) {
     if (speakerGroup -> playerSearchFinished) {
       idleMenu();
       displayUpdate.updateDisplay(true);
@@ -411,7 +412,7 @@ void idleTick() {
     ESP_LOGD("idle", "turning off display");
     menuDrawing = false;
     id(backlight).turn_off();
-  } else if (id(idle_time) > 6400) {
+  } else if (idleTime > 6400) {
     ESP_LOGD("idle", "night night");
     id(tt_sleep).turn_on();
     return;
@@ -419,7 +420,7 @@ void idleTick() {
   if(speakerGroup->updateMediaPosition()) {
     switch(activeMenuState) {
       case nowPlayingMenu:
-        if(id(idle_time) < 16) {
+        if(idleTime < 16) {
           displayUpdate.updateDisplay(true);
         }
         break;
@@ -427,7 +428,7 @@ void idleTick() {
         break;
     }
   }
-  id(idle_time) ++;
+  idleTime ++;
 }
 
 void drawTVOptionMenu() {
@@ -463,6 +464,9 @@ void drawVolumeOptionMenu() {
 }
 
 std::string secondsToString(int seconds) {
+  if(seconds == -1) {
+    return "00:00";
+  }
   return seconds % 60 < 10 ? "0" + to_string(seconds % 60) : to_string(seconds % 60);
 }
 
@@ -612,16 +616,42 @@ void drawNowPlaying() {
   }
 }
 
+int autoClearState = 0;
+
+void drawBootSequence() {
+  if(autoClearState == 0) {
+    id(my_display).set_auto_clear(false);
+    autoClearState = abs((int)esp_random()) + 1; // add 1 in case its 0
+  }
+
+  int imageXPos = esp_random() % (id(my_display).get_width() - 12);
+  int imageYPos = esp_random() % (id(my_display).get_height() - 12);
+  id(my_display).image(imageXPos, imageYPos, & id(image_sleep));
+  std::vector<Color> colors = { id(my_green), id(my_blue), id(my_yellow), id(my_red) };
+
+  for(int i = 0; i < 3; i++) {
+    int xPos = autoClearState % (id(my_display).get_width() / 3);
+    int yPos = autoClearState % (id(my_display).get_height() / 2);
+    auto wrappedBootText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_LEFT, id(boot_device_name));
+    drawTextWrapped(xPos, yPos, id(large_font_size), & id(large_font), colors[esp_random() % colors.size()], TextAlign::TOP_LEFT, wrappedBootText, 0);
+    autoClearState++;
+  }
+  speakerGroup -> findActivePlayer();
+  menuDrawing = false;
+}
+
 void drawMenu() {
-  if(id(idle_time) > 16) {
+  if(idleTime > 16) {
     menuDrawing = false;
     return;
   }
   if (speakerGroup -> playerSearchFinished == false) {
-    id(my_display).printf(40, 40, & id(large_font), id(my_blue), TextAlign::TOP_LEFT, "beep boop");
-    speakerGroup -> findActivePlayer();
-    menuDrawing = false;
+    drawBootSequence();
     return;
+  }
+  if(autoClearState != 0) {
+    id(my_display).set_auto_clear(true);
+    autoClearState = 0;
   }
   switch (activeMenuState) {
   case nowPlayingMenu:
@@ -737,8 +767,8 @@ bool selectMenu() {
 }
 
 bool buttonPressWakeUpDisplay() {
-  if (id(idle_time) != -1) {
-    id(idle_time) = 0;
+  if (idleTime != -1) {
+    idleTime = 0;
   }
   if (!speakerGroup -> playerSearchFinished) {
     speakerGroup -> findActivePlayer();

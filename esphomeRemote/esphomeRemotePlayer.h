@@ -252,7 +252,7 @@ private:
     if(strcmp("TV", mediaTitle.c_str()) != 0) {
       mediaArtist = "";
       mediaDuration = -1;
-      mediaPosition = -1;
+      mediaPosition = 0;
       mediaPlaylist = "";
     }
     mediaTitle = state.c_str();
