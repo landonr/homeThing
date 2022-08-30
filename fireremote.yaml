@@ -3,15 +3,15 @@ esphome:
   platform: ESP32
   board: m5stack-fire
   includes:
-    - MenuGlobals.h
-    - MenuTitle.h
-    - esphomeRemotePlayer.h
-    - esphomeRemoteService.h
-    - esphomeRemoteLight.h
-    - esphomeRemoteSensor.h
-    - DisplayUpdateInterface.h
-    - esphomeRemote.h
-    - esphomeRemoteFire.h
+    - esphomeRemote/MenuGlobals.h
+    - esphomeRemote/MenuTitle.h
+    - esphomeRemote/esphomeRemotePlayer.h
+    - esphomeRemote/esphomeRemoteService.h
+    - esphomeRemote/esphomeRemoteLight.h
+    - esphomeRemote/esphomeRemoteSensor.h
+    - esphomeRemote/DisplayUpdateInterface.h
+    - esphomeRemote/esphomeRemote.h
+    - esphomeRemote/esphomeRemoteFire.h
 
 wifi:
   ssid: !secret wifi_ssid
@@ -89,6 +89,44 @@ font:
     id: small_font
     size: 18
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+
+image:
+  - file: "images/playWhite.png"
+    id: image_play_white
+    type: RGB24
+  - file: "images/play.png"
+    id: image_play
+    type: RGB24
+  - file: "images/pause.png"
+    id: image_pause
+    type: RGB24
+  - file: "images/pauseWhite.png"
+    id: image_pause_white
+    type: RGB24
+  - file: "images/stop.png"
+    id: image_stop
+    type: RGB24
+  - file: "images/stopWhite.png"
+    id: image_stop_white
+    type: RGB24
+  - file: "images/sleepWhite.png"
+    id: image_sleep_white
+    type: RGB24
+  - file: "images/sleep.png"
+    id: image_sleep
+    type: RGB24
+  - file: "images/shuffle.png"
+    id: image_shuffle
+    type: RGB24
+  - file: "images/shuffleDisabled.png"
+    id: image_shuffle_disabled
+    type: RGB24
+  - file: "images/volumeLow.png"
+    id: image_volume_low
+    type: RGB24
+  - file: "images/volumeHigh.png"
+    id: image_volume_high
+    type: RGB24
     
 globals:
   - id: charging
@@ -301,38 +339,6 @@ switch:
     name: "Backlight"
     id: backlight
     restore_mode: ALWAYS_ON
-
-image:
-  - file: "images/playWhite.png"
-    id: image_play_white
-    type: RGB24
-  - file: "images/play.png"
-    id: image_play
-    type: RGB24
-  - file: "images/pause.png"
-    id: image_pause
-    type: RGB24
-  - file: "images/pauseWhite.png"
-    id: image_pause_white
-    type: RGB24
-  - file: "images/stop.png"
-    id: image_stop
-    type: RGB24
-  - file: "images/stopWhite.png"
-    id: image_stop_white
-    type: RGB24
-  - file: "images/shuffle.png"
-    id: image_shuffle
-    type: RGB24
-  - file: "images/shuffleDisabled.png"
-    id: image_shuffle_disabled
-    type: RGB24
-  - file: "images/volumeLow.png"
-    id: image_volume_low
-    type: RGB24
-  - file: "images/volumeHigh.png"
-    id: image_volume_high
-    type: RGB24
 
 time:
   - platform: homeassistant

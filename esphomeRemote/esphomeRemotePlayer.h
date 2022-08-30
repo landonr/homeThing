@@ -138,6 +138,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
       case StoppedRemoteState:
         return StoppedMenuTitleState;
       case PowerOffRemoteState:
+        return PowerOffMenuTitleState;
       case NoRemoteState:
         return NoMenuTitleState;
     }

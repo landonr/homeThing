@@ -113,6 +113,9 @@ int drawPlayPauseIcon() {
     case StoppedMenuTitleState:
       id(my_display).image(xPos, yPos, & id(image_stop));
       break;
+    case PowerOffMenuTitleState:
+      id(my_display).image(xPos, yPos, & id(image_sleep));
+      break;
     default:
       break;
   }
@@ -292,6 +295,13 @@ void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, boo
         id(my_display).image(xPos, adjustedYPos, &id(image_stop));
       }
       break;
+    case PowerOffMenuTitleState:
+      if(selected) {
+        id(my_display).image(xPos, adjustedYPos, &id(image_sleep_white));
+      } else {
+        id(my_display).image(xPos, adjustedYPos, &id(image_sleep));
+      }
+      break;
     default:
       break;
   }
@@ -335,6 +345,7 @@ void drawMenu(std::vector <MenuTitle> menuTitles) {
       case PlayingMenuTitleState:
       case PausedMenuTitleState:
       case StoppedMenuTitleState:
+      case PowerOffMenuTitleState:
         drawTitleImage(menuTitles[i].friendlyName.length(), yPos, menuTitles[i].titleState, menuState == i);
         break;
       case GroupedMenuTitleState:
@@ -436,7 +447,7 @@ void drawSpeakerOptionMenu() {
 }
 
 void drawVolumeOptionMenu() {
-  int imageSize = 16;
+  int imageSize = 12;
   int barMargin = 1;
   int barHeight = id(small_font_size);
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
@@ -444,8 +455,8 @@ void drawVolumeOptionMenu() {
   int barWidth = totalBarWidth * (speakerGroup -> getVolumeLevel() / 100);
   int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
 
-  id(my_display).image(iconMargin / 2 - imageSize / 4, yPos + 1, & id(image_volume_low));
-  id(my_display).image(id(my_display).get_width() - iconMargin / 2 - imageSize / 4, yPos + 1, & id(image_volume_high));
+  id(my_display).image(iconMargin / 2 - imageSize / 2, yPos + 1, & id(image_volume_low));
+  id(my_display).image(id(my_display).get_width() - iconMargin / 2 - imageSize / 2, yPos + 1, & id(image_volume_high));
 
   id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(my_blue));
   id(my_display).filled_rectangle(iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2, id(my_blue));

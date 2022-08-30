@@ -10,7 +10,8 @@ enum MenuTitleState {
   PlayingMenuTitleState,
   PausedMenuTitleState,
   StoppedMenuTitleState,
-  GroupedMenuTitleState
+  GroupedMenuTitleState,
+  PowerOffMenuTitleState
 };
 
 class MenuTitle {
