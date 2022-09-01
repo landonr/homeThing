@@ -92,6 +92,12 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
       playerState = PowerOffRemoteState;
       mediaTitle = "";
       mediaArtist = "";
+    } else if(strcmp(state.c_str(), "home") == 0) {
+      playerState = StoppedRemoteState;
+      mediaTitle = "";
+      mediaArtist = "";
+    } else if(strcmp(state.c_str(), "on") == 0) {
+      playerState = StoppedRemoteState;
     } else if(strcmp(state.c_str(), "idle") == 0) {
       playerState = StoppedRemoteState;
     } else {
