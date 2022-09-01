@@ -76,22 +76,23 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - Up for menu, left for previous track, right for next track, down for pause, center for select
 - 2 additional buttons for home and options menu
 - Charges with usb-c
-- 900 mah battery
+- 1100 mah battery
 - On average 3 days of battery life depending on use
+	- Adafruit ANO Directional Navigation and Scroll Wheel Rotary Encoder https://www.adafruit.com/product/5001
+	- Adafruit ANO Rotary Navigation Encoder Breakout PCB https://www.adafruit.com/product/5221
+	- 1100mah lipo https://leeselectronic.com/en/product/88345-battery-rechargeable-li-poly-37v-1100mah-jst-zh.html
 
 ### 2. M5Stack Fire 🔥
 #### M5Stack Fire is supported without any additional hardware
 - Uses the 3 buttons for navigation
 - Simpler UI
 - Uses internal light for booting sequence and while on
+	- https://www.mouser.ca/ProductDetail/M5Stack/K007-V26?qs=TCDPyi3sCW1MGXwu64XB7w%3D%3D
 
 ![Pause Play Fire Demo Gif](docs/pausePlayFire.gif)
 
 ## includes
 - esphome https://esphome.io/
-- Adafruit ANO Directional Navigation and Scroll Wheel Rotary Encoder https://www.adafruit.com/product/5001
-- LILYGO ESP32 T-Display
-- 900mah lipo https://leeselectronic.com/en/product/88341-battery-rechargeable-li-poly-37v-900mah.html
 - iosevka font https://github.com/be5invis/Iosevka
 
 ## todo
@@ -100,3 +101,5 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - repeat/all/single/off
 - marquee long text
 - case
+- circuit diagram for tdisplay
+- support tdisplay t4
