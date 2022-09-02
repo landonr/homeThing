@@ -547,9 +547,48 @@ bool drawOptionMenuAndStop() {
   return true;
 }
 
+std::string stringForNowPlayingMenuState(NowPlayingMenuState state) {
+  switch(state) {
+  case pauseNowPlayingMenuState:
+    return speakerGroup->playTitleString();
+  case volumeUpNowPlayingMenuState:
+    return "Vol Up";
+  case volumeDownNowPlayingMenuState:
+    return "Vol Down";
+  case nextNowPlayingMenuState:
+    return "Next";
+  case menuNowPlayingMenuState:
+    return "Menu";
+  }
+  return "";
+}
+
+void drawNowPlayingSelectMenu() {
+  auto menuTitles = speakerNowPlayingMenuStates();
+  activeMenuTitleCount = menuTitles.size();
+  int yPos = id(my_display).get_height() - id(margin_size) - id(large_font_size);
+  if(activeMenuTitleCount < 1) {
+    return;
+  }
+  id(my_display).printf(id(my_display).get_width() * 0.5, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, stringForNowPlayingMenuState(menuTitles[menuIndex]).c_str());
+  if(menuIndex + 1 < activeMenuTitleCount) {
+    id(my_display).printf(id(my_display).get_width() * 0.85, yPos, & id(small_font), id(my_white), TextAlign::TOP_CENTER, stringForNowPlayingMenuState(menuTitles[menuIndex + 1]).c_str());
+  } else {
+    id(my_display).printf(id(my_display).get_width() * 0.85, yPos, & id(small_font), id(my_white), TextAlign::TOP_CENTER, stringForNowPlayingMenuState(menuTitles[0]).c_str());
+  }
+  if(menuIndex - 1 >= 0) {
+    id(my_display).printf(id(my_display).get_width() * 0.15, yPos, & id(small_font), id(my_white), TextAlign::TOP_CENTER, stringForNowPlayingMenuState(menuTitles[menuIndex - 1]).c_str());
+  } else {
+    id(my_display).printf(id(my_display).get_width() * 0.15, yPos, & id(small_font), id(my_white), TextAlign::TOP_CENTER, stringForNowPlayingMenuState(menuTitles[activeMenuTitleCount - 1]).c_str());
+  }
+}
+
 void drawNowPlaying() {
   if (drawOptionMenuAndStop()) {
     return;
+  }
+  if (id(draw_now_playing_menu)){
+    drawNowPlayingSelectMenu();
   }
   int yPos = id(header_height);
   if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {

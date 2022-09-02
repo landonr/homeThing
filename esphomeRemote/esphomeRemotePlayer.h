@@ -260,10 +260,10 @@ private:
       mediaPosition = 0;
     }
     if(strcmp("TV", mediaTitle.c_str()) != 0) {
-      mediaArtist = "";
       mediaDuration = -1;
       mediaPosition = 0;
-      mediaPlaylist = "";
+    } else {
+      mediaArtist = "";
     }
     mediaTitle = state.c_str();
     display.updateDisplay(false);
@@ -703,6 +703,21 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     } else {
       activePlayer = tv;
     }
+  }
+
+  std::string playTitleString() {
+    switch(activePlayer->playerState) {
+      case PausedRemoteState:
+        return "Play";
+      case PlayingRemoteState:
+        return "Pause";
+      case StoppedRemoteState:
+      case NoRemoteState:
+        return "Stopped";
+      case PowerOffRemoteState:
+        return "Off";
+    }
+    return "";
   }
 
   private:

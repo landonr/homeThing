@@ -34,6 +34,32 @@ void manageLight() {
   }
 }
 
+void selectNowPlayingMenu() {
+  if(activeMenuTitleCount <= 0 && menuIndex < activeMenuTitleCount) {
+    return;
+  }
+  auto menuTitle = speakerNowPlayingMenuStates()[menuIndex];
+  switch(menuTitle) {
+  case pauseNowPlayingMenuState:
+    speakerGroup -> activePlayer -> playPause();
+    break;
+  case volumeUpNowPlayingMenuState:
+    speakerGroup -> increaseSpeakerVolume();
+    optionMenu = volumeOptionMenu;
+    break;
+  case volumeDownNowPlayingMenuState:
+    speakerGroup -> decreaseSpeakerVolume();
+    optionMenu = volumeOptionMenu;
+    break;
+  case nextNowPlayingMenuState:
+    speakerGroup -> activePlayer -> nextTrack();
+    break;
+  case menuNowPlayingMenuState:
+    topMenu();
+  }
+  displayUpdate.updateDisplay(true);
+}
+
 void buttonPressSelect() {
   if (buttonPressWakeUpDisplay()) {
     return;
@@ -52,8 +78,8 @@ void buttonPressSelect() {
       speakerGroup -> tv -> tvRemoteCommand("play");
       break;
     case SpeakerRemotePlayerType:
-      speakerGroup -> activePlayer -> playPause();
-      break;
+      selectNowPlayingMenu();
+      return;
     }
     return;
   default:
@@ -70,6 +96,8 @@ void buttonPressLeft() {
   }
   if (menuIndex > 0) {
     menuIndex--;
+  } else if(activeMenuState == nowPlayingMenu) {
+    menuIndex = activeMenuTitleCount - 1;
   } else {
     topMenu();
   }

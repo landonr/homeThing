@@ -152,7 +152,7 @@ globals:
   - id: margin_size
     type: int
     restore_value: no
-    initial_value: "4"
+    initial_value: "8"
   - id: scroll_bar_width
     type: int
     restore_value: no
@@ -160,7 +160,11 @@ globals:
   - id: bottom_bar_margin
     type: int
     restore_value: no
-    initial_value: "8"
+    initial_value: "36"
+  - id: draw_now_playing_menu
+    type: bool
+    restore_value: no
+    initial_value: "true"
   - id: boot_device_name
     type: std::string
     restore_value: no

@@ -159,6 +159,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "1"
+  - id: draw_now_playing_menu
+    type: bool
+    restore_value: no
+    initial_value: "false"
   - id: boot_device_name
     type: std::string
     restore_value: no

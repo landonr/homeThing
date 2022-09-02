@@ -14,14 +14,6 @@ enum MenuStates {
   sleepMenu
 };
 
-enum OptionMenuType {
-  noOptionMenu,
-  volumeOptionMenu,
-  tvOptionMenu,
-  speakerOptionMenu,
-  playingNewSourceMenu
-};
-
 std::vector <MenuStates> rootMenuTitles() {
   return {
     nowPlayingMenu,
@@ -33,6 +25,32 @@ std::vector <MenuStates> rootMenuTitles() {
     sleepMenu
   };
 }
+
+enum NowPlayingMenuState {
+  pauseNowPlayingMenuState,
+  volumeUpNowPlayingMenuState,
+  volumeDownNowPlayingMenuState,
+  nextNowPlayingMenuState,
+  menuNowPlayingMenuState
+};
+
+std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
+  return {
+    menuNowPlayingMenuState,
+    pauseNowPlayingMenuState,
+    volumeUpNowPlayingMenuState,
+    volumeDownNowPlayingMenuState,
+    nextNowPlayingMenuState
+  };
+}
+
+enum OptionMenuType {
+  noOptionMenu,
+  volumeOptionMenu,
+  tvOptionMenu,
+  speakerOptionMenu,
+  playingNewSourceMenu
+};
 
 MenuStates activeMenuState = rootMenu;
 int idleTime = -2;
