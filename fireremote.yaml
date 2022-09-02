@@ -160,7 +160,7 @@ globals:
   - id: bottom_bar_margin
     type: int
     restore_value: no
-    initial_value: "36"
+    initial_value: "42"
   - id: draw_now_playing_menu
     type: bool
     restore_value: no

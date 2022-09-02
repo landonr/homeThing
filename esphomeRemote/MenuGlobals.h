@@ -31,16 +31,18 @@ enum NowPlayingMenuState {
   volumeUpNowPlayingMenuState,
   volumeDownNowPlayingMenuState,
   nextNowPlayingMenuState,
-  menuNowPlayingMenuState
+  menuNowPlayingMenuState,
+  shuffleNowPlayingMenuState,
 };
 
 std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
   return {
-    menuNowPlayingMenuState,
     pauseNowPlayingMenuState,
     volumeUpNowPlayingMenuState,
     volumeDownNowPlayingMenuState,
-    nextNowPlayingMenuState
+    nextNowPlayingMenuState,
+    shuffleNowPlayingMenuState,
+    menuNowPlayingMenuState
   };
 }
 

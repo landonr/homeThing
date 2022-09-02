@@ -559,6 +559,12 @@ std::string stringForNowPlayingMenuState(NowPlayingMenuState state) {
     return "Next";
   case menuNowPlayingMenuState:
     return "Menu";
+  case shuffleNowPlayingMenuState:
+    if(speakerGroup -> mediaShuffling()) {
+      return "Shfl on";
+    } else {
+      return "Shfl off";
+    }
   }
   return "";
 }

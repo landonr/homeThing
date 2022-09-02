@@ -54,6 +54,9 @@ void selectNowPlayingMenu() {
   case nextNowPlayingMenuState:
     speakerGroup -> activePlayer -> nextTrack();
     break;
+  case shuffleNowPlayingMenuState:
+    speakerGroup -> toggleShuffle();
+    break;
   case menuNowPlayingMenuState:
     topMenu();
   }
