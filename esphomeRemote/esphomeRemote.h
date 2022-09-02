@@ -123,21 +123,6 @@ int drawPlayPauseIcon() {
   return xPos;
 }
 
-void drawCurrentMediaPlayer() {
-  if (speakerGroup -> activePlayer -> entityId != "") {
-    std::string entityId = speakerGroup -> activePlayer -> friendlyName;
-    if (speakerGroup -> activePlayer -> playerType != TVRemotePlayerType) {
-      SonosSpeakerComponent * activeSpeaker = static_cast < SonosSpeakerComponent * > (speakerGroup -> activePlayer);
-      if (activeSpeaker != NULL) {
-        if (activeSpeaker -> groupMembers.size() > 0) {
-          entityId = entityId + " + " + to_string(activeSpeaker -> groupMembers.size());
-        }
-      }
-    }
-    id(my_display).printf(2, 0, & id(small_font), id(my_white), "%s", entityId.c_str());
-  }
-}
-
 void drawBattery() {
   int batteryHeight = id(header_height) - 5;
   int yPos = 2;
@@ -185,7 +170,7 @@ void drawHeaderTitle() {
   case backlightMenu:
   case sleepMenu:
   case nowPlayingMenu:
-    drawCurrentMediaPlayer();
+    drawHeaderTitleWithString(speakerGroup->headerMediaPlayerTitleString());
     break;
   case sourcesMenu:
     drawHeaderTitleWithString("Sources");

@@ -92,7 +92,8 @@ void buttonPressUp() {
     }
     break;
   case groupMenu:
-   if(speakerGroup->newSpeakerGroupParent != NULL) {
+    menuIndex = 0;
+    if(speakerGroup->newSpeakerGroupParent != NULL) {
       speakerGroup->newSpeakerGroupParent = NULL;
     } else {
       activeMenuState = nowPlayingMenu;
@@ -258,9 +259,19 @@ void buttonPressScreenRight() {
   }
   optionMenu = noOptionMenu;
   switch (activeMenuState) {
-  default:
-    topMenu();
+  case rootMenu:
+  case backlightMenu:
+  case sleepMenu:
+  case nowPlayingMenu:
+    speakerGroup->selectNextMediaPlayer();
     displayUpdate.updateDisplay(true);
+    break;
+  case sourcesMenu:
+  case groupMenu:
+  case mediaPlayersMenu:
+  case scenesMenu:
+  case lightsMenu:
+  case sensorsMenu:
     break;
   }
 }
