@@ -21,8 +21,6 @@ logger:
 
 # Enable Home Assistant API
 api:
-  encryption:
-    key: !secret api_encryption
 
 ota:
   password: !secret ota_encryption
@@ -87,11 +85,11 @@ font:
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
     id: medium_font
-    size: 15
+    size: 18
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
   - file: "fonts/iosevka.ttf"
     id: small_font
-    size: 14
+    size: 16
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
 
 image:
@@ -136,15 +134,15 @@ globals:
   - id: large_font_size
     type: int
     restore_value: no
-    initial_value: "28"
+    initial_value: "24"
   - id: medium_font_size
     type: int
     restore_value: no
-    initial_value: "22"
+    initial_value: "18"
   - id: small_font_size
     type: int
     restore_value: no
-    initial_value: "18"
+    initial_value: "16"
   - id: font_size_width_ratio
     type: double
     restore_value: no
@@ -169,6 +167,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "12"
+  - id: now_playing_max_lines
+    type: int
+    restore_value: no
+    initial_value: "10"
   - id: draw_now_playing_menu
     type: bool
     restore_value: no

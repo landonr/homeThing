@@ -163,6 +163,10 @@ globals:
     type: int
     restore_value: no
     initial_value: "12"
+  - id: now_playing_max_lines
+    type: int
+    restore_value: no
+    initial_value: "5"
   - id: draw_now_playing_menu
     type: bool
     restore_value: no

@@ -130,7 +130,7 @@ int drawBattery() {
   int batteryWidth = 24;
   int batteryHeight = id(header_height) - 5;
   int yPos = 2;
-  int xPos = 4;
+  int xPos = id(margin_size);
   int capHeight = 6;
   int capWidth = 3;
   id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
@@ -140,12 +140,13 @@ int drawBattery() {
   } else {
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
   }
-  return batteryWidth - xPos;
+  return batteryWidth + xPos + id(margin_size);
 }
 
 void drawVolumeLevel(int oldXPos) {
   int xPos = oldXPos - 6;
-  id(my_display).printf(xPos, 0, & id(small_font), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup -> getVolumeLevel());
+  int yPos = ((id(header_height) - id(small_font_size)) / 2) - 1;
+  id(my_display).printf(xPos, yPos, & id(small_font), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup -> getVolumeLevel());
 }
 
 int drawShuffle(int oldXPos) {
@@ -166,7 +167,8 @@ int drawShuffle(int oldXPos) {
 }
 
 void drawHeaderTitleWithString(std::string title) {
-  id(my_display).printf(2, 0, & id(small_font), id(my_white), title.c_str());
+  int yPos = (id(header_height) - id(small_font_size)) / 2;
+  id(my_display).printf(2, yPos, & id(small_font), id(my_white), title.c_str());
 }
 
 void drawHeaderTitle() {
@@ -212,11 +214,12 @@ void drawHeader() {
 
 void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
   int xPos = buttonSpace ? id(small_font_size) + id(margin_size) * 2 : id(margin_size);
+  int textYPos = yPos + (id(margin_size) / 4);
   if (menuState == i) {
     id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(my_blue));
-    id(my_display).printf(xPos, yPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+    id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
   } else {
-    id(my_display).printf(xPos, yPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+    id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
   }
 }
 
@@ -239,7 +242,7 @@ void drawScrollBar(int menuTitlesCount, int headerHeight) {
 
 void drawSwitch(bool switchState, int yPos) {
   int circleSize = id(small_font_size) / 2;
-  int xPos = 4 + circleSize;
+  int xPos = id(margin_size) + circleSize;
   int centerYPos = yPos + (id(medium_font_size) + id(margin_size)) / 2;
   id(my_display).circle(xPos, centerYPos, circleSize, id(my_white));
   if (switchState) {
@@ -476,7 +479,7 @@ void drawMediaDuration() {
     }
     int barMargin = 1;
     int barHeight = id(small_font_size);
-    int textWidth = id(small_font_size) * id(font_size_width_ratio) * 5;
+    int textWidth = (id(small_font_size) * id(font_size_width_ratio) * 5) + id(margin_size) / 2;
     int totalBarWidth = id(my_display).get_width() - textWidth * 2;
     int barWidth = 0;
     if(mediaDuration > 0 && mediaPosition > 0) {
@@ -639,7 +642,7 @@ void drawNowPlaying() {
   auto mediaTitleWrappedText = getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER, speakerGroup -> activePlayer -> mediaTitle);
   int lineCount = nowPlayingWrappedText.size() + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
   int maxLines = 0;
-  if(lineCount > 5) {
+  if(lineCount > id(now_playing_max_lines)) {
     maxLines = 1;
     if(nowPlayingWrappedText.size() > 1) {
       lineCount = 1 + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
@@ -650,7 +653,7 @@ void drawNowPlaying() {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
     return;
   }
-  if(lineCount > 5) {
+  if(lineCount > id(now_playing_max_lines)) {
     maxLines = 2;
   } else {
     maxLines = 0;
@@ -685,7 +688,7 @@ void drawBootSequence() {
 
   for(int i = 0; i < 3; i++) {
     int xPos = autoClearState % (id(my_display).get_width() / 3);
-    int yPos = autoClearState % (id(my_display).get_height() / 2);
+    int yPos = autoClearState % (id(my_display).get_height() - id(large_font_size) * 2);
     auto wrappedBootText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_LEFT, id(boot_device_name));
     drawTextWrapped(xPos, yPos, id(large_font_size), & id(large_font), colors[esp_random() % colors.size()], TextAlign::TOP_LEFT, wrappedBootText, 0);
     autoClearState++;
