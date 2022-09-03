@@ -33,6 +33,9 @@ enum NowPlayingMenuState {
   nextNowPlayingMenuState,
   menuNowPlayingMenuState,
   shuffleNowPlayingMenuState,
+  backNowPlayingMenuState,
+  TVPowerNowPlayingMenuState,
+  homeNowPlayingMenuState
 };
 
 std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
@@ -42,6 +45,18 @@ std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
     volumeDownNowPlayingMenuState,
     nextNowPlayingMenuState,
     shuffleNowPlayingMenuState,
+    menuNowPlayingMenuState
+  };
+}
+
+std::vector <NowPlayingMenuState> TVNowPlayingMenuStates() {
+  return {
+    pauseNowPlayingMenuState,
+    volumeUpNowPlayingMenuState,
+    volumeDownNowPlayingMenuState,
+    backNowPlayingMenuState,
+    TVPowerNowPlayingMenuState,
+    homeNowPlayingMenuState,
     menuNowPlayingMenuState
   };
 }

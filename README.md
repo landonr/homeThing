@@ -1,5 +1,8 @@
 # esphome-remote 
-iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display with Adafruit ANO Scrollwheel. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts.
+iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts. Supports many different hardware configurations:
+- M5Stack Fire (no additional hardware)
+- Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
+- Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
 
 ## Demo Video 🎬
 [![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
@@ -56,7 +59,7 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 ### 2. Control Roku tv 📺
 - Remote directional buttons up, down, left, right, select (with scroll wheel)
 - Scroll for volume (with scroll wheel)
-- Power, back, home, pause in second menu (with scroll wheel)
+- Power, back, home, pause in second menu
 - Change source from tv source list
 
 - Change current media player (tv or speaker) from home menu
@@ -102,4 +105,3 @@ iPod style wifi smart home remote. Supports M5Stack Fire or Lilygo T-Display wit
 - marquee long text
 - case
 - circuit diagram for tdisplay
-- support tdisplay t4

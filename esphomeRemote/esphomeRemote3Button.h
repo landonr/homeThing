@@ -3,42 +3,11 @@
 #ifndef REMOTEFIRE
 #define REMOTEFIRE
 
-enum RemoteLightState {
-  OffRemoteLightState,
-  OnRemoteLightState,
-  EffectRemoteLightState
-};
-
-RemoteLightState lightState = OffRemoteLightState;
-
-void manageLight() {
-  if (!id(backlight).state) {
-    if (lightState != OffRemoteLightState) {
-      auto call = id(side_light).turn_off();
-      call.perform();
-      lightState = OffRemoteLightState;
-    }
-  } else if (lightState == OffRemoteLightState && !speakerGroup -> playerSearchFinished) {
-    auto call = id(side_light).turn_on();
-    call.set_effect("Rainbow Effect");
-    call.perform();
-    lightState = EffectRemoteLightState;
-  } else if (lightState != OnRemoteLightState && speakerGroup -> playerSearchFinished) {
-    auto offCall = id(side_light).turn_off();
-    offCall.perform();
-    auto call = id(side_light).turn_on();
-    call.set_brightness(0.5);
-    call.set_rgb(0.5, 0.25, 1.0);
-    call.perform();
-    lightState = OnRemoteLightState;
-  }
-}
-
 void selectNowPlayingMenu() {
   if(activeMenuTitleCount <= 0 && menuIndex < activeMenuTitleCount) {
     return;
   }
-  auto menuTitle = speakerNowPlayingMenuStates()[menuIndex];
+  auto menuTitle = getNowPlayingMenuStates()[menuIndex];
   switch(menuTitle) {
   case pauseNowPlayingMenuState:
     speakerGroup -> activePlayer -> playPause();
@@ -59,6 +28,16 @@ void selectNowPlayingMenu() {
     break;
   case menuNowPlayingMenuState:
     topMenu();
+    break;
+  case TVPowerNowPlayingMenuState:
+    speakerGroup -> tv -> tvRemoteCommand("power");
+    break;
+  case backNowPlayingMenuState:
+    speakerGroup -> tv -> tvRemoteCommand("back");
+    break;
+  case homeNowPlayingMenuState:
+    speakerGroup -> tv -> tvRemoteCommand("menu");
+    break;
   }
   displayUpdate.updateDisplay(true);
 }
@@ -76,14 +55,7 @@ void buttonPressSelect() {
       return;
     }
 
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("play");
-      break;
-    case SpeakerRemotePlayerType:
-      selectNowPlayingMenu();
-      return;
-    }
+    selectNowPlayingMenu();
     return;
   default:
     break;

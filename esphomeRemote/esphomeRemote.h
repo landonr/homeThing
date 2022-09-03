@@ -559,6 +559,12 @@ std::string stringForNowPlayingMenuState(NowPlayingMenuState state) {
     return "Next";
   case menuNowPlayingMenuState:
     return "Menu";
+  case backNowPlayingMenuState:
+    return "Back";
+  case TVPowerNowPlayingMenuState:
+    return "Power";
+  case homeNowPlayingMenuState:
+    return "TV Home";
   case shuffleNowPlayingMenuState:
     if(speakerGroup -> mediaShuffling()) {
       return "Shfl on";
@@ -569,8 +575,15 @@ std::string stringForNowPlayingMenuState(NowPlayingMenuState state) {
   return "";
 }
 
+std::vector <NowPlayingMenuState> getNowPlayingMenuStates() {
+  if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
+    return TVNowPlayingMenuStates();
+  }
+  return speakerNowPlayingMenuStates();
+}
+
 void drawNowPlayingSelectMenu() {
-  auto menuTitles = speakerNowPlayingMenuStates();
+  auto menuTitles = getNowPlayingMenuStates();
   activeMenuTitleCount = menuTitles.size();
   int yPos = id(my_display).get_height() - id(margin_size) - id(large_font_size);
   if(activeMenuTitleCount < 1) {
