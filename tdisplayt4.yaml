@@ -165,10 +165,18 @@ globals:
     type: int
     restore_value: no
     initial_value: "42"
+  - id: icon_size
+    type: int
+    restore_value: no
+    initial_value: "12"
   - id: draw_now_playing_menu
     type: bool
     restore_value: no
     initial_value: "true"
+  - id: draw_battery_level
+    type: bool
+    restore_value: no
+    initial_value: "false"
   - id: boot_device_name
     type: std::string
     restore_value: no

@@ -101,9 +101,9 @@ MenuTitle menuTitleForType(MenuStates stringType) {
   return MenuTitle("", "", NoMenuTitleState);
 }
 
-int drawPlayPauseIcon() {
+int drawPlayPauseIcon(int batteryWidth) {
   int yPos = id(header_height) / 2 - 6;
-  int xPos = id(my_display).get_width() - batteryWidth - 16 - 4;
+  int xPos = id(my_display).get_width() - batteryWidth - id(icon_size);
   switch(speakerGroup->activePlayer->menuTitlePlayerState()) {
     case PlayingMenuTitleState:
       id(my_display).image(xPos, yPos, & id(image_play));
@@ -123,7 +123,11 @@ int drawPlayPauseIcon() {
   return xPos;
 }
 
-void drawBattery() {
+int drawBattery() {
+  if(!id(draw_battery_level)) {
+    return 0;
+  }
+  int batteryWidth = 24;
   int batteryHeight = id(header_height) - 5;
   int yPos = 2;
   int xPos = 4;
@@ -136,6 +140,7 @@ void drawBattery() {
   } else {
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
   }
+  return batteryWidth - xPos;
 }
 
 void drawVolumeLevel(int oldXPos) {
@@ -195,13 +200,18 @@ void drawHeaderTitle() {
 
 void drawHeader() {
   id(my_display).rectangle(0, id(header_height), id(my_display).get_width(), 1, id(my_blue));
-  drawBattery();
   drawHeaderTitle();
-  drawVolumeLevel(drawShuffle(drawPlayPauseIcon()));
+  drawVolumeLevel(
+    drawShuffle(
+      drawPlayPauseIcon(
+        drawBattery()
+      )
+    )
+  );
 }
 
 void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
-  int xPos = buttonSpace ? 20 : 4;
+  int xPos = buttonSpace ? id(small_font_size) + id(margin_size) * 2 : id(margin_size);
   if (menuState == i) {
     id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(my_blue));
     id(my_display).printf(xPos, yPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
@@ -228,9 +238,12 @@ void drawScrollBar(int menuTitlesCount, int headerHeight) {
 }
 
 void drawSwitch(bool switchState, int yPos) {
-  id(my_display).circle(8, yPos + (id(medium_font_size) + id(margin_size)) / 2, 7, id(my_white));
+  int circleSize = id(small_font_size) / 2;
+  int xPos = 4 + circleSize;
+  int centerYPos = yPos + (id(medium_font_size) + id(margin_size)) / 2;
+  id(my_display).circle(xPos, centerYPos, circleSize, id(my_white));
   if (switchState) {
-    id(my_display).filled_circle(8, yPos + (id(medium_font_size) + id(margin_size)) / 2, 5, id(my_white));
+    id(my_display).filled_circle(xPos, centerYPos, circleSize - 2, id(my_white));
   }
 }
 
@@ -256,7 +269,6 @@ void scrollMenuPosition() {
 }
 
 void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
-  int imageHeight = 12;
   int adjustedYPos = yPos + (id(medium_font_size) / 4);
   int xPos = ((characterCount + 1) * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
   switch(titleState) {
@@ -433,7 +445,6 @@ void drawSpeakerOptionMenu() {
 }
 
 void drawVolumeOptionMenu() {
-  int imageSize = 12;
   int barMargin = 1;
   int barHeight = id(small_font_size);
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
@@ -441,8 +452,8 @@ void drawVolumeOptionMenu() {
   int barWidth = totalBarWidth * (speakerGroup -> getVolumeLevel() / 100);
   int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
 
-  id(my_display).image(iconMargin / 2 - imageSize / 2, yPos + 1, & id(image_volume_low));
-  id(my_display).image(id(my_display).get_width() - iconMargin / 2 - imageSize / 2, yPos + 1, & id(image_volume_high));
+  id(my_display).image(iconMargin / 2 - id(icon_size) / 2, yPos + 1, & id(image_volume_low));
+  id(my_display).image(id(my_display).get_width() - iconMargin / 2 - id(icon_size) / 2, yPos + 1, & id(image_volume_high));
 
   id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(my_blue));
   id(my_display).filled_rectangle(iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2, id(my_blue));
@@ -667,8 +678,8 @@ void drawBootSequence() {
     autoClearState = abs((int)esp_random()) + 1; // add 1 in case its 0
   }
 
-  int imageXPos = esp_random() % (id(my_display).get_width() - 12);
-  int imageYPos = esp_random() % (id(my_display).get_height() - 12);
+  int imageXPos = esp_random() % (id(my_display).get_width() - id(icon_size));
+  int imageYPos = esp_random() % (id(my_display).get_height() - id(icon_size));
   id(my_display).image(imageXPos, imageYPos, & id(image_sleep));
   std::vector<Color> colors = { id(my_green), id(my_blue), id(my_yellow), id(my_red) };
 
