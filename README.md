@@ -9,9 +9,9 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 
 ## Features 📝
 ### iPod classic style menu 
-|t-display demo|m5stack fire demo|
-|--|--|
-|![Scroll Demo Gif](docs/scrollListSelectTDisplay.gif)| ![Scroll List Fire Demo Gif](docs/scrollListSelectFire.gif)|
+|t-display demo|m5stack fire demo|lilygo T4 demo|
+|--|--|--|
+|![Scroll Demo Gif](docs/scrollListSelectTDisplay.gif)|![Scroll List Fire Demo Gif](docs/m5stackFireDemo.gif)|![Lilygo T4 Demo](docs/t4Demo.gif)
 
 - Scroll through list and press center to select
 - With a scrollwheel the top button goes back
@@ -66,18 +66,16 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- On boot the current media player is the first speaker found playing music or the tv
 
 ## Smart Home Control 🧠🏠
-|Toggle lights on and off|View sensors from Home Assistant|
-|--|--|
-|![Lights Menu](docs/lightsTDisplay.png)|![Sensors Menu](docs/sensorsTDisplay.png)|
-
-- #### Also run scenes and scripts
+|Toggle lights on and off|View sensors from Home Assistant|Run scenes and scripts|
+|--|--|--|
+|![Lights Menu](docs/lights.jpg)|![Sensors Menu](docs/sensors.jpg)|![Scenes Menu](docs/scenes.jpg)|
 
 ## Hardware 
 ### 1. Lilygo T-Display with Scrollwheel ⚙️
 #### T-Display with scrollwheel has the same controls as an ipod
 - Scroll to navigate ui and for volume on now playing
 - Up for menu, left for previous track, right for next track, down for pause, center for select
-- 2 additional buttons for home and options menu
+- 2 additional buttons for options menu and quickly switching media players
 - Charges with usb-c
 - 1100 mah battery
 - On average 3 days of battery life depending on use
@@ -87,12 +85,14 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 
 ### 2. M5Stack Fire 🔥
 #### M5Stack Fire is supported without any additional hardware
+- https://www.mouser.ca/ProductDetail/M5Stack/K007-V26?qs=TCDPyi3sCW1MGXwu64XB7w%3D%3D
 - Uses the 3 buttons for navigation
 - Simpler UI
-- Uses internal light for booting sequence and while on
-	- https://www.mouser.ca/ProductDetail/M5Stack/K007-V26?qs=TCDPyi3sCW1MGXwu64XB7w%3D%3D
+- Uses internal RGB light for booting sequence and while on
 
-![Pause Play Fire Demo Gif](docs/pausePlayFire.gif)
+|M5Stack Fire Boot sequence|
+|--|
+|![Fire Boot Demo Gif](docs/m5StackFireBoot.gif)|
 
 ## includes
 - esphome https://esphome.io/
