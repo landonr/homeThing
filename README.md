@@ -76,11 +76,9 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 
 |Lilygo T-Display Controls|
 |--|
-|<img src="docs/tdisplayOverlay.jpg" width="400"/>|
+|<img src="docs/tdisplayOverlay.jpg" width="525"/>|
 
-- Scroll to navigate ui and for volume on now playing
-- Up for menu, left for previous track, right for next track, down for pause, center for select
-- 2 additional buttons for options menu and quickly switching media players
+- Scroll to navigate in list menus and for volume on Now Playing Menu
 - Charges with usb-c
 - 1100 mah battery
 - On average 3 days of battery life depending on use
@@ -108,7 +106,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 
 |Lilygo T4 Controls|
 |--|
-|<img src="docs/tdisplayT4.jpg" width="400"/>|
+|<img src="docs/tdisplayT4.jpg" width="500"/>|
 
 ## includes
 - esphome https://esphome.io/
