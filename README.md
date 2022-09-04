@@ -73,6 +73,11 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 ## Hardware 
 ### 1. Lilygo T-Display with Scrollwheel ⚙️
 #### T-Display with scrollwheel has the same controls as an ipod
+
+|Lilygo T-Display Controls|
+|--|
+|<img src="docs/tdisplayOverlay.jpg" width="400"/>|
+
 - Scroll to navigate ui and for volume on now playing
 - Up for menu, left for previous track, right for next track, down for pause, center for select
 - 2 additional buttons for options menu and quickly switching media players
