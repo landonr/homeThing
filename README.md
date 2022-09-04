@@ -95,7 +95,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 
 |M5Stack Fire Controls|M5Stack Fire Boot sequence|
 |--|--|
-|<img src="docs/m5stackFire.jpg" width="400"/>|![Fire Boot Demo Gif](docs/m5StackFireBoot.gif)|
+|<img src="docs/m5stackFire.jpg" width="300"/>|![Fire Boot Demo Gif](docs/m5StackFireBoot.gif)|
 
 ### 3. Lilygo T-Display T4 
 #### Lilygo T-Display T4 is supported without any additional hardware
@@ -106,7 +106,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 
 |Lilygo T4 Controls|
 |--|
-|<img src="docs/tdisplayT4.jpg" width="500"/>|
+|<img src="docs/tdisplayT4.jpg" width="300"/>|
 
 ## includes
 - esphome https://esphome.io/
