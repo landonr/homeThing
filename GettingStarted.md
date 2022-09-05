@@ -47,14 +47,13 @@
 		8. now_playing_max_lines: Max lines displayed on Now Playing Screen
 		9. draw_now_playing_menu: Show navigation menu on Now Playing screen
 		10. boot_device_name: Customize the name displayed on boot
-4. Update the yaml to your config
-	5. Update **Custom Components**
-		1. Set your speaker media player names under speaker_group_component
-			- Update tv TV to match your media player
-			- Set your soundbar media player to the TV config
-		2. Update your Scenes and Scripts under scene_group_component
-		3. Update your Light switches under light_group_component
-		4. Update your Home Assistant sensors under sensor_group_component
+4. Update the **Custom Components** in the yaml to match your config
+	1. Set your speaker media player names under speaker_group_component
+		1. Update the TV to match your media player
+		2. Set your soundbar media player to the TV config
+	2. Update your Scenes and Scripts under scene_group_component
+	3. Update your Light switches under light_group_component
+	4. Update your Home Assistant sensors under sensor_group_component
 5. Install the firmware to your device
 6. Add the device to Home Assistant
 7. Done! 🎉
