@@ -1,4 +1,4 @@
-<h1 align = "center">Getting Started 🌈</h1>
+<h1 align = "center">ESPHome Remote: Getting Started 🌈</h1>
 
 # Introduction
 #### ESPHome Remote supports the following features:
