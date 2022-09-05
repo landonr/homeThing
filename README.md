@@ -1,8 +1,11 @@
-# esphome-remote 
+
+<h1 align = "center">ESPHome Remote ⚙️</h1>
+
 iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts. Supports many different hardware configurations:
 - M5Stack Fire (no additional hardware)
 - Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
 - Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
+### [Learn how to get started](GettingStarted.md)
 
 ## Demo Video 🎬
 [![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
