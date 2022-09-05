@@ -1,0 +1,59 @@
+esphome:
+  name: s3
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s2
+  framework:
+    type: arduino
+    version: 2.0.3
+    platform_version: 5.0.0
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "yiCT6clBiFeCZp0rwlix8+TSV/DOKikw5sHM9qIaZUQ="
+
+ota:
+  password: "6ada29f6f41ce1685d29d406efd25fa4"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "S3 Fallback Hotspot"
+    password: "zQ9tuPKIfFMu"
+
+color:
+  - id: my_gray
+    red: 50%
+    green: 50%
+    blue: 50%
+
+font:
+  - file: "fonts/iosevka.ttf"
+    id: iosvetta
+    size: 24
+
+display:
+  - platform: st7789v
+    model: Custom
+    offset_height: 0
+    offset_width: 0
+    height: 135
+    width: 240
+    backlight_pin: GPIO38
+    cs_pin: GPIO6
+    dc_pin: GPIO7
+    reset_pin: GPIO5
+    lambda: |-
+      it.print(50, 50, id(iosvetta), "Hello World!");
