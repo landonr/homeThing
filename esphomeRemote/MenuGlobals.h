@@ -2,6 +2,7 @@
 #define MENUGLOBALS
 
 enum MenuStates {
+  bootMenu,
   rootMenu,
   sourcesMenu,
   groupMenu,
@@ -69,7 +70,7 @@ enum OptionMenuType {
   playingNewSourceMenu
 };
 
-MenuStates activeMenuState = rootMenu;
+MenuStates activeMenuState = bootMenu;
 int idleTime = -2;
 bool charging = false;
 int scrollTop = 0;

@@ -44,6 +44,11 @@ auto * sensorGroup = new SensorGroupComponent();
 auto * speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
 auto * lightGroup = new LightGroupComponent(displayUpdate);
 MenuTitle activeMenuTitle = MenuTitle("", "", NoMenuTitleState);
+double marqueePosition = 0;
+
+void resetMarquee() {
+  marqueePosition = 0;
+}
 
 std::string textWrap(std::string text, unsigned per_line) {
   unsigned line_begin = 0;
@@ -97,6 +102,8 @@ MenuTitle menuTitleForType(MenuStates stringType) {
     return MenuTitle("Speaker Group", "", ArrowMenuTitleState);
   case sensorsMenu:
     return MenuTitle("Sensors", "", ArrowMenuTitleState);
+  case bootMenu:
+    return MenuTitle("Boot", "", NoMenuTitleState);
   }
   return MenuTitle("", "", NoMenuTitleState);
 }
@@ -197,7 +204,18 @@ void drawHeaderTitle() {
   case sensorsMenu:
     drawHeaderTitleWithString("Sensors");
     break;
+  case bootMenu:
+    drawHeaderTitleWithString("Boot");
+    break;
   }
+}
+
+int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
+  int characterLimit = (id(my_display).get_width() - xPos) / (fontSize * id(font_size_width_ratio)) - 1;
+  if(xPos == id(my_display).get_width() / 2 && alignment == TextAlign::TOP_CENTER) {
+    characterLimit = id(my_display).get_width() / (fontSize * id(font_size_width_ratio)) - 1;
+  }
+  return characterLimit;
 }
 
 void drawHeader() {
@@ -216,8 +234,20 @@ void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpa
   int xPos = buttonSpace ? id(small_font_size) + id(margin_size) * 2 : id(margin_size);
   int textYPos = yPos + (id(margin_size) / 4);
   if (menuState == i) {
+    int characterLimit = getCharacterLimit(xPos, id(medium_font_size), TextAlign::TOP_LEFT);
+    if(marqueePosition > title.length() - characterLimit + 4) {
+      marqueePosition = -6;
+    }
+    int marqueePositionMaxed = 0;
+    if(title.length() > characterLimit) {
+      marqueePositionMaxed = marqueePosition < title.length() ? marqueePosition : title.length();
+    }
+    if(marqueePositionMaxed < 0) {
+      marqueePositionMaxed = 0;
+    }
+    std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
     id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(my_blue));
-    id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
+    id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
   } else {
     id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
   }
@@ -400,8 +430,21 @@ void idleMenu() {
   activeMenuState = MenuStates::nowPlayingMenu;
 }
 
+void activeTick() {
+  if(activeMenuState == bootMenu) {
+    return;
+  }
+  if(idleTime < 15 && idleTime > 1) {
+    marqueePosition+=1.5;
+    displayUpdate.updateDisplay(true);
+  } else if(marqueePosition != 0) {
+    marqueePosition = 0;
+    displayUpdate.updateDisplay(true);
+  }
+}
+
 void idleTick() {
-  if (idleTime == 4) {
+  if (idleTime == 3) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
   } else if (idleTime == 16) {
@@ -496,14 +539,6 @@ void drawMediaDuration() {
     id(my_display).printf(id(margin_size), textYPos, & id(small_font), id(my_white), TextAlign::TOP_LEFT, "%d:%s", mediaPosition / 60, mediaPositionSeconds.c_str());
     id(my_display).printf(id(my_display).get_width() - id(margin_size), textYPos, & id(small_font), id(my_white), TextAlign::TOP_RIGHT, "%d:%s", mediaDuration / 60, mediaDurationSeconds.c_str());
   }
-}
-
-int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
-  int characterLimit = (id(my_display).get_width() - xPos) / (fontSize * id(font_size_width_ratio)) - 1;
-  if(xPos == id(my_display).get_width() / 2 && alignment == TextAlign::TOP_CENTER) {
-    characterLimit = id(my_display).get_width() / (fontSize * id(font_size_width_ratio)) - 1;
-  }
-  return characterLimit;
 }
 
 std::vector <std::string> getWrappedTitles(int xPos, int fontSize, TextAlign alignment, std::string text) {
@@ -705,6 +740,8 @@ void drawMenu() {
   if (speakerGroup -> playerSearchFinished == false) {
     drawBootSequence();
     return;
+  } else if(activeMenuState == bootMenu) {
+    activeMenuState = rootMenu;
   }
   if(autoClearState != 0) {
     id(my_display).set_auto_clear(true);
@@ -779,6 +816,7 @@ bool selectRootMenu() {
     break;
   case groupMenu:
   case rootMenu:
+  case bootMenu:
     ESP_LOGD("WARNING", "menu is bad  %d", menuIndex);
     return false;
   }

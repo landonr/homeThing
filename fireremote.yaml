@@ -303,6 +303,10 @@ interval:
     then:
     - lambda: |-
         idleTick();
+  - interval: 0.3s
+    then:
+    - lambda: |-
+        activeTick();
 
 binary_sensor:
   - platform: status

@@ -43,6 +43,7 @@ void selectNowPlayingMenu() {
 }
 
 void buttonPressSelect() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -66,6 +67,7 @@ void buttonPressSelect() {
 }
 
 void buttonPressLeft() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -80,6 +82,7 @@ void buttonPressLeft() {
 }
 
 void buttonPressRight() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }

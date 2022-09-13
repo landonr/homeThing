@@ -294,9 +294,7 @@ sensor:
     on_value :
       then:
         - lambda: |-
-            if(idleTime < 2) {
-              displayUpdate.updateDisplay(true);
-            }
+            displayUpdateDebounced();
   - platform: template
     name: batteryVoltage
     id: batteryVoltage
@@ -324,6 +322,10 @@ interval:
     then:
     - lambda: |-
         idleTick();
+  - interval: 0.3s
+    then:
+    - lambda: |-
+        activeTick();
 
 binary_sensor:
   - platform: status

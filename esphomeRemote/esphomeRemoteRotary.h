@@ -10,6 +10,7 @@ void debounceUpdateDisplay() {
 }
 
 void buttonPressSelect() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -39,6 +40,7 @@ void buttonPressSelect() {
 }
 
 void buttonPressNext() {
+  resetMarquee();
   switch (activeMenuState) {
   case nowPlayingMenu:
     speakerGroup -> increaseSpeakerVolume();
@@ -55,6 +57,7 @@ void buttonPressNext() {
 }
 
 void buttonPressPrevious() {
+  resetMarquee();
   switch (activeMenuState) {
   case nowPlayingMenu:
     speakerGroup -> decreaseSpeakerVolume();
@@ -71,6 +74,7 @@ void buttonPressPrevious() {
 }
 
 void buttonPressUp() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -115,6 +119,7 @@ void buttonPressUp() {
 }
 
 void buttonPressDown() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -147,6 +152,7 @@ void buttonPressDown() {
 }
 
 void buttonPressLeft() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -173,6 +179,7 @@ void buttonPressLeft() {
 }
 
 void buttonPressRight() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -205,6 +212,7 @@ void buttonPressRight() {
 }
 
 void buttonReleaseScreenLeft() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -224,6 +232,7 @@ void buttonReleaseScreenLeft() {
 }
 
 void buttonPressScreenLeft() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -254,6 +263,7 @@ void buttonPressScreenLeft() {
 }
 
 void buttonPressScreenRight() {
+  resetMarquee();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -272,7 +282,14 @@ void buttonPressScreenRight() {
   case scenesMenu:
   case lightsMenu:
   case sensorsMenu:
+  case bootMenu:
     break;
+  }
+}
+
+void displayUpdateDebounced() {
+  if(idleTime < 2) {
+    displayUpdate.updateDisplay(true);
   }
 }
 

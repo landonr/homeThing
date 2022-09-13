@@ -119,6 +119,5 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - queue count
 - sonos night sound / speech boost
 - repeat/all/single/off
-- marquee long text
 - case
 - circuit diagram for tdisplay
