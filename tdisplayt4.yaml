@@ -9,7 +9,8 @@ esphome:
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h
-    - esphomeRemote/esphomeRemote3Button.h
+ #   - esphomeRemote/esphomeRemote3Button.h
+    - esphomeRemote/esphomeRemoteRotary.h
 
 esp32:
   board: esp32dev
@@ -235,6 +236,30 @@ custom_component:
   id: sensor_group_component
   
 sensor:
+  - platform: rotary_encoder
+    filters:
+    - throttle: 0.01s
+    name: "Rotary Encoder"
+    internal: true
+    pin_a:
+      number: 33
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: 26
+      mode:
+        input: true
+        pullup: true
+    id: rotary
+    on_clockwise:
+      - lambda: |-
+          buttonPressWakeUpDisplay();
+          buttonPressNext();
+    on_anticlockwise:
+      - lambda: |-
+          buttonPressWakeUpDisplay();
+          buttonPressPrevious();
   - platform: template
     id: display_update_tick
     filters:
@@ -288,6 +313,71 @@ binary_sensor:
         - lambda: |-
             buttonPressRight();
 
+### rotary buttons
+# - platform: gpio
+#   internal: true
+#   pin:
+#     number: 33
+#     inverted: true
+#     mode:
+#       input: true
+#       pullup: true
+#   id: sw5left
+#   on_press:
+#     then:
+#     - lambda: |-
+#         buttonPressLeft();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 19
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw4up
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressUp();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw3right
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressRight();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 34
+      mode:
+        input: true
+    id: sw2down
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressDown();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 25
+      inverted: true
+      mode:
+        input: true
+        pullup: false
+    id: sw1select
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressSelect();
+
 # We can still control the backlight independently
 switch:
   - platform: gpio
@@ -295,12 +385,6 @@ switch:
       number: 27
       inverted: false
     id: comb
-    internal: true
-  - platform: gpio
-    pin:
-      number: 26
-      inverted: false
-    id: coma
     internal: true
   - platform: gpio
     pin: GPIO4
