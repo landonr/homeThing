@@ -111,6 +111,11 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 |--|
 |<img src="docs/tdisplayT4.jpg" width="300"/>|
 
+## Mentions
+- Hackaday https://hackaday.com/2022/09/08/scroll-through-esphome-with-ipod-style-click-wheel/
+- Hackster https://www.hackster.io/news/ipod-style-esphome-remote-3ca38edab2b4
+- Reddit post https://www.reddit.com/r/homeassistant/comments/x59dcp/i_built_an_ipod_style_esphome_remote_for_home/
+
 ## includes
 - esphome https://esphome.io/
 - iosevka font https://github.com/be5invis/Iosevka
@@ -121,3 +126,4 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - repeat/all/single/off
 - case
 - circuit diagram for tdisplay
+
