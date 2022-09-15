@@ -75,6 +75,7 @@ color:
     blue: 100%
 
 font:
+## Font needs to be monospace!
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: 24
@@ -89,6 +90,8 @@ font:
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
 
 image:
+## You need 2 icons for each, one with a color background, one with black
+## todo would be make these material icons or svg
   - file: "images/playWhite.png"
     id: image_play_white
     type: RGB24
@@ -127,60 +130,86 @@ image:
     type: RGB24
     
 globals:
+## Size of the large font above
   - id: large_font_size
     type: int
     restore_value: no
     initial_value: "24"
+    
+## Size of the medium font above
   - id: medium_font_size
     type: int
     restore_value: no
     initial_value: "15"
+    
+## Size of the small font above
   - id: small_font_size
     type: int
     restore_value: no
     initial_value: "14"
+    
+## Height / width ratio of the monospace font used
   - id: font_size_width_ratio
     type: double
     restore_value: no
     initial_value: "0.6"
+    
+## Status bar height
   - id: header_height
     type: int
     restore_value: no
     initial_value: "16"
+    
+## Global margin size
   - id: margin_size
     type: int
     restore_value: no
     initial_value: "4"
+    
+## Scrollbar total width
   - id: scroll_bar_width
     type: int
     restore_value: no
     initial_value: "6"
+    
+## Volume bar and media duration bar margin
   - id: bottom_bar_margin
     type: int
     restore_value: no
     initial_value: "1"
+    
+## Height and width of the icons used in px
   - id: icon_size
     type: int
     restore_value: no
     initial_value: "12"
+    
+## Max lines on now playing screen before truncating happens
   - id: now_playing_max_lines
     type: int
     restore_value: no
     initial_value: "5"
+    
+## Draw buttons in now playing menu for 3 button devices
   - id: draw_now_playing_menu
     type: bool
     restore_value: no
     initial_value: "false"
+    
+## Draw battery icon if battery level is supported
   - id: draw_battery_level
     type: bool
     restore_value: no
     initial_value: "true"
+    
+## Customize device boot name
   - id: boot_device_name
     type: std::string
     restore_value: no
     initial_value: '"TDisplay Remote <3"'
 
 custom_component:
+## Home assistant speakers and tv. Set TV up with a sound bar
 - lambda: |-
     std::vector<std::string> speakerNames { 
       "media_player.beam", 
@@ -192,6 +221,8 @@ custom_component:
     App.register_component(speakerGroup);
     return {speakerGroup};
   id: speaker_group_component
+  
+## Home assistant scripts and scenes. Set with a friendly name
 - lambda: |-
     std::vector<BaseService> scenes { 
       ScriptService("script.colors", "Colors"), 
@@ -205,6 +236,8 @@ custom_component:
     App.register_component(sceneGroup);
     return {sceneGroup};
   id: scene_group_component
+
+## Home assistant lights. Set with a friendly name
 - lambda: |-
     std::vector<FriendlyNameEntity> lights { 
       FriendlyNameEntity("light.bathroom_lights", "Bathroom"), 
@@ -217,6 +250,8 @@ custom_component:
     App.register_component(lightGroup);
     return {lightGroup};
   id: light_group_component
+
+## Home assistant sensors. Set with a friendly name
 - lambda: |-
     std::vector<FriendlyNameEntity> sensors { 
       FriendlyNameEntity("sensor.current_time", ""),
@@ -231,6 +266,7 @@ custom_component:
   id: sensor_group_component
   
 sensor:
+## Rotary
   - platform: rotary_encoder
     filters:
     - throttle: 0.01s
@@ -255,17 +291,29 @@ sensor:
       - lambda: |-
           buttonPressWakeUpDisplay();
           buttonPressPrevious();
+
+## Needed to debounce screen updates for rotary. 17ms is close to 60fps for st7789v
+  - platform: template
+    id: display_update_tick
+    filters:
+      - debounce: 17ms
+    on_value :
+      then:
+        - lambda: |-
+            displayUpdateDebounced();
+          
+## Battery
   - platform: adc
     pin: 34
-    attenuation: auto
-    name: "VBatt"
-    update_interval: 10s
+    attenuation: 11db
+    name: "vccadc"
+    update_interval: 250ms
     id: vcc_adc
     internal: true
     on_value:
       then:
         lambda: |-
-          if (id(vcc_adc).state > 4) {
+          if (id(vcc_adc).state > 2.23) {
             if (charging == false) {
               charging = true;
             }
@@ -273,28 +321,19 @@ sensor:
             if (charging == true) {
               charging = false;
             }
-            id(vcc_adc_avg).publish_state(id(vcc_adc).state);
           }
-          
+          id(vcc_adc_avg).publish_state(id(vcc_adc).state);
   - platform: template
     id: vcc_adc_avg
     filters:
       - sliding_window_moving_average:
-          window_size: 6
-          send_every: 6
+          window_size: 4
+          send_every: 4
     on_value :
       then:
         - sensor.template.publish:
             id: batteryVoltage
-            state: !lambda 'return ((id(vcc_adc).state) * 1.77);'
-  - platform: template
-    id: display_update_tick
-    filters:
-      - debounce: 0.02s
-    on_value :
-      then:
-        - lambda: |-
-            displayUpdateDebounced();
+            state: !lambda 'return id(vcc_adc).state;'
   - platform: template
     name: batteryVoltage
     id: batteryVoltage
@@ -304,18 +343,17 @@ sensor:
       then:
         - sensor.template.publish:
             id: TTGoBatteryPercent
-            state: !lambda 'return (((id(batteryVoltage).state - 3) * 100) / (3.7 - 3));'
-    on_value_range:
-      below: 3.07
-      then:
-        lambda: |-
-          ESP_LOGE("batteryVoltage", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryVoltage).state);
-          id(tt_sleep).turn_on();
-
+            state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
   - platform: template
     name: Battery Percent
     id: TTGoBatteryPercent
     unit_of_measurement: '%'
+    on_value_range:
+      below: 5
+      then:
+        lambda: |-
+          ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(TTGoBatteryPercent).state);
+          id(tt_sleep).turn_on();
 
 interval:
   - interval: 1s
@@ -331,6 +369,8 @@ binary_sensor:
   - platform: status
     name: "Node Status"
     id: system_status
+    
+## TDisplay buttons
   - platform: gpio
     pin:
       number: GPIO0
@@ -361,6 +401,8 @@ binary_sensor:
       then:
       - lambda: |-
           buttonPressScreenRight();
+          
+## Rotary buttons
   - platform: gpio
     internal: true
     pin:
@@ -427,7 +469,6 @@ binary_sensor:
       - lambda: |-
           buttonPressSelect();
 
-# We can still control the backlight independently
 switch:
   - platform: gpio
     pin:
@@ -447,11 +488,12 @@ switch:
     id: backlight
     internal: true
     restore_mode: RESTORE_DEFAULT_ON
+
+## Exposed to home assistant so you can sleep from a script
   - platform: template
-    name: Sleep Toggle
+    name: TDisplay Sleep Toggle
     id: tt_sleep
     optimistic: true
-    internal: true
     on_turn_on:
       then:
         - deep_sleep.enter:
@@ -474,7 +516,7 @@ display:
     dc_pin: GPIO16
     reset_pin: GPIO23
     rotation: 90
-    update_interval: 60s
+    update_interval: 60000s
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");

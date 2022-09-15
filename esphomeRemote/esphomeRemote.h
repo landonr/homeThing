@@ -45,6 +45,7 @@ auto * speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
 auto * lightGroup = new LightGroupComponent(displayUpdate);
 MenuTitle activeMenuTitle = MenuTitle("", "", NoMenuTitleState);
 double marqueePosition = 0;
+bool marqueeText = false;
 
 void resetMarquee() {
   marqueePosition = 0;
@@ -165,8 +166,10 @@ int drawShuffle(int oldXPos) {
     int yPos = id(header_height) / 2 - 6;
     if (speakerGroup -> mediaShuffling()) {
       id(my_display).image(xPos, yPos, & id(image_shuffle));
-    } else {
+    } else if(id(draw_shuffle_disabled)) {
       id(my_display).image(xPos, yPos, & id(image_shuffle_disabled));
+    } else {
+      return oldXPos;
     }
     return xPos;
   }
@@ -240,10 +243,13 @@ void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpa
     }
     int marqueePositionMaxed = 0;
     if(title.length() > characterLimit) {
+      marqueeText = true;
       marqueePositionMaxed = marqueePosition < title.length() ? marqueePosition : title.length();
-    }
-    if(marqueePositionMaxed < 0) {
-      marqueePositionMaxed = 0;
+      if(marqueePositionMaxed < 0) {
+        marqueePositionMaxed = 0;
+      }
+    } else {
+      marqueeText = false;
     }
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
     id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(my_blue));
@@ -434,12 +440,16 @@ void activeTick() {
   if(activeMenuState == bootMenu) {
     return;
   }
-  if(idleTime < 15 && idleTime > 1) {
+  if(idleTime < 15 && idleTime > 1 && marqueeText) {
     marqueePosition+=1.5;
-    displayUpdate.updateDisplay(true);
+    if(marqueePosition >= 0) {
+      displayUpdate.updateDisplay(true);
+    }
   } else if(marqueePosition != 0) {
     marqueePosition = 0;
-    displayUpdate.updateDisplay(true);
+    if(marqueeText) {
+      displayUpdate.updateDisplay(true);
+    }
   }
 }
 
@@ -450,15 +460,20 @@ void idleTick() {
   } else if (idleTime == 16) {
     if (speakerGroup -> playerSearchFinished) {
       idleMenu();
-      displayUpdate.updateDisplay(true);
+      displayUpdate.updateDisplay(false);
     }
-    ESP_LOGD("idle", "turning off display");
-    menuDrawing = false;
-    id(backlight).turn_off();
-  } else if (idleTime > 6400) {
-    ESP_LOGD("idle", "night night");
-    id(tt_sleep).turn_on();
+    if(!charging) {
+      ESP_LOGD("idle", "turning off display");
+      id(backlight).turn_off();
+    }
+    idleTime ++;
     return;
+  } else if (idleTime > 6400) {
+    if(!charging) {
+      ESP_LOGD("idle", "night night");
+      id(tt_sleep).turn_on();
+      return;
+    }
   }
   if(speakerGroup->updateMediaPosition()) {
     switch(activeMenuState) {
@@ -495,7 +510,7 @@ void drawVolumeOptionMenu() {
   int barHeight = id(small_font_size);
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
   int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
-  int barWidth = totalBarWidth * (speakerGroup -> getVolumeLevel() / 100);
+  int barWidth = (totalBarWidth - 4) * (speakerGroup -> getVolumeLevel() / 100);
   int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
 
   id(my_display).image(iconMargin / 2 - id(icon_size) / 2, yPos + 1, & id(image_volume_low));
@@ -526,7 +541,7 @@ void drawMediaDuration() {
     int totalBarWidth = id(my_display).get_width() - textWidth * 2;
     int barWidth = 0;
     if(mediaDuration > 0 && mediaPosition > 0) {
-      barWidth = totalBarWidth * ((double)mediaPosition / (double)mediaDuration);
+      barWidth = (totalBarWidth - 4) * ((double)mediaPosition / (double)mediaDuration);
     }
 
     int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
@@ -733,7 +748,7 @@ void drawBootSequence() {
 }
 
 void drawMenu() {
-  if(idleTime > 16) {
+  if(idleTime > 16 && !charging) {
     menuDrawing = false;
     return;
   }
@@ -750,9 +765,6 @@ void drawMenu() {
   switch (activeMenuState) {
   case nowPlayingMenu:
     drawNowPlaying();
-    break;
-  case sourcesMenu:
-    drawMenu(activeMenu());
     break;
   case lightsMenu:
     drawMenu(lightGroup -> lightTitleSwitches());

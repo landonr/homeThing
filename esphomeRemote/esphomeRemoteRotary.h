@@ -137,8 +137,8 @@ void buttonPressDown() {
       speakerGroup -> tv -> tvRemoteCommand("down");
       break;
     case SpeakerRemotePlayerType:
+      optionMenu = noOptionMenu;
       if (optionMenu == speakerOptionMenu) {
-        optionMenu = noOptionMenu;
         activeMenuState = groupMenu;
         displayUpdate.updateDisplay(true);
       } else {
@@ -196,9 +196,9 @@ void buttonPressRight() {
       speakerGroup -> tv -> tvRemoteCommand("right");
       break;
     case SpeakerRemotePlayerType:
+      optionMenu = noOptionMenu;
       if (optionMenu == speakerOptionMenu) {
         speakerGroup -> toggleMute();
-        optionMenu = noOptionMenu;
         displayUpdate.updateDisplay(true);
       } else {
         speakerGroup -> activePlayer -> nextTrack();

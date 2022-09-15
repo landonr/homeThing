@@ -216,19 +216,28 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   }
 
   void increaseVolume() {
-    if(speaker_volume == -1 || localVolume > 1) {
+    if(speaker_volume == -1) {
+      localVolume = 0;
       return;
     }
-    localVolume = localVolume + volumeStep;
+    if(localVolume + volumeStep > 1) {
+      localVolume = 1;
+    } else {
+      localVolume = localVolume + volumeStep;
+    }
     updateVolumeLevel();
   }
 
   void decreaseVolume() {
-    if(speaker_volume == -1 || localVolume < 0) {
+    if(speaker_volume == -1 || localVolume - volumeStep < 0) {
       localVolume = 0;
       return;
     }
-    localVolume = localVolume - volumeStep;
+    if(localVolume - volumeStep > 1) {
+      localVolume = 0;
+    } else {
+      localVolume = localVolume - volumeStep;
+    }
     updateVolumeLevel();
   }
 
@@ -354,7 +363,6 @@ class TVPlayerComponent : public BasePlayerComponent {
       std::string source = filter(state);
       sources.push_back(MenuTitle(source, "", NoMenuTitleState));
     }
-    display.updateDisplay(false);
   }
 
   void tvRemoteCommand(std::string command) {

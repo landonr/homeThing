@@ -125,9 +125,14 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - sonos night sound / speech boost
 - repeat/all/single/off
 - light dimming
-- settings menu
 - weather screen
-- hvac screen
+- room screen
+	- temp display
+	- lights
+	- media player
+	- hvac
+- settings menu
+- stay on during charging
 - case
 - circuit diagram for tdisplay
 
