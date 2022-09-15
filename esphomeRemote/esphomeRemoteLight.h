@@ -24,7 +24,7 @@ class LightService: public CustomAPIDevice, public Component {
 
   private:
     void state_changed(std::string newOnState) {
-      ESP_LOGD("Light", "state changed to %s", newOnState.c_str());
+      ESP_LOGI("Light", "state changed to %s", newOnState.c_str());
       onState = newOnState == "on";
       display.updateDisplay(false);
     }
@@ -45,7 +45,7 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
     std::vector<MenuTitle> lightTitleSwitches() {
       std::vector<MenuTitle> out;
       for (auto &light: lights) {
-        ESP_LOGD("Light", "state %d", light->onState);
+        ESP_LOGI("Light", "state %d", light->onState);
         MenuTitleState state = light->onState ? OnMenuTitleState : OffMenuTitleState;
         out.push_back(MenuTitle(light->friendlyName, light->entityId, state));
       }

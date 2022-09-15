@@ -27,6 +27,7 @@ captive_portal:
 
 # Enable logging
 logger:
+  level: INFO
 
 # Enable Home Assistant API
 api:
@@ -201,6 +202,12 @@ globals:
     type: bool
     restore_value: no
     initial_value: "true"
+    
+## Draw shuffle icon if shuffle is disabled
+  - id: draw_shuffle_disabled
+    type: bool
+    restore_value: no
+    initial_value: "false"
     
 ## Customize device boot name
   - id: boot_device_name
@@ -522,10 +529,6 @@ display:
         ESP_LOGD("drawing menu", "turning on");
         id(backlight).turn_on();
         idleTime = 0;
-      } else if (!id(backlight).state) {
-        ESP_LOGD("drawing menu", "turning off %d", idleTime);
-        id(my_display).set_update_interval(60000);
-        return;
       }
 
       drawMenu();

@@ -13,7 +13,7 @@ bool menuDrawing = false;
 class DisplayUpdateImpl: public DisplayUpdateInterface {
   public: virtual void updateDisplay(bool force) {
     if(menuDrawing && id(backlight).state) {
-      ESP_LOGD("WARNING", "menu already drawing");
+      ESP_LOGW("WARNING", "menu already drawing");
       return;
     }
     if (force) {
@@ -416,7 +416,7 @@ std::vector <MenuTitle> activeMenu() {
   case sensorsMenu:
     return sensorGroup -> sensorTitles();
   default:
-    ESP_LOGD("WARNING", "menu is bad  %d", x);
+    ESP_LOGW("WARNING", "menu is bad  %d", x);
     std::vector <MenuTitle> out;
     return out;
   }
@@ -470,7 +470,7 @@ void idleTick() {
     return;
   } else if (idleTime > 6400) {
     if(!charging) {
-      ESP_LOGD("idle", "night night");
+      ESP_LOGI("idle", "night night");
       id(tt_sleep).turn_on();
       return;
     }
@@ -478,7 +478,7 @@ void idleTick() {
   if(speakerGroup->updateMediaPosition()) {
     switch(activeMenuState) {
       case nowPlayingMenu:
-        if(idleTime < 16) {
+        if(idleTime < 16 || charging) {
           displayUpdate.updateDisplay(true);
         }
         break;
@@ -867,7 +867,7 @@ bool selectMenu() {
     }
     break;
   default:
-    ESP_LOGD("WARNING", "menu state is bad but its an enum");
+    ESP_LOGW("WARNING", "menu state is bad but its an enum");
     return false;
   }
   return true;

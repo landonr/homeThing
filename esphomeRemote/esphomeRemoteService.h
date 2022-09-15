@@ -63,7 +63,7 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
   bool selectScene(int index) {
    if(index >= 0 && index < services.size()) {
       BaseService service = services[index];
-      ESP_LOGD("Scene", "Service called %s", service.getFriendlyName().c_str());
+      ESP_LOGI("Scene", "Service called %s", service.getFriendlyName().c_str());
       service.callService();
       return false;
     }

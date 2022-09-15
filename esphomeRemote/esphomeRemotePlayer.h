@@ -77,13 +77,13 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     int index;
 
   void superSetup() {
-    ESP_LOGD("Player", "Player subbed %s", entityId.c_str());
+    ESP_LOGI("Player", "Player subbed %s", entityId.c_str());
     subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, entityId.c_str());
     subscribe_homeassistant_state(&BasePlayerComponent::player_name_changed, entityId, "friendly_name");
   }
 
   void playerState_changed(std::string state) {
-    ESP_LOGD("Player", "%s state changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("Player", "%s state changed to %s", entityId.c_str(), state.c_str());
     if(state.length() == 0) {
       playerState = StoppedRemoteState;
     } if(strcmp(state.c_str(), "playing") == 0) {
@@ -109,13 +109,13 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   }
 
   void player_name_changed(std::string state) {
-    ESP_LOGD("Player", "%s name changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("Player", "%s name changed to %s", entityId.c_str(), state.c_str());
     friendlyName = state.c_str();
     display.updateDisplay(false);
   }
 
   void playSource(float index) {
-    ESP_LOGD("speaker", "%s playing %f %s", entityId.c_str(), index, sources[index].friendlyName.c_str());
+    ESP_LOGI("speaker", "%s playing %f %s", entityId.c_str(), index, sources[index].friendlyName.c_str());
     playingNewSourceText = sources[index].friendlyName;
     call_homeassistant_service("media_player.select_source", {
       {"entity_id", entityId},
@@ -124,14 +124,14 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   }
 
   void playPause() {
-    ESP_LOGD("speaker", "%s play pause", entityId.c_str());
+    ESP_LOGI("speaker", "%s play pause", entityId.c_str());
     call_homeassistant_service("media_player.media_play_pause", {
       {"entity_id", entityId},
     });
   }
 
   void nextTrack() {
-    ESP_LOGD("speaker", "%s next track", entityId.c_str());
+    ESP_LOGI("speaker", "%s next track", entityId.c_str());
     call_homeassistant_service("media_player.media_next_track", {
       {"entity_id", entityId},
     });
@@ -168,7 +168,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   int mediaPosition = -1;
 
   void setup() {
-    ESP_LOGD("speaker", "Sonos Speaker subbed %s", entityId.c_str());
+    ESP_LOGI("speaker", "Sonos Speaker subbed %s", entityId.c_str());
     superSetup();
     subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_volume_changed, entityId, "volume_level");
     subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_muted_changed, entityId, "is_volume_muted");
@@ -183,7 +183,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   }
 
   void ungroup() {
-    ESP_LOGD("speaker", "%s ungroup speaker", entityId.c_str());
+    ESP_LOGI("speaker", "%s ungroup speaker", entityId.c_str());
     call_homeassistant_service("media_player.unjoin", {
       {"entity_id", entityId},
     });
@@ -191,7 +191,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   }
 
   void joinGroup(std::string newSpeakerName) {
-    ESP_LOGD("speaker", "%s group speaker to %s", entityId.c_str(), newSpeakerName.c_str());
+    ESP_LOGI("speaker", "%s group speaker to %s", entityId.c_str(), newSpeakerName.c_str());
     call_homeassistant_service("media_player.join", {
       {"entity_id", newSpeakerName.c_str()},
       {"group_members", entityId.c_str()},
@@ -200,7 +200,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   }
 
   void toggleShuffle() {
-    ESP_LOGD("speaker", "%s toggle shuffle", entityId.c_str());
+    ESP_LOGI("speaker", "%s toggle shuffle", entityId.c_str());
     call_homeassistant_service("media_player.shuffle_set", {
       {"entity_id", entityId},
       {"shuffle", shuffle ? "false" : "true"},
@@ -208,7 +208,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   }
 
   void toggleMute() {
-    ESP_LOGD("speaker", "%s toggle mute", entityId.c_str());
+    ESP_LOGI("speaker", "%s toggle mute", entityId.c_str());
     call_homeassistant_service("media_player.volume_mute", {
       {"entity_id", entityId},
       {"is_volume_muted", muted ? "false" : "true"},
@@ -255,7 +255,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
         {"is_volume_muted", "false"},
       });
     }
-    ESP_LOGD("speaker", "%s volume update %f", entityIds.c_str(), localVolume);
+    ESP_LOGI("speaker", "%s volume update %f", entityIds.c_str(), localVolume);
     call_homeassistant_service("media_player.volume_set", {
       {"entity_id", entityIds},
       {"volume_level", to_string(localVolume)},
@@ -264,7 +264,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
 
 private:
   void player_media_title_changed(std::string state) {
-    ESP_LOGD("Player", "%s Player media title changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("Player", "%s Player media title changed to %s", entityId.c_str(), state.c_str());
     if(strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
       mediaPosition = 0;
     }
@@ -279,13 +279,13 @@ private:
   }
 
   void player_media_artist_changed(std::string state) {
-    ESP_LOGD("Player", "%s Player artist changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("Player", "%s Player artist changed to %s", entityId.c_str(), state.c_str());
     mediaArtist = state.c_str();
     display.updateDisplay(false);
   }
 
   void speaker_volume_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker volume changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker volume changed to %s", entityId.c_str(), state.c_str());
     speaker_volume =  atof(state.c_str());
     if(localVolume == -1) {
       localVolume = atof(state.c_str());
@@ -294,25 +294,25 @@ private:
   }
 
   void speaker_muted_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker muted changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker muted changed to %s", entityId.c_str(), state.c_str());
     muted = strcmp(state.c_str(), "on") == 0;
     display.updateDisplay(false);
   }
 
   void shuffle_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker shuffle changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker shuffle changed to %s", entityId.c_str(), state.c_str());
     shuffle = strcmp(state.c_str(), "on") == 0;
     display.updateDisplay(false);
   }
 
   void playlist_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker playlist changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker playlist changed to %s", entityId.c_str(), state.c_str());
     mediaPlaylist = state.c_str();
     display.updateDisplay(false);
   }
 
   void group_members_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker group members changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker group members changed to %s", entityId.c_str(), state.c_str());
     std::vector<std::string> out;
     tokenize(state, ",", out);
     groupMembers.clear();
@@ -324,13 +324,13 @@ private:
   }
 
   void media_duration_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker media duration changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker media duration changed to %s", entityId.c_str(), state.c_str());
     mediaDuration = atof(state.c_str());
     display.updateDisplay(false);
   }
 
   void media_position_changed(std::string state) {
-    ESP_LOGD("speaker", "%s Sonos Speaker media position changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("speaker", "%s Sonos Speaker media position changed to %s", entityId.c_str(), state.c_str());
     mediaPosition = atof(state.c_str());
     display.updateDisplay(false);
   }
@@ -342,20 +342,20 @@ class TVPlayerComponent : public BasePlayerComponent {
   SonosSpeakerComponent *speaker;
 
   void setup() {
-    ESP_LOGD("PlayerTV", "TV subbed %s", entityId.c_str());
+    ESP_LOGI("PlayerTV", "TV subbed %s", entityId.c_str());
     superSetup();
     subscribe_homeassistant_state(&TVPlayerComponent::player_media_artist_changed, entityId, "source");
     subscribe_homeassistant_state(&TVPlayerComponent::player_source_list_changed, entityId, "source_list");
   }
 
   void player_media_artist_changed(std::string state) {
-    ESP_LOGD("PlayerTV", "%s Player source changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("PlayerTV", "%s Player source changed to %s", entityId.c_str(), state.c_str());
     mediaArtist = state.c_str();
     display.updateDisplay(false);
   }
 
   void player_source_list_changed(std::string state) {
-    ESP_LOGD("PlayerTV", "%s Player source list changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("PlayerTV", "%s Player source list changed to %s", entityId.c_str(), state.c_str());
     std::vector<std::string> out;
     tokenize(state, ",", out);
     sources.clear();
@@ -367,7 +367,7 @@ class TVPlayerComponent : public BasePlayerComponent {
 
   void tvRemoteCommand(std::string command) {
     std::string remoteName = entityId.substr(12).insert(0, "remote");
-    ESP_LOGD("PlayerTV", "remote %s, %s", command.c_str(), remoteName.c_str());
+    ESP_LOGI("PlayerTV", "remote %s, %s", command.c_str(), remoteName.c_str());
     call_homeassistant_service("remote.send_command", {
       {"entity_id", remoteName},
       {"command", command.c_str()},
@@ -422,13 +422,13 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     activePlayer = tv;
 
     for (auto &name: speakerNames) {
-      ESP_LOGD("speakerGroup", "New speaker %s", name.c_str());
+      ESP_LOGI("speakerGroup", "New speaker %s", name.c_str());
       index++;
       auto newSpeaker = new SonosSpeakerComponent(display, name, index);
       newSpeaker->setup();
       speakers.push_back(newSpeaker);
       if(name == tvSetup.soundBarEntityId) {
-        ESP_LOGD("speakerGroup", "New sound bar %s", name.c_str());
+        ESP_LOGI("speakerGroup", "New sound bar %s", name.c_str());
         tv->speaker = newSpeaker;
       }
     }
@@ -455,7 +455,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
   }
 
   void on_state_changed(std::string state) {
-    ESP_LOGD("group", "Sonos Favorites changes to %s", state.c_str());
+    ESP_LOGI("group", "Sonos Favorites changes to %s", state.c_str());
     std::string delim = ", '";
  
     std::vector<std::string> out;
@@ -590,7 +590,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
       if (speaker->groupMembers.size() > 1) {
         if(speaker->groupMembers[0] != speaker->entityId) {
-          ESP_LOGD("group title string", "%s not parent %s", speaker->groupMembers[0].c_str(), speaker->entityId.c_str());
+          ESP_LOGI("group title string", "%s not parent %s", speaker->groupMembers[0].c_str(), speaker->entityId.c_str());
           // speaker isn't the group parent
           continue;
         }
