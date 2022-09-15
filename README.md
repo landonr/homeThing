@@ -132,7 +132,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- media player
 	- hvac
 - settings menu
-- stay on during charging
+- battery level for m5stack fire
 - case
 - circuit diagram for tdisplay
 
