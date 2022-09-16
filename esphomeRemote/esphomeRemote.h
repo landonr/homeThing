@@ -143,8 +143,8 @@ int drawBattery() {
   int capWidth = 3;
   id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
   id(my_display).rectangle(id(my_display).get_width() - xPos - 1, yPos + (batteryHeight / 2) - (capHeight / 2), capWidth, capHeight, id(my_gray_dark));
-  if (id(TTGoBatteryPercent).state < 100) {
-    id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, (batteryWidth * id(TTGoBatteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
+  if (id(batteryPercent).state <= 100 && !charging) {
+    id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, (batteryWidth * id(batteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
   } else {
     id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
   }

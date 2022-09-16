@@ -14,6 +14,47 @@ esphome:
     - esphomeRemote/esphomeRemote3Button.h
     - esphomeRemote/esphomeRemoteFireLight.h
 
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ssieb/custom_components
+    components: [ ip5306 ]
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: True
+
+ip5306:
+  battery_level:
+    name: M5 Battery Percent
+    id: batteryPercent
+  charger_connected:
+    id: connected
+    on_press:
+      then:
+        - lambda: |-
+            ESP_LOGD("TEST", "charging");
+            if (charging == false) {
+              charging = true;
+            }
+        
+    on_release:
+      then:
+        - lambda: |-
+            ESP_LOGD("TEST", "not charging");
+            if (charging == true) {
+              charging = false;
+            }
+  charge_full:
+    id: full
+    on_press:
+      then:
+        - lambda: ESP_LOGD("TEST", "fully charged");
+    on_release:
+      then:
+        - lambda: ESP_LOGD("TEST", "still charging");
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -28,6 +69,7 @@ captive_portal:
 
 # Enable logging
 logger:
+  level: INFO
 
 # Enable Home Assistant API
 api:
@@ -78,6 +120,7 @@ color:
     blue: 100%
 
 font:
+## Font needs to be monospace!
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: 28
@@ -92,6 +135,8 @@ font:
     glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
 
 image:
+## You need 2 icons for each, one with a color background, one with black
+## todo would be make these material icons or svg
   - file: "images/playWhite.png"
     id: image_play_white
     type: RGB24
@@ -130,60 +175,92 @@ image:
     type: RGB24
     
 globals:
+## Size of the large font above
   - id: large_font_size
     type: int
     restore_value: no
     initial_value: "28"
+
+## Size of the medium font above
   - id: medium_font_size
     type: int
     restore_value: no
     initial_value: "22"
+
+## Size of the small font above
   - id: small_font_size
     type: int
     restore_value: no
     initial_value: "18"
+    
+## Height / width ratio of the monospace font used
   - id: font_size_width_ratio
     type: double
     restore_value: no
     initial_value: "0.6"
+    
+## Status bar height
   - id: header_height
     type: int
     restore_value: no
     initial_value: "24"
+    
+## Global margin size
   - id: margin_size
     type: int
     restore_value: no
     initial_value: "8"
+    
+## Scrollbar total width
   - id: scroll_bar_width
     type: int
     restore_value: no
     initial_value: "6"
+    
+## Volume bar and media duration bar bottom margin
   - id: bottom_bar_margin
     type: int
     restore_value: no
     initial_value: "42"
+    
+## Height and width of the icons used in px
   - id: icon_size
     type: int
     restore_value: no
     initial_value: "12"
+    
+## Max lines on now playing screen before truncating happens
   - id: now_playing_max_lines
     type: int
     restore_value: no
     initial_value: "5"
+    
+## Draw buttons in now playing menu for 3 button devices
   - id: draw_now_playing_menu
     type: bool
     restore_value: no
     initial_value: "true"
+    
+## Draw battery icon if battery level is supported
   - id: draw_battery_level
     type: bool
     restore_value: no
+    initial_value: "true"
+    
+## Draw shuffle icon if shuffle is disabled
+  - id: draw_shuffle_disabled
+    type: bool
+    restore_value: no
     initial_value: "false"
+    
+## Customize device boot name
   - id: boot_device_name
     type: std::string
     restore_value: no
     initial_value: '"M5Stack Fire Remote <3"'
 
 custom_component:
+## Home assistant speakers and tv. Set TV up with a sound bar
 - lambda: |-
     std::vector<std::string> speakerNames { 
       "media_player.beam", 
@@ -195,6 +272,8 @@ custom_component:
     App.register_component(speakerGroup);
     return {speakerGroup};
   id: speaker_group_component
+  
+## Home assistant scripts and scenes. Set with a friendly name
 - lambda: |-
     std::vector<BaseService> scenes { 
       ScriptService("script.colors", "Colors"), 
@@ -208,6 +287,8 @@ custom_component:
     App.register_component(sceneGroup);
     return {sceneGroup};
   id: scene_group_component
+
+## Home assistant lights. Set with a friendly name
 - lambda: |-
     std::vector<FriendlyNameEntity> lights { 
       FriendlyNameEntity("light.bathroom_lights", "Bathroom"), 
@@ -220,6 +301,8 @@ custom_component:
     App.register_component(lightGroup);
     return {lightGroup};
   id: light_group_component
+
+## Home assistant sensors. Set with a friendly name
 - lambda: |-
     std::vector<FriendlyNameEntity> sensors { 
       FriendlyNameEntity("sensor.current_time", ""),
@@ -232,71 +315,6 @@ custom_component:
     App.register_component(sensorGroup);
     return {sensorGroup};
   id: sensor_group_component
-
-sensor:
-  - platform: adc
-    pin: 34
-    attenuation: auto
-    name: "VBatt"
-    update_interval: 10s
-    id: vcc_adc
-    internal: true
-    on_value:
-      then:
-        lambda: |-
-          if (id(vcc_adc).state > 4) {
-            if (charging == false) {
-              charging = true;
-            }
-          } else {
-            if (charging == true) {
-              charging = false;
-            }
-            id(vcc_adc_avg).publish_state(id(vcc_adc).state);
-          }
-          
-  - platform: template
-    id: vcc_adc_avg
-    filters:
-      - sliding_window_moving_average:
-          window_size: 6
-          send_every: 6
-    on_value :
-      then:
-        - sensor.template.publish:
-            id: batteryVoltage
-            state: !lambda 'return ((id(vcc_adc).state) * 1.77);'
-  - platform: template
-    id: display_update_tick
-    filters:
-      - debounce: 0.02s
-    on_value :
-      then:
-        - lambda: |-
-            if(idleTime < 2) {
-              displayUpdate.updateDisplay(true);
-            }
-  - platform: template
-    name: batteryVoltage
-    id: batteryVoltage
-    internal: true
-    unit_of_measurement: 'V'
-    on_value :
-      then:
-        - sensor.template.publish:
-            id: TTGoBatteryPercent
-            state: !lambda 'return (((id(batteryVoltage).state - 3) * 100) / (3.7 - 3));'
-    on_value_range:
-      below: 2.5
-      then:
-        lambda: |-
-          ESP_LOGE("batteryVoltage", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryVoltage).state);
-          id(tt_sleep).turn_on();
-
-  - platform: template
-    name: Battery Percent
-    id: TTGoBatteryPercent
-    unit_of_measurement: '%'
 
 interval:
   - interval: 1s
@@ -343,10 +361,9 @@ binary_sensor:
 # We can still control the backlight independently
 switch:
   - platform: template
-    name: Sleep Toggle
+    name: M5Stack Fire Sleep Toggle
     id: tt_sleep
     optimistic: true
-    internal: true
     on_turn_on:
       then:
         - deep_sleep.enter:
@@ -356,6 +373,7 @@ switch:
     name: "Backlight"
     id: backlight
     restore_mode: ALWAYS_ON
+    internal: true
 
 time:
   - platform: homeassistant
@@ -397,10 +415,6 @@ display:
         ESP_LOGD("drawing menu", "turning on");
         id(backlight).turn_on();
         idleTime = 0;
-      } else if (!id(backlight).state) {
-        ESP_LOGD("drawing menu", "turning off %d", idleTime);
-        // id(my_display).set_update_interval(60000);
-        return;
       }
       drawMenu();
       return;

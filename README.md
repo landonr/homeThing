@@ -119,6 +119,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 ## includes
 - esphome https://esphome.io/
 - iosevka font https://github.com/be5invis/Iosevka
+- @ssieb's IP5306 esphome component https://github.com/ssieb/custom_components/tree/master/components/ip5306
 
 ## todo
 - queue count
@@ -132,7 +133,6 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- media player
 	- hvac
 - settings menu
-- battery level for m5stack fire
 - case
 - circuit diagram for tdisplay
 
