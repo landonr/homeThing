@@ -5,8 +5,10 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - M5Stack Fire (no additional hardware)
 - Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
 - Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
-### [Learn how to get started](GettingStarted.md)
-
+### Learn More
+ - [Get Started](GettingStarted.md) - Learn how to build your own remote
+ - [Discord](https://discord.gg/s2Dnz9fu) - support / chat with the community and the team
+ 
 ## Demo Video 🎬
 [![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
 
