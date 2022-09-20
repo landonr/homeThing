@@ -17,4 +17,4 @@ jobs:
     steps:
       - uses: esphome/build-action@v1
         with:
-          yaml_file: ${{ matrix.devices }}.yaml
+          yaml_file: lilygo.yaml
