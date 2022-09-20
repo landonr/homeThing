@@ -1,6 +1,12 @@
 
 <h1 align = "center">ESPHome Remote ⚙️</h1>
 
+<p align="center">
+<a href="https://github.com/landonr/esphome-remote/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/workflow/status/landonr/esphome-remote/ESPHome%20Builder?style=for-the-badge"/></a>
+<a href="https://github.com/landonr/esphome-remote/stargazers"><img src="https://img.shields.io/github/stars/landonr/esphome-remote?style=for-the-badge"/></a>
+<a href="https://discord.gg/s2Dnz9fu"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
+</p>
+
 iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts. Supports many different hardware configurations:
 - M5Stack Fire (no additional hardware)
 - Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
