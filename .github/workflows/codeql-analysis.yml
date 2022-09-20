@@ -13,10 +13,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ 'esp32', 'esp32c3' ]
+        devices: [ 'lilygo', 'fireremote', 'tdisplay2' ]
     steps:
       - uses: actions/checkout@v2
       - uses: dmamontov/esphome-lint@main
         with:
-          # YAML file to use
-          yaml_file: lilygo.yaml
+          use-esphome-compile: true
+          esphome-compile-file: ${{ matrix.devices }}.yaml
+          use-clang-format: true
+          extra-clang-format-options: "-assume-filename=.clang-format"
+          use-esphome-branch: true
