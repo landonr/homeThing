@@ -15,6 +15,7 @@ jobs:
       matrix:
         devices: [ 'lilygo', 'fireremote', 'tdisplay2' ]
     steps:
-      - uses: esphome/build-action@v1
+      - uses: actions/checkout@v2
+      - uses: esphome/build-action@v1.1.0
         with:
-          yaml_file: lilygo.yaml
+          yaml_file: ${{ matrix.devices }}.yaml
