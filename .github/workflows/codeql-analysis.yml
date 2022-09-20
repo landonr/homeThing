@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: dmamontov/esphome-lint@main
         with:
-          esphome-version: ">=2022.8.0"
+          esphome-version: "2022.8.3"
           use-esphome-compile: true
           esphome-compile-file: ${{ matrix.devices }}.yaml
           use-clang-format: true
