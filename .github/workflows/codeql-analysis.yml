@@ -1,27 +1,9 @@
-name: Checks dev ESPHome
-
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 */6 * * *'
-
-jobs:
-  lint:
-    runs-on: "ubuntu-latest"
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ 'esp32', 'esp32c3' ]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: dmamontov/esphome-lint@main
-        with:
-          esphome-version: "dev"
-          extra-pylint-options: "--disable=unused-argument"
-          use-esphome-compile: true
-          esphome-compile-file: examples/${{ matrix.platform }}.yaml
-          use-clang-format: true
-          extra-clang-format-options: "-assume-filename=.clang-format"
-          use-esphome-branch: true
+- name: ESPHome Builder
+  # You may pin to the exact commit or the version.
+  # uses: esphome/build-action@94054922590c1e1f63a6438cf5904138b515e5ee
+  uses: esphome/build-action@v1.5.2
+  with:
+    # YAML file to use
+    yaml_file: lilygo.yaml
+    # Version of ESPHome to build
+    version: # optional, default is latest
