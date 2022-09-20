@@ -135,6 +135,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- media player
 	- hvac
 - settings menu
+- stay on during charging
 - case
 - circuit diagram for tdisplay
 

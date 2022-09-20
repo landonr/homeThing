@@ -268,13 +268,15 @@ private:
     if(strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
       mediaPosition = 0;
     }
-    if(strcmp("TV", mediaTitle.c_str()) != 0) {
+    if(strcmp("TV", state.c_str()) != 0) {
       mediaDuration = -1;
       mediaPosition = 0;
+      mediaTitle = state.c_str();
     } else {
+      mediaTitle = "TV";
       mediaArtist = "";
+      mediaPlaylist = "";
     }
-    mediaTitle = state.c_str();
     display.updateDisplay(false);
   }
 
@@ -559,6 +561,22 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
     }
     return 0;
+  }
+
+  std::string getMediaTitleString() {
+    if(activePlayer->mediaTitle != "TV") {
+      return activePlayer->mediaTitle;
+    } else {
+      return "TV";
+    }
+  }
+
+  std::string getMediaArtistString() {
+    if(activePlayer->mediaTitle != "TV") {
+      return activePlayer->mediaArtist;
+    } else {
+      return tv->mediaArtist;
+    }
   }
 
   std::vector<MenuTitle> groupTitleSwitches() {

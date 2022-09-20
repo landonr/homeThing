@@ -109,6 +109,15 @@ MenuTitle menuTitleForType(MenuStates stringType) {
   return MenuTitle("", "", NoMenuTitleState);
 }
 
+void goToScreenFromString(std::string screenName) {
+  if(screenName == "nowPlaying") {
+    activeMenuState = nowPlayingMenu;
+  } else if (screenName == "sensors") {
+    activeMenuState = sensorsMenu;
+  }
+  displayUpdate.updateDisplay(true);
+}
+
 int drawPlayPauseIcon(int batteryWidth) {
   int yPos = id(header_height) / 2 - 6;
   int xPos = id(my_display).get_width() - batteryWidth - id(icon_size);
@@ -429,11 +438,13 @@ void topMenu() {
   activeMenuState = MenuStates::rootMenu;
 }
 
-void idleMenu() {
-  menuIndex = 0;
-  speakerGroup->newSpeakerGroupParent = NULL;
-  optionMenu = noOptionMenu;
-  activeMenuState = MenuStates::nowPlayingMenu;
+void idleMenu(bool force) {
+  if(!charging || force) {
+    menuIndex = 0;
+    speakerGroup->newSpeakerGroupParent = NULL;
+    optionMenu = noOptionMenu;
+    activeMenuState = MenuStates::nowPlayingMenu;
+  }
 }
 
 void activeTick() {
@@ -454,12 +465,13 @@ void activeTick() {
 }
 
 void idleTick() {
+  bool updatedMediaPositions = speakerGroup->updateMediaPosition();
   if (idleTime == 3) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
   } else if (idleTime == 16) {
     if (speakerGroup -> playerSearchFinished) {
-      idleMenu();
+      idleMenu(false);
       displayUpdate.updateDisplay(false);
     }
     if(!charging) {
@@ -468,6 +480,10 @@ void idleTick() {
     }
     idleTime ++;
     return;
+  } else if(idleTime == 180 && charging) {
+    idleMenu(true);
+    idleTime++;
+    return;
   } else if (idleTime > 6400) {
     if(!charging) {
       ESP_LOGI("idle", "night night");
@@ -475,7 +491,7 @@ void idleTick() {
       return;
     }
   }
-  if(speakerGroup->updateMediaPosition()) {
+  if(updatedMediaPositions) {
     switch(activeMenuState) {
       case nowPlayingMenu:
         if(idleTime < 16 || charging) {
@@ -688,8 +704,8 @@ void drawNowPlaying() {
   }
   int xPos = id(my_display).get_width() / 2;
   auto nowPlayingWrappedText = getWrappedTitles(4, id(medium_font_size), TextAlign::TOP_LEFT, nowPlayingText);
-  auto mediaArtistWrappedText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_CENTER, speakerGroup -> activePlayer -> mediaArtist);
-  auto mediaTitleWrappedText = getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER, speakerGroup -> activePlayer -> mediaTitle);
+  auto mediaArtistWrappedText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_CENTER, speakerGroup -> getMediaArtistString());
+  auto mediaTitleWrappedText = getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER, speakerGroup -> getMediaTitleString());
   int lineCount = nowPlayingWrappedText.size() + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
   int maxLines = 0;
   if(lineCount > id(now_playing_max_lines)) {
@@ -845,7 +861,7 @@ bool selectMenu() {
     activeMenuState = MenuStates::nowPlayingMenu;
     break;
   case sourcesMenu:
-    idleMenu();
+    idleMenu(true);
     speakerGroup -> activePlayer -> playSource(menuIndexForSource);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);

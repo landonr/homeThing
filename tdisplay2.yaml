@@ -1,5 +1,5 @@
 esphome:
-  name: lilygo_display
+  name: tdisplay2
   platform: ESP32
   board: featheresp32
   includes:
@@ -27,17 +27,10 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: INFO
+  level: DEBUG
 
 # Enable Home Assistant API
 api:
-  services:
-    - service: goto_screen
-      variables:
-        screen_name: string
-      then:
-      - lambda: |-
-          goToScreenFromString(screen_name);
 
 ota:
 
@@ -220,7 +213,7 @@ globals:
   - id: boot_device_name
     type: std::string
     restore_value: no
-    initial_value: '"TDisplay Remote <3"'
+    initial_value: '"TDisplay Remote 2"'
 
 custom_component:
 ## Home assistant speakers and tv. Set TV up with a sound bar
@@ -287,12 +280,12 @@ sensor:
     name: "Rotary Encoder"
     internal: true
     pin_a:
-      number: 12
+      number: 21
       mode:
         input: true
         pullup: true
     pin_b:
-      number: 13
+      number: 22
       mode:
         input: true
         pullup: true
@@ -420,42 +413,16 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 21
+      number: 15
       inverted: true
       mode:
         input: true
         pullup: true
-    id: sw5
+    id: sw5left
     on_press:
       then:
       - lambda: |-
           buttonPressLeft();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 22
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw4
-    on_press:
-      then:
-      - lambda: |-
-          buttonPressUp();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 17
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw3
-    on_press:
-      then:
-      - lambda: |-
-          buttonPressRight();
   - platform: gpio
     internal: true
     pin:
@@ -464,7 +431,33 @@ binary_sensor:
       mode:
         input: true
         pullup: true
-    id: sw2
+    id: sw4up
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressUp();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 12
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw3right
+    on_press:
+      then:
+      - lambda: |-
+          buttonPressRight();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 13
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw2down
     on_press:
       then:
       - lambda: |-
@@ -472,12 +465,12 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 15
+      number: 17
       inverted: true
       mode:
         input: true
         pullup: true
-    id: sw1
+    id: sw1select
     on_press:
       then:
       - lambda: |-
