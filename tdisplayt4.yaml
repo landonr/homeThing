@@ -183,6 +183,12 @@ globals:
     type: std::string
     restore_value: no
     initial_value: '"T4 Remote <3"'
+    
+## Draw shuffle icon if shuffle is disabled
+  - id: draw_shuffle_disabled
+    type: bool
+    restore_value: no
+    initial_value: "false"
 
 custom_component:
 - lambda: |-
@@ -247,7 +253,7 @@ sensor:
             }
   - platform: template
     name: Battery Percent
-    id: TTGoBatteryPercent
+    id: batteryPercent
     unit_of_measurement: '%'
 
 interval:
@@ -263,7 +269,7 @@ binary_sensor:
   - platform: gpio
     id: T4_BtnA
     pin:
-      number: 38
+      number: 39
       inverted: true
     on_click:
       then:
@@ -281,7 +287,7 @@ binary_sensor:
   - platform: gpio
     id: T4_BtnC
     pin:
-      number: 39
+      number: 38
       inverted: true
     on_click:
       then:
@@ -335,7 +341,8 @@ display:
     dc_pin: 32
     led_pin: 04  ### see note below ###
     reset_pin: 05
-    update_interval: 60s
+    update_interval: 600s
+    rotation: 90
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");
@@ -346,6 +353,6 @@ display:
         id(my_display).set_update_interval(60000);
         return;
       }
-
+      charging = true;
       drawMenu();
       return;
