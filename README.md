@@ -130,7 +130,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - [@ssieb](https://github.com/ssieb)'s IP5306 esphome component https://github.com/ssieb/custom_components/tree/master/components/ip5306
 
 ## todo
-- queue count
+- playlist queue count
 - sonos night sound / speech boost
 - repeat/all/single/off
 - light dimming
@@ -141,7 +141,17 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- media player
 	- hvac
 - settings menu
-- stay on during charging
+- esphome custom components
+	- display menu code
+	- rotary and button control code
+	- tdisplay battery / charging
+	- m5stack fire battery / charging
+- substitutions
+- packages for shared yaml
 - case
 - circuit diagram for tdisplay
+- make sensor for current screen
+- better tv support
+	- support multiple tvs
+	- make soundbar optional
 
