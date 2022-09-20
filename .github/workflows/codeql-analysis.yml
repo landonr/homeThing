@@ -15,12 +15,6 @@ jobs:
       matrix:
         devices: [ 'lilygo', 'fireremote', 'tdisplay2' ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: dmamontov/esphome-lint@main
+      - uses: esphome/build-action@v1
         with:
-          esphome-version: "2022.8.3"
-          use-esphome-compile: true
-          esphome-compile-file: ${{ matrix.devices }}.yaml
-          use-clang-format: true
-          extra-clang-format-options: "-assume-filename=.clang-format"
-          use-esphome-branch: true
+          yaml_file: ${{ matrix.devices }}.yaml
