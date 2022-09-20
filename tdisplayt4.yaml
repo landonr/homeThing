@@ -21,6 +21,13 @@ logger:
 
 # Enable Home Assistant API
 api:
+  services:
+    - service: goto_screen
+      variables:
+        screen_name: string
+      then:
+      - lambda: |-
+          goToScreenFromString(screen_name);
 
 ota:
   password: !secret ota_encryption
