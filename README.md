@@ -146,8 +146,6 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- rotary and button control code
 	- tdisplay battery / charging
 	- m5stack fire battery / charging
-- substitutions
-- packages for shared yaml
 - case
 - circuit diagram for tdisplay
 - make sensor for current screen

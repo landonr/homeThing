@@ -32,21 +32,23 @@
 	1. TTGo T-Display: lilygo.yaml
 	2. TTGo T-Display T4: tdisplayt4.yaml
 	3. M5Stack Fire: fireremote.yaml
-3. Customize the yaml to your preference
-	1. Customize **Colors**
-	2. Customize **Fonts**
-		- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
-	3. Update the **Globals**
-		1. font_size: Make sure the font sizes match the font sizes set above
-		2. font_size_width_ratio: The width:height ratio of the font used
-		3. header_height: Customize the header height
-		4. margin_size: Customize the margin
-		5. bottom_bar_margin: Distance the media duration bar is from the bottom
-		6. scroll_bar_width: Customize the width of the scrollbar
-		7. icon_size: Size of icons used to calculate UI
-		8. now_playing_max_lines: Max lines displayed on Now Playing Screen
-		9. draw_now_playing_menu: Show navigation menu on Now Playing screen
-		10. boot_device_name: Customize the name displayed on boot
+3. The basic configuration is done through substitions
+	1. font_size: Make sure the font sizes match the font sizes set above
+	2. font_size_width_ratio: The width:height ratio of the font used
+	3. header_height: Customize the header height
+	4. margin_size: Customize the margin
+	5. bottom_bar_margin: Distance the media duration bar is from the bottom
+	6. scroll_bar_width: Customize the width of the scrollbar
+	7. icon_size: Size of icons used to calculate UI
+	8. now_playing_max_lines: Max lines displayed on Now Playing Screen
+	9. draw_now_playing_menu: Show navigation menu on Now Playing screen
+	10. boot_device_name: Customize the name displayed on boot
+	- More configuration can be done in esphome/esphome-remote-base.yaml
+		1. Customize **Colors**
+		2. Customize **Fonts**
+			- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
+		3. Customize **Globals**
+
 4. Update the **Custom Components** in the yaml to match your config
 	1. Set your speaker media player names under speaker_group_component
 		1. Update the TV to match your media player

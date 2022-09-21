@@ -34,186 +34,22 @@ api:
 
 ota:
 
-deep_sleep:
-  id: deep_sleep_1
+substitutions:
+  boot_name: '"TTDisplay Remote <3"'
+  large_font_size: "24"
+  medium_font_size: "15"
+  small_font_size: "14"
+  header_height: "16"
+  margin_size: "4"
+  scroll_bar_width: "6"
+  bottom_bar_margin: "1"
+  now_playing_max_lines: "5"
+  draw_now_playing_menu: "false"
+  draw_battery_level: "true"
+  draw_shuffle_disabled: "false"
 
-color:
-  - id: my_red
-    red: 100%
-    green: 0%
-    blue: 0%
-  - id: my_yellow
-    red: 100%
-    green: 100%
-    blue: 0%
-  - id: my_green
-    red: 0%
-    green: 100%
-    blue: 0%
-  - id: my_blue
-    red: 0%
-    green: 45%
-    blue: 68%
-  - id: my_gray_dark
-    red: 40%
-    green: 40%
-    blue: 40%
-  - id: my_gray_dark_2
-    red: 3%
-    green: 3%
-    blue: 3%
-  - id: my_gray
-    red: 10%
-    green: 10%
-    blue: 10%
-  - id: my_black
-    red: 0%
-    green: 0%
-    blue: 0%
-  - id: my_white
-    red: 100%
-    green: 100%
-    blue: 100%
+<<: !include esphomeRemote/esphome-remote-base.yaml
 
-font:
-## Font needs to be monospace!
-  - file: "fonts/iosevka.ttf"
-    id: large_font
-    size: 24
-    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
-  - file: "fonts/iosevka.ttf"
-    id: medium_font
-    size: 15
-    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
-  - file: "fonts/iosevka.ttf"
-    id: small_font
-    size: 14
-    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
-
-image:
-## You need 2 icons for each, one with a color background, one with black
-## todo would be make these material icons or svg
-  - file: "images/playWhite.png"
-    id: image_play_white
-    type: RGB24
-  - file: "images/play.png"
-    id: image_play
-    type: RGB24
-  - file: "images/pause.png"
-    id: image_pause
-    type: RGB24
-  - file: "images/pauseWhite.png"
-    id: image_pause_white
-    type: RGB24
-  - file: "images/stop.png"
-    id: image_stop
-    type: RGB24
-  - file: "images/stopWhite.png"
-    id: image_stop_white
-    type: RGB24
-  - file: "images/sleepWhite.png"
-    id: image_sleep_white
-    type: RGB24
-  - file: "images/sleep.png"
-    id: image_sleep
-    type: RGB24
-  - file: "images/shuffle.png"
-    id: image_shuffle
-    type: RGB24
-  - file: "images/shuffleDisabled.png"
-    id: image_shuffle_disabled
-    type: RGB24
-  - file: "images/volumeLow.png"
-    id: image_volume_low
-    type: RGB24
-  - file: "images/volumeHigh.png"
-    id: image_volume_high
-    type: RGB24
-    
-globals:
-## Size of the large font above
-  - id: large_font_size
-    type: int
-    restore_value: no
-    initial_value: "24"
-    
-## Size of the medium font above
-  - id: medium_font_size
-    type: int
-    restore_value: no
-    initial_value: "15"
-    
-## Size of the small font above
-  - id: small_font_size
-    type: int
-    restore_value: no
-    initial_value: "14"
-    
-## Height / width ratio of the monospace font used
-  - id: font_size_width_ratio
-    type: double
-    restore_value: no
-    initial_value: "0.6"
-    
-## Status bar height
-  - id: header_height
-    type: int
-    restore_value: no
-    initial_value: "16"
-    
-## Global margin size
-  - id: margin_size
-    type: int
-    restore_value: no
-    initial_value: "4"
-    
-## Scrollbar total width
-  - id: scroll_bar_width
-    type: int
-    restore_value: no
-    initial_value: "6"
-    
-## Volume bar and media duration bar margin
-  - id: bottom_bar_margin
-    type: int
-    restore_value: no
-    initial_value: "1"
-    
-## Height and width of the icons used in px
-  - id: icon_size
-    type: int
-    restore_value: no
-    initial_value: "12"
-    
-## Max lines on now playing screen before truncating happens
-  - id: now_playing_max_lines
-    type: int
-    restore_value: no
-    initial_value: "5"
-    
-## Draw buttons in now playing menu for 3 button devices
-  - id: draw_now_playing_menu
-    type: bool
-    restore_value: no
-    initial_value: "false"
-    
-## Draw battery icon if battery level is supported
-  - id: draw_battery_level
-    type: bool
-    restore_value: no
-    initial_value: "true"
-    
-## Draw shuffle icon if shuffle is disabled
-  - id: draw_shuffle_disabled
-    type: bool
-    restore_value: no
-    initial_value: "false"
-    
-## Customize device boot name
-  - id: boot_device_name
-    type: std::string
-    restore_value: no
-    initial_value: '"TDisplay Remote 2"'
 
 custom_component:
 ## Home assistant speakers and tv. Set TV up with a sound bar
@@ -360,23 +196,9 @@ sensor:
       then:
         lambda: |-
           ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryPercent).state);
-          id(tt_sleep).turn_on();
-
-interval:
-  - interval: 1s
-    then:
-    - lambda: |-
-        idleTick();
-  - interval: 0.3s
-    then:
-    - lambda: |-
-        activeTick();
+          id(sleep_toggle).turn_on();
 
 binary_sensor:
-  - platform: status
-    name: "Node Status"
-    id: system_status
-    
 ## TDisplay buttons
   - platform: gpio
     pin:
@@ -495,11 +317,9 @@ switch:
     id: backlight
     internal: true
     restore_mode: RESTORE_DEFAULT_ON
-
-## Exposed to home assistant so you can sleep from a script
   - platform: template
-    name: TDisplay Sleep Toggle
-    id: tt_sleep
+    name: Sleep Toggle
+    id: sleep_toggle
     optimistic: true
     on_turn_on:
       then:

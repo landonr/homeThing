@@ -269,14 +269,14 @@ private:
       mediaPosition = 0;
     }
     if(strcmp("TV", state.c_str()) != 0) {
-      mediaDuration = -1;
-      mediaPosition = 0;
       mediaTitle = state.c_str();
     } else {
       mediaTitle = "TV";
       mediaArtist = "";
       mediaPlaylist = "";
+      mediaPosition = -1;
     }
+    mediaDuration = -1;
     display.updateDisplay(false);
   }
 

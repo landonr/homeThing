@@ -439,7 +439,7 @@ void topMenu() {
 }
 
 void idleMenu(bool force) {
-  if(charging || force) {
+  if(!charging || force) {
     menuIndex = 0;
     speakerGroup->newSpeakerGroupParent = NULL;
     optionMenu = noOptionMenu;
@@ -454,7 +454,7 @@ void activeTick() {
   if(activeMenuState == bootMenu) {
     return;
   }
-  if(idleTime < 15 && idleTime > 1 && marqueeText) {
+  if((charging || idleTime < 15) && idleTime > 1 && marqueeText) {
     marqueePosition+=1.5;
     if(marqueePosition >= 0) {
       displayUpdate.updateDisplay(true);
@@ -490,7 +490,7 @@ void idleTick() {
   } else if (idleTime > 6400) {
     if(!charging) {
       ESP_LOGI("idle", "night night");
-      id(tt_sleep).turn_on();
+      id(sleep_toggle).turn_on();
       return;
     }
   }
@@ -840,7 +840,7 @@ bool selectRootMenu() {
     id(backlight).turn_off();
     return false;
   case sleepMenu:
-    id(tt_sleep).turn_on();
+    id(sleep_toggle).turn_on();
     return false;
   case sensorsMenu:
     activeMenuState = sensorsMenu;
@@ -864,7 +864,7 @@ bool selectMenu() {
     activeMenuState = MenuStates::nowPlayingMenu;
     break;
   case sourcesMenu:
-    idleMenu(true);
+    idleMenu(false);
     speakerGroup -> activePlayer -> playSource(menuIndexForSource);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);
