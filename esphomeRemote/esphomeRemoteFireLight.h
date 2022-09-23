@@ -11,6 +11,7 @@ enum RemoteLightState {
 };
 
 RemoteLightState lightState = OffRemoteLightState;
+int previousBatteryLevel = 0;
 
 void updateLight(double brightness, double red, double green, double blue) {
   auto offCall = id(side_light).turn_off();

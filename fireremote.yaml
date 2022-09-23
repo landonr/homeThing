@@ -45,6 +45,15 @@ ip5306:
   battery_level:
     name: M5 Battery Percent
     id: batteryPercent
+    on_value :
+      then:
+        - lambda: |-
+            if(id(batteryPercent).state > previousBatteryLevel && !charging) {
+                charging = true;
+            } else if(id(batteryPercent).state <= previousBatteryLevel && charging) {
+                charging = false;
+            }
+            previousBatteryLevel = id(batteryPercent).state;
   charger_connected:
     id: connected
     on_press:
