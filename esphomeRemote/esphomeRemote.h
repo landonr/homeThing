@@ -115,6 +115,7 @@ void goToScreenFromString(std::string screenName) {
   } else if (screenName == "sensors") {
     activeMenuState = sensorsMenu;
   }
+  menuIndex = 0;
   displayUpdate.updateDisplay(true);
 }
 
@@ -454,8 +455,12 @@ void activeTick() {
   if(activeMenuState == bootMenu) {
     return;
   }
-  if((charging || idleTime < 15) && idleTime > 1 && marqueeText) {
-    marqueePosition+=1.5;
+  if((charging || idleTime < 15) && idleTime > 1 && (marqueeText || charging)) {
+    if(marqueeText) {
+      marqueePosition+=1.5;
+    } else if(marqueePosition != 0) {
+      marqueePosition = 0;
+    }
     if(marqueePosition >= 0) {
       displayUpdate.updateDisplay(true);
     }

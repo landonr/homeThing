@@ -6,10 +6,20 @@
 enum RemoteLightState {
   OffRemoteLightState,
   OnRemoteLightState,
+  ChargingLightState,
   EffectRemoteLightState
 };
 
 RemoteLightState lightState = OffRemoteLightState;
+
+void updateLight(double brightness, double red, double green, double blue) {
+  auto offCall = id(side_light).turn_off();
+  offCall.perform();
+  auto call = id(side_light).turn_on();
+  call.set_brightness(brightness);
+  call.set_rgb(red, green, blue);
+  call.perform();
+}
 
 void manageLight() {
   if (!id(backlight).state) {
@@ -23,15 +33,14 @@ void manageLight() {
     call.set_effect("Rainbow Effect");
     call.perform();
     lightState = EffectRemoteLightState;
-  } else if (lightState != OnRemoteLightState && speakerGroup -> playerSearchFinished) {
-    auto offCall = id(side_light).turn_off();
-    offCall.perform();
-    auto call = id(side_light).turn_on();
-    call.set_brightness(0.5);
-    call.set_rgb(0.5, 0.25, 1.0);
-    call.perform();
-    lightState = OnRemoteLightState;
+  } else if (speakerGroup -> playerSearchFinished) {
+    if (!charging && lightState != OnRemoteLightState) {
+      updateLight(0.2, 0.75, 0.5, 1.0);
+      lightState = OnRemoteLightState;
+    } else if (charging && lightState != ChargingLightState) {
+      updateLight(0.5, 1.0, 0.75, 0.1);
+      lightState = ChargingLightState;
+    }
   }
 }
-
 #endif

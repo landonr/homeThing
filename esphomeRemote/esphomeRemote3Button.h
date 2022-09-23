@@ -68,6 +68,7 @@ void buttonPressSelect() {
 
 void buttonPressLeft() {
   resetMarquee();
+  optionMenu = noOptionMenu;
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -83,6 +84,7 @@ void buttonPressLeft() {
 
 void buttonPressRight() {
   resetMarquee();
+  optionMenu = noOptionMenu;
   if (buttonPressWakeUpDisplay()) {
     return;
   }
