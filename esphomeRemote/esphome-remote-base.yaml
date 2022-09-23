@@ -5,8 +5,8 @@ color:
     blue: 0%
   - id: my_yellow
     red: 100%
-    green: 100%
-    blue: 0%
+    green: 75%
+    blue: 10%
   - id: my_green
     red: 0%
     green: 100%
@@ -20,9 +20,9 @@ color:
     green: 40%
     blue: 40%
   - id: my_gray_dark_2
-    red: 3%
-    green: 3%
-    blue: 3%
+    red: 8%
+    green: 8%
+    blue: 8%
   - id: my_gray
     red: 10%
     green: 10%
@@ -41,15 +41,15 @@ font:
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: ${large_font_size}
-    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: ${medium_font_size}
-    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: ${small_font_size}
-    glyphs: '*/\$#<>!"%()+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êé'''
+    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
 
 image:
 ## You need 2 icons for each, one with a color background, one with black
@@ -150,25 +150,25 @@ globals:
   - id: now_playing_max_lines
     type: int
     restore_value: no
-    initial_value: "5"
+    initial_value: ${now_playing_max_lines}
     
 ## Draw buttons in now playing menu for 3 button devices
   - id: draw_now_playing_menu
     type: bool
     restore_value: no
-    initial_value: "false"
+    initial_value: ${draw_now_playing_menu}
     
 ## Draw battery icon if battery level is supported
   - id: draw_battery_level
     type: bool
     restore_value: no
-    initial_value: "true"
+    initial_value: ${draw_battery_level}
     
 ## Draw shuffle icon if shuffle is disabled
   - id: draw_shuffle_disabled
     type: bool
     restore_value: no
-    initial_value: "false"
+    initial_value: ${draw_shuffle_disabled}
     
 ## Customize device boot name
   - id: boot_device_name

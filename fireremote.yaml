@@ -16,12 +16,12 @@ esphome:
 
 substitutions:
   boot_name: '"Fire Remote <3"'
-  large_font_size: "28"
-  medium_font_size: "12"
+  large_font_size: "24"
+  medium_font_size: "20"
   small_font_size: "18"
   header_height: "24"
   margin_size: "8"
-  scroll_bar_width: "6"
+  scroll_bar_width: "8"
   bottom_bar_margin: "42"
   now_playing_max_lines: "5"
   draw_now_playing_menu: "true"
@@ -114,7 +114,7 @@ custom_component:
       ScriptService("script.colors", "Colors"), 
       ScriptService("script.warm", "Warm"), 
       ScriptService("script.dim_scene_script", "Dim"),
-      ScriptService("script.off", "Lights Off"),
+      ScriptService("script.off_script", "Lights Off"),
       SceneService("scene.hell", "Hell"),
       ScriptService("script.feed_cat_single", "Feed cat")
     };

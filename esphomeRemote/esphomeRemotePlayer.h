@@ -164,6 +164,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   bool muted = false;
   std::vector<std::string> groupMembers;
   std::string mediaPlaylist = "";
+  std::string mediaAlbumName = "";
   int mediaDuration = -1;
   int mediaPosition = -1;
 
@@ -177,7 +178,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
     subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_title_changed, entityId, "media_title");
     subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_artist_changed, entityId, "media_artist");
     subscribe_homeassistant_state(&SonosSpeakerComponent::playlist_changed, entityId, "media_playlist");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::playlist_changed, entityId, "media_album_name");
+    subscribe_homeassistant_state(&SonosSpeakerComponent::media_album_changed, entityId, "media_album_name");
     subscribe_homeassistant_state(&SonosSpeakerComponent::media_duration_changed, entityId, "media_duration");
     subscribe_homeassistant_state(&SonosSpeakerComponent::media_position_changed, entityId, "media_position");
   }
@@ -310,6 +311,12 @@ private:
   void playlist_changed(std::string state) {
     ESP_LOGI("speaker", "%s Sonos Speaker playlist changed to %s", entityId.c_str(), state.c_str());
     mediaPlaylist = state.c_str();
+    display.updateDisplay(false);
+  }
+
+  void media_album_changed(std::string state) {
+    ESP_LOGI("speaker", "%s Sonos Speaker album changed to %s", entityId.c_str(), state.c_str());
+    mediaAlbumName = state.c_str();
     display.updateDisplay(false);
   }
 

@@ -68,7 +68,7 @@ custom_component:
       ScriptService("script.colors", "Colors"), 
       ScriptService("script.warm", "Warm"), 
       ScriptService("script.dim_scene_script", "Dim"),
-      ScriptService("script.off", "Lights Off"),
+      ScriptService("script.off_script", "Lights Off"),
       SceneService("scene.hell", "Hell"),
       ScriptService("script.feed_cat_single", "Feed cat")
     };

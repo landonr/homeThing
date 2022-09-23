@@ -703,6 +703,8 @@ void drawNowPlaying() {
     SonosSpeakerComponent * activeSpeaker = static_cast <SonosSpeakerComponent*>(speakerGroup->activePlayer);
     if(activeSpeaker->mediaPlaylist != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->mediaPlaylist;
+    } else if(activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
+      nowPlayingText += " " + activeSpeaker->mediaAlbumName;
     }
   }
   int xPos = id(my_display).get_width() / 2;
