@@ -81,6 +81,14 @@ std::string textWrap(std::string text, unsigned per_line) {
   return text;
 }
 
+int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
+  int characterLimit = (id(my_display).get_width() - xPos) / (fontSize * id(font_size_width_ratio)) - 1;
+  if(xPos == id(my_display).get_width() / 2 && alignment == TextAlign::TOP_CENTER) {
+    characterLimit = id(my_display).get_width() / (fontSize * id(font_size_width_ratio)) - 1;
+  }
+  return characterLimit;
+}
+
 MenuTitle menuTitleForType(MenuStates stringType) {
   switch (stringType) {
   case nowPlayingMenu:
@@ -119,9 +127,17 @@ void goToScreenFromString(std::string screenName) {
   displayUpdate.updateDisplay(true);
 }
 
-int drawPlayPauseIcon(int batteryWidth) {
-  int yPos = id(header_height) / 2 - 6;
-  int xPos = id(my_display).get_width() - batteryWidth - id(icon_size);
+int getTextWidth(int fontSize, int characterCount) {
+  return (fontSize * id(font_size_width_ratio) * characterCount);
+}
+
+int getHeaderTextYPos() {
+  return ((id(header_height) - id(small_font_size) * 1.2) / 2);
+}
+
+int drawPlayPauseIcon(int oldXPos) {
+  int yPos = id(header_height) / 2 - id(icon_size) / 2;
+  int xPos = oldXPos;
   switch(speakerGroup->activePlayer->menuTitlePlayerState()) {
     case PlayingMenuTitleState:
       id(my_display).image(xPos, yPos, & id(image_play));
@@ -136,35 +152,58 @@ int drawPlayPauseIcon(int batteryWidth) {
       id(my_display).image(xPos, yPos, & id(image_sleep));
       break;
     default:
-      break;
+      return oldXPos;
   }
-  return xPos;
+  return xPos + id(icon_size) + id(margin_size) / 2;
 }
 
-int drawBattery() {
-  if(!id(draw_battery_level)) {
-    return 0;
-  }
-  int batteryWidth = 24;
-  int batteryHeight = id(header_height) - 5;
-  int yPos = 2;
-  int xPos = id(margin_size);
-  int capHeight = 6;
-  int capWidth = 3;
-  id(my_display).rectangle(id(my_display).get_width() - xPos - batteryWidth, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
-  id(my_display).rectangle(id(my_display).get_width() - xPos - 1, yPos + (batteryHeight / 2) - (capHeight / 2), capWidth, capHeight, id(my_gray_dark));
-  if (id(batteryPercent).state <= 100 && !charging) {
-    id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, (batteryWidth * id(batteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
-  } else {
-    id(my_display).filled_rectangle(id(my_display).get_width() - xPos - batteryWidth + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
-  }
-  return batteryWidth + xPos + id(margin_size);
+void drawHeaderTitleWithString(std::string title, int xPos) {
+  int yPos = getHeaderTextYPos();
+  id(my_display).printf(xPos, yPos, & id(small_font), id(my_white), title.c_str());
 }
 
-void drawVolumeLevel(int oldXPos) {
-  int xPos = oldXPos - 6;
-  int yPos = ((id(header_height) - id(small_font_size)) / 2) - 1;
+void drawHeaderTitle() {
+  int xPos = 2;
+  switch (activeMenuState) {
+  case rootMenu:
+  case backlightMenu:
+  case sleepMenu:
+  case nowPlayingMenu:
+    xPos = drawPlayPauseIcon(xPos);
+    drawHeaderTitleWithString(speakerGroup->headerMediaPlayerTitleString(), xPos);
+    break;
+  case sourcesMenu:
+    drawHeaderTitleWithString("Sources", xPos);
+    break;
+  case groupMenu:
+    drawHeaderTitleWithString("Group Speakers", xPos);
+    break;
+  case mediaPlayersMenu:
+    drawHeaderTitleWithString("Media Players", xPos);
+    break;
+  case scenesMenu:
+    drawHeaderTitleWithString("Scenes/Actions", xPos);
+    break;
+  case lightsMenu:
+    drawHeaderTitleWithString("Lights", xPos);
+    break;
+  case sensorsMenu:
+    drawHeaderTitleWithString("Sensors", xPos);
+    break;
+  case bootMenu:
+    drawHeaderTitleWithString("Boot", xPos);
+    break;
+  }
+}
+
+int drawVolumeLevel(int oldXPos) {
+  if(!id(draw_volume_level)) {
+    return oldXPos;
+  }
+  int xPos = oldXPos - id(margin_size) / 2;
+  int yPos = getHeaderTextYPos();
   id(my_display).printf(xPos, yPos, & id(small_font), id(my_white), TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup -> getVolumeLevel());
+  return xPos;
 }
 
 int drawShuffle(int oldXPos) {
@@ -172,8 +211,8 @@ int drawShuffle(int oldXPos) {
     return oldXPos;
   }
   if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
-    int xPos = oldXPos - 18;
-    int yPos = id(header_height) / 2 - 6;
+    int xPos = oldXPos - id(icon_size) - id(margin_size) / 2;
+    int yPos = id(header_height) / 2 - id(icon_size) / 2;
     if (speakerGroup -> mediaShuffling()) {
       id(my_display).image(xPos, yPos, & id(image_shuffle));
     } else if(id(draw_shuffle_disabled)) {
@@ -181,63 +220,50 @@ int drawShuffle(int oldXPos) {
     } else {
       return oldXPos;
     }
-    return xPos;
+    return xPos - id(margin_size) / 2;
   }
   return oldXPos;
 }
 
-void drawHeaderTitleWithString(std::string title) {
-  int yPos = (id(header_height) - id(small_font_size)) / 2;
-  id(my_display).printf(2, yPos, & id(small_font), id(my_white), title.c_str());
+int drawHeaderTime(int oldXPos) {
+  int yPos = getHeaderTextYPos();
+  std::string timeString = id(esptime).now().strftime("%I:%M%P");
+  if(timeString.length() > 0 && timeString[0] == '0') {
+    timeString.erase(0,1);
+  }
+  int xPos = oldXPos - getTextWidth(id(small_font_size), timeString.length());
+  id(my_display).printf(xPos, yPos, &id(small_font), timeString.c_str());
+  return xPos - id(margin_size) / 2;
 }
 
-void drawHeaderTitle() {
-  switch (activeMenuState) {
-  case rootMenu:
-  case backlightMenu:
-  case sleepMenu:
-  case nowPlayingMenu:
-    drawHeaderTitleWithString(speakerGroup->headerMediaPlayerTitleString());
-    break;
-  case sourcesMenu:
-    drawHeaderTitleWithString("Sources");
-    break;
-  case groupMenu:
-    drawHeaderTitleWithString("Group Speakers");
-    break;
-  case mediaPlayersMenu:
-    drawHeaderTitleWithString("Media Players");
-    break;
-  case scenesMenu:
-    drawHeaderTitleWithString("Scenes/Actions");
-    break;
-  case lightsMenu:
-    drawHeaderTitleWithString("Lights");
-    break;
-  case sensorsMenu:
-    drawHeaderTitleWithString("Sensors");
-    break;
-  case bootMenu:
-    drawHeaderTitleWithString("Boot");
-    break;
+int drawBattery(int oldXPos) {
+  if(!id(draw_battery_level)) {
+    return oldXPos;
   }
-}
-
-int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
-  int characterLimit = (id(my_display).get_width() - xPos) / (fontSize * id(font_size_width_ratio)) - 1;
-  if(xPos == id(my_display).get_width() / 2 && alignment == TextAlign::TOP_CENTER) {
-    characterLimit = id(my_display).get_width() / (fontSize * id(font_size_width_ratio)) - 1;
+  int batteryWidth = 24;
+  int batteryHeight = id(header_height) - 5;
+  int yPos = 2;
+  int capHeight = 6;
+  int capWidth = 3;
+  int xPos = oldXPos - batteryWidth;
+  id(my_display).rectangle(xPos, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
+  id(my_display).rectangle(xPos + batteryWidth - 1, yPos + (batteryHeight / 2) - (capHeight / 2), capWidth, capHeight, id(my_gray_dark));
+  if (id(batteryPercent).state <= 100 && !charging) {
+    id(my_display).filled_rectangle(xPos + 1, yPos + 1, (batteryWidth * id(batteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
+  } else {
+    id(my_display).filled_rectangle(xPos + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
   }
-  return characterLimit;
+  return xPos - id(margin_size);
 }
 
 void drawHeader() {
   id(my_display).rectangle(0, id(header_height), id(my_display).get_width(), 1, id(my_blue));
   drawHeaderTitle();
+  int xPos = id(my_display).get_width() - id(margin_size) / 2;
   drawVolumeLevel(
-    drawShuffle(
-      drawPlayPauseIcon(
-        drawBattery()
+    drawHeaderTime(
+      drawShuffle(
+        drawBattery(xPos)
       )
     )
   );
@@ -697,7 +723,7 @@ void drawNowPlaying() {
   if (id(draw_now_playing_menu)){
     drawNowPlayingSelectMenu();
   }
-  int yPos = id(header_height);
+  int yPos = id(header_height) + id(margin_size) / 4;
   if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Power Off");
     return;
@@ -713,7 +739,7 @@ void drawNowPlaying() {
     }
   }
   int xPos = id(my_display).get_width() / 2;
-  auto nowPlayingWrappedText = getWrappedTitles(4, id(medium_font_size), TextAlign::TOP_LEFT, nowPlayingText);
+  auto nowPlayingWrappedText = getWrappedTitles(id(margin_size), id(medium_font_size), TextAlign::TOP_LEFT, nowPlayingText);
   auto mediaArtistWrappedText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_CENTER, speakerGroup -> getMediaArtistString());
   auto mediaTitleWrappedText = getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER, speakerGroup -> getMediaTitleString());
   int lineCount = nowPlayingWrappedText.size() + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
@@ -724,7 +750,7 @@ void drawNowPlaying() {
       lineCount = 1 + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
     }
   }
-  yPos = drawTextWrapped(4, yPos, id(medium_font_size), & id(medium_font), id(my_white), TextAlign::TOP_LEFT, nowPlayingWrappedText, maxLines);
+  yPos = drawTextWrapped(id(margin_size), yPos, id(medium_font_size), & id(medium_font), id(my_white), TextAlign::TOP_LEFT, nowPlayingWrappedText, maxLines);
   if (speakerGroup -> activePlayer -> mediaArtist == "" && speakerGroup -> activePlayer -> mediaTitle == "") {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Nothing!");
     return;
@@ -871,7 +897,7 @@ bool selectMenu() {
     activeMenuState = MenuStates::nowPlayingMenu;
     break;
   case sourcesMenu:
-    idleMenu(false);
+    idleMenu(true);
     speakerGroup -> activePlayer -> playSource(menuIndexForSource);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);

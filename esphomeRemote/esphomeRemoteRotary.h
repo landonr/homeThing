@@ -114,6 +114,7 @@ void buttonPressUp() {
     displayUpdate.updateDisplay(true);
     return;
   }
+  optionMenu = noOptionMenu;
   topMenu();
   displayUpdate.updateDisplay(true);
 }
@@ -137,12 +138,12 @@ void buttonPressDown() {
       speakerGroup -> tv -> tvRemoteCommand("down");
       break;
     case SpeakerRemotePlayerType:
-      optionMenu = noOptionMenu;
       if (optionMenu == speakerOptionMenu) {
         activeMenuState = groupMenu;
         displayUpdate.updateDisplay(true);
       } else {
         speakerGroup -> activePlayer -> playPause();
+        optionMenu = noOptionMenu;
       }
       break;
     }
@@ -170,6 +171,7 @@ void buttonPressLeft() {
       speakerGroup -> tv -> tvRemoteCommand("left");
       break;
     case SpeakerRemotePlayerType:
+      optionMenu = noOptionMenu;
       break;
     }
     break;
@@ -196,13 +198,13 @@ void buttonPressRight() {
       speakerGroup -> tv -> tvRemoteCommand("right");
       break;
     case SpeakerRemotePlayerType:
-      optionMenu = noOptionMenu;
       if (optionMenu == speakerOptionMenu) {
         speakerGroup -> toggleMute();
         displayUpdate.updateDisplay(true);
       } else {
         speakerGroup -> activePlayer -> nextTrack();
       }
+      optionMenu = noOptionMenu;
       break;
     }
     break;

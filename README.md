@@ -135,11 +135,13 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - repeat/all/single/off
 - light dimming
 - weather screen
-- room screen
+- home / room screen
 	- temp display
-	- lights
+	- rgb / temp lights
 	- media player
 	- hvac
+	- switches
+	- sliders
 - settings menu
 - esphome custom components
 	- display menu code
@@ -147,6 +149,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 	- tdisplay battery / charging
 	- m5stack fire battery / charging
 - case
+- grid ui
 - circuit diagram for tdisplay
 - make sensor for current screen
 - better tv support

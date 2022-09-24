@@ -164,6 +164,12 @@ globals:
     restore_value: no
     initial_value: ${draw_battery_level}
     
+## Draw volume level in header
+  - id: draw_volume_level
+    type: bool
+    restore_value: no
+    initial_value: ${draw_volume_level}
+    
 ## Draw shuffle icon if shuffle is disabled
   - id: draw_shuffle_disabled
     type: bool
