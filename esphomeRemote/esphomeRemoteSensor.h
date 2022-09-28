@@ -18,7 +18,7 @@ class SensorComponent : public CustomAPIDevice, public Component {
 
   private:
     void state_changed(std::string newState) {
-      ESP_LOGI("Sensor", "state changed to %s", newState.c_str());
+      ESP_LOGD("Sensor", "%s state changed to %s", friendlyName.c_str(), newState.c_str());
       state = newState;
     }
 };
@@ -37,7 +37,6 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
     std::vector<MenuTitle> sensorTitles() {
       std::vector<MenuTitle> out;
       for (auto &sensor: sensors) {
-        ESP_LOGI("Sensor", "state %s", sensor->state.c_str());
         if(sensor->friendlyName != "") {
           out.push_back(MenuTitle(sensor->friendlyName + " " + sensor->state, sensor->entityId, NoMenuTitleState));
         } else {
