@@ -77,6 +77,7 @@ int scrollTop = 0;
 int menuIndex = 0;
 int rotaryPosition = 0;
 int activeMenuTitleCount = 0;
+double previousVCCADC = 0;
 OptionMenuType optionMenu = noOptionMenu;
 
 #endif

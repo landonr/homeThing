@@ -248,10 +248,10 @@ int drawBattery(int oldXPos) {
   int xPos = oldXPos - batteryWidth;
   id(my_display).rectangle(xPos, yPos, batteryWidth, batteryHeight, id(my_gray_dark));
   id(my_display).rectangle(xPos + batteryWidth - 1, yPos + (batteryHeight / 2) - (capHeight / 2), capWidth, capHeight, id(my_gray_dark));
-  if (id(batteryPercent).state <= 100 && !charging) {
+  if (!charging) {
     id(my_display).filled_rectangle(xPos + 1, yPos + 1, (batteryWidth * id(batteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_green));
   } else {
-    id(my_display).filled_rectangle(xPos + 1, yPos + 1, batteryWidth - 2, batteryHeight - 2, id(my_yellow));
+    id(my_display).filled_rectangle(xPos + 1, yPos + 1, (batteryWidth * id(batteryPercent).state * 0.01) - 2, batteryHeight - 2, id(my_yellow));
   }
   return xPos - id(margin_size);
 }

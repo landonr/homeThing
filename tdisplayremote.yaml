@@ -27,7 +27,7 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: INFO
+  level: DEBUG
 
 ota:
 
@@ -93,11 +93,12 @@ custom_component:
 
 ## Home assistant sensors. Set with a friendly name
 - lambda: |-
-    std::vector<FriendlyNameEntity> sensors { 
+    std::vector<FriendlyNameEntity> sensors {
       FriendlyNameEntity("sensor.vancouver_forecast", ""),
       FriendlyNameEntity("sensor.accuweather_realfeel_temperature", "Temperature"),
       FriendlyNameEntity("sensor.washing_machine_state", "Washing Machine"),
-      FriendlyNameEntity("sensor.soil_sensor_soil_moisture_2", "Plant Moisture")
+      FriendlyNameEntity("sensor.soil_sensor_soil_moisture_2", "Plant Moisture"),
+      FriendlyNameEntity("sensor.particulate_matter_2_5um_concentration", "Kitchen Air")
     };
     sensorGroup->setup(sensors);
     App.register_component(sensorGroup);
@@ -148,44 +149,111 @@ sensor:
     name: "vccadc"
     update_interval: 250ms
     id: vcc_adc
-    internal: true
+    internal: false
+    accuracy_decimals: 5
+    filters:
+      - multiply: 2
+      - sliding_window_moving_average:
+          window_size: 9
+          send_every: 4
+          send_first_at: 4
     on_value:
       then:
         lambda: |-
-          if (id(vcc_adc).state > 2.23) {
+          if (x >= 4.2) {
             if (charging == false) {
               charging = true;
+              previousVCCADC = 0;
             }
+            if (x <= previousVCCADC) {
+              return;
+            }
+            // if(previousVCCADC == 0) {
+            //   previousVCCADC = x;
+            // } else if(x - previousVCCADC > 0.01) {
+            //   previousVCCADC += 0.001;
+            // } else {
+                 previousVCCADC = x;
+            // }
+            id(charge_battery_voltage).publish_state(previousVCCADC);
           } else {
             if (charging == true) {
               charging = false;
+              previousVCCADC = 0;
             }
+            if (x >= previousVCCADC && previousVCCADC != 0) {
+              return;
+            }
+            if(previousVCCADC == 0) {
+              previousVCCADC = x;
+            } else if(previousVCCADC - x > 0.01) {
+              previousVCCADC -= 0.0005;
+            }
+            id(discharge_battery_voltage).publish_state(previousVCCADC);
           }
-          id(vcc_adc_avg).publish_state(id(vcc_adc).state);
   - platform: template
-    id: vcc_adc_avg
+    id: discharge_battery_voltage
+    update_interval: never
+    accuracy_decimals: 5
     filters:
-      - sliding_window_moving_average:
-          window_size: 4
-          send_every: 4
+    - calibrate_polynomial:
+       degree: 1
+       datapoints:
+        - 3.6000 -> 0.0000
+        - 3.7500 -> 50.0000
+        - 4.0000 -> 90.0000
+        - 4.0500 -> 98.0000
+        - 4.1400 -> 100.0000
     on_value :
-      then:
-        - sensor.template.publish:
-            id: batteryVoltage
-            state: !lambda 'return id(vcc_adc).state;'
+     then:
+       - sensor.template.publish:
+           id: batteryPercent
+           state: !lambda 'return x;'
   - platform: template
-    name: batteryVoltage
-    id: batteryVoltage
-    internal: true
-    unit_of_measurement: 'V'
+    id: charge_battery_voltage
+    accuracy_decimals: 5
+    update_interval: never
+    filters:
+    - calibrate_polynomial:
+       degree: 1
+       datapoints:
+        - 4.2000 -> 0.0000
+        - 4.8000 -> 10.0000
+        - 4.8100 -> 20.0000
+        - 4.8200 -> 25.0000
+        - 4.8250 -> 40.0000
+        - 4.8275 -> 60.0000
+        - 4.8300 -> 90.0000
+        - 4.8400 -> 100.0000
     on_value :
-      then:
-        - sensor.template.publish:
-            id: batteryPercent
-            state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
+     then:
+       - sensor.template.publish:
+           id: batteryPercent
+           state: !lambda 'return x;'
+  #- platform: template
+  #  name: batteryVoltage
+  #  id: batteryVoltage
+  #  internal: true
+  #  unit_of_measurement: 'V'
+  #  on_value :
+  #    then:
+  #      lambda: |-
+  #        double newBatteryPercent = (id(batteryVoltage).state * 118) - 162;
+  #        if(newBatteryPercent > 100 && charging) {
+  #          double chargingBatteryPercent = ((newBatteryPercent - 100) / 0.24);
+  #          id(batteryPercent).publish_state(chargingBatteryPercent > chargingBatteryPercent ? 100 : chargingBatteryPercent);
+  #        } else {
+  #          id(batteryPercent).publish_state(newBatteryPercent);
+  #        }
+      # (((2.42487 * 118) - 162) - 100) / 0.25
+      #  - sensor.template.publish:
+      #      id: batteryPercent
+      #      state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
   - platform: template
     name: Battery Percent
     id: batteryPercent
+    update_interval: never
+    accuracy_decimals: 0
     unit_of_measurement: '%'
     on_value_range:
       below: 5
