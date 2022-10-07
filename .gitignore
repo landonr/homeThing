@@ -89,3 +89,18 @@ fastlane/test_output
 
 iOSInjectionProject/
 .esphome
+esphome-lvgl/LvglCheckbox.h
+esphome-lvgl/LvglComponent.h
+esphome-lvgl/LvglImage.h
+esphome-lvgl/LvglLabel.h
+esphome-lvgl/LvglSwitch.h
+esphome-lvgl/LvglToggleButton.h
+esphome-lvgl/bootlogo.h
+esphome-lvgl/lv_conf.h
+esphome-lvgl/lv_demo_conf.h
+esphome-lvgl/tftespi-component.h
+esphome-ttgo-tdisplay-s3-lvgl.yaml
+soil-sensor.yaml
+tdisplays3-switchplate.yaml
+cat-feeder.yaml
+secrets.yaml

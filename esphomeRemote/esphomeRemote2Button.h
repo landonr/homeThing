@@ -1,8 +1,8 @@
 #include "esphomeRemote.h"
 #include "esphomeRemoteNowPlayingMenu.h"
 
-#ifndef REMOTETHREEBUTTON
-#define REMOTETHREEBUTTON
+#ifndef REMOTETWOBUTTON
+#define REMOTETWOBUTTON
 
 void buttonPressSelect() {
   resetMarquee();
@@ -27,22 +27,6 @@ void buttonPressSelect() {
   }
 }
 
-void buttonPressLeft() {
-  resetMarquee();
-  optionMenu = noOptionMenu;
-  if (buttonPressWakeUpDisplay()) {
-    return;
-  }
-  if (menuIndex > 0) {
-    menuIndex--;
-  } else if(activeMenuState == nowPlayingMenu) {
-    menuIndex = activeMenuTitleCount - 1;
-  } else {
-    topMenu();
-  }
-  displayUpdate.updateDisplay(true);
-}
-
 void buttonPressRight() {
   resetMarquee();
   optionMenu = noOptionMenu;
@@ -52,7 +36,7 @@ void buttonPressRight() {
   if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
   } else if (menuIndex == activeMenuTitleCount - 1) {
-    menuIndex = 0;
+    topMenu();
   } else {
     menuIndex = 0;
   }
