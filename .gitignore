@@ -103,3 +103,4 @@ esphome-ttgo-tdisplay-s3-lvgl.yaml
 soil-sensor.yaml
 tdisplays3-switchplate.yaml
 cat-feeder.yaml
+secrets.yaml
