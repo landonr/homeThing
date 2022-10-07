@@ -13,13 +13,13 @@ esphome:
     - esphomeRemote/esphomeRemote2Button.h
 
 esp32:
-  board: esp32dev
+  board: m5stick-c
   framework:
     type: arduino
 
 substitutions:
   boot_name: '"M5Stick Remote <3"'
-  friendly_name: '"M5stickcRemote"'
+  friendly_name: M5stickcRemote
   large_font_size: "20"
   medium_font_size: "14"
   small_font_size: "12"
@@ -73,13 +73,13 @@ sensor:
 light:
   - platform: monochromatic
     output:  builtin_led
-    name: "${friendly_name} Led"
+    name: ${friendly_name} Led
     id: led1
   - platform: axp192
     id: axpbacklight
     axp192_id: axp
     restore_mode: ALWAYS_ON
-    name: "${friendly_name} Backlight"
+    name: ${friendly_name} Backlight
 
 output:
   - platform: ledc
@@ -92,7 +92,7 @@ binary_sensor:
     axp192_id: axp
     type: charging
     id: axp_charger
-    name: "${friendly_name} Charger"
+    name: ${friendly_name} Charger
     on_state:
       then:
         lambda: |-

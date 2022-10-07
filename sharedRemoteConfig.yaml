@@ -1,13 +1,12 @@
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  fast_connect: true
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "ESPHome Remote Fallback"
-    password: !secret wifi_password
-
-captive_portal:
+    password: !secret wifi_fallback_password
 
 # Enable logging
 logger:
@@ -229,64 +228,64 @@ time:
   - platform: homeassistant
     id: esptime
 
-#custom_component:
-## Home assistant speakers and tv. Set TV up with a sound bar
-# - lambda: |-
-#     SpeakerSetup soundBar = SpeakerSetup("media_player.beam", "Beam");
-#     std::vector<TVSetup> tvSetup = {
-#       TVSetup("media_player.55_tcl_roku_tv", "TV", 
-#         &soundBar
-#       ),
-#       TVSetup("media_player.55_tcl_roku_tv", "Fake", NULL)
-#     };
-#     std::vector<SpeakerSetup> speakerSetup = {
-#       SpeakerSetup("media_player.kitchen", "Kitchen"),
-#       SpeakerSetup("media_player.bedroom", "Bedroom")
-#     };
-#     speakerGroup->setup(tvSetup, speakerSetup);
-#     App.register_component(speakerGroup);
-#     return {speakerGroup};
-#   id: speaker_group_component
-  
-# ## Home assistant scripts and scenes. Set with a friendly name
-# - lambda: |-
-#     std::vector<BaseService> scenes { 
-#       ScriptService("script.colors", "Colors"), 
-#       ScriptService("script.warm", "Warm"), 
-#       ScriptService("script.dim_scene_script", "Dim"),
-#       ScriptService("script.off_script", "Lights Off"),
-#       SceneService("scene.hell", "Hell"),
-#       ScriptService("script.feed_cat_single", "Feed cat")
-#     };
-#     sceneGroup->setup(scenes);
-#     App.register_component(sceneGroup);
-#     return {sceneGroup};
-#   id: scene_group_component
+custom_component:
+# Home assistant speakers and tv. Set TV up with a sound bar
+ - lambda: |-
+     SpeakerSetup soundBar = SpeakerSetup("media_player.beam", "Beam");
+     std::vector<TVSetup> tvSetup = {
+       TVSetup("media_player.55_tcl_roku_tv", "TV", 
+         &soundBar
+       ),
+       TVSetup("media_player.55_tcl_roku_tv", "Fake", NULL)
+     };
+     std::vector<SpeakerSetup> speakerSetup = {
+       SpeakerSetup("media_player.kitchen", "Kitchen"),
+       SpeakerSetup("media_player.bedroom", "Bedroom")
+     };
+     speakerGroup->setup(tvSetup, speakerSetup);
+     App.register_component(speakerGroup);
+     return {speakerGroup};
+   id: speaker_group_component
+ 
+ ## Home assistant scripts and scenes. Set with a friendly name
+ - lambda: |-
+     std::vector<BaseService> scenes { 
+       ScriptService("script.colors", "Colors"), 
+       ScriptService("script.warm", "Warm"), 
+       ScriptService("script.dim_scene_script", "Dim"),
+       ScriptService("script.off_script", "Lights Off"),
+       SceneService("scene.hell", "Hell"),
+       ScriptService("script.feed_cat_single", "Feed cat")
+     };
+     sceneGroup->setup(scenes);
+     App.register_component(sceneGroup);
+     return {sceneGroup};
+   id: scene_group_component
 
-# ## Home assistant lights. Set with a friendly name
-# - lambda: |-
-#     std::vector<FriendlyNameEntity> lights { 
-#       FriendlyNameEntity("light.bathroom_lights", "Bathroom"), 
-#       FriendlyNameEntity("light.bedroom_lights", "Bedroom"), 
-#       FriendlyNameEntity("light.kitchen_lights", "Kitchen"), 
-#       FriendlyNameEntity("light.living_room_lights", "Living Room"), 
-#       FriendlyNameEntity("light.office_lamp", "Office Lamp")
-#     };
-#     lightGroup->setup(lights);
-#     App.register_component(lightGroup);
-#     return {lightGroup};
-#   id: light_group_component
+ ## Home assistant lights. Set with a friendly name
+ - lambda: |-
+     std::vector<FriendlyNameEntity> lights { 
+       FriendlyNameEntity("light.bathroom_lights", "Bathroom"), 
+       FriendlyNameEntity("light.bedroom_lights", "Bedroom"), 
+       FriendlyNameEntity("light.kitchen_lights", "Kitchen"), 
+       FriendlyNameEntity("light.living_room_lights", "Living Room"), 
+       FriendlyNameEntity("light.office_lamp", "Office Lamp")
+     };
+     lightGroup->setup(lights);
+     App.register_component(lightGroup);
+     return {lightGroup};
+   id: light_group_component
 
-# ## Home assistant sensors. Set with a friendly name
-# - lambda: |-
-#     std::vector<FriendlyNameEntity> sensors {
-#       FriendlyNameEntity("sensor.vancouver_forecast", ""),
-#       FriendlyNameEntity("sensor.accuweather_realfeel_temperature", "Temperature"),
-#       FriendlyNameEntity("sensor.washing_machine_state", "Washing Machine"),
-#       FriendlyNameEntity("sensor.soil_sensor_soil_moisture_2", "Plant Moisture"),
-#       FriendlyNameEntity("sensor.particulate_matter_2_5um_concentration", "Kitchen Air")
-#     };
-#     sensorGroup->setup(sensors);
-#     App.register_component(sensorGroup);
-#     return {sensorGroup};
-#   id: sensor_group_component
+ ## Home assistant sensors. Set with a friendly name
+ - lambda: |-
+     std::vector<FriendlyNameEntity> sensors {
+       FriendlyNameEntity("sensor.vancouver_forecast", ""),
+       FriendlyNameEntity("sensor.accuweather_realfeel_temperature", "Temperature"),
+       FriendlyNameEntity("sensor.washing_machine_state", "Washing Machine"),
+       FriendlyNameEntity("sensor.soil_sensor_soil_moisture_2", "Plant Moisture"),
+       FriendlyNameEntity("sensor.particulate_matter_2_5um_concentration", "Kitchen Air")
+     };
+     sensorGroup->setup(sensors);
+     App.register_component(sensorGroup);
+     return {sensorGroup};
+   id: sensor_group_component
