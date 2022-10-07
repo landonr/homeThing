@@ -72,6 +72,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - Scroll for volume (with scroll wheel)
 - Power, back, home, pause in second menu
 - Change source from tv source list
+- Optional soundbar support
 
 - Change current media player (tv or speaker) from home menu
 	- On boot the current media player is the first speaker found playing music or the tv
@@ -152,7 +153,4 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - grid ui
 - circuit diagram for tdisplay
 - make sensor for current screen
-- better tv support
-	- support multiple tvs
-	- make soundbar optional
 
