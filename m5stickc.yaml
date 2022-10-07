@@ -20,6 +20,9 @@ esp32:
 substitutions:
   boot_name: '"M5Stick Remote <3"'
   friendly_name: M5stickcRemote
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  wifi_fallback_password: !secret wifi_fallback_password
   large_font_size: "20"
   medium_font_size: "14"
   small_font_size: "12"
@@ -33,7 +36,7 @@ substitutions:
   draw_volume_level: "false"
   draw_shuffle_disabled: "false"
 
-<<: !include sharedRemoteConfig.yaml
+<<: !include esphomeRemote/sharedRemoteConfig.yaml
 
 i2c:
    - id: bus_a
@@ -73,13 +76,13 @@ sensor:
 light:
   - platform: monochromatic
     output:  builtin_led
-    name: ${friendly_name} Led
+    name: Led
     id: led1
   - platform: axp192
     id: axpbacklight
     axp192_id: axp
     restore_mode: ALWAYS_ON
-    name: ${friendly_name} Backlight
+    name: Backlight
 
 output:
   - platform: ledc
@@ -92,7 +95,7 @@ binary_sensor:
     axp192_id: axp
     type: charging
     id: axp_charger
-    name: ${friendly_name} Charger
+    name: Charger
     on_state:
       then:
         lambda: |-
@@ -101,7 +104,7 @@ binary_sensor:
     pin:
       number: GPIO37
       inverted: true
-    name: ${friendly_name} Button A
+    name: Button A
     on_press:
       then:
         lambda: |-
@@ -117,7 +120,7 @@ binary_sensor:
     pin:
       number: GPIO39
       inverted: true
-    name: ${friendly_name} Button B
+    name: Button B
     on_press:
       then:
         lambda: |-
@@ -164,9 +167,9 @@ display:
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");
-      //  id(backlight).turn_on();
+        id(backlight).turn_on();
         idleTime = 0;
       }
 
-      // drawMenu();
+      drawMenu();
       return;

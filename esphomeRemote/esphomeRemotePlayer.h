@@ -789,6 +789,9 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
   }
 
   bool updateMediaPosition() {
+    if(!playerSearchFinished) {
+      return false;
+    }
     bool updateDisplay = false;
     for (auto &speaker: speakers) {
       if (
@@ -801,12 +804,14 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
         updateDisplay = true;
       }
     }
-    switch (activePlayer->playerType) {
-    case TVRemotePlayerType:
-      updateDisplay = false;
-      break;
-    case SpeakerRemotePlayerType:
-      break;
+    if(activePlayer != NULL) {
+      switch (activePlayer->playerType) {
+      case TVRemotePlayerType:
+        updateDisplay = false;
+        break;
+      case SpeakerRemotePlayerType:
+        break;
+      }
     }
     return updateDisplay;
   }
