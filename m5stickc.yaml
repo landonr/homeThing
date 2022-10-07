@@ -1,0 +1,172 @@
+esphome:
+  name: m5stickc
+  includes:
+    - esphomeRemote/MenuGlobals.h
+    - esphomeRemote/MenuTitle.h
+    - esphomeRemote/esphomeRemotePlayer.h
+    - esphomeRemote/esphomeRemoteService.h
+    - esphomeRemote/esphomeRemoteLight.h
+    - esphomeRemote/esphomeRemoteSensor.h
+    - esphomeRemote/DisplayUpdateInterface.h
+    - esphomeRemote/esphomeRemote.h
+    - esphomeRemote/esphomeRemoteNowPlayingMenu.h
+    - esphomeRemote/esphomeRemote2Button.h
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+substitutions:
+  boot_name: '"M5Stick Remote <3"'
+  friendly_name: '"M5stickcRemote"'
+  large_font_size: "20"
+  medium_font_size: "14"
+  small_font_size: "12"
+  header_height: "16"
+  margin_size: "4"
+  scroll_bar_width: "6"
+  bottom_bar_margin: "32"
+  now_playing_max_lines: "5"
+  draw_now_playing_menu: "true"
+  draw_battery_level: "true"
+  draw_volume_level: "false"
+  draw_shuffle_disabled: "false"
+
+<<: !include sharedRemoteConfig.yaml
+
+i2c:
+   - id: bus_a
+     sda: GPIO21
+     scl: GPIO22
+     scan: true
+
+external_components:
+  - source:
+      type: git
+      url: https://gitlab.com/geiseri/esphome_extras.git
+    refresh: 0s
+    components: [axp192]
+
+axp192:
+  id: axp
+  address: 0x34
+  i2c_id: bus_a
+  update_interval: 60s
+
+sensor:
+    # AXP192 power management - must be present to initialize TFT power on
+  - platform: axp192
+    axp192_id: axp
+    id: batteryPercent
+  - platform: template
+    id: display_update_tick
+    filters:
+      - debounce: 0.02s
+    on_value :
+      then:
+        - lambda: |-
+            if(idleTime < 2) {
+              displayUpdate.updateDisplay(true);
+            }
+# internal LED
+light:
+  - platform: monochromatic
+    output:  builtin_led
+    name: "${friendly_name} Led"
+    id: led1
+  - platform: axp192
+    id: axpbacklight
+    axp192_id: axp
+    restore_mode: ALWAYS_ON
+    name: "${friendly_name} Backlight"
+
+output:
+  - platform: ledc
+    pin: 10
+    inverted: true
+    id: builtin_led
+
+binary_sensor:
+  - platform: axp192
+    axp192_id: axp
+    type: charging
+    id: axp_charger
+    name: "${friendly_name} Charger"
+    on_state:
+      then:
+        lambda: |-
+          charging = x;
+  - platform: gpio
+    pin:
+      number: GPIO37
+      inverted: true
+    name: ${friendly_name} Button A
+    on_press:
+      then:
+        lambda: |-
+            buttonPressRight();
+            auto call = id(led1).turn_on();
+            call.set_transition_length(0);
+            call.perform();
+    on_release:
+      then:
+        - light.turn_off: led1
+        
+  - platform: gpio
+    pin:
+      number: GPIO39
+      inverted: true
+    name: ${friendly_name} Button B
+    on_press:
+      then:
+        lambda: |-
+            buttonPressSelect();
+            auto call = id(led1).turn_on();
+            call.set_transition_length(0);
+            call.perform();
+    on_release:
+      then:
+        - light.turn_off: led1
+
+switch:
+  - platform: template
+    id: sleep_toggle
+    internal: true
+    optimistic: true
+  - platform: template
+    id: backlight
+    optimistic: true
+    internal: true
+    on_turn_on:
+      then:
+        - light.turn_on:
+            id: axpbacklight
+    on_turn_off:
+      then:
+        - light.turn_off:
+            id: axpbacklight
+            transition_length: 0.5s
+
+spi:
+  clk_pin: GPIO13
+  mosi_pin: GPIO15
+
+display:
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
+    id: my_display
+    cs_pin: GPIO5
+    dc_pin: GPIO23
+    reset_pin: GPIO18
+    rotation: 0
+    update_interval: 60s
+    lambda: |-
+      if (idleTime < 0) {
+        ESP_LOGD("drawing menu", "turning on");
+      //  id(backlight).turn_on();
+        idleTime = 0;
+      }
+
+      // drawMenu();
+      return;

@@ -18,14 +18,14 @@ void buttonPressSelect() {
   case nowPlayingMenu:
     if (optionMenu == tvOptionMenu) {
       optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("power");
+      speakerGroup->sendActivePlayerRemoteCommand("power");
       displayUpdate.updateDisplay(true);
       return;
     }
 
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("select");
+      speakerGroup->sendActivePlayerRemoteCommand("select");
       break;
     case SpeakerRemotePlayerType:
       break;
@@ -89,7 +89,7 @@ void buttonPressUp() {
 
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("up");
+      speakerGroup->sendActivePlayerRemoteCommand("up");
       return;
     case SpeakerRemotePlayerType:
       break;
@@ -128,14 +128,14 @@ void buttonPressDown() {
   case nowPlayingMenu:
     if (optionMenu == tvOptionMenu) {
       optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("play");
+      speakerGroup->sendActivePlayerRemoteCommand("play");
       displayUpdate.updateDisplay(true);
       return;
     }
 
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("down");
+      speakerGroup->sendActivePlayerRemoteCommand("down");
       break;
     case SpeakerRemotePlayerType:
       if (optionMenu == speakerOptionMenu) {
@@ -161,14 +161,14 @@ void buttonPressLeft() {
   case nowPlayingMenu:
     if (optionMenu == tvOptionMenu) {
       optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("back");
+      speakerGroup->sendActivePlayerRemoteCommand("back");
       displayUpdate.updateDisplay(true);
       return;
     }
 
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("left");
+      speakerGroup->sendActivePlayerRemoteCommand("left");
       break;
     case SpeakerRemotePlayerType:
       optionMenu = noOptionMenu;
@@ -189,13 +189,13 @@ void buttonPressRight() {
   case nowPlayingMenu:
     if (optionMenu == tvOptionMenu) {
       optionMenu = noOptionMenu;
-      speakerGroup -> tv -> tvRemoteCommand("menu");
+      speakerGroup->sendActivePlayerRemoteCommand("menu");
       displayUpdate.updateDisplay(true);
       return;
     }
     switch (speakerGroup -> activePlayer -> playerType) {
     case TVRemotePlayerType:
-      speakerGroup -> tv -> tvRemoteCommand("right");
+      speakerGroup->sendActivePlayerRemoteCommand("right");
       break;
     case SpeakerRemotePlayerType:
       if (optionMenu == speakerOptionMenu) {

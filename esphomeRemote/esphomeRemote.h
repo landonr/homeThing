@@ -226,6 +226,16 @@ int drawShuffle(int oldXPos) {
 }
 
 int drawHeaderTime(int oldXPos) {
+    switch (activeMenuState) {
+    case rootMenu:
+    case nowPlayingMenu:
+      break;
+    default:
+      if(id(my_display).get_width() < 200) {
+        return oldXPos;
+      }
+      break;
+  }
   int yPos = getHeaderTextYPos();
   std::string timeString = id(esptime).now().strftime("%I:%M%P");
   if(timeString.length() > 0 && timeString[0] == '0') {
@@ -653,9 +663,9 @@ bool drawOptionMenuAndStop() {
   case noOptionMenu:
     return false;
   case playingNewSourceMenu:
-    id(my_display).printf(id(my_display).get_width() / 2, 20 + id(margin_size), & id(medium_font), id(my_white), TextAlign::TOP_CENTER, "Playing...");
+    id(my_display).printf(id(my_display).get_width() / 2, id(header_height) + id(margin_size), & id(medium_font), id(my_white), TextAlign::TOP_CENTER, "Playing...");
     auto playingNewSourceWrappedText = getWrappedTitles(id(my_display).get_width() / 2, id(large_font_size), TextAlign::TOP_CENTER, playingNewSourceText);
-    drawTextWrapped(id(my_display).get_width() / 2, 40, 24, & id(large_font), id(my_white), TextAlign::TOP_CENTER, playingNewSourceWrappedText, 0);
+    drawTextWrapped(id(my_display).get_width() / 2, id(header_height) + id(margin_size) * 2 + id(medium_font_size), 24, & id(large_font), id(my_white), TextAlign::TOP_CENTER, playingNewSourceWrappedText, 0);
     return true;
   }
   return true;
@@ -837,17 +847,20 @@ void drawMenu() {
 }
 
 void selectMediaPlayers() {
-  if(activeMenuTitle.entityId == speakerGroup->tv->entityId) {
-    speakerGroup->activePlayer = speakerGroup->tv;
-  } else {
-    for (auto & speaker: speakerGroup->speakers) {
-      if(speaker->entityId == activeMenuTitle.entityId) {
-        speakerGroup->activePlayer = speaker;
-        break;
-      }
+  for (auto & speaker: speakerGroup->speakers) {
+    if(speaker->entityId == activeMenuTitle.entityId) {
+      speakerGroup->activePlayer = speaker;
+      topMenu();
+      return;
     }
   }
-  topMenu();
+  for (auto & tv: speakerGroup->tvs) {
+    if(tv->entityId == activeMenuTitle.entityId) {
+      speakerGroup->activePlayer = tv;
+      topMenu();
+      return;
+    }
+  }
 }
 
 bool selectRootMenu() {
