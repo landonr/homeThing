@@ -136,20 +136,20 @@ int getHeaderTextYPos() {
 }
 
 int drawPlayPauseIcon(int oldXPos) {
-  int yPos = id(header_height) / 2 - id(icon_size) / 2;
+  int yPos = getHeaderTextYPos();
   int xPos = oldXPos;
   switch(speakerGroup->activePlayer->menuTitlePlayerState()) {
     case PlayingMenuTitleState:
-      id(my_display).image(xPos, yPos, & id(image_play));
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(my_blue), "󰐊");
       break;
     case PausedMenuTitleState:
-      id(my_display).image(xPos, yPos, & id(image_pause));
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(my_blue), "󰏤");
       break;
     case StoppedMenuTitleState:
-      id(my_display).image(xPos, yPos, & id(image_stop));
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(my_blue), "󰓛");
       break;
     case PowerOffMenuTitleState:
-      id(my_display).image(xPos, yPos, & id(image_sleep));
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(my_blue), "󰽥");
       break;
     default:
       return oldXPos;
@@ -212,11 +212,11 @@ int drawShuffle(int oldXPos) {
   }
   if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
     int xPos = oldXPos - id(icon_size) - id(margin_size) / 2;
-    int yPos = id(header_height) / 2 - id(icon_size) / 2;
+    int yPos = getHeaderTextYPos();
     if (speakerGroup -> mediaShuffling()) {
-      id(my_display).image(xPos, yPos, & id(image_shuffle));
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(my_blue), "󰒝");
     } else if(id(draw_shuffle_disabled)) {
-      id(my_display).image(xPos, yPos, & id(image_shuffle_disabled));
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(my_blue), "󰒞");
     } else {
       return oldXPos;
     }
@@ -355,35 +355,20 @@ void scrollMenuPosition() {
 
 void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
   int adjustedYPos = yPos + (id(medium_font_size) / 4);
-  int xPos = ((characterCount + 1) * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
+  int xPos = (characterCount * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
+  auto color = selected ? id(my_white) : id(my_blue);
   switch(titleState) {
     case PlayingMenuTitleState:
-      if(selected) {
-        id(my_display).image(xPos, adjustedYPos, &id(image_play_white));
-      } else {
-        id(my_display).image(xPos, adjustedYPos, &id(image_play));
-      }
+      id(my_display).printf(xPos, yPos, &id(material_font), color, "󰐊");
       break;
     case PausedMenuTitleState:
-      if(selected) {
-        id(my_display).image(xPos, adjustedYPos, &id(image_pause_white));
-      } else {
-        id(my_display).image(xPos, adjustedYPos, &id(image_pause));
-      }
+      id(my_display).printf(xPos, yPos, &id(material_font), color, "󰏤");
       break;
     case StoppedMenuTitleState:
-      if(selected) {
-        id(my_display).image(xPos, adjustedYPos, &id(image_stop_white));
-      } else {
-        id(my_display).image(xPos, adjustedYPos, &id(image_stop));
-      }
+      id(my_display).printf(xPos, yPos, &id(material_font), color, "󰓛");
       break;
     case PowerOffMenuTitleState:
-      if(selected) {
-        id(my_display).image(xPos, adjustedYPos, &id(image_sleep_white));
-      } else {
-        id(my_display).image(xPos, adjustedYPos, &id(image_sleep));
-      }
+      id(my_display).printf(xPos, yPos, &id(material_font), color, "󰽥");
       break;
     default:
       break;
@@ -573,8 +558,8 @@ void drawVolumeOptionMenu() {
   int barWidth = (totalBarWidth - 4) * (speakerGroup -> getVolumeLevel() / 100);
   int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
 
-  id(my_display).image(iconMargin / 2 - id(icon_size) / 2, yPos + 1, & id(image_volume_low));
-  id(my_display).image(id(my_display).get_width() - iconMargin / 2 - id(icon_size) / 2, yPos + 1, & id(image_volume_high));
+  id(my_display).printf(iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(my_blue), "󰕿");
+  id(my_display).printf(id(my_display).get_width() - iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(my_blue), "󰕾");
 
   id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(my_blue));
   id(my_display).filled_rectangle(iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2, id(my_blue));
@@ -792,12 +777,27 @@ void drawBootSequence() {
     id(my_display).set_auto_clear(false);
     autoClearState = abs((int)esp_random()) + 1; // add 1 in case its 0
   }
+  speakerGroup -> findActivePlayer();
 
-  int imageXPos = esp_random() % (id(my_display).get_width() - id(icon_size));
-  int imageYPos = esp_random() % (id(my_display).get_height() - id(icon_size));
-  id(my_display).image(imageXPos, imageYPos, & id(image_sleep));
+  std::vector<std::string> glyphs = {
+    "󰐊",
+    "󰓛",
+    "󰏤",
+    "󰽥",
+    "󰒝",
+    "󰒞",
+    "󰕾",
+    "󰕿",
+  };
+
   std::vector<Color> colors = { id(my_green), id(my_blue), id(my_yellow), id(my_red) };
-
+  id(my_display).printf(
+    (int)esp_random() % (id(my_display).get_width() - id(icon_size)), 
+    (int)esp_random() % (id(my_display).get_height() - id(icon_size)), 
+    &id(material_font_small), 
+    colors[esp_random() % colors.size()], 
+    glyphs[esp_random() % glyphs.size()].c_str()
+  );
   for(int i = 0; i < 3; i++) {
     int xPos = autoClearState % (id(my_display).get_width() / 3);
     int yPos = autoClearState % (id(my_display).get_height() - id(large_font_size) * 2);
@@ -805,7 +805,6 @@ void drawBootSequence() {
     drawTextWrapped(xPos, yPos, id(large_font_size), & id(large_font), colors[esp_random() % colors.size()], TextAlign::TOP_LEFT, wrappedBootText, 0);
     autoClearState++;
   }
-  speakerGroup -> findActivePlayer();
   menuDrawing = false;
 }
 
