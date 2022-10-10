@@ -33,6 +33,7 @@ substitutions:
   draw_battery_level: "true"
   draw_volume_level: "false"
   draw_shuffle_disabled: "false"
+  draw_header_time: "true"
   color_accent_primary_red: 0%
   color_accent_primary_green: 45%
   color_accent_primary_blue: 68%

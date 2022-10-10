@@ -90,6 +90,7 @@ font:
       '󰝆', # mdi-netflix
       '󰗃', # mdi-youtube
       '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
     ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_small
@@ -107,6 +108,7 @@ font:
       '󰝆', # mdi-netflix
       '󰗃', # mdi-youtube
       '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
     ]
     
 globals:
@@ -200,6 +202,12 @@ globals:
     restore_value: no
     initial_value: ${draw_shuffle_disabled}
     
+## Draw time in header
+  - id: draw_header_time
+    type: bool
+    restore_value: no
+    initial_value: ${draw_header_time}
+    
 ## Customize device boot name
   - id: boot_device_name
     type: std::string
@@ -253,7 +261,7 @@ custom_component:
      std::vector<SpeakerSetup> speakerSetup = {
        SpeakerSetup("media_player.kitchen", "Kitchen"),
        SpeakerSetup("media_player.bedroom", "Bedroom"),
-       SpeakerSetup("media_player.bedroom", "Office")
+       SpeakerSetup("media_player.office", "Office")
      };
      speakerGroup->setup(tvSetup, speakerSetup);
      App.register_component(speakerGroup);
