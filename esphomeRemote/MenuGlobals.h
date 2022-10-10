@@ -36,7 +36,8 @@ enum NowPlayingMenuState {
   shuffleNowPlayingMenuState,
   backNowPlayingMenuState,
   TVPowerNowPlayingMenuState,
-  homeNowPlayingMenuState
+  homeNowPlayingMenuState,
+  groupNowPlayingMenuState
 };
 
 std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
@@ -46,6 +47,7 @@ std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
     volumeDownNowPlayingMenuState,
     nextNowPlayingMenuState,
     shuffleNowPlayingMenuState,
+    groupNowPlayingMenuState,
     menuNowPlayingMenuState
   };
 }

@@ -29,6 +29,10 @@ void selectNowPlayingMenu() {
   case menuNowPlayingMenuState:
     topMenu();
     break;
+  case groupNowPlayingMenuState:
+    menuIndex = 0;
+    activeMenuState = groupMenu;
+    break;
   case TVPowerNowPlayingMenuState:
     speakerGroup->sendActivePlayerRemoteCommand("power");
     break;

@@ -32,7 +32,7 @@ substitutions:
   margin_size: "4"
   scroll_bar_width: "6"
   bottom_bar_margin: "32"
-  now_playing_max_lines: "5"
+  now_playing_max_lines: "8"
   draw_now_playing_menu: "true"
   draw_battery_level: "true"
   draw_volume_level: "false"
@@ -140,11 +140,24 @@ binary_sensor:
       then:
         - light.turn_off: led1
 
+deep_sleep:
+  id: deep_sleep_m5
+  wakeup_pin: 37
+  wakeup_pin_mode: INVERT_WAKEUP
+
 switch:
   - platform: template
     id: sleep_toggle
     internal: true
     optimistic: true
+    on_turn_on:
+      then:
+        - light.turn_off:
+            id: axpbacklight
+            transition_length: 0s
+        - delay: 0.5s
+        - deep_sleep.enter:
+            id: deep_sleep_m5
   - platform: template
     id: backlight
     optimistic: true

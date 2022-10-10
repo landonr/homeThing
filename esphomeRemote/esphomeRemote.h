@@ -679,6 +679,8 @@ std::string stringForNowPlayingMenuState(NowPlayingMenuState state) {
     return "Power";
   case homeNowPlayingMenuState:
     return "TV Home";
+  case groupNowPlayingMenuState:
+    return "Group";
   case shuffleNowPlayingMenuState:
     if(speakerGroup -> mediaShuffling()) {
       return "Shfl on";

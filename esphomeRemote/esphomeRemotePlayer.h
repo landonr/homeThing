@@ -152,7 +152,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   std::string mediaTitleString() {
     switch(playerType) {
       case TVRemotePlayerType:
-        playingSourceStateString(mediaSource);
+        return playingSourceStateString(mediaSource);
       case SpeakerRemotePlayerType:
         return mediaArtist;
     }
@@ -429,7 +429,7 @@ class TVPlayerComponent : public BasePlayerComponent {
   }
 
   void player_source_changed(std::string state) {
-    ESP_LOGI("PlayerTV", "%s Player source changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("PlayerTV", "%s Player source changed to %s", friendlyName.c_str(), state.c_str());
     if(state.find("YouTube") != std::string::npos) {
       mediaSource = YouTubeMenuTitlePlayingSourceState;
     } else if(state.find("Netflix") != std::string::npos) {
@@ -443,7 +443,7 @@ class TVPlayerComponent : public BasePlayerComponent {
   }
 
   void player_source_list_changed(std::string state) {
-    ESP_LOGI("PlayerTV", "%s Player source list changed to %s", entityId.c_str(), state.c_str());
+    ESP_LOGI("PlayerTV", "%s Player source list changed to %s", friendlyName.c_str(), state.c_str());
     std::vector<std::string> out;
     tokenize(state, ",", out);
     sources.clear();
@@ -769,7 +769,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     }
     for (auto &tv: tvs) {
       out.push_back(MenuTitle(tv->friendlyName, tv->entityId, tv->menuTitlePlayerState()));
-      if(tv->speaker != NULL) {
+      if(tv->speaker != NULL && tv->speaker->mediaSource != TVMenuTitlePlayingSourceState) {
         out.push_back(MenuTitle(tv->speaker->friendlyName, tv->speaker->entityId, GroupedMenuTitleState));
       }
     }
@@ -880,9 +880,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
         if(activePlayer->mediaSource == TVMenuTitlePlayingSourceState) {
           SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
           if(activeSpeaker != NULL && activeSpeaker->tv != NULL) {
-            return playingSourceStateString(activeSpeaker->tv->mediaSource);
+            return activeSpeaker->tv->mediaTitleString();
           }
-          return "";
         }
         return activePlayer->mediaTitleString();
       }
