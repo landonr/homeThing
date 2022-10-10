@@ -26,6 +26,8 @@ substitutions:
   large_font_size: "20"
   medium_font_size: "14"
   small_font_size: "12"
+  icon_size: "18"
+  icon_size_large: "19"
   header_height: "16"
   margin_size: "4"
   scroll_bar_width: "6"
@@ -35,6 +37,9 @@ substitutions:
   draw_battery_level: "true"
   draw_volume_level: "false"
   draw_shuffle_disabled: "false"
+  color_text_primary_red: 63%
+  color_text_primary_green: 13%
+  color_text_primary_blue: 94%
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
 
