@@ -14,12 +14,22 @@ enum MenuTitleState {
   PowerOffMenuTitleState
 };
 
+enum MenuTitlePlayingSourceState {
+  NoMenuTitlePlayingSourceState,
+  YouTubeMenuTitlePlayingSourceState,
+  SpotifyMenuTitlePlayingSourceState,
+  NetflixMenuTitlePlayingSourceState,
+  PlexMenuTitlePlayingSourceState
+};
+
 class MenuTitle {
   public:
     MenuTitle(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState) { }
+    MenuTitle(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState, MenuTitlePlayingSourceState newPlayingState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState), playingState(newPlayingState) { }
     std::string friendlyName;
     std::string entityId;
     MenuTitleState titleState;
+    MenuTitlePlayingSourceState playingState = NoMenuTitlePlayingSourceState;
     
     bool indentLine() {
       switch (titleState) {
@@ -31,6 +41,22 @@ class MenuTitle {
           return false;
       }
       return false;
+    }
+
+    std::string playingSourceStateString() {
+      switch(playingState) {
+        case NoMenuTitlePlayingSourceState:
+          return "󰐊";
+        case YouTubeMenuTitlePlayingSourceState:
+          return "󰗃";
+        case SpotifyMenuTitlePlayingSourceState:
+          return "󰓇";
+        case NetflixMenuTitlePlayingSourceState:
+          return "󰝆";
+        case PlexMenuTitlePlayingSourceState:
+          return "󰚺";
+      }
+      return "";
     }
 };
 

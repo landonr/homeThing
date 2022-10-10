@@ -35,10 +35,10 @@ color:
     red: 0%
     green: 100%
     blue: 0%
-  - id: my_blue
-    red: 0%
-    green: 45%
-    blue: 68%
+  - id: color_accent_primary
+    red: ${color_accent_primary_red}
+    green: ${color_accent_primary_green}
+    blue: ${color_accent_primary_blue}
   - id: my_gray_dark
     red: 40%
     green: 40%
@@ -74,46 +74,40 @@ font:
     id: small_font
     size: ${small_font_size}
     glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
-
-image:
-## You need 2 icons for each, one with a color background, one with black
-## todo would be make these material icons or svg
-  - file: "images/playWhite.png"
-    id: image_play_white
-    type: RGB24
-  - file: "images/play.png"
-    id: image_play
-    type: RGB24
-  - file: "images/pause.png"
-    id: image_pause
-    type: RGB24
-  - file: "images/pauseWhite.png"
-    id: image_pause_white
-    type: RGB24
-  - file: "images/stop.png"
-    id: image_stop
-    type: RGB24
-  - file: "images/stopWhite.png"
-    id: image_stop_white
-    type: RGB24
-  - file: "images/sleepWhite.png"
-    id: image_sleep_white
-    type: RGB24
-  - file: "images/sleep.png"
-    id: image_sleep
-    type: RGB24
-  - file: "images/shuffle.png"
-    id: image_shuffle
-    type: RGB24
-  - file: "images/shuffleDisabled.png"
-    id: image_shuffle_disabled
-    type: RGB24
-  - file: "images/volumeLow.png"
-    id: image_volume_low
-    type: RGB24
-  - file: "images/volumeHigh.png"
-    id: image_volume_high
-    type: RGB24
+  - file: 'fonts/materialdesignicons-webfont.ttf' 
+    id: material_font_large
+    size: ${icon_size_large}
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+    ]  
+  - file: 'fonts/materialdesignicons-webfont.ttf' 
+    id: material_font_small
+    size: ${icon_size}
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+    ]
     
 globals:
 ## Size of the large font above
@@ -168,7 +162,13 @@ globals:
   - id: icon_size
     type: int
     restore_value: no
-    initial_value: "12"
+    initial_value: ${icon_size}
+    
+## Height and width of the icons used in px
+  - id: icon_size_large
+    type: int
+    restore_value: no
+    initial_value: ${icon_size_large}
     
 ## Max lines on now playing screen before truncating happens
   - id: now_playing_max_lines
@@ -240,7 +240,8 @@ custom_component:
      };
      std::vector<SpeakerSetup> speakerSetup = {
        SpeakerSetup("media_player.kitchen", "Kitchen"),
-       SpeakerSetup("media_player.bedroom", "Bedroom")
+       SpeakerSetup("media_player.bedroom", "Bedroom"),
+       SpeakerSetup("media_player.bedroom", "Office")
      };
      speakerGroup->setup(tvSetup, speakerSetup);
      App.register_component(speakerGroup);
