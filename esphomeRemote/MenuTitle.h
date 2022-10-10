@@ -19,8 +19,27 @@ enum MenuTitlePlayingSourceState {
   YouTubeMenuTitlePlayingSourceState,
   SpotifyMenuTitlePlayingSourceState,
   NetflixMenuTitlePlayingSourceState,
-  PlexMenuTitlePlayingSourceState
+  PlexMenuTitlePlayingSourceState,
+  TVMenuTitlePlayingSourceState
 };
+
+std::string playingSourceStateString(MenuTitlePlayingSourceState playingState) {
+  switch(playingState) {
+    case NoMenuTitlePlayingSourceState:
+      return "No";
+    case YouTubeMenuTitlePlayingSourceState:
+      return "YouTube";
+    case SpotifyMenuTitlePlayingSourceState:
+      return "Spotify";
+    case NetflixMenuTitlePlayingSourceState:
+      return "Netflix";
+    case PlexMenuTitlePlayingSourceState:
+      return "Plex";
+    case TVMenuTitlePlayingSourceState:
+      return "TV";
+  }
+  return "";
+}
 
 class MenuTitle {
   public:
@@ -43,7 +62,7 @@ class MenuTitle {
       return false;
     }
 
-    std::string playingSourceStateString() {
+    std::string playingSourceStateIcon() {
       switch(playingState) {
         case NoMenuTitlePlayingSourceState:
           return "󰐊";
@@ -55,6 +74,8 @@ class MenuTitle {
           return "󰝆";
         case PlexMenuTitlePlayingSourceState:
           return "󰚺";
+        case TVMenuTitlePlayingSourceState:
+          return "󰔂";
       }
       return "";
     }

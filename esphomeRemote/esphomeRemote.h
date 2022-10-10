@@ -140,7 +140,7 @@ int drawPlayPauseIcon(int oldXPos, MenuTitle menuTitle) {
   int xPos = oldXPos;
   switch(menuTitle.titleState) {
     case PlayingMenuTitleState:
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.playingSourceStateString().c_str());
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.playingSourceStateIcon().c_str());
       break;
     case PausedMenuTitleState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰏤");
@@ -213,7 +213,7 @@ int drawShuffle(int oldXPos) {
     return oldXPos;
   }
   if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
-    int xPos = oldXPos - id(icon_size) - id(margin_size) / 2;
+    int xPos = oldXPos - id(icon_size) + id(margin_size) / 2;
     int yPos = getHeaderTextYPos();
     if (speakerGroup -> mediaShuffling()) {
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰒝");
@@ -228,7 +228,10 @@ int drawShuffle(int oldXPos) {
 }
 
 int drawHeaderTime(int oldXPos) {
-    switch (activeMenuState) {
+  if(!id(draw_header_time)) {
+    return oldXPos;
+  }
+  switch (activeMenuState) {
     case rootMenu:
     case nowPlayingMenu:
       break;
@@ -378,7 +381,7 @@ void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, boo
 }
 
 void drawGroupedBar(int yPos, bool extend) {
-  int xPos = 8;
+  int xPos = id(margin_size) * 2;
   int width = 8;
   int lineHeight = extend ? id(medium_font_size) + id(margin_size) : (id(medium_font_size) + id(margin_size)) / 2;
   id(my_display).line(xPos, yPos, xPos, yPos + lineHeight, id(my_white));
@@ -737,8 +740,8 @@ void drawNowPlaying() {
   }
   int xPos = id(my_display).get_width() / 2;
   auto nowPlayingWrappedText = getWrappedTitles(id(margin_size), id(medium_font_size), TextAlign::TOP_LEFT, nowPlayingText);
-  auto mediaArtistWrappedText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_CENTER, speakerGroup -> activePlayer->mediaTitleString());
-  auto mediaTitleWrappedText = getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER, speakerGroup -> activePlayer->mediaSubtitleString());
+  auto mediaArtistWrappedText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_CENTER, speakerGroup->mediaTitleString());
+  auto mediaTitleWrappedText = getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER, speakerGroup->mediaSubtitleString());
   int lineCount = nowPlayingWrappedText.size() + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
   int maxLines = 0;
   if(lineCount > id(now_playing_max_lines)) {
