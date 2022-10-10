@@ -206,6 +206,18 @@ globals:
     restore_value: no
     initial_value: ${boot_name}
 
+## Turn off display after x seconds of idle
+  - id: display_timeout
+    type: int
+    restore_value: no
+    initial_value: ${display_timeout}
+
+## Go to sleep after x seconds of idle
+  - id: sleep_after
+    type: int
+    restore_value: no
+    initial_value: ${sleep_after}
+      
 interval:
   - interval: 1s
     then:

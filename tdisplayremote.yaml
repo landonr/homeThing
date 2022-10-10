@@ -36,6 +36,8 @@ substitutions:
   color_accent_primary_red: 0%
   color_accent_primary_green: 45%
   color_accent_primary_blue: 68%
+  display_timeout: "16"
+  sleep_after: "7200"
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
   
