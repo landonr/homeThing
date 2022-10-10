@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: finnp/create-file-action@1.0.0
         env:
-          FILE_NAME: "secrets.yaml"
+          FILE_NAME: ${{ matrix.devices }}/secrets.yaml
           FILE_BASE64: "d2lmaV9ic3NpZDogIjFDOjg3OjJDOjcwOkMyOkMyIgp3aWZpX3NzaWQ6ICJzc2lkIgp3aWZpX3Bhc3N3b3JkOiAid2lmaXBhc3MiCndpZmlfZmFsbGJhY2tfcGFzc3dvcmQ6ICJ3aWZpZmFsbGJhY2twYXNzIgphcGlfZW5jcnlwdGlvbjogImFwaWVuY3J5cHRpb24iCm90YV9lbmNyeXB0aW9uOiAib3RhZW5jcnlwdGlvbiI="
       - uses: esphome/build-action@v1.1.0
         with:
