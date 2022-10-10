@@ -15,7 +15,7 @@
 	- toggle lights on and off 5
 	- view Home Assistant Sensors
 - more
-	- display sleeps after 4s, powers off after 2h
+	- display sleeps after 16s, powers off after 2h (configure through substitutions)
 
 # What You Need
 -  Hardware (pick one):
@@ -43,6 +43,8 @@
 	8. now_playing_max_lines: Max lines displayed on Now Playing Screen
 	9. draw_now_playing_menu: Show navigation menu on Now Playing screen
 	10. boot_device_name: Customize the name displayed on boot
+    11. display_timeout: Turn off display [s]
+    12. sleep_after: Enter deep sleep [s]
 	- More configuration can be done in esphome/esphome-remote-base.yaml
 		1. Customize **Colors**
 		2. Customize **Fonts**

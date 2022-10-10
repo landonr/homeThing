@@ -500,7 +500,7 @@ void idleTick() {
   if (idleTime == 3) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
-  } else if (idleTime == 16) {
+  } else if (idleTime == id(display_timeout)) {
     if (speakerGroup -> playerSearchFinished) {
       idleMenu(false);
       displayUpdate.updateDisplay(false);
@@ -515,7 +515,7 @@ void idleTick() {
     idleMenu(true);
     idleTime++;
     return;
-  } else if (idleTime > 6400) {
+  } else if (idleTime > id(sleep_after)) {
     if(!charging) {
       ESP_LOGI("idle", "night night");
       id(sleep_toggle).turn_on();
