@@ -15,7 +15,7 @@
 	- toggle lights on and off 5
 	- view Home Assistant Sensors
 - more
-	- display sleeps after 16s, powers off after 2h (configure through substitions)
+	- display sleeps after 16s, powers off after 2h (configure through substitutions)
 
 # What You Need
 -  Hardware (pick one):
