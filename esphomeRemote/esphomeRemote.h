@@ -140,16 +140,16 @@ int drawPlayPauseIcon(int oldXPos, MenuTitle menuTitle) {
   int xPos = oldXPos;
   switch(menuTitle.titleState) {
     case PlayingMenuTitleState:
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_text_primary), menuTitle.playingSourceStateString().c_str());
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.playingSourceStateString().c_str());
       break;
     case PausedMenuTitleState:
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_text_primary), "󰏤");
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰏤");
       break;
     case StoppedMenuTitleState:
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_text_primary), "󰓛");
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰓛");
       break;
     case PowerOffMenuTitleState:
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_text_primary), "󰽥");
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰽥");
       break;
     default:
       return oldXPos;
@@ -216,9 +216,9 @@ int drawShuffle(int oldXPos) {
     int xPos = oldXPos - id(icon_size) - id(margin_size) / 2;
     int yPos = getHeaderTextYPos();
     if (speakerGroup -> mediaShuffling()) {
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_text_primary), "󰒝");
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰒝");
     } else if(id(draw_shuffle_disabled)) {
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_text_primary), "󰒞");
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰒞");
     } else {
       return oldXPos;
     }
@@ -269,7 +269,7 @@ int drawBattery(int oldXPos) {
 }
 
 void drawHeader() {
-  id(my_display).rectangle(0, id(header_height), id(my_display).get_width(), 1, id(color_text_primary));
+  id(my_display).rectangle(0, id(header_height), id(my_display).get_width(), 1, id(color_accent_primary));
   drawHeaderTitle();
   int xPos = id(my_display).get_width() - id(margin_size) / 2;
   drawVolumeLevel(
@@ -300,7 +300,7 @@ void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpa
       marqueeText = false;
     }
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
-    id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(color_text_primary));
+    id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(medium_font_size) + id(margin_size), id(color_accent_primary));
     id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
   } else {
     id(my_display).printf(xPos, textYPos, & id(medium_font), id(my_white), TextAlign::TOP_LEFT, "%s", title.c_str());
@@ -320,7 +320,7 @@ void drawScrollBar(int menuTitlesCount, int headerHeight) {
     double height = maxItems() * (screenHeight / menuTitlesCount);
     double yPos = (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 + headerHeight;
     id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth, headerHeight, scrollBarWidth, screenHeight, id(my_gray_dark_2));
-    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth + scrollBarMargin, yPos, scrollBarWidth - scrollBarMargin * 2, height - 1, id(color_text_primary));
+    id(my_display).filled_rectangle(id(my_display).get_width() - scrollBarWidth + scrollBarMargin, yPos, scrollBarWidth - scrollBarMargin * 2, height - 1, id(color_accent_primary));
   }
 }
 
@@ -358,7 +358,7 @@ void scrollMenuPosition() {
 void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
-  auto color = selected ? id(my_white) : id(color_text_primary);
+  auto color = selected ? id(my_white) : id(color_accent_primary);
   switch(titleState) {
     case PlayingMenuTitleState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰐊");
@@ -560,11 +560,11 @@ void drawVolumeOptionMenu() {
   int barWidth = (totalBarWidth - 4) * (speakerGroup -> getVolumeLevel() / 100);
   int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
 
-  id(my_display).printf(iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(color_text_primary), "󰕿");
-  id(my_display).printf(id(my_display).get_width() - iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(color_text_primary), "󰕾");
+  id(my_display).printf(iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(color_accent_primary), "󰕿");
+  id(my_display).printf(id(my_display).get_width() - iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(color_accent_primary), "󰕾");
 
-  id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(color_text_primary));
-  id(my_display).filled_rectangle(iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2, id(color_text_primary));
+  id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(color_accent_primary));
+  id(my_display).filled_rectangle(iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2, id(color_accent_primary));
 }
 
 std::string secondsToString(int seconds) {
@@ -792,7 +792,7 @@ void drawBootSequence() {
     "󰕿",
   };
 
-  std::vector<Color> colors = { id(my_green), id(color_text_primary), id(my_yellow), id(my_red) };
+  std::vector<Color> colors = { id(my_green), id(color_accent_primary), id(my_yellow), id(my_red) };
   id(my_display).printf(
     (int)esp_random() % (id(my_display).get_width() - id(icon_size_large) * 2), 
     (int)esp_random() % (id(my_display).get_height() - id(icon_size_large) * 2), 

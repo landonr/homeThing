@@ -35,9 +35,9 @@ substitutions:
   draw_battery_level: "true"
   draw_volume_level: "false"
   draw_shuffle_disabled: "false"
-  color_text_primary_red: 63%
-  color_text_primary_green: 13%
-  color_text_primary_blue: 94%
+  color_accent_primary_red: 63%
+  color_accent_primary_green: 13%
+  color_accent_primary_blue: 94%
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
 

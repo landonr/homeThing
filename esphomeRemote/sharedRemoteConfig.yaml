@@ -35,10 +35,10 @@ color:
     red: 0%
     green: 100%
     blue: 0%
-  - id: color_text_primary
-    red: ${color_text_primary_red}
-    green: ${color_text_primary_green}
-    blue: ${color_text_primary_blue}
+  - id: color_accent_primary
+    red: ${color_accent_primary_red}
+    green: ${color_accent_primary_green}
+    blue: ${color_accent_primary_blue}
   - id: my_gray_dark
     red: 40%
     green: 40%
