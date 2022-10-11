@@ -52,7 +52,7 @@ void buttonPressNext() {
   }
   if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
-  } else if (menuIndex == activeMenuTitleCount - 1) {
+  } else if (id(menu_rollover_on) && menuIndex == activeMenuTitleCount - 1) {
       menuIndex = 0;
   }
   debounceUpdateDisplay();
@@ -71,7 +71,7 @@ void buttonPressPrevious() {
   }
   if (menuIndex > 0) {
     menuIndex--;
-  } else if (menuIndex == 0) {
+  } else if (id(menu_rollover_on) && menuIndex == 0) {
       menuIndex = activeMenuTitleCount - 1;
   }
   debounceUpdateDisplay();
