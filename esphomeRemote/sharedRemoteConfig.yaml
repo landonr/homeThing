@@ -226,6 +226,12 @@ globals:
     type: int
     restore_value: no
     initial_value: ${sleep_after}
+
+## Let the menu selection roll-over when reaching the beginning/end
+  - id: menu_rollover_on
+    type: bool
+    restore_value: no
+    initial_value: ${menu_rollover_on}
       
 interval:
   - interval: 1s
