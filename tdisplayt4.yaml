@@ -3,6 +3,7 @@ esphome:
   includes:
     - esphomeRemote/MenuGlobals.h
     - esphomeRemote/MenuTitle.h
+    - esphomeRemote/FriendlyNameEntity.h
     - esphomeRemote/esphomeRemotePlayer.h
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h

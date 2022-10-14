@@ -444,7 +444,7 @@ std::vector <MenuTitle> activeMenu() {
   case rootMenu:
     return menuTypesToTitles(rootMenuTitles());
   case sourcesMenu:
-    return speakerGroup -> activePlayer -> sources;
+    return speakerGroup -> activePlayerSourceMenu();
   case mediaPlayersMenu:
     return speakerGroup -> mediaPlayersTitleString();
   case scenesMenu:
@@ -917,7 +917,7 @@ bool selectMenu() {
     break;
   case sourcesMenu:
     idleMenu(true);
-    speakerGroup -> activePlayer -> playSource(menuIndexForSource);
+    speakerGroup -> activePlayer -> playSource(activeMenuTitle);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);
     break;

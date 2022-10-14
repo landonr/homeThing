@@ -1,6 +1,7 @@
 #include "esphome.h"
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
+#include "FriendlyNameEntity.h"
 
 #ifndef REMOTELIGHT
 #define REMOTELIGHT

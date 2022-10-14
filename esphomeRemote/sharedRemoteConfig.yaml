@@ -23,6 +23,10 @@ wifi:
 
 captive_portal:
 
+http_request:
+  useragent: esphome/device
+  timeout: 10s
+
 color:
   - id: my_red
     red: 100%

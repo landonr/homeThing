@@ -1,5 +1,6 @@
 #include "esphome.h"
 #include "MenuTitle.h"
+#include "FriendlyNameEntity.h"
 
 #ifndef REMOTESENSOR
 #define REMOTESENSOR
