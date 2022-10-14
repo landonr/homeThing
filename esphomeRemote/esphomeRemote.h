@@ -4,9 +4,9 @@
 #include "esphomeRemoteLight.h"
 #include "esphomeRemoteSensor.h"
 #include "MenuGlobals.h"
+#include "TextHelpers.h"
 
-#ifndef ESPHOMEREMOTE
-#define ESPHOMEREMOTE
+#pragma once
 
 bool menuDrawing = false;
 
@@ -444,7 +444,7 @@ std::vector <MenuTitle> activeMenu() {
   case rootMenu:
     return menuTypesToTitles(rootMenuTitles());
   case sourcesMenu:
-    return speakerGroup -> activePlayer -> sources;
+    return speakerGroup -> activePlayerSourceMenu();
   case mediaPlayersMenu:
     return speakerGroup -> mediaPlayersTitleString();
   case scenesMenu:
@@ -612,7 +612,7 @@ std::vector <std::string> getWrappedTitles(int xPos, int fontSize, TextAlign ali
     return output;
   }
   std::string wrappedTitles = textWrap(text, getCharacterLimit(xPos, fontSize, alignment));
-  tokenize(wrappedTitles, "\n", output);
+  TextHelpers::tokenize(wrappedTitles, "\n", output);
   return output;
 }
 
@@ -917,7 +917,7 @@ bool selectMenu() {
     break;
   case sourcesMenu:
     idleMenu(true);
-    speakerGroup -> activePlayer -> playSource(menuIndexForSource);
+    speakerGroup -> activePlayer -> playSource(activeMenuTitle);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);
     break;
@@ -958,5 +958,3 @@ bool buttonPressWakeUpDisplay() {
   }
   return false;
 }
-
-#endif

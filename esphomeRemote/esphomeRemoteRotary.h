@@ -1,7 +1,6 @@
 #include "esphomeRemote.h"
 
-#ifndef REMOTEROTARY
-#define REMOTEROTARY
+#pragma once
 
 void debounceUpdateDisplay() {
   if (id(display_update_tick).state != id(rotary).state) {
@@ -298,5 +297,3 @@ void displayUpdateDebounced() {
     displayUpdate.updateDisplay(true);
   }
 }
-
-#endif

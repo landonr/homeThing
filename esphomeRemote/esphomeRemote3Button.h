@@ -1,8 +1,7 @@
 #include "esphomeRemote.h"
 #include "esphomeRemoteNowPlayingMenu.h"
 
-#ifndef REMOTETHREEBUTTON
-#define REMOTETHREEBUTTON
+#pragma once
 
 void buttonPressSelect() {
   resetMarquee();
@@ -58,5 +57,3 @@ void buttonPressRight() {
   }
   displayUpdate.updateDisplay(true);
 }
-
-#endif

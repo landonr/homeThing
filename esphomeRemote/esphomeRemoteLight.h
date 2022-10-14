@@ -1,9 +1,9 @@
 #include "esphome.h"
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
+#include "FriendlyNameEntity.h"
 
-#ifndef REMOTELIGHT
-#define REMOTELIGHT
+#pragma once
 
 class LightService: public CustomAPIDevice, public Component {
   public:
@@ -63,5 +63,3 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
   private:
     DisplayUpdateInterface& display;
 };
-
-#endif
