@@ -899,6 +899,10 @@ case lightsDetailMenu:
     drawMenuLightDetail();
     // drawMenuLightDetail();
     break;
+case lightsDetailMenu:
+    drawMenuLightDetail();
+    // drawMenuLightDetail();
+    break;
   case groupMenu: {
       if (speakerGroup -> newSpeakerGroupParent != NULL) {
         auto playerSwitches = speakerGroup -> groupTitleSwitches();
