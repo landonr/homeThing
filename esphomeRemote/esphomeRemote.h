@@ -9,6 +9,8 @@
 #pragma once
 
 bool menuDrawing = false;
+int currentSelectedLight = -1;
+bool lightDetailSelected = false;
 
 class DisplayUpdateImpl: public DisplayUpdateInterface {
   public: virtual void updateDisplay(bool force) {
@@ -103,6 +105,8 @@ MenuTitle menuTitleForType(MenuStates stringType) {
     return MenuTitle("Media Players", "", ArrowMenuTitleState);
   case lightsMenu:
     return MenuTitle("Lights", "", ArrowMenuTitleState);
+  case lightsDetailMenu:
+    return MenuTitle("Lights Details", "", ArrowMenuTitleState);
   case scenesMenu:
     return MenuTitle("Scenes and Actions", "", ArrowMenuTitleState);
   case rootMenu:
@@ -188,6 +192,11 @@ void drawHeaderTitle() {
     break;
   case lightsMenu:
     drawHeaderTitleWithString("Lights", xPos);
+    break;
+  case lightsDetailMenu:
+    drawHeaderTitleWithString("LightDetail", xPos);
+    // drawHeaderTitleWithString(lightGroup->lights[currentSelectedLight]->friendlyName, xPos);
+
     break;
   case sensorsMenu:
     drawHeaderTitleWithString("Sensors", xPos);
@@ -359,6 +368,7 @@ void scrollMenuPosition() {
 }
 
 void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
+    // draw little icon in th topleft corner
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
   auto color = selected ? id(my_white) : id(color_accent_primary);
@@ -388,7 +398,7 @@ void drawGroupedBar(int yPos, bool extend) {
   id(my_display).line(xPos, yPos + (id(medium_font_size) + id(margin_size)) / 2, xPos + width, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
 }
 
-void drawMenu(std::vector <MenuTitle> menuTitles) {
+void drawMenuVector(std::vector <MenuTitle> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
   if(menuTitles.size() == 0 ) {
     return;
@@ -815,6 +825,44 @@ void drawBootSequence() {
   menuDrawing = false;
 }
 
+void drawMenuLightDetail(){
+    // draw button and sliders to adjust light
+
+    activeMenuTitleCount = 3;
+    scrollMenuPosition();
+    int menuState = menuIndex;
+    int barMargin = 1;
+    int barHeight = id(small_font_size);
+    int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
+    int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
+    int barWidth = (totalBarWidth - 4) * (50 / 100);
+    int yPos = id(header_height);
+
+    // First Item
+    drawTitle(menuState, 0,lightGroup->lights[currentSelectedLight]->friendlyName, yPos, true);
+    drawSwitch(lightGroup->lights[currentSelectedLight]->onState, yPos);
+
+    yPos += id(medium_font_size) + id(margin_size);
+
+    // Second Item
+    auto brightness =lightGroup->lights[currentSelectedLight]->brightness ;
+    if(menuState == 1){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(small_font_size) + barHeight + 2, id(color_accent_primary));
+    }
+    id(my_display).filled_rectangle(1, yPos+1, brightness, id(margin_size) + id(small_font_size) + barHeight -1, id(my_white));
+    id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Brightness");
+    yPos += id(margin_size) + id(small_font_size) + barHeight;
+
+    // Third Item
+    auto color_temp =lightGroup->lights[currentSelectedLight]->color_temp ;
+    if(menuState == 2){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(small_font_size) + barHeight + 2, id(color_accent_primary));
+    }
+    auto color_temp_bar =0.64 * color_temp;
+    id(my_display).filled_rectangle(1, yPos+1, color_temp_bar, id(margin_size) + id(small_font_size) + barHeight -1, id(my_white));
+    id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Temperature");
+}
+
 void drawMenu() {
   if(idleTime > 16 && !charging) {
     menuDrawing = false;
@@ -835,22 +883,27 @@ void drawMenu() {
     drawNowPlaying();
     break;
   case lightsMenu:
-    drawMenu(lightGroup -> lightTitleSwitches());
+    drawMenuVector(lightGroup -> lightTitleSwitches());
+    break;
+case lightsDetailMenu:
+    drawMenuLightDetail();
+    // drawMenuLightDetail();
     break;
   case groupMenu:
     if (speakerGroup -> newSpeakerGroupParent != NULL) {
-      drawMenu(speakerGroup -> groupTitleSwitches());
+      drawMenuVector(speakerGroup -> groupTitleSwitches());
       break;
     }
-    drawMenu(speakerGroup -> groupTitleString());
+    drawMenuVector(speakerGroup -> groupTitleString());
     break;
   default:
-    drawMenu(activeMenu());
+    drawMenuVector(activeMenu());
     break;
   }
   drawHeader();
   menuDrawing = false;
 }
+
 
 void selectMediaPlayers() {
   for (auto & speaker: speakerGroup->speakers) {
@@ -902,6 +955,8 @@ bool selectRootMenu() {
   case bootMenu:
     ESP_LOGD("WARNING", "menu is bad  %d", menuIndex);
     return false;
+  default:
+    break;
   }
   menuIndex = 0;
   return true;
@@ -933,8 +988,17 @@ bool selectMenu() {
     }
     break;
   case lightsMenu:
-    if (lightGroup -> selectLight(menuIndexForSource)) {
-      topMenu();
+    menuIndex = 0; // highlight first item in menu
+    activeMenuState = lightsDetailMenu;
+    currentSelectedLight = menuIndexForSource; // save the selected light to be able to control later
+    break;
+  case lightsDetailMenu:
+    // First item is the switch and doesn't need selection
+    // sliders need selection
+    if (menuIndexForSource == 0){
+        lightGroup -> selectLight(currentSelectedLight);
+    }else{
+        lightDetailSelected = true;
     }
     break;
   default:

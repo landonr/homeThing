@@ -8,6 +8,7 @@ enum MenuStates {
   mediaPlayersMenu,
   scenesMenu,
   lightsMenu,
+  lightsDetailMenu,
   nowPlayingMenu,
   sensorsMenu,
   backlightMenu,

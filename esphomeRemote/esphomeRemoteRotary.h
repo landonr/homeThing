@@ -46,6 +46,14 @@ void buttonPressNext() {
     optionMenu = volumeOptionMenu;
     debounceUpdateDisplay();
     return;
+  case lightsDetailMenu:
+    if(lightDetailSelected && menuIndex == 1){
+        lightGroup -> lights[currentSelectedLight]->incBrightness();
+        return;
+    }else if(lightDetailSelected && menuIndex == 2){
+        lightGroup -> lights[currentSelectedLight]->incTemperature();
+        return;
+    }
   default:
     break;
   }
@@ -65,6 +73,14 @@ void buttonPressPrevious() {
     optionMenu = volumeOptionMenu;
     debounceUpdateDisplay();
     return;
+  case lightsDetailMenu:
+    if(lightDetailSelected && menuIndex == 1){
+        lightGroup -> lights[currentSelectedLight]->decBrightness();
+        return;
+    }else if(lightDetailSelected && menuIndex == 2){
+        lightGroup -> lights[currentSelectedLight]->decTemperature();
+        return;
+    }
   default:
     break;
   }
@@ -108,6 +124,18 @@ void buttonPressUp() {
     }
     displayUpdate.updateDisplay(true);
     return;
+  case lightsDetailMenu:
+      if(lightDetailSelected){
+          // deselect ligh if selected and stay in lightsDetailMenu
+          lightDetailSelected = false;
+          return;
+      }else{
+          // if no light is selected go back to lightsMenu
+          activeMenuState = lightsMenu;
+          displayUpdate.updateDisplay(true);
+          return;
+      }
+      break;
   default:
     break;
   }
@@ -118,6 +146,7 @@ void buttonPressUp() {
     return;
   }
   optionMenu = noOptionMenu;
+  // currentSelectedLight = -1;
   topMenu();
   displayUpdate.updateDisplay(true);
 }
@@ -286,6 +315,7 @@ void buttonPressScreenRight() {
   case mediaPlayersMenu:
   case scenesMenu:
   case lightsMenu:
+  case lightsDetailMenu:
   case sensorsMenu:
   case bootMenu:
     break;

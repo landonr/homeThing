@@ -2,6 +2,7 @@
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
+#include <sstream>
 
 #pragma once
 
@@ -10,11 +11,69 @@ class LightService: public CustomAPIDevice, public Component {
     LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface& newCallback) : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
       onState = false;
       subscribe_homeassistant_state(&LightService::state_changed, newEntityId.c_str());
+      subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(),"brightness");
+      subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(),"color_temp");
+      // subscribe_homeassistant_state(&LightService::, newEntityId.c_str());
     }
     std::string friendlyName;
     std::string entityId;
     DisplayUpdateInterface& display;
+    int brightness = 0;
+    int color_temp = 0;
     bool onState;
+
+    // TODO:
+    // * change slider design to match overall design
+    // * only show sliders if the light supports them 
+    // * reduce number of functions (maybe just one which is handed a struct
+    // * cleanup
+    // * only show lightDetailMenu if light supports it. Otherwise just toggle it
+    // * only enable scrolling menu if light is turned on
+    // * if light is off show sliders as inactive
+
+    void decTemperature() {
+        std::stringstream ss;
+        ss << (color_temp - 10);
+        const std::map< std::string, std::string > data = {
+                                                              {"entity_id",entityId.c_str()},
+                                                              {"color_temp", ss.str()} ,
+                                                          };
+        setAttribute(data);
+    }
+
+    void incTemperature() {
+        std::stringstream ss;
+        ss << (color_temp + 10);
+        const std::map< std::string, std::string > data = {
+                                                              {"entity_id",entityId.c_str()},
+                                                              {"color_temp", ss.str()} ,
+                                                          };
+        setAttribute(data);
+    }
+
+    void decBrightness() {
+        std::stringstream ss;
+        ss << (brightness - 10);
+        const std::map< std::string, std::string > data = {
+                                                              {"entity_id",entityId.c_str()},
+                                                              {"brightness", ss.str()} ,
+                                                          };
+        setAttribute(data);
+    }
+
+    void incBrightness() {
+        std::stringstream ss;
+        ss << (brightness + 10);
+        const std::map< std::string, std::string > data = {
+                                                              {"entity_id",entityId.c_str()},
+                                                              {"brightness", ss.str()} ,
+                                                          };
+        setAttribute(data);
+    }
+
+    void setAttribute(const std::map< std::string, std::string> &data){
+        call_homeassistant_service("light.turn_on", data);
+    }
 
     void toggleLight() {
       call_homeassistant_service("light.toggle", {
@@ -24,8 +83,23 @@ class LightService: public CustomAPIDevice, public Component {
 
   private:
     void state_changed(std::string newOnState) {
-      ESP_LOGI("Light", "state changed to %s", newOnState.c_str());
+      ESP_LOGI("brightness", " changed to %s", newOnState.c_str());
       onState = newOnState == "on";
+      // visualize that light is off by resetting brightness and color_temp
+      if (!onState){
+        brightness = 0;
+        color_temp = 0;
+      }
+      display.updateDisplay(false);
+    }
+    void brightness_changed(std::string newOnState) {
+      ESP_LOGI("brightness", "state changed to %s", newOnState.c_str());
+      brightness = atoi(newOnState.c_str());
+      display.updateDisplay(false);
+    }
+    void color_temp_changed(std::string newOnState){
+      ESP_LOGI("color_temp", "state changed to %s", newOnState.c_str());
+      color_temp = atoi(newOnState.c_str());
       display.updateDisplay(false);
     }
 };
