@@ -1,7 +1,6 @@
 #include "esphomeRemote.h"
 
-#ifndef NOWPLAYINGMENU
-#define NOWPLAYINGMENU
+#pragma once
 
 void selectNowPlayingMenu() {
   if(activeMenuTitleCount <= 0 && menuIndex < activeMenuTitleCount) {
@@ -45,5 +44,3 @@ void selectNowPlayingMenu() {
   }
   displayUpdate.updateDisplay(true);
 }
-
-#endif

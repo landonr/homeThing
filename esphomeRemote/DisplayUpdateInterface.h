@@ -1,10 +1,7 @@
-#ifndef DISPLAYUPDATEINTERFACE
-#define DISPLAYUPDATEINTERFACE
+#pragma once
 
 class DisplayUpdateInterface
 {
   public:
   virtual void updateDisplay(bool force) = 0;
 };
-
-#endif

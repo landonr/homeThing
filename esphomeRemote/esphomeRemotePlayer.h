@@ -2,9 +2,9 @@
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
+#include "TextHelpers.h"
 
-#ifndef REMOTEPLAYERS
-#define REMOTEPLAYERS
+#pragma once
 
 enum RemotePlayerType {
   TVRemotePlayerType,
@@ -44,84 +44,6 @@ class TVSetup
     std::string friendlyName;
     SpeakerSetup* soundBar;
 };
-
-void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
-  size_t start;
-  size_t end = 0;
-
-  while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
-  {
-      end = str.find(delim, start);
-      out.push_back( str.substr(start, end - start));
-  }
-}
-
-std::string filter(std::string str) {
-  std::string output;
-  output.reserve(str.size()); // optional, avoids buffer reallocations in the loop
-  for(size_t i = 0; i < str.size(); ++i) {
-    if(i == 0 && str[i] == ' ') continue;
-    if(i < str.size() - 3 && str[i] == '\\' && str[i+1] == 'x' && str[i+2] == 'a') {
-      // replace \xa with space
-      output += ' ';
-      i+=3;
-      continue;
-    }
-    if(i == str.size() - 1 && str[i] == '}') return output;
-    if(str[i] != '[' && str[i] != ']' && str[i] != '\'' && str[i] != '"') output += str[i];
-  }
-  return output;
-}
-
-std::vector<MenuTitle> parseJsonArray(std::string state, std::string entityId) {
-  StaticJsonDocument<1024> doc;
-  deserializeJson(doc, state);
-  JsonArray array = doc.as<JsonArray>();
-  std::vector<MenuTitle> sources;
-  for(JsonVariant v : array) {
-    std::string sourceName = v.as<std::string>();
-    ESP_LOGI("group", "new source %s %s", sourceName.c_str(), entityId.c_str());
-    sources.push_back(MenuTitle(sourceName, entityId, NoMenuTitleState));
-  }
-  return sources;
-}
-
-std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-    }
-    return str;
-}
-
-std::vector<MenuTitle> parseJsonSource(std::string state, std::string nameKey, std::string valueKey) {
-  StaticJsonDocument<1024> doc;
-  deserializeJson(doc, state);
-  JsonArray array = doc.as<JsonArray>();
-  std::vector<MenuTitle> sources;
-  for(JsonVariant v : array) {
-    std::string playlistName = v[nameKey].as<std::string>();
-    std::string playlistId = v[valueKey].as<std::string>();
-    ESP_LOGI("group", "new source %s %s", playlistId.c_str(), playlistName.c_str());
-    sources.push_back(MenuTitle(playlistName, playlistId, NoMenuTitleState));
-  }
-  return sources;
-}
-
-std::vector<MenuTitle> parseJsonKeyValue(std::string state) {
-  StaticJsonDocument<1024> doc;
-  deserializeJson(doc, state);
-  JsonObject array = doc.as<JsonObject>();
-  std::vector<MenuTitle> sources;
-  for(JsonPair v : array) {
-    std::string playlistName(v.value().as<std::string>());
-    std::string playlistId(v.key().c_str());
-    ESP_LOGI("group", "new source %s %s", playlistId.c_str(), playlistName.c_str());
-    sources.push_back(MenuTitle(playlistName, playlistId, NoMenuTitleState));
-  }
-  return sources;
-}
 
 class BasePlayerComponent : public CustomAPIDevice, public Component {
   protected:
@@ -444,11 +366,11 @@ private:
   void group_members_changed(std::string state) {
     ESP_LOGI("speaker", "%s Sonos Speaker group members changed to %s", entityId.c_str(), state.c_str());
     std::vector<std::string> out;
-    tokenize(state, ",", out);
+    TextHelpers::tokenize(state, ",", out);
     groupMembers.clear();
     for (auto &state: out) {
-      std::string newGroupedSpeaker = filter(state);
-      groupMembers.push_back(filter(state));
+      std::string newGroupedSpeaker = TextHelpers::filter(state);
+      groupMembers.push_back(newGroupedSpeaker);
     }
     display.updateDisplay(false);
   }
@@ -519,7 +441,7 @@ class TVPlayerComponent : public BasePlayerComponent {
 
   void player_source_list_changed(std::string state) {
     ESP_LOGI("PlayerTV", "%s Player source list changed to %s", friendlyName.c_str(), state.c_str());
-    auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
+    auto newSources = TextHelpers::parseJsonArray(TextHelpers::replaceAll(state, "\\xa0", " "), "source");
     sources = newSources;
   }
 
@@ -991,7 +913,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
 
   void sonos_favorites_changed(std::string state) {
     ESP_LOGI("group", "Sonos Favorites changes to %s", state.c_str());
-    auto sources = parseJsonKeyValue(state);
+    auto sources = TextHelpers::parseJsonKeyValue(state);
     for(auto &player: speakers) {
       player->sources = sources;
     }
@@ -1001,12 +923,10 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
   void playlists_changed(std::string state) {
     stripUnicode(state);
     ESP_LOGI("group", "Spotify playlists changes to %s", state.c_str());
-    auto sources = parseJsonSource(state, "name", "uri");
+    auto sources = TextHelpers::parseJsonSource(state, "name", "uri");
     for(auto &player: speakers) {
       player->sources = sources;
     }
     spotifyPlaylists = sources;
   }
 };
-
-#endif

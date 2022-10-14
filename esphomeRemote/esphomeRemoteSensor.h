@@ -2,8 +2,7 @@
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
 
-#ifndef REMOTESENSOR
-#define REMOTESENSOR
+#pragma once
 
 class SensorComponent : public CustomAPIDevice, public Component {
   public:
@@ -47,5 +46,3 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
       return out;
     }
 };
-
-#endif

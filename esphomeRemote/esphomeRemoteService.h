@@ -2,8 +2,7 @@
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
 
-#ifndef REMOTESERVICE
-#define REMOTESERVICE
+#pragma once
 
 class BaseService: public CustomAPIDevice {
   public:
@@ -70,5 +69,3 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
     return true;
   }
 };
-
-#endif

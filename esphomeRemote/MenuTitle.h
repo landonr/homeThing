@@ -1,5 +1,4 @@
-#ifndef MENUTITLE
-#define MENUTITLE
+#pragma once
 
 enum MenuTitleState {
   NoMenuTitleState,
@@ -79,5 +78,3 @@ class MenuTitle {
       return "";
     }
 };
-
-#endif
