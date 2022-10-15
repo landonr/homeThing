@@ -34,13 +34,13 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
       }
     }
 
-    std::vector<MenuTitle> sensorTitles() {
-      std::vector<MenuTitle> out;
+    std::vector<MenuTitleBase*> sensorTitles() {
+      std::vector<MenuTitleBase*> out;
       for (auto &sensor: sensors) {
         if(sensor->friendlyName != "") {
-          out.push_back(MenuTitle(sensor->friendlyName + " " + sensor->state, sensor->entityId, NoMenuTitleState));
+          out.push_back(new MenuTitleBase(sensor->friendlyName + " " + sensor->state, sensor->entityId, NoMenuTitleState));
         } else {
-          out.push_back(MenuTitle(sensor->state, sensor->entityId, NoMenuTitleState));
+          out.push_back(new MenuTitleBase(sensor->state, sensor->entityId, NoMenuTitleState));
         }
       }
       return out;

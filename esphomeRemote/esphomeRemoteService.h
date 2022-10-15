@@ -51,10 +51,10 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
     services = newServices;
   }
 
-  std::vector<MenuTitle> sceneTitleStrings() {
-    std::vector<MenuTitle> out;
+  std::vector<MenuTitleBase*> sceneTitleStrings() {
+    std::vector<MenuTitleBase*> out;
     for (auto &service: services) {
-      out.push_back(MenuTitle(service.getFriendlyName(), "", NoMenuTitleState));
+      out.push_back(new MenuTitleBase(service.getFriendlyName(), "", NoMenuTitleState));
     }
     return out;
   }

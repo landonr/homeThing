@@ -12,41 +12,67 @@ enum MenuTitleState {
   PowerOffMenuTitleState
 };
 
-enum MenuTitlePlayingSourceState {
-  NoMenuTitlePlayingSourceState,
-  YouTubeMenuTitlePlayingSourceState,
-  SpotifyMenuTitlePlayingSourceState,
-  NetflixMenuTitlePlayingSourceState,
-  PlexMenuTitlePlayingSourceState,
-  TVMenuTitlePlayingSourceState
-};
-
-std::string playingSourceStateString(MenuTitlePlayingSourceState playingState) {
-  switch(playingState) {
-    case NoMenuTitlePlayingSourceState:
-      return "No";
-    case YouTubeMenuTitlePlayingSourceState:
-      return "YouTube";
-    case SpotifyMenuTitlePlayingSourceState:
-      return "Spotify";
-    case NetflixMenuTitlePlayingSourceState:
-      return "Netflix";
-    case PlexMenuTitlePlayingSourceState:
-      return "Plex";
-    case TVMenuTitlePlayingSourceState:
-      return "TV";
-  }
-  return "";
-}
-
-class MenuTitle {
+class MenuTitleBase {
   public:
-    MenuTitle(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState) { }
-    MenuTitle(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState, MenuTitlePlayingSourceState newPlayingState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState), playingState(newPlayingState) { }
     std::string friendlyName;
     std::string entityId;
     MenuTitleState titleState;
-    MenuTitlePlayingSourceState playingState = NoMenuTitlePlayingSourceState;
+    MenuTitleBase(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState) { }
+    
+    bool indentLine() {
+      switch (titleState) {
+        case OffMenuTitleState:
+        case OnMenuTitleState:
+        case GroupedMenuTitleState:
+          return true;
+        default:
+          return false;
+      }
+      return false;
+    }
+};
+
+enum RemotePlayerMediaSource {
+  NoRemotePlayerMediaSource,
+  YouTubeRemotePlayerMediaSource,
+  SpotifyRemotePlayerMediaSource,
+  NetflixRemotePlayerMediaSource,
+  PlexRemotePlayerMediaSource,
+  TVRemotePlayerMediaSource
+};
+
+std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
+    switch(playingState) {
+      case NoRemotePlayerMediaSource:
+        return "No";
+      case YouTubeRemotePlayerMediaSource:
+        return "YouTube";
+      case SpotifyRemotePlayerMediaSource:
+        return "Spotify";
+      case NetflixRemotePlayerMediaSource:
+        return "Netflix";
+      case PlexRemotePlayerMediaSource:
+        return "Plex";
+      case TVRemotePlayerMediaSource:
+        return "TV";
+    }
+    return "";
+  }
+
+class MenuTitlePlayer: public MenuTitleBase {
+  public:
+    RemotePlayerMediaSource mediaSource;
+
+    MenuTitlePlayer(
+      std::string newFriendlyName, 
+      std::string newEntityId, 
+      MenuTitleState newTitleState,
+      RemotePlayerMediaSource newMediaSource
+    ) : MenuTitleBase { 
+      newFriendlyName,
+      newEntityId,
+      newTitleState
+    }, mediaSource(newMediaSource) {}
     
     bool indentLine() {
       switch (titleState) {
@@ -60,20 +86,54 @@ class MenuTitle {
       return false;
     }
 
-    std::string playingSourceStateIcon() {
-      switch(playingState) {
-        case NoMenuTitlePlayingSourceState:
+    std::string mediaSourceIcon() {
+      switch(mediaSource) {
+        case NoRemotePlayerMediaSource:
           return "󰐊";
-        case YouTubeMenuTitlePlayingSourceState:
+        case YouTubeRemotePlayerMediaSource:
           return "󰗃";
-        case SpotifyMenuTitlePlayingSourceState:
+        case SpotifyRemotePlayerMediaSource:
           return "󰓇";
-        case NetflixMenuTitlePlayingSourceState:
+        case NetflixRemotePlayerMediaSource:
           return "󰝆";
-        case PlexMenuTitlePlayingSourceState:
+        case PlexRemotePlayerMediaSource:
           return "󰚺";
-        case TVMenuTitlePlayingSourceState:
+        case TVRemotePlayerMediaSource:
           return "󰔂";
+      }
+      return "";
+    }
+};
+
+enum RemotePlayerSourceType {
+  MusicRemotePlayerSourceType,
+  FavoriteItemIDRemotePlayerSourceType,
+  SourceRemotePlayerSourceType
+};
+
+class MenuTitleSource: public MenuTitleBase {
+  public:
+    RemotePlayerSourceType sourceType;
+
+    MenuTitleSource(
+      std::string newFriendlyName, 
+      std::string newEntityId, 
+      MenuTitleState newTitleState,
+      RemotePlayerSourceType newSourceType
+    ) : MenuTitleBase { 
+      newFriendlyName,
+      newEntityId,
+      newTitleState
+    }, sourceType(newSourceType) {}
+
+    std::string sourceTypeString() {
+      switch(sourceType) {
+        case MusicRemotePlayerSourceType:
+          return "music";
+        case FavoriteItemIDRemotePlayerSourceType:
+          return "favorite_item_id";
+        case SourceRemotePlayerSourceType:
+          return "source";
       }
       return "";
     }

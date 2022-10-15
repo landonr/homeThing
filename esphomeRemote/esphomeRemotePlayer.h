@@ -67,9 +67,9 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     ) : display(newCallback), stateCallback(newStateCallback), index(newIndex), entityId(newEntityId), friendlyName(newFriendlyName), playerType(newPlayerType) { }
     std::string mediaTitle = "";
     std::string mediaArtist = "";
-    MenuTitlePlayingSourceState mediaSource = NoMenuTitlePlayingSourceState;
+    RemotePlayerMediaSource mediaSource = NoRemotePlayerMediaSource;
     RemotePlayerState playerState = NoRemoteState;
-    std::vector<MenuTitle> sources;
+    std::vector<MenuTitleSource*> sources;
     int index;
     std::string entityId;
     std::string friendlyName;
@@ -80,17 +80,15 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, entityId.c_str());
   }
 
-  void playSource(MenuTitle source) {
-    switch(playerType) {
-      case TVRemotePlayerType: {
-        selectSource(source);
+  void playSource(MenuTitleSource source) {
+    ESP_LOGI("Player", "Player play source %s %s %s %d", entityId.c_str(), source.entityId.c_str(), source.sourceTypeString().c_str(), source.sourceType);
+    switch(source.sourceType) {
+      case MusicRemotePlayerSourceType:
+        playMedia(source);
         break;
-      } case SpeakerRemotePlayerType:
-        if(source.entityId == "source") {
-          selectSource(source);
-        } else {  
-          playMedia(source);
-        }
+      case FavoriteItemIDRemotePlayerSourceType:
+      case SourceRemotePlayerSourceType:
+        selectSource(source);
         break;
     }
   }
@@ -112,7 +110,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   std::string mediaTitleString() {
     switch(playerType) {
       case TVRemotePlayerType:
-        return playingSourceStateString(mediaSource);
+        return playerSourceStateString(mediaSource);
       case SpeakerRemotePlayerType:
         return mediaArtist;
     }
@@ -146,7 +144,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   }
 
 private:
-  void selectSource(MenuTitle source) {
+  void selectSource(MenuTitleSource source) {
     ESP_LOGI("player", "%s select source %s", entityId.c_str(), source.friendlyName.c_str());
     playingNewSourceText = source.friendlyName;
     call_homeassistant_service("media_player.select_source", {
@@ -155,13 +153,13 @@ private:
     });
   }
 
-  void playMedia(MenuTitle source) {
+  void playMedia(MenuTitleSource source) {
     ESP_LOGI("player", "%s play media %s %s", entityId.c_str(), source.friendlyName.c_str(), source.entityId.c_str());
     playingNewSourceText = source.friendlyName;
     call_homeassistant_service("media_player.play_media", {
       {"entity_id", entityId},
       {"media_content_id", source.entityId.c_str()},
-      {"media_content_type", "music"},
+      {"media_content_type", source.sourceTypeString().c_str()},
     });
   }
 
@@ -402,11 +400,11 @@ private:
   void media_source_changed(std::string state) {
     ESP_LOGI("speaker", "%s Speaker source changed to %s", entityId.c_str(), state.c_str());
     if(state.find("spdif") != std::string::npos) {
-      mediaSource = TVMenuTitlePlayingSourceState;
+      mediaSource = TVRemotePlayerMediaSource;
     } else if(state.find("spotify") != std::string::npos) {
-      mediaSource = SpotifyMenuTitlePlayingSourceState;
+      mediaSource = SpotifyRemotePlayerMediaSource;
     } else {
-      mediaSource = NoMenuTitlePlayingSourceState;
+      mediaSource = NoRemotePlayerMediaSource;
     }
     display.updateDisplay(false);
   }
@@ -442,13 +440,13 @@ class TVPlayerComponent : public BasePlayerComponent {
   void player_source_changed(std::string state) {
     ESP_LOGI("PlayerTV", "%s Player source changed to %s", friendlyName.c_str(), state.c_str());
     if(state.find("YouTube") != std::string::npos) {
-      mediaSource = YouTubeMenuTitlePlayingSourceState;
+      mediaSource = YouTubeRemotePlayerMediaSource;
     } else if(state.find("Netflix") != std::string::npos) {
-      mediaSource = NetflixMenuTitlePlayingSourceState;
+      mediaSource = NetflixRemotePlayerMediaSource;
     } else if(state.find("Plex") != std::string::npos) {
-      mediaSource = PlexMenuTitlePlayingSourceState;
+      mediaSource = PlexRemotePlayerMediaSource;
     } else {
-      mediaSource = NoMenuTitlePlayingSourceState;
+      mediaSource = NoRemotePlayerMediaSource;
     }
     display.updateDisplay(false);
   }
@@ -456,7 +454,7 @@ class TVPlayerComponent : public BasePlayerComponent {
   void player_source_list_changed(std::string state) {
     ESP_LOGI("PlayerTV", "%s Player source list changed to %s", friendlyName.c_str(), state.c_str());
     auto newSources = TextHelpers::parseJsonArray(TextHelpers::replaceAll(state, "\\xa0", " "), "source");
-    sources = newSources;
+    sources.assign(newSources.begin(), newSources.end());
   }
 
   void tvRemoteCommand(std::string command) {
@@ -508,7 +506,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       } else if(
           speaker->tv != NULL && 
           speaker->playerState == PlayingRemoteState && 
-          speaker->mediaSource == TVMenuTitlePlayingSourceState
+          speaker->mediaSource == TVRemotePlayerMediaSource
       ) {
         activePlayer = speaker->tv;
         playerSearchFinished = true;
@@ -680,7 +678,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     return "";
   }
 
-  MenuTitle *newSpeakerGroupParent = NULL;
+  MenuTitlePlayer *newSpeakerGroupParent = NULL;
 
   double getVolumeLevel() {
     if (activePlayer->playerType == TVRemotePlayerType) {
@@ -707,27 +705,27 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     return 0;
   }
 
-  std::vector<MenuTitle> groupTitleSwitches() {
-    std::vector<MenuTitle> out;
+  std::vector<MenuTitlePlayer*> groupTitleSwitches() {
+    std::vector<MenuTitlePlayer*> out;
     std::vector<std::string> groupedMembers;
-    out.push_back(MenuTitle("Group " + newSpeakerGroupParent->friendlyName, newSpeakerGroupParent->entityId, ArrowMenuTitleState));
+    out.push_back(new MenuTitlePlayer("Group " + newSpeakerGroupParent->friendlyName, newSpeakerGroupParent->entityId, ArrowMenuTitleState, newSpeakerGroupParent->mediaSource));
 
     for (auto &speaker: speakers) {
       if (newSpeakerGroupParent->entityId == speaker->entityId) {
         continue;
       } else {
         if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(), newSpeakerGroupParent->entityId) != speaker->groupMembers.end()) {
-          out.push_back(MenuTitle(speaker->friendlyName, speaker->entityId, OnMenuTitleState));
+          out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, OnMenuTitleState, speaker->mediaSource));
         } else {
-          out.push_back(MenuTitle(speaker->friendlyName, speaker->entityId, OffMenuTitleState));
+          out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, OffMenuTitleState, speaker->mediaSource));
         }
       }
     }
     return out;
   }
 
-  std::vector<MenuTitle> groupTitleString() {
-    std::vector<MenuTitle> out;
+  std::vector<MenuTitlePlayer*> groupTitleString() {
+    std::vector<MenuTitlePlayer*> out;
     std::vector<std::string> groupedMembers;
     for (auto &speaker: speakers) {
       if (std::find(groupedMembers.begin(), groupedMembers.end(), speaker->entityId) != groupedMembers.end()) {
@@ -741,38 +739,38 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
           continue;
         }
 
-        out.push_back(MenuTitle(speaker->friendlyName, speaker->entityId, speaker->menuTitlePlayerState()));
+        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, speaker->menuTitlePlayerState(), speaker->mediaSource));
         for (auto &groupedSpeaker: speaker->groupMembers) {
           if(groupedSpeaker != speaker->entityId) {
             groupedMembers.push_back(groupedSpeaker);
             std::string groupedSpeakerName = friendlyNameForEntityId(groupedSpeaker);
-            out.push_back(MenuTitle(groupedSpeakerName, groupedSpeaker, GroupedMenuTitleState));
+            out.push_back(new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker, GroupedMenuTitleState, speaker->mediaSource));
           }
         }
       } else {
-        out.push_back(MenuTitle(speaker->friendlyName, speaker->entityId, speaker->menuTitlePlayerState()));
+        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, speaker->menuTitlePlayerState(), speaker->mediaSource));
       }
     }
     return out;
   }
 
-  std::vector<MenuTitle> mediaPlayersTitleString() {
-    std::vector<MenuTitle> out;
+  std::vector<MenuTitlePlayer*> mediaPlayersTitleString() {
+    std::vector<MenuTitlePlayer*> out;
     for (auto &speaker: speakers) {
-      if(speaker->mediaSource != TVMenuTitlePlayingSourceState) {
-        out.push_back(MenuTitle(speaker->friendlyName, speaker->entityId, speaker->menuTitlePlayerState()));
+      if(speaker->mediaSource != TVRemotePlayerMediaSource) {
+        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, speaker->menuTitlePlayerState(), speaker->mediaSource));
       }
     }
     for (auto &tv: tvs) {
-      out.push_back(MenuTitle(tv->friendlyName, tv->entityId, tv->menuTitlePlayerState()));
-      if(tv->speaker != NULL && tv->speaker->mediaSource == TVMenuTitlePlayingSourceState) {
-        out.push_back(MenuTitle(tv->speaker->friendlyName, tv->speaker->entityId, GroupedMenuTitleState));
+      out.push_back(new MenuTitlePlayer(tv->friendlyName, tv->entityId, tv->menuTitlePlayerState(), tv->mediaSource));
+      if(tv->speaker != NULL && tv->speaker->mediaSource == TVRemotePlayerMediaSource) {
+        out.push_back(new MenuTitlePlayer(tv->speaker->friendlyName, tv->speaker->entityId, GroupedMenuTitleState, tv->speaker->mediaSource));
       }
     }
     return out;
   }
 
-  MenuTitle headerMediaPlayerTitle() {
+  MenuTitlePlayer* headerMediaPlayerTitle() {
     std::string friendlyName = activePlayer -> friendlyName;
     if (activePlayer -> playerType != TVRemotePlayerType) {
       SonosSpeakerComponent * activeSpeaker = static_cast < SonosSpeakerComponent * > (activePlayer);
@@ -782,12 +780,12 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         }
       }
     }
-    return MenuTitle(friendlyName, activePlayer->entityId, activePlayer->menuTitlePlayerState(), activePlayer->mediaSource);
+    return new MenuTitlePlayer(friendlyName, activePlayer->entityId, activePlayer->menuTitlePlayerState(), activePlayer->mediaSource);
   }
 
-  void selectGroup(MenuTitle *selectedMenuTitle) {
+  void selectGroup(MenuTitlePlayer *selectedMenuTitle) {
     if (newSpeakerGroupParent == NULL) {
-      MenuTitle *selectedMenuTitleCopy = new MenuTitle(selectedMenuTitle->friendlyName, selectedMenuTitle->entityId, selectedMenuTitle->titleState);
+      MenuTitlePlayer *selectedMenuTitleCopy = new MenuTitlePlayer(selectedMenuTitle->friendlyName, selectedMenuTitle->entityId, selectedMenuTitle->titleState, selectedMenuTitle->mediaSource);
       newSpeakerGroupParent = selectedMenuTitleCopy;
       return;
     } else if (menuIndex == 0) {
@@ -873,7 +871,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       case TVRemotePlayerType:
         return activePlayer->mediaTitleString();
       case SpeakerRemotePlayerType:
-        if(activePlayer->mediaSource == TVMenuTitlePlayingSourceState) {
+        if(activePlayer->mediaSource == TVRemotePlayerMediaSource) {
           SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
           if(activeSpeaker != NULL && activeSpeaker->tv != NULL) {
             return activeSpeaker->tv->mediaTitleString();
@@ -889,8 +887,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       case TVRemotePlayerType:
         return activePlayer->mediaSubtitleString();
       case SpeakerRemotePlayerType:
-        if(activePlayer->mediaSource == TVMenuTitlePlayingSourceState) {
-          return playingSourceStateString(activePlayer->mediaSource);
+        if(activePlayer->mediaSource == TVRemotePlayerMediaSource) {
+          return playerSourceStateString(activePlayer->mediaSource);
         }
         return activePlayer->mediaSubtitleString();
     }
@@ -904,8 +902,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     }
   }
 
-  std::vector<MenuTitle> activePlayerSourceMenu() {
-    std::vector<MenuTitle> out;
+  std::vector<MenuTitleSource*> activePlayerSourceMenu() {
+    std::vector<MenuTitleSource*> out;
     switch(activePlayer->playerType) {
       case TVRemotePlayerType:
         return activePlayer->sources;
@@ -913,7 +911,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
         if (activeSpeaker != NULL) {
           if(activeSpeaker->tv != NULL && activeSpeaker->tv->friendlyName.size() > 0) {
-            out.push_back(MenuTitle(activeSpeaker->tv->friendlyName, "source", NoMenuTitleState));
+            out.push_back(new MenuTitleSource(activeSpeaker->tv->friendlyName, "", NoMenuTitleState, SourceRemotePlayerSourceType));
           }
           out.insert(out.end(), spotifyPlaylists.begin(), spotifyPlaylists.end());
           out.insert(out.end(), sonosFavorites.begin(), sonosFavorites.end());
@@ -947,14 +945,14 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
 
   private:
   DisplayUpdateInterface& display;
-  std::vector<MenuTitle> sonosFavorites;
-  std::vector<MenuTitle> spotifyPlaylists;
+  std::vector<MenuTitleSource*> sonosFavorites;
+  std::vector<MenuTitleSource*> spotifyPlaylists;
 
   void sonos_favorites_changed(std::string state) {
     ESP_LOGI("group", "Sonos Favorites changes to %s", state.c_str());
     auto sources = TextHelpers::parseJsonKeyValue(state);
     for(auto &player: speakers) {
-      player->sources = sources;
+      player->sources.assign(sources.begin(), sources.end());
     }
     sonosFavorites = sources;
   }
@@ -964,7 +962,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     ESP_LOGI("group", "Spotify playlists changes to %s", state.c_str());
     auto sources = TextHelpers::parseJsonSource(state, "name", "uri");
     for(auto &player: speakers) {
-      player->sources = sources;
+      player->sources.assign(sources.begin(), sources.end());
     }
     spotifyPlaylists = sources;
   }
