@@ -13,10 +13,16 @@ enum RemotePlayerType {
 
 enum RemotePlayerState {
   NoRemoteState,
-  PausedRemoteState,
-  PlayingRemoteState,
+  PowerOffRemoteState,
   StoppedRemoteState,
-  PowerOffRemoteState
+  PausedRemoteState,
+  PlayingRemoteState
+};
+
+class RemotePlayerStateUpdatedInterface
+{
+  public:
+    virtual void stateUpdated(RemotePlayerState state) {};
 };
 
 std::string playingNewSourceText = "";
@@ -48,15 +54,17 @@ class TVSetup
 class BasePlayerComponent : public CustomAPIDevice, public Component {
   protected:
   DisplayUpdateInterface& display;
-
+  RemotePlayerStateUpdatedInterface* stateCallback = NULL;
+  
   public:
     BasePlayerComponent(
       DisplayUpdateInterface& newCallback,
+      RemotePlayerStateUpdatedInterface* newStateCallback,
       int newIndex,
       std::string newEntityId,
       std::string newFriendlyName,
       RemotePlayerType newPlayerType
-    ) : display(newCallback), index(newIndex), entityId(newEntityId), friendlyName(newFriendlyName), playerType(newPlayerType) { }
+    ) : display(newCallback), stateCallback(newStateCallback), index(newIndex), entityId(newEntityId), friendlyName(newFriendlyName), playerType(newPlayerType) { }
     std::string mediaTitle = "";
     std::string mediaArtist = "";
     MenuTitlePlayingSourceState mediaSource = NoMenuTitlePlayingSourceState;
@@ -70,32 +78,6 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
   void superSetup() {
     ESP_LOGI("Player", "Player subbed %s", entityId.c_str());
     subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, entityId.c_str());
-  }
-
-  void playerState_changed(std::string state) {
-    ESP_LOGI("Player", "%s state changed to %s", entityId.c_str(), state.c_str());
-    if(state.length() == 0) {
-      playerState = StoppedRemoteState;
-    } if(strcmp(state.c_str(), "playing") == 0) {
-      playerState = PlayingRemoteState;
-    } else if(strcmp(state.c_str(), "paused") == 0) {
-      playerState = PausedRemoteState;
-    } else if(strcmp(state.c_str(), "standby") == 0) {
-      playerState = PowerOffRemoteState;
-      mediaTitle = "";
-      mediaArtist = "";
-    } else if(strcmp(state.c_str(), "home") == 0) {
-      playerState = StoppedRemoteState;
-      mediaTitle = "";
-      mediaArtist = "";
-    } else if(strcmp(state.c_str(), "on") == 0) {
-      playerState = StoppedRemoteState;
-    } else if(strcmp(state.c_str(), "idle") == 0) {
-      playerState = StoppedRemoteState;
-    } else {
-      playerState = NoRemoteState;
-    }
-    display.updateDisplay(false);
   }
 
   void playSource(MenuTitle source) {
@@ -165,7 +147,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
 
 private:
   void selectSource(MenuTitle source) {
-    ESP_LOGI("speaker", "%s playing %s", entityId.c_str(), source.friendlyName.c_str());
+    ESP_LOGI("player", "%s select source %s", entityId.c_str(), source.friendlyName.c_str());
     playingNewSourceText = source.friendlyName;
     call_homeassistant_service("media_player.select_source", {
       {"entity_id", entityId},
@@ -174,12 +156,40 @@ private:
   }
 
   void playMedia(MenuTitle source) {
-    ESP_LOGI("speaker", "%s playing %s", entityId.c_str(), source.friendlyName.c_str());
+    ESP_LOGI("player", "%s play media %s %s", entityId.c_str(), source.friendlyName.c_str(), source.entityId.c_str());
     playingNewSourceText = source.friendlyName;
-    call_homeassistant_service("media_player.select_source", {
+    call_homeassistant_service("media_player.play_media", {
       {"entity_id", entityId},
-      {"source", source.friendlyName.c_str()},
+      {"media_content_id", source.entityId.c_str()},
+      {"media_content_type", "music"},
     });
+  }
+
+  void playerState_changed(std::string state) {
+    ESP_LOGI("Player", "%s state changed to %s", entityId.c_str(), state.c_str());
+    if(state.length() == 0) {
+      playerState = StoppedRemoteState;
+    } if(strcmp(state.c_str(), "playing") == 0) {
+      playerState = PlayingRemoteState;
+    } else if(strcmp(state.c_str(), "paused") == 0) {
+      playerState = PausedRemoteState;
+    } else if(strcmp(state.c_str(), "standby") == 0) {
+      playerState = PowerOffRemoteState;
+      mediaTitle = "";
+      mediaArtist = "";
+    } else if(strcmp(state.c_str(), "home") == 0) {
+      playerState = StoppedRemoteState;
+      mediaTitle = "";
+      mediaArtist = "";
+    } else if(strcmp(state.c_str(), "on") == 0) {
+      playerState = StoppedRemoteState;
+    } else if(strcmp(state.c_str(), "idle") == 0) {
+      playerState = StoppedRemoteState;
+    } else {
+      playerState = NoRemoteState;
+    }
+    stateCallback->stateUpdated(playerState);
+    display.updateDisplay(false);
   }
 };
 
@@ -187,10 +197,12 @@ class SonosSpeakerComponent : public BasePlayerComponent {
  public:
   SonosSpeakerComponent(
     DisplayUpdateInterface& newCallback,
+    RemotePlayerStateUpdatedInterface* newStateCallback,
     int newIndex,
     SpeakerSetup newSpeakerSetup
   ) : BasePlayerComponent { 
     newCallback,
+    newStateCallback,
     newIndex,
     newSpeakerSetup.entityId,
     newSpeakerSetup.friendlyName,
@@ -208,7 +220,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   std::string mediaAlbumName = "";
   int mediaDuration = -1;
   int mediaPosition = -1;
-  BasePlayerComponent *tv;
+  BasePlayerComponent *tv = NULL;
 
   void setup() {
     ESP_LOGI("speaker", "Sonos Speaker subbed %s", entityId.c_str());
@@ -404,11 +416,13 @@ class TVPlayerComponent : public BasePlayerComponent {
  public:
   TVPlayerComponent(
     DisplayUpdateInterface& newCallback,
+    RemotePlayerStateUpdatedInterface* newStateCallback,
     int newIndex,
     TVSetup newTVSetup,
     SonosSpeakerComponent* newSoundBar
   ) : BasePlayerComponent { 
     newCallback,
+    newStateCallback,
     newIndex,
     newTVSetup.entityId,
     newTVSetup.friendlyName,
@@ -463,7 +477,7 @@ class TVPlayerComponent : public BasePlayerComponent {
   }
 };
 
-class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
+class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, public RemotePlayerStateUpdatedInterface {
  public:
   SonosSpeakerGroupComponent(DisplayUpdateInterface& newCallback) : display(newCallback) { }
 
@@ -476,43 +490,44 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     if (playerSearchFinished) {
       return;
     }
+    BasePlayerComponent *newActivePlayer = NULL;
     for (auto &tv: tvs) {
-      if (tv->playerState == PlayingRemoteState) {
-        activePlayer = tv;
-        playerSearchFinished = true;
-        display.updateDisplay(true);
+      if (tv->playerState == NoRemoteState) {
         return;
+      } else if (newActivePlayer != NULL) {
+        if(newActivePlayer->playerState < tv->playerState) {
+          newActivePlayer = tv;
+        }
+      } else {
+        newActivePlayer = tv;
       }
     }
     for (auto &speaker: speakers) {
       if (speaker->playerState == NoRemoteState) {
         return;
-      } else if (speaker->playerState == PlayingRemoteState && speaker->mediaTitle != "") {
-        if(speaker->mediaSource == TVMenuTitlePlayingSourceState) {
-          for (auto &tv: tvs) {
-            if (tv->speaker == speaker) {
-              activePlayer = tv;
-              playerSearchFinished = true;
-              display.updateDisplay(true);
-              return;
-            }
-          }
-        } else {
-          activePlayer = speaker;
-          playerSearchFinished = true;
-          display.updateDisplay(true);
-          return;
+      } else if(
+          speaker->tv != NULL && 
+          speaker->playerState == PlayingRemoteState && 
+          speaker->mediaSource == TVMenuTitlePlayingSourceState
+      ) {
+        activePlayer = speaker->tv;
+        playerSearchFinished = true;
+        display.updateDisplay(true);
+        ESP_LOGI("findActivePlayer", "stopped on tv 2");
+        return;
+      } else if (newActivePlayer != NULL) {
+        if(newActivePlayer->playerState < speaker->playerState) {
+          newActivePlayer = speaker;
         }
+      } else {
+        newActivePlayer = speaker;
       }
     }
-    if(tvs.size() > 0) {
-      activePlayer = tvs[0];
+    if(newActivePlayer != NULL) {
+      activePlayer = newActivePlayer;
       playerSearchFinished = true;
       display.updateDisplay(true);
-    } else if(speakers.size() > 0) {
-      activePlayer = speakers[0];
-      playerSearchFinished = true;
-      display.updateDisplay(true);
+      ESP_LOGI("findActivePlayer", "stopped %d", activePlayer->playerState);
     }
   }
 
@@ -527,6 +542,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       if(newTVSetup.soundBar != NULL) {
         auto newSpeaker = new SonosSpeakerComponent(
           display,
+          this,
           newTVSetups.size() + speakerIndex,
           *newTVSetup.soundBar
         );
@@ -536,6 +552,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
       auto newTV = new TVPlayerComponent(
         display,
+        this,
         tvIndex,
         newTVSetup,
         newSoundBar
@@ -549,6 +566,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
     for (auto &newSpeakerSetup: newSpeakerSetups) {
       auto newSpeaker = new SonosSpeakerComponent(
         display,
+        this,
         newTVSetups.size() + speakerIndex,
         newSpeakerSetup
       );
@@ -904,6 +922,27 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component {
       }
     }
     return out;
+  }
+
+  void stateUpdated(RemotePlayerState state) {
+    if(id(sync_active_player) == false) {
+      return;
+    }
+    switch(state) {
+      case NoRemoteState:
+      case PausedRemoteState:
+        return;
+      case PlayingRemoteState:
+        if(activePlayer->playerState != PlayingRemoteState) {
+          playerSearchFinished = false;
+          findActivePlayer();
+        }
+        return;
+      case PowerOffRemoteState:
+      case StoppedRemoteState:
+        playerSearchFinished = false;
+        findActivePlayer();
+    }
   }
 
   private:

@@ -42,6 +42,7 @@ substitutions:
   display_timeout: "16"
   sleep_after: "7200"
   menu_rollover_on: "false"
+  sync_active_player: "true"
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
   

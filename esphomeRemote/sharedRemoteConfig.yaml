@@ -70,15 +70,15 @@ font:
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: ${large_font_size}
-    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
+    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: ${medium_font_size}
-    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
+    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: ${small_font_size}
-    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ'''
+    glyphs: '*/\$#<>!"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_large
     size: ${icon_size_large}
@@ -236,6 +236,12 @@ globals:
     type: bool
     restore_value: no
     initial_value: ${menu_rollover_on}
+
+## Find a new active media player if the current active one stops playing
+  - id: sync_active_player
+    type: bool
+    restore_value: no
+    initial_value: ${sync_active_player}
       
 interval:
   - interval: 1s
