@@ -425,7 +425,7 @@ void drawMenu(std::vector <MenuTitleBase*> menuTitles) {
         drawTitleImage(menuTitles[i]->friendlyName.length(), yPos, menuTitles[i]->titleState, menuState == i);
         break;
       case GroupedMenuTitleState:
-        bool extend = i < menuTitles.size() && menuTitles[i+1]->titleState == GroupedMenuTitleState;
+        bool extend = i < menuTitles.size() - 1 && menuTitles[i+1]->titleState == GroupedMenuTitleState;
         drawGroupedBar(yPos, extend);
         break;
     }
@@ -850,6 +850,8 @@ void drawMenu() {
         drawMenu({playerSwitches.begin(), playerSwitches.end()});
         break;
       }
+      auto playerStrings = speakerGroup -> groupTitleString();
+      drawMenu({playerStrings.begin(), playerStrings.end()});
       break;
   }
   default:

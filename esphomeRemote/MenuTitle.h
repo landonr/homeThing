@@ -73,18 +73,6 @@ class MenuTitlePlayer: public MenuTitleBase {
       newEntityId,
       newTitleState
     }, mediaSource(newMediaSource) {}
-    
-    bool indentLine() {
-      switch (titleState) {
-        case OffMenuTitleState:
-        case OnMenuTitleState:
-        case GroupedMenuTitleState:
-          return true;
-        default:
-          return false;
-      }
-      return false;
-    }
 
     std::string mediaSourceIcon() {
       switch(mediaSource) {
