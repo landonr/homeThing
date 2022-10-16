@@ -139,20 +139,20 @@ int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer* menuTitle) {
   int yPos = getHeaderTextYPos() - 1;
   int xPos = oldXPos;
   switch(menuTitle->titleState) {
-    case PlayingMenuTitleState: {
+    case PlayingRemotePlayerState: {
       MenuTitlePlayer* playerTitleState = static_cast <MenuTitlePlayer*>(menuTitle);
       if(playerTitleState != NULL) {
         id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), playerTitleState->mediaSourceIcon().c_str());
       }
       break;
     }
-    case PausedMenuTitleState:
+    case PausedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰏤");
       break;
-    case StoppedMenuTitleState:
+    case StoppedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰓛");
       break;
-    case PowerOffMenuTitleState:
+    case PowerOffRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰽥");
       break;
     default:
@@ -216,7 +216,7 @@ int drawShuffle(int oldXPos) {
   if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
     return oldXPos;
   }
-  if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
+  if (speakerGroup -> activePlayer -> playerState != StoppedRemotePlayerState) {
     int xPos = oldXPos - id(icon_size) + id(margin_size) / 2;
     int yPos = getHeaderTextYPos();
     if (speakerGroup -> mediaShuffling()) {
@@ -362,21 +362,21 @@ void scrollMenuPosition() {
   }
 }
 
-void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
+void drawTitleImage(int characterCount, int yPos, RemotePlayerState titleState, bool selected) {
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
   auto color = selected ? id(my_white) : id(color_accent_primary);
   switch(titleState) {
-    case PlayingMenuTitleState:
+    case PlayingRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰐊");
       break;
-    case PausedMenuTitleState:
+    case PausedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰏤");
       break;
-    case StoppedMenuTitleState:
+    case StoppedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰓛");
       break;
-    case PowerOffMenuTitleState:
+    case PowerOffRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰽥");
       break;
     default:
@@ -418,15 +418,21 @@ void drawMenu(std::vector <MenuTitleBase*> menuTitles) {
           drawArrow(yPos, menuTitles.size());
         }
         break;
-      case PlayingMenuTitleState:
-      case PausedMenuTitleState:
-      case StoppedMenuTitleState:
-      case PowerOffMenuTitleState:
-        drawTitleImage(menuTitles[i]->friendlyName.length(), yPos, menuTitles[i]->titleState, menuState == i);
-        break;
       case GroupedMenuTitleState:
         bool extend = i < menuTitles.size() - 1 && menuTitles[i+1]->titleState == GroupedMenuTitleState;
         drawGroupedBar(yPos, extend);
+        break;
+    }
+    switch(menuTitles[i]->titleType) {
+      case PlayerMenuTitleType: {
+        MenuTitlePlayer * playerTitle = static_cast <MenuTitlePlayer*>(menuTitles[i]);
+        if(playerTitle != NULL) {
+          int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
+          drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
+        }
+        break;
+      } 
+      case BaseMenuTitleType:
         break;
     }
   }
@@ -733,7 +739,7 @@ void drawNowPlaying() {
     drawNowPlayingSelectMenu();
   }
   int yPos = id(header_height) + id(margin_size) / 4;
-  if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {
+  if(speakerGroup->activePlayer->playerState == PowerOffRemotePlayerState) {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Power Off");
     return;
   }

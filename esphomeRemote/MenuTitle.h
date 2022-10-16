@@ -5,11 +5,12 @@ enum MenuTitleState {
   OffMenuTitleState,
   OnMenuTitleState,
   ArrowMenuTitleState,
-  PlayingMenuTitleState,
-  PausedMenuTitleState,
-  StoppedMenuTitleState,
-  GroupedMenuTitleState,
-  PowerOffMenuTitleState
+  GroupedMenuTitleState
+};
+
+enum MenuTitleType {
+  BaseMenuTitleType,
+  PlayerMenuTitleType
 };
 
 class MenuTitleBase {
@@ -17,7 +18,13 @@ class MenuTitleBase {
     std::string friendlyName;
     std::string entityId;
     MenuTitleState titleState;
-    MenuTitleBase(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState) { }
+    MenuTitleType titleType;
+    MenuTitleBase(
+      std::string newFriendlyName, 
+      std::string newEntityId, 
+      MenuTitleState newTitleState,
+      MenuTitleType newTitleType = BaseMenuTitleType
+    ) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState), titleType(newTitleType) { }
     
     bool indentLine() {
       switch (titleState) {
@@ -25,7 +32,8 @@ class MenuTitleBase {
         case OnMenuTitleState:
         case GroupedMenuTitleState:
           return true;
-        default:
+        case NoMenuTitleState:
+        case ArrowMenuTitleState:
           return false;
       }
       return false;
@@ -39,6 +47,14 @@ enum RemotePlayerMediaSource {
   NetflixRemotePlayerMediaSource,
   PlexRemotePlayerMediaSource,
   TVRemotePlayerMediaSource
+};
+
+enum RemotePlayerState {
+  NoRemotePlayerState,
+  PowerOffRemotePlayerState,
+  StoppedRemotePlayerState,
+  PausedRemotePlayerState,
+  PlayingRemotePlayerState
 };
 
 std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
@@ -62,17 +78,20 @@ std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
 class MenuTitlePlayer: public MenuTitleBase {
   public:
     RemotePlayerMediaSource mediaSource;
+    RemotePlayerState playerState;
 
     MenuTitlePlayer(
       std::string newFriendlyName, 
       std::string newEntityId, 
       MenuTitleState newTitleState,
-      RemotePlayerMediaSource newMediaSource
+      RemotePlayerMediaSource newMediaSource,
+      RemotePlayerState newPlayerState
     ) : MenuTitleBase { 
       newFriendlyName,
       newEntityId,
-      newTitleState
-    }, mediaSource(newMediaSource) {}
+      newTitleState,
+      PlayerMenuTitleType
+    }, mediaSource(newMediaSource), playerState(newPlayerState) {}
 
     std::string mediaSourceIcon() {
       switch(mediaSource) {
