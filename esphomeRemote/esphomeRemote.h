@@ -434,6 +434,9 @@ void drawMenu(std::vector <MenuTitleBase*> menuTitles) {
     }
   }
   drawScrollBar(menuTitles.size(), id(header_height));
+  if(activeMenuState == sourcesMenu) {
+    return;
+  }
   for (auto p : menuTitles)
   {
    delete p;
