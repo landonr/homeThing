@@ -135,15 +135,12 @@ int getHeaderTextYPos() {
   return ((id(header_height) - id(small_font_size) * 1.2) / 2);
 }
 
-int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer* menuTitle) {
+int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle) {
   int yPos = getHeaderTextYPos() - 1;
   int xPos = oldXPos;
-  switch(menuTitle->titleState) {
+  switch(menuTitle.playerState) {
     case PlayingRemotePlayerState: {
-      MenuTitlePlayer* playerTitleState = static_cast <MenuTitlePlayer*>(menuTitle);
-      if(playerTitleState != NULL) {
-        id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), playerTitleState->mediaSourceIcon().c_str());
-      }
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.mediaSourceIcon().c_str());
       break;
     }
     case PausedRemotePlayerState:
@@ -175,7 +172,7 @@ void drawHeaderTitle() {
   case nowPlayingMenu: {
     auto headerMenuTitle = speakerGroup->headerMediaPlayerTitle();
     xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-    drawHeaderTitleWithString(headerMenuTitle->friendlyName, xPos);
+    drawHeaderTitleWithString(headerMenuTitle.friendlyName, xPos);
     break;
   }
   case sourcesMenu:
@@ -437,6 +434,11 @@ void drawMenu(std::vector <MenuTitleBase*> menuTitles) {
     }
   }
   drawScrollBar(menuTitles.size(), id(header_height));
+  for (auto p : menuTitles)
+  {
+   delete p;
+  } 
+  menuTitles.clear();
 }
 
 std::vector <MenuTitleBase*> menuTypesToTitles(std::vector <MenuStates> menu) {

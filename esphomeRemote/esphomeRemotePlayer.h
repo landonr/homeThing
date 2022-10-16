@@ -745,7 +745,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     return out;
   }
 
-  MenuTitlePlayer* headerMediaPlayerTitle() {
+  MenuTitlePlayer headerMediaPlayerTitle() {
     std::string friendlyName = activePlayer -> friendlyName;
     if (activePlayer -> playerType != TVRemotePlayerType) {
       SonosSpeakerComponent * activeSpeaker = static_cast < SonosSpeakerComponent * > (activePlayer);
@@ -755,7 +755,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         }
       }
     }
-    return new MenuTitlePlayer(friendlyName, activePlayer->entityId, NoMenuTitleState, activePlayer->mediaSource, activePlayer->playerState);
+    return MenuTitlePlayer(friendlyName, activePlayer->entityId, NoMenuTitleState, activePlayer->mediaSource, activePlayer->playerState);
   }
 
   void selectGroup(MenuTitlePlayer *selectedMenuTitle) {
