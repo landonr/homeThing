@@ -31,15 +31,15 @@ class TextHelpers
 	  return output;
 	}
 
-	static std::vector<MenuTitleSource*> parseJsonArray(std::string state, std::string entityId) {
+	static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonArray(std::string state, std::string entityId) {
 	  StaticJsonDocument<1024> doc;
 	  deserializeJson(doc, state);
 	  JsonArray array = doc.as<JsonArray>();
-	  std::vector<MenuTitleSource*> sources;
+	  std::vector<std::shared_ptr<MenuTitleSource>> sources;
 	  for(JsonVariant v : array) {
 	    std::string sourceName = v.as<std::string>();
 	    ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(), entityId.c_str());
-	    MenuTitleSource* newsource = new MenuTitleSource(sourceName, entityId, NoMenuTitleState, SourceRemotePlayerSourceType);
+        auto newsource = std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleState, SourceRemotePlayerSourceType);
 	    sources.push_back(newsource);
 	  }
 	  return sources;
@@ -54,31 +54,31 @@ class TextHelpers
 	    return str;
 	}
 
-	static std::vector<MenuTitleSource*> parseJsonSource(std::string state, std::string nameKey, std::string valueKey) {
+	static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonSource(std::string state, std::string nameKey, std::string valueKey) {
 	  StaticJsonDocument<1024> doc;
 	  deserializeJson(doc, state);
 	  JsonArray array = doc.as<JsonArray>();
-	  std::vector<MenuTitleSource*> sources;
+	  std::vector<std::shared_ptr<MenuTitleSource>> sources;
 	  for(JsonVariant v : array) {
 	    std::string playlistName = v[nameKey].as<std::string>();
 	    std::string playlistId = v[valueKey].as<std::string>();
 	    ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(), playlistName.c_str());
-	    MenuTitleSource* newsource = new MenuTitleSource(playlistName, playlistId, NoMenuTitleState, MusicRemotePlayerSourceType);
+        auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, MusicRemotePlayerSourceType);
 	    sources.push_back(newsource);
 	  }
 	  return sources;
 	}
 
-	static std::vector<MenuTitleSource*> parseJsonKeyValue(std::string state) {
+	static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonKeyValue(std::string state) {
 	  StaticJsonDocument<1024> doc;
 	  deserializeJson(doc, state);
 	  JsonObject array = doc.as<JsonObject>();
-	  std::vector<MenuTitleSource*> sources;
+	  std::vector<std::shared_ptr<MenuTitleSource>> sources;
 	  for(JsonPair v : array) {
 	    std::string playlistName(v.value().as<std::string>());
 	    std::string playlistId(v.key().c_str());
 	    ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(), playlistName.c_str());
-	    MenuTitleSource* newsource = new MenuTitleSource(playlistName, playlistId, NoMenuTitleState, FavoriteItemIDRemotePlayerSourceType);
+        auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, FavoriteItemIDRemotePlayerSourceType);
 	    sources.push_back(newsource);
 	  }
 	  return sources;

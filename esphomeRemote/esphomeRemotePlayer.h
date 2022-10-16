@@ -61,7 +61,7 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     std::string mediaArtist = "";
     RemotePlayerMediaSource mediaSource = NoRemotePlayerMediaSource;
     RemotePlayerState playerState = NoRemotePlayerState;
-    std::vector<MenuTitleSource*> sources;
+    std::vector<std::shared_ptr<MenuTitleSource>> sources;
     int index;
     std::string entityId;
     std::string friendlyName;
@@ -758,9 +758,9 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     return MenuTitlePlayer(friendlyName, activePlayer->entityId, NoMenuTitleState, activePlayer->mediaSource, activePlayer->playerState);
   }
 
-  void selectGroup(MenuTitlePlayer *selectedMenuTitle) {
+  void selectGroup(MenuTitlePlayer selectedMenuTitle) {
     if (newSpeakerGroupParent == NULL) {
-      MenuTitlePlayer *selectedMenuTitleCopy = new MenuTitlePlayer(selectedMenuTitle->friendlyName, selectedMenuTitle->entityId, selectedMenuTitle->titleState, selectedMenuTitle->mediaSource, selectedMenuTitle->playerState);
+      MenuTitlePlayer *selectedMenuTitleCopy = new MenuTitlePlayer(selectedMenuTitle.friendlyName, selectedMenuTitle.entityId, selectedMenuTitle.titleState, selectedMenuTitle.mediaSource, selectedMenuTitle.playerState);
       newSpeakerGroupParent = selectedMenuTitleCopy;
       return;
     } else if (menuIndex == 0) {
@@ -877,8 +877,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     }
   }
 
-  std::vector<MenuTitleSource*> activePlayerSourceMenu() {
-    std::vector<MenuTitleSource*> out;
+  std::vector<std::shared_ptr<MenuTitleSource>> activePlayerSourceMenu() {
+    std::vector<std::shared_ptr<MenuTitleSource>> out;
     switch(activePlayer->playerType) {
       case TVRemotePlayerType:
         return activePlayer->sources;
@@ -886,8 +886,11 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
         if (activeSpeaker != NULL) {
           if(activeSpeaker->tv != NULL && activeSpeaker->tv->friendlyName.size() > 0) {
-            out.push_back(new MenuTitleSource(activeSpeaker->tv->friendlyName, "", NoMenuTitleState, SourceRemotePlayerSourceType));
+            auto tvSource = std::make_shared<MenuTitleSource>(activeSpeaker->tv->friendlyName, "", NoMenuTitleState, SourceRemotePlayerSourceType);
+            out.push_back(tvSource);
           }
+          // std::vector<MenuTitleSource*> newSonosFavorites(sonosFavorites);
+          // std::vector<MenuTitleSource*> newSpotifyPlaylists(spotifyPlaylists);
           out.insert(out.end(), spotifyPlaylists.begin(), spotifyPlaylists.end());
           out.insert(out.end(), sonosFavorites.begin(), sonosFavorites.end());
         }
@@ -898,7 +901,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
   }
 
   void stateUpdated(RemotePlayerState state) {
-    if(id(sync_active_player) == false) {
+    if(activePlayer == NULL || id(sync_active_player) == false) {
       return;
     }
     switch(state) {
@@ -920,8 +923,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
 
   private:
   DisplayUpdateInterface& display;
-  std::vector<MenuTitleSource*> sonosFavorites;
-  std::vector<MenuTitleSource*> spotifyPlaylists;
+  std::vector<std::shared_ptr<MenuTitleSource>> sonosFavorites;
+  std::vector<std::shared_ptr<MenuTitleSource>> spotifyPlaylists;
 
   void sonos_favorites_changed(std::string state) {
     ESP_LOGI("group", "Sonos Favorites changes to %s", state.c_str());
