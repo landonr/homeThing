@@ -13,9 +13,9 @@ api:
 ota:
 
 wifi:
-  ssid: ${wifi_ssid}
-  password: ${wifi_password}
-  fast_connect: true
+  ssid: "alsobadd"
+  password: "badbadbad"
+  fast_connect: false
 
   ap:
     ssid: "${friendly_name} Fallback"

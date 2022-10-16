@@ -69,7 +69,8 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
 
   void superSetup() {
     ESP_LOGI("Player", "Player subbed %s", entityId.c_str());
-    subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, entityId.c_str());
+    // subscribe_homeassistant_state(&BasePlayerComponent::playerState_changed, entityId.c_str());
+    playerState = PlayingRemotePlayerState;
   }
 
   void playSource(MenuTitleSource source) {
@@ -199,17 +200,23 @@ class SonosSpeakerComponent : public BasePlayerComponent {
   void setup() {
     ESP_LOGI("speaker", "Sonos Speaker subbed %s", entityId.c_str());
     superSetup();
-    subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_volume_changed, entityId, "volume_level");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_muted_changed, entityId, "is_volume_muted");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::shuffle_changed, entityId, "shuffle");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::group_members_changed, entityId, "group_members");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_title_changed, entityId, "media_title");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_artist_changed, entityId, "media_artist");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::playlist_changed, entityId, "media_playlist");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::media_album_changed, entityId, "media_album_name");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::media_duration_changed, entityId, "media_duration");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::media_position_changed, entityId, "media_position");
-    subscribe_homeassistant_state(&SonosSpeakerComponent::media_source_changed, entityId, "media_content_id");
+    speaker_volume = 0.5;
+    localVolume = 0.5;
+    mediaTitle = "Test build";
+    mediaArtist = "ESPHome Remote";
+    mediaDuration = 420;
+    mediaPosition = 69;
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_volume_changed, entityId, "volume_level");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::speaker_muted_changed, entityId, "is_volume_muted");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::shuffle_changed, entityId, "shuffle");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::group_members_changed, entityId, "group_members");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_title_changed, entityId, "media_title");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::player_media_artist_changed, entityId, "media_artist");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::playlist_changed, entityId, "media_playlist");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::media_album_changed, entityId, "media_album_name");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::media_duration_changed, entityId, "media_duration");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::media_position_changed, entityId, "media_position");
+    // subscribe_homeassistant_state(&SonosSpeakerComponent::media_source_changed, entityId, "media_content_id");
   }
 
   void ungroup() {
@@ -409,8 +416,11 @@ class TVPlayerComponent : public BasePlayerComponent {
   void setup() {
     ESP_LOGI("PlayerTV", "TV subbed %s", entityId.c_str());
     superSetup();
-    subscribe_homeassistant_state(&TVPlayerComponent::player_source_changed, entityId, "source");
-    subscribe_homeassistant_state(&TVPlayerComponent::player_source_list_changed, entityId, "source_list");
+    mediaSource = YouTubeRemotePlayerMediaSource;
+    auto newSources = TextHelpers::parseJsonArray("['Home', 'Apple TV', 'Netflix']", "source");
+    sources.assign(newSources.begin(), newSources.end());
+    // subscribe_homeassistant_state(&TVPlayerComponent::player_source_changed, entityId, "source");
+    // subscribe_homeassistant_state(&TVPlayerComponent::player_source_list_changed, entityId, "source_list");
   }
 
   void player_source_changed(std::string state) {
@@ -536,6 +546,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       }
       tvs.push_back(newTV);
       tvIndex++;
+      activePlayer = newTV;
     }
     for (auto &newSpeakerSetup: newSpeakerSetups) {
       auto newSpeaker = new SonosSpeakerComponent(
@@ -547,8 +558,13 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       speakers.push_back(newSpeaker);
       speakerIndex++;
     }
-    subscribe_homeassistant_state(&SonosSpeakerGroupComponent::playlists_changed, "sensor.playlists_sensor", "playlists");
-    subscribe_homeassistant_state(&SonosSpeakerGroupComponent::sonos_favorites_changed, "sensor.sonos_favorites", "items");
+    // subscribe_homeassistant_state(&SonosSpeakerGroupComponent::playlists_changed, "sensor.playlists_sensor", "playlists");
+    // subscribe_homeassistant_state(&SonosSpeakerGroupComponent::sonos_favorites_changed, "sensor.sonos_favorites", "items");
+    auto sources = TextHelpers::parseJsonKeyValue("{'FV:2/10': '94.5 Virgin Radio', 'FV:2/47': 'African Heat', 'FV:2/60': 'Alté Cruise', 'FV:2/65': 'Barter 6', 'FV:2/6': 'Blonde', 'FV:2/63': 'Bronco', 'FV:2/24': 'BUBBA', 'FV:2/50': 'Caravelle', 'FV:2/9': 'CBC Radio One Vancouver', 'FV:2/17': 'Chance The Rapper - #10DAY', 'FV:2/16': 'Chance The Rapper - Acid Rap', 'FV:2/4': 'Circles (Deluxe)', 'FV:2/33': 'Cool FM 96.9 - LAGOS', 'FV:2/51': 'Cyclorama', 'FV:2/21': 'Daily Mix 1'}");
+    for(auto &player: speakers) {
+      player->sources.assign(sources.begin(), sources.end());
+    }
+    sonosFavorites = sources;
   }
 
   std::vector<std::string> groupNames() {
