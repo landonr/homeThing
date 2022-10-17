@@ -196,8 +196,6 @@ void drawHeaderTitle() {
     break;
   case lightsDetailMenu:
     drawHeaderTitleWithString("LightDetail", xPos);
-    // drawHeaderTitleWithString(lightGroup->lights[currentSelectedLight]->friendlyName, xPos);
-
     break;
   case sensorsMenu:
     drawHeaderTitleWithString("Sensors", xPos);
@@ -897,11 +895,6 @@ void drawMenu() {
     break;
 case lightsDetailMenu:
     drawMenuLightDetail();
-    // drawMenuLightDetail();
-    break;
-case lightsDetailMenu:
-    drawMenuLightDetail();
-    // drawMenuLightDetail();
     break;
   case groupMenu: {
       if (speakerGroup -> newSpeakerGroupParent != NULL) {
