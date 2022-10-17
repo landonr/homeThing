@@ -6,6 +6,22 @@
 
 #pragma once
 
+/* Home Assistant entities can have these modes in color_mode/supported_color_mode.
+ * Depending on the mode the light supports we want to show sliders or not.
+ *
+ * |color_mode | supports brightness | supports color_temp |
+ * |---------- | ------------------- | ------------------- |
+ * | UNKNOWN   |          -          |          -          |
+ * | ONOFF     |          -          |          -          |
+ * | BRIGHTNESS|          x          |          x          |
+ * | COLOR_TEMP|          x          |          -          |
+ * | HS        |          x          |          -          |
+ * | RGB       |          x          |          -          |
+ * | RGBW      |          x          |          -          |
+ * | RGBWW     |          x          |          -          |
+ * | WHITE     |          x          |          -          |
+ * | XY        |          x          |          -          |
+ */
 class LightService: public CustomAPIDevice, public Component {
   public:
     LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface& newCallback) : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
@@ -13,6 +29,8 @@ class LightService: public CustomAPIDevice, public Component {
       subscribe_homeassistant_state(&LightService::state_changed, newEntityId.c_str());
       subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(),"brightness");
       subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(),"color_temp");
+      subscribe_homeassistant_state(&LightService::color_mode_changed, newEntityId.c_str(),"color_mode");
+      ESP_LOGI("inital color_mode", "state changed to %s", color_mode.c_str());
       // subscribe_homeassistant_state(&LightService::, newEntityId.c_str());
     }
     std::string friendlyName;
@@ -20,6 +38,7 @@ class LightService: public CustomAPIDevice, public Component {
     DisplayUpdateInterface& display;
     int brightness = 0;
     int color_temp = 0;
+    std::string color_mode = "";
     bool onState;
 
     // TODO:
@@ -84,6 +103,7 @@ class LightService: public CustomAPIDevice, public Component {
   private:
     void state_changed(std::string newOnState) {
       ESP_LOGI("brightness", " changed to %s", newOnState.c_str());
+      ESP_LOGI("color_mode", "state changed to %s", color_mode.c_str());
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
       if (!onState){
@@ -100,6 +120,11 @@ class LightService: public CustomAPIDevice, public Component {
     void color_temp_changed(std::string newOnState){
       ESP_LOGI("color_temp", "state changed to %s", newOnState.c_str());
       color_temp = atoi(newOnState.c_str());
+      display.updateDisplay(false);
+    }
+    void color_mode_changed(std::string newOnState){
+      ESP_LOGI("color_mode_changed", "state changed to %s", newOnState.c_str());
+      color_mode = newOnState.c_str();
       display.updateDisplay(false);
     }
 };

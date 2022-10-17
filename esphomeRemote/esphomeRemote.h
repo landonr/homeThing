@@ -1009,9 +1009,16 @@ bool selectMenu() {
     }
     break;
   case lightsMenu:
-    menuIndex = 0; // highlight first item in menu
-    activeMenuState = lightsDetailMenu;
     currentSelectedLight = menuIndexForSource; // save the selected light to be able to control later
+    // switch light directly if it doesn't support brightness
+    if (lightGroup->lights[currentSelectedLight]->color_mode.compare("onoff") == 0 ||
+        lightGroup->lights[currentSelectedLight]->color_mode.compare("unknown") == 0){
+        lightGroup->selectLight(currentSelectedLight);
+        return true;
+    } else {
+      menuIndex = 0; // highlight first item in menu
+      activeMenuState = lightsDetailMenu;
+    }
     break;
   case lightsDetailMenu:
     // First item is the switch and doesn't need selection
