@@ -100,6 +100,14 @@ class LightService: public CustomAPIDevice, public Component {
       });
     }
 
+    bool supportsBrightness(){
+        return color_mode.compare("onoff") == 0 || color_mode.compare("unknown") == 0;
+    }
+
+    bool supportsColorTemperature(){
+        return false;
+    }
+
   private:
     void state_changed(std::string newOnState) {
       ESP_LOGI("brightness", " changed to %s", newOnState.c_str());

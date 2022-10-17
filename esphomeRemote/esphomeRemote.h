@@ -1004,8 +1004,7 @@ bool selectMenu() {
   case lightsMenu:
     currentSelectedLight = menuIndexForSource; // save the selected light to be able to control later
     // switch light directly if it doesn't support brightness
-    if (lightGroup->lights[currentSelectedLight]->color_mode.compare("onoff") == 0 ||
-        lightGroup->lights[currentSelectedLight]->color_mode.compare("unknown") == 0){
+    if (lightGroup->lights[currentSelectedLight]->supportsBrightness()){
         lightGroup->selectLight(currentSelectedLight);
         return true;
     } else {
