@@ -832,9 +832,13 @@ void drawBootSequence() {
   menuDrawing = false;
 }
 
-void drawMenuLightDetail(){
+void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles){
     // draw button and sliders to adjust light
-
+      activeMenuTitleCount = menuTitles.size();
+      if(menuTitles.size() == 0 ) {
+        return;
+      }
+    ESP_LOGI("LightMenu", "ok lets go %i", activeMenuTitleCount);
     activeMenuTitleCount = 3;
     scrollMenuPosition();
     int menuState = menuIndex;
@@ -844,6 +848,19 @@ void drawMenuLightDetail(){
     int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
     int barWidth = (totalBarWidth - 4) * (50 / 100);
     int yPos = id(header_height);
+    for (int i = scrollTop; i < menuTitles.size(); i++) {
+        // auto bla = std::static_pointer_cast<MenuTitleLightSlider>(menuTitles[i]);
+        // ESP_LOGI("LightMenu", "supports birghtness %i", bla->slider_);
+        if (i > scrollTop + maxItems()) {
+            break;
+        }
+        // int yPos = ((i - scrollTop) * (id(medium_font_size) + id(margin_size))) + id(header_height);
+        //
+        // 
+        // WIP
+        //
+        //
+    }
 
     // First Item
     drawTitle(menuState, 0,lightGroup->lights[currentSelectedLight]->friendlyName, yPos, true);
@@ -853,21 +870,33 @@ void drawMenuLightDetail(){
 
     // Second Item
     auto brightness =lightGroup->lights[currentSelectedLight]->brightness ;
-    if(menuState == 1){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(small_font_size) + barHeight + 2, id(color_accent_primary));
+    if(menuState == 1 && lightDetailSelected == 1){
+        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
+    }else if(menuState == 1){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
     }
-    id(my_display).filled_rectangle(1, yPos+1, brightness, id(margin_size) + id(small_font_size) + barHeight -1, id(my_white));
+    id(my_display).filled_rectangle(1, yPos+1, brightness, id(margin_size) + id(medium_font_size) , id(my_white));
     id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Brightness");
-    yPos += id(margin_size) + id(small_font_size) + barHeight;
-
-    // Third Item
-    auto color_temp =lightGroup->lights[currentSelectedLight]->color_temp ;
-    if(menuState == 2){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(small_font_size) + barHeight + 2, id(color_accent_primary));
+    yPos += id(margin_size) + id(medium_font_size);
+    // Second Item
+    auto color_temp_bar = lightGroup->lights[currentSelectedLight]->color_temp * 0.64;
+    if(menuState == 2 && lightDetailSelected == 1){
+        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
+    }else if(menuState == 2){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
     }
-    auto color_temp_bar =0.64 * color_temp;
-    id(my_display).filled_rectangle(1, yPos+1, color_temp_bar, id(margin_size) + id(small_font_size) + barHeight -1, id(my_white));
+    id(my_display).filled_rectangle(1, yPos+1, color_temp_bar, id(margin_size) + id(medium_font_size) , id(my_white));
     id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Temperature");
+    yPos += id(margin_size) + id(medium_font_size);
+
+    // // Third Item
+    // auto color_temp =lightGroup->lights[currentSelectedLight]->color_temp ;
+    // if(menuState == 2){
+    //     id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(small_font_size) + barHeight + 2, id(color_accent_primary));
+    // }
+    // auto color_temp_bar =0.64 * color_temp;
+    // id(my_display).filled_rectangle(1, yPos+1, color_temp_bar, id(margin_size) + id(small_font_size) + barHeight -1, id(my_white));
+    // id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Temperature");
 }
 
 void drawMenu() {
@@ -894,7 +923,7 @@ void drawMenu() {
     (lightGroup -> lightTitleSwitches());
     break;
 case lightsDetailMenu:
-    drawMenuLightDetail();
+    drawMenuLightDetail(lightGroup -> lightTitleSwitches());
     break;
   case groupMenu: {
       if (speakerGroup -> newSpeakerGroupParent != NULL) {
