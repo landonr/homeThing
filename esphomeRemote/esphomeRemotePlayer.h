@@ -460,7 +460,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
   std::vector<TVPlayerComponent*> tvs;
   bool playerSearchFinished = false;
 
-  void findActivePlayer() {
+  void findActivePlayer(bool background = false) {
     if (playerSearchFinished) {
       return;
     }
@@ -486,8 +486,9 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       ) {
         activePlayer = speaker->tv;
         playerSearchFinished = true;
-        display.updateDisplay(true);
-        ESP_LOGI("findActivePlayer", "stopped on tv 2");
+        if(!background) {
+          display.updateDisplay(true);
+        }
         return;
       } else if (newActivePlayer != NULL) {
         if(newActivePlayer->playerState < speaker->playerState) {
@@ -500,8 +501,9 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     if(newActivePlayer != NULL) {
       activePlayer = newActivePlayer;
       playerSearchFinished = true;
-      display.updateDisplay(true);
-      ESP_LOGI("findActivePlayer", "stopped %d", activePlayer->playerState);
+      if(!background) {
+        display.updateDisplay(true);
+      }
     }
   }
 
@@ -911,13 +913,13 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       case PlayingRemotePlayerState:
         if(activePlayer->playerState != PlayingRemotePlayerState) {
           playerSearchFinished = false;
-          findActivePlayer();
+          findActivePlayer(true);
         }
         return;
       case PowerOffRemotePlayerState:
       case StoppedRemotePlayerState:
         playerSearchFinished = false;
-        findActivePlayer();
+        findActivePlayer(true);
     }
   }
 
