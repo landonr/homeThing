@@ -45,7 +45,7 @@ auto * sceneGroup = new SceneGroupComponent();
 auto * sensorGroup = new SensorGroupComponent();
 auto * speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
 auto * lightGroup = new LightGroupComponent(displayUpdate);
-MenuTitle activeMenuTitle = MenuTitle("", "", NoMenuTitleState);
+std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
 double marqueePosition = 0;
 bool marqueeText = false;
 
@@ -91,34 +91,34 @@ int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
   return characterLimit;
 }
 
-MenuTitle menuTitleForType(MenuStates stringType) {
+std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType) {
   switch (stringType) {
   case nowPlayingMenu:
-    return MenuTitle("Now Playing", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Now Playing", "", ArrowMenuTitleState);
   case sourcesMenu:
-    return MenuTitle("Sources", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Sources", "", ArrowMenuTitleState);
   case backlightMenu:
-    return MenuTitle("Backlight", "", NoMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Backlight", "", NoMenuTitleState);
   case sleepMenu:
-    return MenuTitle("Sleep", "", NoMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleState);
   case mediaPlayersMenu:
-    return MenuTitle("Media Players", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Media Players", "", ArrowMenuTitleState);
   case lightsMenu:
-    return MenuTitle("Lights", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Lights", "", ArrowMenuTitleState);
   case lightsDetailMenu:
-    return MenuTitle("Lights Details", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Light Detail", "", ArrowMenuTitleState);
   case scenesMenu:
-    return MenuTitle("Scenes and Actions", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Scenes and Actions", "", ArrowMenuTitleState);
   case rootMenu:
-    return MenuTitle("Home", "", NoMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Home", "", NoMenuTitleState);
   case groupMenu:
-    return MenuTitle("Speaker Group", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Speaker Group", "", ArrowMenuTitleState);
   case sensorsMenu:
-    return MenuTitle("Sensors", "", ArrowMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Sensors", "", ArrowMenuTitleState);
   case bootMenu:
-    return MenuTitle("Boot", "", NoMenuTitleState);
+    return std::make_shared<MenuTitleBase>("Boot", "", NoMenuTitleState);
   }
-  return MenuTitle("", "", NoMenuTitleState);
+  return std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
 }
 
 void goToScreenFromString(std::string screenName) {
@@ -139,20 +139,21 @@ int getHeaderTextYPos() {
   return ((id(header_height) - id(small_font_size) * 1.2) / 2);
 }
 
-int drawPlayPauseIcon(int oldXPos, MenuTitle menuTitle) {
+int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle) {
   int yPos = getHeaderTextYPos() - 1;
   int xPos = oldXPos;
-  switch(menuTitle.titleState) {
-    case PlayingMenuTitleState:
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.playingSourceStateIcon().c_str());
+  switch(menuTitle.playerState) {
+    case PlayingRemotePlayerState: {
+      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.mediaSourceIcon().c_str());
       break;
-    case PausedMenuTitleState:
+    }
+    case PausedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰏤");
       break;
-    case StoppedMenuTitleState:
+    case StoppedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰓛");
       break;
-    case PowerOffMenuTitleState:
+    case PowerOffRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰽥");
       break;
     default:
@@ -175,7 +176,7 @@ void drawHeaderTitle() {
   case nowPlayingMenu: {
     auto headerMenuTitle = speakerGroup->headerMediaPlayerTitle();
     xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-    drawHeaderTitleWithString(headerMenuTitle.friendlyName, xPos);
+    drawHeaderTitleWithString((headerMenuTitle).friendlyName, xPos);
     break;
   }
   case sourcesMenu:
@@ -221,7 +222,7 @@ int drawShuffle(int oldXPos) {
   if (speakerGroup -> activePlayer -> playerType == TVRemotePlayerType) {
     return oldXPos;
   }
-  if (speakerGroup -> activePlayer -> playerState != StoppedRemoteState) {
+  if (speakerGroup -> activePlayer -> playerState != StoppedRemotePlayerState) {
     int xPos = oldXPos - id(icon_size) + id(margin_size) / 2;
     int yPos = getHeaderTextYPos();
     if (speakerGroup -> mediaShuffling()) {
@@ -367,22 +368,21 @@ void scrollMenuPosition() {
   }
 }
 
-void drawTitleImage(int characterCount, int yPos, MenuTitleState titleState, bool selected) {
-    // draw little icon in th topleft corner
+void drawTitleImage(int characterCount, int yPos, RemotePlayerState titleState, bool selected) {
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) * (id(medium_font_size) * id(font_size_width_ratio))) + 4;
   auto color = selected ? id(my_white) : id(color_accent_primary);
   switch(titleState) {
-    case PlayingMenuTitleState:
+    case PlayingRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰐊");
       break;
-    case PausedMenuTitleState:
+    case PausedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰏤");
       break;
-    case StoppedMenuTitleState:
+    case StoppedRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰓛");
       break;
-    case PowerOffMenuTitleState:
+    case PowerOffRemotePlayerState:
       id(my_display).printf(xPos, yPos, &id(material_font_large), color, "󰽥");
       break;
     default:
@@ -398,72 +398,81 @@ void drawGroupedBar(int yPos, bool extend) {
   id(my_display).line(xPos, yPos + (id(medium_font_size) + id(margin_size)) / 2, xPos + width, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
 }
 
-void drawMenuVector(std::vector <MenuTitle> menuTitles) {
+void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
   if(menuTitles.size() == 0 ) {
     return;
   }
   scrollMenuPosition();
   int menuState = menuIndex;
-  MenuTitle menuTitleCopy = menuTitles[menuIndex];
-  activeMenuTitle = menuTitleCopy;
+  activeMenuTitle = menuTitles[menuIndex];
   for (int i = scrollTop; i < menuTitles.size(); i++) {
     if (i > scrollTop + maxItems()) {
       break;
     }
     int yPos = ((i - scrollTop) * (id(medium_font_size) + id(margin_size))) + id(header_height);
-    drawTitle(menuState, i, menuTitles[i].friendlyName, yPos, menuTitles[i].indentLine());
-    switch(menuTitles[i].titleState) {
+    drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
+    switch(menuTitles[i]->titleState) {
       case NoMenuTitleState:
         break;
       case OffMenuTitleState:
       case OnMenuTitleState:
-        drawSwitch(menuTitles[i].titleState == OnMenuTitleState, yPos);
+        drawSwitch(menuTitles[i]->titleState == OnMenuTitleState, yPos);
         break;
       case ArrowMenuTitleState:
         if(menuState == i) {
           drawArrow(yPos, menuTitles.size());
         }
         break;
-      case PlayingMenuTitleState:
-      case PausedMenuTitleState:
-      case StoppedMenuTitleState:
-      case PowerOffMenuTitleState:
-        drawTitleImage(menuTitles[i].friendlyName.length(), yPos, menuTitles[i].titleState, menuState == i);
-        break;
       case GroupedMenuTitleState:
-        bool extend = i < menuTitles.size() && menuTitles[i+1].titleState == GroupedMenuTitleState;
+        bool extend = i < menuTitles.size() - 1 && menuTitles[i+1]->titleState == GroupedMenuTitleState;
         drawGroupedBar(yPos, extend);
+        break;
+    }
+    switch(menuTitles[i]->titleType) {
+      case PlayerMenuTitleType: {
+        auto playerTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
+        if(playerTitle != NULL) {
+          int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
+          drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
+        }
+        break;
+      } 
+      case BaseMenuTitleType:
         break;
     }
   }
   drawScrollBar(menuTitles.size(), id(header_height));
 }
 
-std::vector <MenuTitle> menuTypesToTitles(std::vector <MenuStates> menu) {
-  std::vector <MenuTitle> out;
+std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(std::vector <MenuStates> menu) {
+  std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto & menuItem: menu) {
     out.push_back(menuTitleForType(menuItem));
   }
   return out;
 }
 
-std::vector <MenuTitle> activeMenu() {
+std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
   case rootMenu:
     return menuTypesToTitles(rootMenuTitles());
-  case sourcesMenu:
-    return speakerGroup -> activePlayerSourceMenu();
-  case mediaPlayersMenu:
-    return speakerGroup -> mediaPlayersTitleString();
+  case sourcesMenu:{
+    auto sourceTitles = speakerGroup -> activePlayerSourceMenu();
+    return {sourceTitles.begin(), sourceTitles.end()};
+  }
+  case mediaPlayersMenu: {
+    auto mediaPlayersTitles = speakerGroup -> mediaPlayersTitleString();
+    return {mediaPlayersTitles.begin(), mediaPlayersTitles.end()};
+  }
   case scenesMenu:
     return sceneGroup -> sceneTitleStrings();
   case sensorsMenu:
     return sensorGroup -> sensorTitles();
   default:
     ESP_LOGW("WARNING", "menu is bad  %d", x);
-    std::vector <MenuTitle> out;
+    std::vector<std::shared_ptr<MenuTitleBase>> out;
     return out;
   }
 }
@@ -736,7 +745,7 @@ void drawNowPlaying() {
     drawNowPlayingSelectMenu();
   }
   int yPos = id(header_height) + id(margin_size) / 4;
-  if(speakerGroup->activePlayer->playerState == PowerOffRemoteState) {
+  if(speakerGroup->activePlayer->playerState == PowerOffRemotePlayerState) {
     id(my_display).printf(id(my_display).get_width() / 2, yPos, & id(large_font), id(my_white), TextAlign::TOP_CENTER, "Power Off");
     return;
   }
@@ -883,21 +892,25 @@ void drawMenu() {
     drawNowPlaying();
     break;
   case lightsMenu:
-    drawMenuVector(lightGroup -> lightTitleSwitches());
+    drawMenu
+    (lightGroup -> lightTitleSwitches());
     break;
 case lightsDetailMenu:
     drawMenuLightDetail();
     // drawMenuLightDetail();
     break;
-  case groupMenu:
-    if (speakerGroup -> newSpeakerGroupParent != NULL) {
-      drawMenuVector(speakerGroup -> groupTitleSwitches());
+  case groupMenu: {
+      if (speakerGroup -> newSpeakerGroupParent != NULL) {
+        auto playerSwitches = speakerGroup -> groupTitleSwitches();
+        drawMenu({playerSwitches.begin(), playerSwitches.end()});
+        break;
+      }
+      auto playerStrings = speakerGroup -> groupTitleString();
+      drawMenu({playerStrings.begin(), playerStrings.end()});
       break;
-    }
-    drawMenuVector(speakerGroup -> groupTitleString());
-    break;
+  }
   default:
-    drawMenuVector(activeMenu());
+    drawMenu(activeMenu());
     break;
   }
   drawHeader();
@@ -907,14 +920,14 @@ case lightsDetailMenu:
 
 void selectMediaPlayers() {
   for (auto & speaker: speakerGroup->speakers) {
-    if(speaker->entityId == activeMenuTitle.entityId) {
+    if(speaker->entityId == activeMenuTitle->entityId) {
       speakerGroup->activePlayer = speaker;
       topMenu();
       return;
     }
   }
   for (auto & tv: speakerGroup->tvs) {
-    if(tv->entityId == activeMenuTitle.entityId) {
+    if(tv->entityId == activeMenuTitle->entityId) {
       speakerGroup->activePlayer = tv;
       topMenu();
       return;
@@ -970,15 +983,19 @@ bool selectMenu() {
   case nowPlayingMenu:
     activeMenuState = MenuStates::nowPlayingMenu;
     break;
-  case sourcesMenu:
+  case sourcesMenu: {
+    auto sourceTitleState = std::static_pointer_cast<MenuTitleSource>(activeMenuTitle);
     idleMenu(true);
-    speakerGroup -> activePlayer -> playSource(activeMenuTitle);
+    speakerGroup -> activePlayer -> playSource(*sourceTitleState);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);
     break;
-  case groupMenu:
-    speakerGroup -> selectGroup(&activeMenuTitle);
+  }
+  case groupMenu: {
+    auto playerTitleState = std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
+    speakerGroup -> selectGroup(*playerTitleState);
     break;
+  }
   case mediaPlayersMenu:
     selectMediaPlayers();
     break;

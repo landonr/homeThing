@@ -116,12 +116,12 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
       }
     }
 
-    std::vector<MenuTitle> lightTitleSwitches() {
-      std::vector<MenuTitle> out;
+    std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches() {
+      std::vector<std::shared_ptr<MenuTitleBase>> out;
       for (auto &light: lights) {
         ESP_LOGI("Light", "state %d", light->onState);
         MenuTitleState state = light->onState ? OnMenuTitleState : OffMenuTitleState;
-        out.push_back(MenuTitle(light->friendlyName, light->entityId, state));
+        out.push_back(std::make_shared<MenuTitleBase>(light->friendlyName, light->entityId, state));
       }
       return out;
     }
