@@ -866,37 +866,27 @@ void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles)
     drawTitle(menuState, 0,lightGroup->lights[currentSelectedLight]->friendlyName, yPos, true);
     drawSwitch(lightGroup->lights[currentSelectedLight]->onState, yPos);
 
-    yPos += id(medium_font_size) + id(margin_size);
-
-    // Second Item
+    yPos += id(small_font_size) + id(margin_size);
+    if(menuState == 1 && lightDetailSelected){
+        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    else if(menuState == 1 ){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
     auto brightness =lightGroup->lights[currentSelectedLight]->brightness ;
-    if(menuState == 1 && lightDetailSelected == 1){
-        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
-    }else if(menuState == 1){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
-    }
-    id(my_display).filled_rectangle(1, yPos+1, brightness, id(margin_size) + id(medium_font_size) , id(my_white));
-    id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Brightness");
-    yPos += id(margin_size) + id(medium_font_size);
-    // Second Item
-    auto color_temp_bar = lightGroup->lights[currentSelectedLight]->color_temp * 0.64;
-    if(menuState == 2 && lightDetailSelected == 1){
-        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
-    }else if(menuState == 2){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(medium_font_size), id(color_accent_primary));
-    }
-    id(my_display).filled_rectangle(1, yPos+1, color_temp_bar, id(margin_size) + id(medium_font_size) , id(my_white));
-    id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Temperature");
-    yPos += id(margin_size) + id(medium_font_size);
+    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), brightness, id(margin_size) + id(medium_font_size) , id(my_white));
+    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), "Brightness");
+    yPos += (id(medium_font_size) + id(margin_size)) * 2;
 
-    // // Third Item
-    // auto color_temp =lightGroup->lights[currentSelectedLight]->color_temp ;
-    // if(menuState == 2){
-    //     id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), id(margin_size) + id(small_font_size) + barHeight + 2, id(color_accent_primary));
-    // }
-    // auto color_temp_bar =0.64 * color_temp;
-    // id(my_display).filled_rectangle(1, yPos+1, color_temp_bar, id(margin_size) + id(small_font_size) + barHeight -1, id(my_white));
-    // id(my_display).printf(iconMargin, yPos + 1, &id(medium_font), id(color_accent_primary), "Temperature");
+    auto color_temp_bar =0.64 * lightGroup->lights[currentSelectedLight]->color_temp ;
+    if(menuState == 2 && lightDetailSelected){
+        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    else if(menuState == 2 ){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), color_temp_bar, id(margin_size) + id(medium_font_size) , id(my_white));
+    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), "Temperature");
 }
 
 void drawMenu() {
@@ -989,6 +979,7 @@ bool selectRootMenu() {
   case sensorsMenu:
     activeMenuState = sensorsMenu;
     break;
+  case lightsDetailMenu:
   case groupMenu:
   case rootMenu:
   case bootMenu:
