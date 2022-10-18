@@ -32,17 +32,22 @@ class TextHelpers
 	}
 
 	static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonArray(std::string state, std::string entityId) {
-	  StaticJsonDocument<1024> doc;
-	  deserializeJson(doc, state);
-	  JsonArray array = doc.as<JsonArray>();
-	  std::vector<std::shared_ptr<MenuTitleSource>> sources;
-	  for(JsonVariant v : array) {
-	    std::string sourceName = v.as<std::string>();
-	    ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(), entityId.c_str());
-        auto newsource = std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleState, SourceRemotePlayerSourceType);
-	    sources.push_back(newsource);
-	  }
-	  return sources;
+	 	StaticJsonDocument<3072> doc;
+		DeserializationError err = deserializeJson(doc, state);
+		std::vector<std::shared_ptr<MenuTitleSource>> sources;
+		if (err) {
+			ESP_LOGE("JSON", "deserializeJson() failed: ");
+			ESP_LOGE("JSON", err.c_str());
+ 			return sources;
+		}
+	  	JsonArray array = doc.as<JsonArray>();
+	  	for(JsonVariant v : array) {
+	    	std::string sourceName = v.as<std::string>();
+	    	ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(), entityId.c_str());
+        	auto newsource = std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleState, SourceRemotePlayerSourceType);
+	    	sources.push_back(newsource);
+	  	}
+	  	return sources;
 	}
 
 	static std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
@@ -55,33 +60,43 @@ class TextHelpers
 	}
 
 	static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonSource(std::string state, std::string nameKey, std::string valueKey) {
-	  StaticJsonDocument<1024> doc;
-	  deserializeJson(doc, state);
-	  JsonArray array = doc.as<JsonArray>();
-	  std::vector<std::shared_ptr<MenuTitleSource>> sources;
-	  for(JsonVariant v : array) {
-	    std::string playlistName = v[nameKey].as<std::string>();
-	    std::string playlistId = v[valueKey].as<std::string>();
-	    ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(), playlistName.c_str());
-        auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, MusicRemotePlayerSourceType);
-	    sources.push_back(newsource);
-	  }
-	  return sources;
+	 	StaticJsonDocument<3072> doc;
+		DeserializationError err = deserializeJson(doc, state);
+		std::vector<std::shared_ptr<MenuTitleSource>> sources;
+		if (err) {
+			ESP_LOGE("JSON", "deserializeJson() failed: ");
+			ESP_LOGE("JSON", err.c_str());
+			return sources;
+		}
+		JsonArray array = doc.as<JsonArray>();
+		for(JsonVariant v : array) {
+			std::string playlistName = v[nameKey].as<std::string>();
+			std::string playlistId = v[valueKey].as<std::string>();
+			ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(), playlistName.c_str());
+			auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, MusicRemotePlayerSourceType);
+			sources.push_back(newsource);
+		}
+		return sources;
 	}
 
 	static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonKeyValue(std::string state) {
-	  StaticJsonDocument<1024> doc;
-	  deserializeJson(doc, state);
-	  JsonObject array = doc.as<JsonObject>();
-	  std::vector<std::shared_ptr<MenuTitleSource>> sources;
-	  for(JsonPair v : array) {
-	    std::string playlistName(v.value().as<std::string>());
-	    std::string playlistId(v.key().c_str());
-	    ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(), playlistName.c_str());
-        auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, FavoriteItemIDRemotePlayerSourceType);
-	    sources.push_back(newsource);
-	  }
-	  return sources;
+	 	StaticJsonDocument<3072> doc;
+		DeserializationError err = deserializeJson(doc, state);
+		std::vector<std::shared_ptr<MenuTitleSource>> sources;
+		if (err) {
+			ESP_LOGE("JSON", "deserializeJson() failed: ");
+			ESP_LOGE("JSON", err.c_str());
+			return sources;
+		}
+	  	JsonObject array = doc.as<JsonObject>();
+	  	for(JsonPair v : array) {
+	  	  	std::string playlistName(v.value().as<std::string>());
+	  	  	std::string playlistId(v.key().c_str());
+	  	  	ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(), playlistName.c_str());
+      	  	auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, FavoriteItemIDRemotePlayerSourceType);
+	  	  	sources.push_back(newsource);
+	  	}
+	  	return sources;
 	}
 
  private:
