@@ -994,8 +994,6 @@ bool selectRootMenu() {
   case bootMenu:
     ESP_LOGD("WARNING", "menu is bad  %d", menuIndex);
     return false;
-  default:
-    break;
   }
   menuIndex = 0;
   return true;
