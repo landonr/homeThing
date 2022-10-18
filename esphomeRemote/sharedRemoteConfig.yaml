@@ -242,6 +242,30 @@ globals:
     type: bool
     restore_value: no
     initial_value: ${sync_active_player}
+
+## brightness decrease step
+  - id: dec_brightness_step
+    type: int
+    restore_value: no
+    initial_value: ${dec_brightness_step}
+
+## brightness increase step
+  - id: inc_brightness_step
+    type: int
+    restore_value: no
+    initial_value: ${inc_brightness_step}
+
+## color temperature decrease step
+  - id: dec_color_temperature_step
+    type: int
+    restore_value: no
+    initial_value: ${dec_color_temperature_step}
+
+## color temperature increase step
+  - id: inc_color_temperature_step
+    type: int
+    restore_value: no
+    initial_value: ${inc_color_temperature_step}
       
 interval:
   - interval: 1s

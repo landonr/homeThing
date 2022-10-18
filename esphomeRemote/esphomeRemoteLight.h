@@ -22,6 +22,7 @@
  * | WHITE     |          x          |          -          |
  * | XY        |          x          |          -          |
  */
+
 class LightService: public CustomAPIDevice, public Component {
   public:
     LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface& newCallback) : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
@@ -30,8 +31,6 @@ class LightService: public CustomAPIDevice, public Component {
       subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(),"brightness");
       subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(),"color_temp");
       subscribe_homeassistant_state(&LightService::color_mode_changed, newEntityId.c_str(),"color_mode");
-      ESP_LOGI("inital color_mode", "state changed to %s", color_mode.c_str());
-      // subscribe_homeassistant_state(&LightService::, newEntityId.c_str());
     }
     std::string friendlyName;
     std::string entityId;
@@ -43,16 +42,16 @@ class LightService: public CustomAPIDevice, public Component {
 
     // TODO:
     // * change slider design to match overall design
-    // * only show sliders if the light supports them 
-    // * reduce number of functions (maybe just one which is handed a struct
+    // * only show sliders if the light supports them => DONE
+    // * reduce number of functions (maybe just one which is handed a struct => DONE, keep it as is to just have compact functins to call
     // * cleanup
-    // * only show lightDetailMenu if light supports it. Otherwise just toggle it
-    // * only enable scrolling menu if light is turned on
-    // * if light is off show sliders as inactive
+    // * only show lightDetailMenu if light supports it. Otherwise just toggle it => DONE
+    // * only enable scrolling menu if light is turned on => DONE
+    // * if light is off show sliders as inactive => DONE
 
     void decTemperature() {
         std::stringstream ss;
-        ss << (color_temp - 10);
+        ss << (color_temp - id(inc_color_temperature_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
                                                               {"color_temp", ss.str()} ,
@@ -62,7 +61,7 @@ class LightService: public CustomAPIDevice, public Component {
 
     void incTemperature() {
         std::stringstream ss;
-        ss << (color_temp + 10);
+        ss << (color_temp + id(dec_color_temperature_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
                                                               {"color_temp", ss.str()} ,
@@ -72,7 +71,7 @@ class LightService: public CustomAPIDevice, public Component {
 
     void decBrightness() {
         std::stringstream ss;
-        ss << (brightness - 10);
+        ss << (brightness - id(dec_brightness_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
                                                               {"brightness", ss.str()} ,
@@ -82,7 +81,7 @@ class LightService: public CustomAPIDevice, public Component {
 
     void incBrightness() {
         std::stringstream ss;
-        ss << (brightness + 10);
+        ss << (brightness + id(inc_brightness_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
                                                               {"brightness", ss.str()} ,
