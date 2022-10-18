@@ -167,6 +167,10 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
       }
       return true;
     }
+
+    int currentSelectedLight = -1;
+    bool lightDetailSelected = false;
+
   private:
     DisplayUpdateInterface& display;
 };

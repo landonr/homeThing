@@ -47,11 +47,11 @@ void buttonPressNext() {
     debounceUpdateDisplay();
     return;
   case lightsDetailMenu:
-    if(lightDetailSelected && menuIndex == 1){
-        lightGroup -> lights[currentSelectedLight]->incBrightness();
+    if(lightGroup->lightDetailSelected && menuIndex == 1){
+        lightGroup -> lights[lightGroup->currentSelectedLight]->incBrightness();
         return;
-    }else if(lightDetailSelected && menuIndex == 2){
-        lightGroup -> lights[currentSelectedLight]->incTemperature();
+    }else if(lightGroup->lightDetailSelected && menuIndex == 2){
+        lightGroup -> lights[lightGroup->currentSelectedLight]->incTemperature();
         return;
     }
   default:
@@ -74,11 +74,11 @@ void buttonPressPrevious() {
     debounceUpdateDisplay();
     return;
   case lightsDetailMenu:
-    if(lightDetailSelected && menuIndex == 1){
-        lightGroup -> lights[currentSelectedLight]->decBrightness();
+    if(lightGroup->lightDetailSelected && menuIndex == 1){
+        lightGroup -> lights[lightGroup->currentSelectedLight]->decBrightness();
         return;
-    }else if(lightDetailSelected && menuIndex == 2){
-        lightGroup -> lights[currentSelectedLight]->decTemperature();
+    }else if(lightGroup->lightDetailSelected && menuIndex == 2){
+        lightGroup -> lights[lightGroup->currentSelectedLight]->decTemperature();
         return;
     }
   default:
@@ -125,9 +125,9 @@ void buttonPressUp() {
     displayUpdate.updateDisplay(true);
     return;
   case lightsDetailMenu:
-      if(lightDetailSelected){
+      if(lightGroup->lightDetailSelected){
           // deselect ligh if selected and stay in lightsDetailMenu
-          lightDetailSelected = false;
+          lightGroup->lightDetailSelected = false;
           return;
       }else{
           // if no light is selected go back to lightsMenu

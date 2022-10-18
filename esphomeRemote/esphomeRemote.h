@@ -9,8 +9,6 @@
 #pragma once
 
 bool menuDrawing = false;
-int currentSelectedLight = -1;
-bool lightDetailSelected = false;
 
 class DisplayUpdateImpl: public DisplayUpdateInterface {
   public: virtual void updateDisplay(bool force) {
@@ -863,6 +861,8 @@ void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles)
     }
 
     // First Item
+    int currentSelectedLight = lightGroup->currentSelectedLight;
+    bool lightDetailSelected = lightGroup->lightDetailSelected;
     drawTitle(menuState, 0,lightGroup->lights[currentSelectedLight]->friendlyName, yPos, true);
     drawSwitch(lightGroup->lights[currentSelectedLight]->onState, yPos);
 
@@ -1031,10 +1031,10 @@ bool selectMenu() {
     }
     break;
   case lightsMenu:
-    currentSelectedLight = menuIndexForSource; // save the selected light to be able to control later
+    lightGroup->currentSelectedLight = menuIndexForSource; // save the selected light to be able to control later
     // switch light directly if it doesn't support brightness
-    if (lightGroup->lights[currentSelectedLight]->supportsBrightness()){
-        lightGroup->selectLight(currentSelectedLight);
+    if (lightGroup->lights[lightGroup->currentSelectedLight]->supportsBrightness()){
+        lightGroup->selectLight(lightGroup->currentSelectedLight);
         return true;
     } else {
       menuIndex = 0; // highlight first item in menu
@@ -1045,9 +1045,9 @@ bool selectMenu() {
     // First item is the switch and doesn't need selection
     // sliders need selection
     if (menuIndexForSource == 0){
-        lightGroup -> selectLight(currentSelectedLight);
+        lightGroup -> selectLight(lightGroup->currentSelectedLight);
     }else{
-        lightDetailSelected = true;
+        lightGroup->lightDetailSelected = true;
     }
     break;
   default:
