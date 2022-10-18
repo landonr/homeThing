@@ -830,63 +830,45 @@ void drawBootSequence() {
   menuDrawing = false;
 }
 
+void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_selection_active, int bar_width, const std::string &title){
+    // draw second item (brightness slider). Only fill with color_accent_primary if slider is selected
+    if(slider_selection_active){
+        id(my_display).filled_rectangle(xPos, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    else if(slider_selection){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), bar_width, id(margin_size) + id(medium_font_size) , id(my_white));
+    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title.c_str());
+}
+
 void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles){
     // draw button and sliders to adjust light
-      activeMenuTitleCount = menuTitles.size();
-      if(menuTitles.size() == 0 ) {
+    activeMenuTitleCount = menuTitles.size();
+    if(menuTitles.size() == 0 ) {
         return;
-      }
-    ESP_LOGI("LightMenu", "ok lets go %i", activeMenuTitleCount);
-    activeMenuTitleCount = 3;
-    scrollMenuPosition();
-    int menuState = menuIndex;
-    int barMargin = 1;
-    int barHeight = id(small_font_size);
-    int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
-    int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
-    int barWidth = (totalBarWidth - 4) * (50 / 100);
-    int yPos = id(header_height);
-    for (int i = scrollTop; i < menuTitles.size(); i++) {
-        // auto bla = std::static_pointer_cast<MenuTitleLightSlider>(menuTitles[i]);
-        // ESP_LOGI("LightMenu", "supports birghtness %i", bla->slider_);
-        if (i > scrollTop + maxItems()) {
-            break;
-        }
-        // int yPos = ((i - scrollTop) * (id(medium_font_size) + id(margin_size))) + id(header_height);
-        //
-        // 
-        // WIP
-        //
-        //
     }
+    scrollMenuPosition();
 
-    // First Item
+    int menuState = menuIndex;
+    int yPos = id(header_height);
     int currentSelectedLight = lightGroup->currentSelectedLight;
     bool lightDetailSelected = lightGroup->lightDetailSelected;
+    auto brightness_bar =lightGroup->lights[currentSelectedLight]->brightness ;
+    auto color_temp_bar =0.64 * lightGroup->lights[currentSelectedLight]->color_temp ;
+
+    // draw first item => title
+
     drawTitle(menuState, 0,lightGroup->lights[currentSelectedLight]->friendlyName, yPos, true);
     drawSwitch(lightGroup->lights[currentSelectedLight]->onState, yPos);
 
     yPos += id(small_font_size) + id(margin_size);
-    if(menuState == 1 && lightDetailSelected){
-        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
-    }
-    else if(menuState == 1 ){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
-    }
-    auto brightness =lightGroup->lights[currentSelectedLight]->brightness ;
-    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), brightness, id(margin_size) + id(medium_font_size) , id(my_white));
-    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), "Brightness");
-    yPos += (id(medium_font_size) + id(margin_size)) * 2;
+    drawLightSlider(0, yPos, menuState == 1, menuState == 1 && lightDetailSelected, brightness_bar, "Brightness");
 
-    auto color_temp_bar =0.64 * lightGroup->lights[currentSelectedLight]->color_temp ;
-    if(menuState == 2 && lightDetailSelected){
-        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    if(lightGroup->lights[currentSelectedLight]->supportsColorTemperature()){
+        yPos += (id(medium_font_size) + id(margin_size)) * 2;
+        drawLightSlider(0, yPos, menuState == 2, menuState == 2 && lightDetailSelected, color_temp_bar, "Temperature");
     }
-    else if(menuState == 2 ){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
-    }
-    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), color_temp_bar, id(margin_size) + id(medium_font_size) , id(my_white));
-    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), "Temperature");
 }
 
 void drawMenu() {
@@ -909,8 +891,7 @@ void drawMenu() {
     drawNowPlaying();
     break;
   case lightsMenu:
-    drawMenu
-    (lightGroup -> lightTitleSwitches());
+    drawMenu(lightGroup -> lightTitleSwitches());
     break;
 case lightsDetailMenu:
     drawMenuLightDetail(lightGroup -> lightTitleSwitches());
@@ -1022,7 +1003,7 @@ bool selectMenu() {
   case lightsMenu:
     lightGroup->currentSelectedLight = menuIndexForSource; // save the selected light to be able to control later
     // switch light directly if it doesn't support brightness
-    if (lightGroup->lights[lightGroup->currentSelectedLight]->supportsBrightness()){
+    if (!lightGroup->lights[lightGroup->currentSelectedLight]->supportsBrightness()){
         lightGroup->selectLight(lightGroup->currentSelectedLight);
         return true;
     } else {

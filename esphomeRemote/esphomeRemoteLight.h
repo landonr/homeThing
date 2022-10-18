@@ -13,8 +13,8 @@
  * |---------- | ------------------- | ------------------- |
  * | UNKNOWN   |          -          |          -          |
  * | ONOFF     |          -          |          -          |
- * | BRIGHTNESS|          x          |          x          |
- * | COLOR_TEMP|          x          |          -          |
+ * | BRIGHTNESS|          x          |          -          |
+ * | COLOR_TEMP|          x          |          x          |
  * | HS        |          x          |          -          |
  * | RGB       |          x          |          -          |
  * | RGBW      |          x          |          -          |
@@ -100,17 +100,18 @@ class LightService: public CustomAPIDevice, public Component {
     }
 
     bool supportsBrightness(){
-        return color_mode.compare("onoff") == 0 || color_mode.compare("unknown") == 0;
+        return color_mode.compare("onoff") != 0 && color_mode.compare("unknown") != 0;
     }
 
     bool supportsColorTemperature(){
-        return false;
+        // TODO: research if color lights support color temp as well
+        // return color_mode.compare("color_temp") == 0;
+        return true;
     }
 
   private:
     void state_changed(std::string newOnState) {
       ESP_LOGI("brightness", " changed to %s", newOnState.c_str());
-      ESP_LOGI("color_mode", "state changed to %s", color_mode.c_str());
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
       if (!onState){
