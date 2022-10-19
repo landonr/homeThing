@@ -14,7 +14,7 @@ enum RemotePlayerType {
 class RemotePlayerStateUpdatedInterface
 {
   public:
-    virtual void stateUpdated(RemotePlayerState state) {};
+    void stateUpdated(RemotePlayerState state) {};
 };
 
 std::string playingNewSourceText = "";
