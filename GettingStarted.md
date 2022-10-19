@@ -19,12 +19,14 @@
 
 # What You Need
 -  Hardware (pick one):
-	 - TTGo T-Display
+	- TTGo T-Display
 	- TTGo T-Display T4
 	- M5Stack Fire
+	- M5Stick C
 - Software:
 	- [ESPHome](https://esphome.io/)
 	- [Home Assistant](https://www.home-assistant.io/)
+	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup) 
 
 # Install guide
 1. Copy project into your ESPHome folder
@@ -32,6 +34,7 @@
 	1. TTGo T-Display: lilygo.yaml
 	2. TTGo T-Display T4: tdisplayt4.yaml
 	3. M5Stack Fire: fireremote.yaml
+	4. M5Stick C: m5stickc.yaml
 3. The basic configuration is done through substitions
 	1. font_size: Make sure the font sizes match the font sizes set above
 	2. font_size_width_ratio: The width:height ratio of the font used
@@ -43,13 +46,13 @@
 	8. now_playing_max_lines: Max lines displayed on Now Playing Screen
 	9. draw_now_playing_menu: Show navigation menu on Now Playing screen
 	10. boot_device_name: Customize the name displayed on boot
-    11. display_timeout: Turn off display [s]
-    12. sleep_after: Enter deep sleep [s]
-	- More configuration can be done in esphome/esphome-remote-base.yaml
-		1. Customize **Colors**
-		2. Customize **Fonts**
-			- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
-		3. Customize **Globals**
+	11. display_timeout: Turn off display [s]
+	12. sleep_after: Enter deep sleep [s]
+- More configuration can be done in esphome/esphome-remote-base.yaml
+	1. Customize **Colors**
+	2. Customize **Fonts**
+		- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
+	3. Customize **Globals**
 
 4. Update the **Custom Components** in the yaml to match your config
 	1. Set your speaker media player names under speaker_group_component
@@ -61,3 +64,10 @@
 5. Install the firmware to your device
 6. Add the device to Home Assistant
 7. Done! 🎉
+
+# Spotcast setup
+### Required for Spotify playlists to show up in Sources menu 
+1. Install Spotcast through HACS https://github.com/fondberg/spotcast
+2. Set up the Spotcast sensor https://github.com/fondberg/spotcast#use-the-sensor
+3. Once the sensor is set up in Home Assistant, reboot your device
+4. Done. Sources should include Spotify playlists!
