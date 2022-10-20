@@ -394,6 +394,18 @@ void drawGroupedBar(int yPos, bool extend) {
   id(my_display).line(xPos, yPos + (id(medium_font_size) + id(margin_size)) / 2, xPos + width, yPos + (id(medium_font_size) + id(margin_size)) / 2, id(my_white));
 }
 
+void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_selection_active, int bar_width, const std::string &title){
+    // draw second item (brightness slider). Only fill with color_accent_primary if slider is selected
+    if(slider_selection_active){
+        id(my_display).filled_rectangle(xPos, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    else if(slider_selection){
+        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+    }
+    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), bar_width, id(margin_size) + id(medium_font_size) , id(my_white));
+    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title.c_str());
+}
+
 void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
   if(menuTitles.size() == 0 ) {
@@ -402,40 +414,60 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
   scrollMenuPosition();
   int menuState = menuIndex;
   activeMenuTitle = menuTitles[menuIndex];
+  int yPos = id(header_height);
+  int sliderExtra = 0; // fake menu items as the slider uses two rows
   for (int i = scrollTop; i < menuTitles.size(); i++) {
-    if (i > scrollTop + maxItems()) {
-      break;
-    }
-    int yPos = ((i - scrollTop) * (id(medium_font_size) + id(margin_size))) + id(header_height);
-    drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
-    switch(menuTitles[i]->titleState) {
-      case NoMenuTitleState:
-        break;
-      case OffMenuTitleState:
-      case OnMenuTitleState:
-        drawSwitch(menuTitles[i]->titleState == OnMenuTitleState, yPos);
-        break;
-      case ArrowMenuTitleState:
-        if(menuState == i) {
-          drawArrow(yPos, menuTitles.size());
-        }
-        break;
-      case GroupedMenuTitleState:
-        bool extend = i < menuTitles.size() - 1 && menuTitles[i+1]->titleState == GroupedMenuTitleState;
-        drawGroupedBar(yPos, extend);
+    if (i + sliderExtra > scrollTop + maxItems()) {
+        ESP_LOGW("WARNING", "no more items. these are enough: %i ",i);
         break;
     }
     switch(menuTitles[i]->titleType) {
-      case PlayerMenuTitleType: {
-        auto playerTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
-        if(playerTitle != NULL) {
-          int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
-          drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
-        }
-        break;
-      } 
-      case BaseMenuTitleType:
-        break;
+        case BaseMenuTitleType: 
+            {
+                drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
+                switch(menuTitles[i]->titleState) {
+                    case NoMenuTitleState:
+                        break;
+                    case OffMenuTitleState:
+                    case OnMenuTitleState:
+                        drawSwitch(menuTitles[i]->titleState == OnMenuTitleState, yPos);
+                        break;
+                    case ArrowMenuTitleState:
+                        if(menuState == i) {
+                            drawArrow(yPos, menuTitles.size());
+                        }
+                        break;
+                    case GroupedMenuTitleState:
+                        bool extend = i < menuTitles.size() - 1 && menuTitles[i+1]->titleState == GroupedMenuTitleState;
+                        drawGroupedBar(yPos, extend);
+                        break;
+                }
+                yPos += id(medium_font_size) + id(margin_size);
+                break;
+            }
+        case LightMenuTitleType:
+            // TODO: this breaks the scrolling if there are more items then can fit on the screen
+            // sliderExtra doesn't solve it. Figure out whats missing to get it to work
+            {
+                bool lightDetailSelected = lightGroup->lightDetailSelected;
+                auto mt = menuTitles[i];
+                auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
+                drawLightSlider(0, yPos, menuState == i, menuState == i && lightDetailSelected, item->slider_width,mt->friendlyName);
+                sliderExtra += 2;
+
+                yPos += (id(medium_font_size) + id(margin_size)) * 2;
+                break;
+            }
+      case PlayerMenuTitleType: 
+            {
+                auto playerTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
+                if(playerTitle != NULL) {
+                    int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
+                    drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
+                    yPos += id(medium_font_size) + id(margin_size);
+                }
+                break;
+            } 
     }
   }
   drawScrollBar(menuTitles.size(), id(header_height));
@@ -830,20 +862,17 @@ void drawBootSequence() {
   menuDrawing = false;
 }
 
-void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_selection_active, int bar_width, const std::string &title){
-    // draw second item (brightness slider). Only fill with color_accent_primary if slider is selected
-    if(slider_selection_active){
-        id(my_display).filled_rectangle(xPos, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
-    }
-    else if(slider_selection){
-        id(my_display).rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
-    }
-    id(my_display).filled_rectangle(1, yPos+id(medium_font_size)+id(margin_size), bar_width, id(margin_size) + id(medium_font_size) , id(my_white));
-    id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title.c_str());
-}
-
 void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles){
+    //
+    //
+    // ##################################################
+    // LEAVE THAT ONE HERE FOR NOW - REMOVE BEFORE MERGE!
+    // IT'S NOW PART OF DRAWMENU!
+    // ##################################################
+    //
+    //
     // draw button and sliders to adjust light
+    // std::vector<std::shared_ptr<MenuTitleBase>> menuTitles = lightGroup->lights[lightGroup->currentSelectedLight]->lightTitleItems();
     activeMenuTitleCount = menuTitles.size();
     if(menuTitles.size() == 0 ) {
         return;
@@ -854,21 +883,28 @@ void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles)
     int yPos = id(header_height);
     int currentSelectedLight = lightGroup->currentSelectedLight;
     bool lightDetailSelected = lightGroup->lightDetailSelected;
-    auto brightness_bar =lightGroup->lights[currentSelectedLight]->brightness ;
-    auto color_temp_bar =0.64 * lightGroup->lights[currentSelectedLight]->color_temp ;
+    // auto brightness_bar =lightGroup->lights[currentSelectedLight]->brightness ;
+    // auto color_temp_bar =0.64 * lightGroup->lights[currentSelectedLight]->color_temp ;
+    for(int i = 0;i<menuTitles.size();++i){
+        auto mt = menuTitles[i];
+        if(mt->titleType == BaseMenuTitleType){
+            ESP_LOGW("WARNING", "add title");
+            drawTitle(menuState, 0,mt->friendlyName, yPos, true);
 
-    // draw first item => title
+            bool onState = mt->titleState == OnMenuTitleState;
+            ESP_LOGW("WARNING", "state: %i", mt->titleState);
+            ESP_LOGW("WARNING", onState ? "true" : "false");
+            drawSwitch(mt->titleState == OnMenuTitleState, yPos);
+            yPos += id(small_font_size) + id(margin_size);
+        } else if(mt->titleType == LightMenuTitleType){
+            auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
+            ESP_LOGW("WARNING", "add slider: %i ",item->slider_width);
+            drawLightSlider(0, yPos, menuState == i, menuState == i && lightDetailSelected, item->slider_width,mt->friendlyName);
 
-    drawTitle(menuState, 0,lightGroup->lights[currentSelectedLight]->friendlyName, yPos, true);
-    drawSwitch(lightGroup->lights[currentSelectedLight]->onState, yPos);
-
-    yPos += id(small_font_size) + id(margin_size);
-    drawLightSlider(0, yPos, menuState == 1, menuState == 1 && lightDetailSelected, brightness_bar, "Brightness");
-
-    if(lightGroup->lights[currentSelectedLight]->supportsColorTemperature()){
-        yPos += (id(medium_font_size) + id(margin_size)) * 2;
-        drawLightSlider(0, yPos, menuState == 2, menuState == 2 && lightDetailSelected, color_temp_bar, "Temperature");
+            yPos += (id(medium_font_size) + id(margin_size)) * 2;
+        }
     }
+    return;
 }
 
 void drawMenu() {
@@ -894,7 +930,7 @@ void drawMenu() {
     drawMenu(lightGroup -> lightTitleSwitches());
     break;
 case lightsDetailMenu:
-    drawMenuLightDetail(lightGroup -> lightTitleSwitches());
+    drawMenu(lightGroup -> lights[lightGroup->currentSelectedLight]->lightTitleItems());
     break;
   case groupMenu: {
       if (speakerGroup -> newSpeakerGroupParent != NULL) {

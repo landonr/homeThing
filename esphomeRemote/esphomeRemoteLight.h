@@ -40,15 +40,6 @@ class LightService: public CustomAPIDevice, public Component {
     std::string color_mode = "";
     bool onState;
 
-    // TODO:
-    // * change slider design to match overall design
-    // * only show sliders if the light supports them => DONE
-    // * reduce number of functions (maybe just one which is handed a struct => DONE, keep it as is to just have compact functins to call
-    // * cleanup
-    // * only show lightDetailMenu if light supports it. Otherwise just toggle it => DONE
-    // * only enable scrolling menu if light is turned on => DONE
-    // * if light is off show sliders as inactive => DONE
-
     void decTemperature() {
         std::stringstream ss;
         ss << (color_temp - id(inc_color_temperature_step));
@@ -107,6 +98,19 @@ class LightService: public CustomAPIDevice, public Component {
         // TODO: research if color lights support color temp as well
         // return color_mode.compare("color_temp") == 0;
         return true;
+    }
+
+    std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
+      std::vector<std::shared_ptr<MenuTitleBase>> out;
+        out.push_back(std::make_shared<MenuTitleBase>(friendlyName, entityId, onState ? OnMenuTitleState : OffMenuTitleState));
+
+        if(supportsBrightness()){
+                out.push_back(std::make_shared<MenuTitleSlider>("Brightness", entityId, onState ? OnMenuTitleState : OffMenuTitleState, brightness));
+        }
+        if(supportsColorTemperature()){
+                out.push_back(std::make_shared<MenuTitleSlider>("Temperature", entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(color_temp *0.64)));
+        }
+      return out;
     }
 
   private:
