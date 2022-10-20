@@ -7,10 +7,18 @@
 <a href="https://discord.gg/s2Dnz9fu"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
 
-iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts. Supports many different hardware configurations:
+iPod style wifi remote that uses ESPHome and Home Assistant to integrate with your smart home
+- Controls music playback from Spotify and Sonos on local speakers
+- Works as a remote for Roku TVs
+- Toggles lights, runs custom scenes and scripts
+- Shows the status of your smart home sensors
+
+Supports many different hardware configurations:
 - M5Stack Fire (no additional hardware)
+- M5Stick C (no additional hardware)
 - Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
 - Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
+
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
  - [Discord](https://discord.gg/s2Dnz9fu) - support / chat with the community and the team
@@ -63,7 +71,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 |--|--|
 |![Shuffle Gif](docs/shuffleTDisplay.gif)|![Scroll Volume Demo Gif](docs/volumeScrollTDisplay.gif)|
 
-|Manage speaker group|Change source from Sonos favourites list|
+|Manage speaker group|Change source from Spotify playlists and Sonos Favorites|
 |--|--|
 |![Speaker Group Demo Gif](docs/groupTDisplay.gif)|![Scroll Volume Demo Gif](docs/sourceSelectTDisplay.gif)|
 
