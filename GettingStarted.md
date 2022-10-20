@@ -48,16 +48,19 @@
 	10. boot_device_name: Customize the name displayed on boot
 	11. display_timeout: Turn off display [s]
 	12. sleep_after: Enter deep sleep [s]
-- More configuration can be done in esphome/esphome-remote-base.yaml
+	13. menu_rollover_on: Let the menu selection rollover when reaching the beginning / end
+	14. sync_active_player: Auto switch active player if current active player goes idle
+- More configuration can be done in esphome/sharedRemoteConfig.yaml
 	1. Customize **Colors**
 	2. Customize **Fonts**
 		- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
 	3. Customize **Globals**
 
-4. Update the **Custom Components** in the yaml to match your config
-	1. Set your speaker media player names under speaker_group_component
-		1. Update the TV to match your media player
-		2. Set your soundbar media player to the TV config
+4. Update the **Custom Components** in the esphomeRemote/sharedRemoteConfig.yaml to match your config
+	1. Every component is optional. If you don't want to include the component then remove it
+	2. Set your speaker media players under speaker_group_component
+		1. If you have a supported TV then update it otherwise remove the TV line
+		2. If you have a soundbar attached to the TV, include it in the setup otherwise leave it as NULL
 	2. Update your Scenes and Scripts under scene_group_component
 	3. Update your Light switches under light_group_component
 	4. Update your Home Assistant sensors under sensor_group_component
