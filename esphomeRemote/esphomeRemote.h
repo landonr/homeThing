@@ -140,7 +140,7 @@ int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle) {
   int xPos = oldXPos;
   switch(menuTitle.playerState) {
     case PlayingRemotePlayerState: {
-      id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), menuTitle.mediaSourceIcon().c_str());
+      id(my_display).printf(xPos, yPos, &id(material_font_small), menuTitle.mediaSourceIconColor(), menuTitle.mediaSourceIcon().c_str());
       break;
     }
     case PausedRemotePlayerState:
