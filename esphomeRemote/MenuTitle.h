@@ -169,17 +169,20 @@ class MenuTitleSlider: public MenuTitleBase{
         bool slider_{false};
         int slider_width;
         bool current_state;
+        std::string title_extra;
     MenuTitleSlider(
-      std::string newFriendlyName, 
+      std::string newTitle, 
+      std::string newTitleExtra, 
       std::string newEntityId, 
       MenuTitleState newTitleState,
-      int slider_width
+      int sliderWidth
     ) : MenuTitleBase { 
-      newFriendlyName,
+      newTitle,
       newEntityId,
       newTitleState,
        LightMenuTitleType
-    },slider_width(slider_width)
+    },slider_width(sliderWidth),
+    title_extra(newTitleExtra)
     {}
 };
 

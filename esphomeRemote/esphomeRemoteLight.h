@@ -104,11 +104,26 @@ class LightService: public CustomAPIDevice, public Component {
       std::vector<std::shared_ptr<MenuTitleBase>> out;
         out.push_back(std::make_shared<MenuTitleBase>(friendlyName, entityId, onState ? OnMenuTitleState : OffMenuTitleState));
 
+        std::stringstream ss;
         if(supportsBrightness()){
-                out.push_back(std::make_shared<MenuTitleSlider>("Brightness", entityId, onState ? OnMenuTitleState : OffMenuTitleState, brightness));
+            if(brightness > 0){
+                float percent = ((float)brightness/255.0);
+                int percentInt = (int)(percent*100);
+                ss << "Brightness - " << percentInt << " %%";
+            }else{
+                ss << "Brightness";
+            }
+            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(brightness*0.94)));
+            ss.str("");
         }
         if(supportsColorTemperature()){
-                out.push_back(std::make_shared<MenuTitleSlider>("Temperature", entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(color_temp *0.64)));
+            if(color_temp > 0){
+                ss << "Temperature - " << 1000000/color_temp << " K";
+            }else{
+                ss << "Temperature";
+            }
+            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(color_temp *0.64)));
+            ss.str("");
         }
       return out;
     }
