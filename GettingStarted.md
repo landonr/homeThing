@@ -50,6 +50,7 @@
 	12. sleep_after: Enter deep sleep [s]
 	13. menu_rollover_on: Let the menu selection rollover when reaching the beginning / end
 	14. sync_active_player: Auto switch active player if current active player goes idle
+	15. dark_mode: Use black background. Performance is better in dark mode because filling the screen white is slow
 - More configuration can be done in esphome/sharedRemoteConfig.yaml
 	1. Customize **Colors**
 	2. Customize **Fonts**

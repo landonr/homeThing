@@ -111,6 +111,23 @@ class MenuTitlePlayer: public MenuTitleBase {
       }
       return "";
     }
+
+    Color mediaSourceIconColor() {
+      switch(mediaSource) {
+        case NoRemotePlayerMediaSource:
+        case TVRemotePlayerMediaSource:
+          return id(color_accent_primary);
+        case YouTubeRemotePlayerMediaSource:
+          return Color(248, 0, 0);
+        case SpotifyRemotePlayerMediaSource:
+          return Color(27, 212, 96);
+        case NetflixRemotePlayerMediaSource:
+          return Color(179, 0, 10);
+        case PlexRemotePlayerMediaSource:
+          return Color(223, 156, 13);
+      }
+      return id(color_accent_primary);
+    }
 };
 
 enum RemotePlayerSourceType {

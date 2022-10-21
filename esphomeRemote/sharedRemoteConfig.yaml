@@ -266,6 +266,12 @@ globals:
     type: int
     restore_value: no
     initial_value: ${inc_color_temperature_step}
+
+## Black background
+  - id: dark_mode
+    type: bool
+    restore_value: no
+    initial_value: ${dark_mode}
       
 interval:
   - interval: 1s
