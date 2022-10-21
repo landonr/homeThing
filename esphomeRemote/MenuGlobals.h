@@ -1,5 +1,4 @@
-#ifndef MENUGLOBALS
-#define MENUGLOBALS
+#pragma once
 
 enum MenuStates {
   bootMenu,
@@ -36,7 +35,8 @@ enum NowPlayingMenuState {
   shuffleNowPlayingMenuState,
   backNowPlayingMenuState,
   TVPowerNowPlayingMenuState,
-  homeNowPlayingMenuState
+  homeNowPlayingMenuState,
+  groupNowPlayingMenuState
 };
 
 std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
@@ -46,6 +46,7 @@ std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
     volumeDownNowPlayingMenuState,
     nextNowPlayingMenuState,
     shuffleNowPlayingMenuState,
+    groupNowPlayingMenuState,
     menuNowPlayingMenuState
   };
 }
@@ -79,5 +80,3 @@ int rotaryPosition = 0;
 int activeMenuTitleCount = 0;
 double previousVCCADC = 0;
 OptionMenuType optionMenu = noOptionMenu;
-
-#endif

@@ -7,10 +7,18 @@
 <a href="https://discord.gg/s2Dnz9fu"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
 
-iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate with Sonos, Roku and run custom scenes and scripts. Supports many different hardware configurations:
+iPod style wifi remote that uses ESPHome and Home Assistant to integrate with your smart home
+- Controls music playback from Spotify and Sonos on local speakers
+- Works as a remote for Roku TVs
+- Toggles lights, runs custom scenes and scripts
+- Shows the status of your smart home sensors
+
+Supports many different hardware configurations:
 - M5Stack Fire (no additional hardware)
+- M5Stick C (no additional hardware)
 - Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
 - Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
+
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
  - [Discord](https://discord.gg/s2Dnz9fu) - support / chat with the community and the team
@@ -63,7 +71,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 |--|--|
 |![Shuffle Gif](docs/shuffleTDisplay.gif)|![Scroll Volume Demo Gif](docs/volumeScrollTDisplay.gif)|
 
-|Manage speaker group|Change source from Sonos favourites list|
+|Manage speaker group|Change source from Spotify playlists and Sonos Favorites|
 |--|--|
 |![Speaker Group Demo Gif](docs/groupTDisplay.gif)|![Scroll Volume Demo Gif](docs/sourceSelectTDisplay.gif)|
 
@@ -72,6 +80,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - Scroll for volume (with scroll wheel)
 - Power, back, home, pause in second menu
 - Change source from tv source list
+- Optional soundbar support
 
 - Change current media player (tv or speaker) from home menu
 	- On boot the current media player is the first speaker found playing music or the tv
@@ -123,7 +132,7 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - Hackaday https://hackaday.com/2022/09/08/scroll-through-esphome-with-ipod-style-click-wheel/
 - Hackster https://www.hackster.io/news/ipod-style-esphome-remote-3ca38edab2b4
 - Reddit post https://www.reddit.com/r/homeassistant/comments/x59dcp/i_built_an_ipod_style_esphome_remote_for_home/
-
+- Self Hosted - Episode 80 - Solving Whole Home Audio (around 30:00) https://selfhosted.show/80 
 ## includes
 - esphome https://esphome.io/
 - iosevka font https://github.com/be5invis/Iosevka
@@ -152,7 +161,4 @@ iPod style wifi smart home remote. Uses ESPHome and Home Assistant to integrate 
 - grid ui
 - circuit diagram for tdisplay
 - make sensor for current screen
-- better tv support
-	- support multiple tvs
-	- make soundbar optional
 

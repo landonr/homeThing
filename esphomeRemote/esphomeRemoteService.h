@@ -2,8 +2,7 @@
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
 
-#ifndef REMOTESERVICE
-#define REMOTESERVICE
+#pragma once
 
 class BaseService: public CustomAPIDevice {
   public:
@@ -52,10 +51,10 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
     services = newServices;
   }
 
-  std::vector<MenuTitle> sceneTitleStrings() {
-    std::vector<MenuTitle> out;
+  std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings() {
+    std::vector<std::shared_ptr<MenuTitleBase>> out;
     for (auto &service: services) {
-      out.push_back(MenuTitle(service.getFriendlyName(), "", NoMenuTitleState));
+      out.push_back(std::make_shared<MenuTitleBase>(service.getFriendlyName(), "", NoMenuTitleState));
     }
     return out;
   }
@@ -70,5 +69,3 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
     return true;
   }
 };
-
-#endif

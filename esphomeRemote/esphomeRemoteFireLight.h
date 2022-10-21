@@ -1,7 +1,6 @@
 #include "esphomeRemote.h"
 
-#ifndef REMOTEFIRELIGHT
-#define REMOTEFIRELIGHT
+#pragma once
 
 enum RemoteLightState {
   OffRemoteLightState,
@@ -44,4 +43,3 @@ void manageLight() {
     }
   }
 }
-#endif
