@@ -443,7 +443,7 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
     }else{
         // no selection, no hover so just show background slider
         id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width(), sliderHeight, id(my_gray_dark_2));
-        id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title.c_str());
+        id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
     }
 }
 
