@@ -54,7 +54,8 @@ enum RemotePlayerState {
   PowerOffRemotePlayerState,
   StoppedRemotePlayerState,
   PausedRemotePlayerState,
-  PlayingRemotePlayerState
+  PlayingRemotePlayerState,
+  UnavailableRemotePlayerState
 };
 
 std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
