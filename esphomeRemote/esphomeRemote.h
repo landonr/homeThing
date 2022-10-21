@@ -264,7 +264,7 @@ int drawHeaderTime(int oldXPos) {
     timeString.erase(0,1);
   }
   int xPos = oldXPos - getTextWidth(id(small_font_size), timeString.length());
-  id(my_display).printf(xPos, yPos, &id(small_font), timeString.c_str());
+  id(my_display).printf(xPos, yPos, &id(small_font), id(color_accent_primary), timeString.c_str());
   return xPos - id(margin_size) / 2;
 }
 
