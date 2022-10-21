@@ -525,6 +525,14 @@ void activeTick() {
 }
 
 void idleTick() {
+  if(activeMenuState == bootMenu) {
+    if (idleTime == id(display_timeout) && !charging) {
+      ESP_LOGD("idle", "turning off display");
+      id(backlight).turn_off();
+    }
+    idleTime ++;
+    return;
+  }
   bool updatedMediaPositions = speakerGroup->updateMediaPosition();
   if (idleTime == 3) {
     optionMenu = noOptionMenu;
