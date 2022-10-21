@@ -57,7 +57,7 @@ Color primaryTextColor() {
 
 Color secondaryTextColor() {
   if(id(dark_mode)) {
-    return id(my_black);
+    return id(my_white);
   } else {
     return id(my_white);
   }
