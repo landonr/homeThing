@@ -413,17 +413,13 @@ void drawGroupedBar(int yPos, bool extend) {
 void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_selection_active, int bar_width, const std::string &title, const std::string &title_extra){
     // draw second item (brightness slider). Only fill with color_accent_primary if slider is selected
     int sliderHeight = 3;
+    // position slider in the middle of the row
     int sliderOffset = (int)(id(medium_font_size) + id(margin_size))/2;
     int oneRow = id(medium_font_size) + id(margin_size);
-    int dotPosition_x = bar_width;
-    // TODO: cleanup and make it more readable/change variables names!
+    int dotPosition_x = bar_width + id(slider_margin_size);
     if(slider_selection_active){
-        // make brightness blue and slider darg grey and dot blue
-        
-        // full background slider
-        id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width(), sliderHeight, id(my_gray_dark_2));
         // current value slider
-        id(my_display).filled_rectangle(1, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(color_accent_primary));
+        id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(color_accent_primary));
 
         // two colored dot indicating current value
         id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow,5,  id(my_white));
@@ -432,9 +428,9 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
         id(my_display).printf(0, yPos + 1, &id(medium_font), id(color_accent_primary), title_extra.c_str());
     }
     else if(slider_selection){
-        // make brightness white and slider dark grey
-        id(my_display).filled_rectangle(xPos, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
-        id(my_display).filled_rectangle(1, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(my_white));
+        // make current slider white and the background dark grey
+        id(my_display).filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2, id(color_accent_primary));
+        id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(my_white));
         
         // white dot indicating current value
         id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_white));
@@ -442,7 +438,9 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
         id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
     }else{
         // no selection, no hover so just show background slider
-        id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width(), sliderHeight, id(my_gray_dark_2));
+        id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width()-2 * id(slider_margin_size), sliderHeight, id(my_gray_dark_2));
+        // white dot indicating current value
+        id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_gray_dark_2));
         id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
     }
 }
@@ -493,7 +491,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
                 bool lightDetailSelected = lightGroup->lightDetailSelected;
                 auto mt = menuTitles[i];
                 auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
-                drawLightSlider(0, yPos, menuState == i, menuState == i && lightDetailSelected, item->slider_width,mt->friendlyName, item->title_extra);
+                drawLightSlider(id(slider_margin_size), yPos, menuState == i, menuState == i && lightDetailSelected, item->slider_width,mt->friendlyName, item->title_extra);
                 sliderExtra += 2;
 
                 yPos += (id(medium_font_size) + id(margin_size)) * 2;

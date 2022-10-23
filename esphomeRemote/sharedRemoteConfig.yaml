@@ -117,6 +117,12 @@ font:
     ]
     
 globals:
+## Width in pixels
+  - id: display_size_x
+    type: int
+    restore_value: no
+    initial_value: ${display_size_x}
+
 ## Size of the large font above
   - id: large_font_size
     type: int
@@ -152,6 +158,12 @@ globals:
     type: int
     restore_value: no
     initial_value: ${margin_size}
+    
+## Global slider_margin size
+  - id: slider_margin_size
+    type: int
+    restore_value: no
+    initial_value: ${slider_margin_size}
     
 ## Scrollbar total width
   - id: scroll_bar_width

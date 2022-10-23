@@ -14,24 +14,31 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup->sendActivePlayerRemoteCommand("power");
-      displayUpdate.updateDisplay(true);
-      return;
-    }
+      case lightsDetailMenu:
+          if(lightGroup->lightDetailSelected){
+              // deselect ligh if selected and stay in lightsDetailMenu
+              lightGroup->lightDetailSelected = false;
+              return;
+          }
+          break;
+      case nowPlayingMenu:
+          if (optionMenu == tvOptionMenu) {
+              optionMenu = noOptionMenu;
+              speakerGroup->sendActivePlayerRemoteCommand("power");
+              displayUpdate.updateDisplay(true);
+              return;
+          }
 
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup->sendActivePlayerRemoteCommand("select");
-      break;
-    case SpeakerRemotePlayerType:
-      break;
-    }
-    return;
-  default:
-    break;
+          switch (speakerGroup -> activePlayer -> playerType) {
+              case TVRemotePlayerType:
+                  speakerGroup->sendActivePlayerRemoteCommand("select");
+                  break;
+              case SpeakerRemotePlayerType:
+                  break;
+          }
+          return;
+      default:
+          break;
   }
   if (selectMenu()) {
     displayUpdate.updateDisplay(true);

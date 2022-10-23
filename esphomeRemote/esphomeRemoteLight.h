@@ -6,6 +6,7 @@
 
 #pragma once
 
+#define MAX_BRIGHTNESS 255.0f
 /* Home Assistant entities can have these modes in color_mode/supported_color_mode.
  * Depending on the mode the light supports we want to show sliders or not.
  *
@@ -18,7 +19,7 @@
  * | HS        |          x          |          -          |
  * | RGB       |          x          |          -          |
  * | RGBW      |          x          |          -          |
- * | RGBWW     |          x          |          -          |
+ * | RGBWW     |          x          |          x          |
  * | WHITE     |          x          |          -          |
  * | XY        |          x          |          -          |
  */
@@ -28,6 +29,8 @@ class LightService: public CustomAPIDevice, public Component {
     LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface& newCallback) : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
       onState = false;
       subscribe_homeassistant_state(&LightService::state_changed, newEntityId.c_str());
+      subscribe_homeassistant_state(&LightService::min_mireds_changed, newEntityId.c_str(),"min_mireds");
+      subscribe_homeassistant_state(&LightService::max_mireds_changed, newEntityId.c_str(),"max_mireds");
       subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(),"brightness");
       subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(),"color_temp");
       subscribe_homeassistant_state(&LightService::color_mode_changed, newEntityId.c_str(),"color_mode");
@@ -39,6 +42,8 @@ class LightService: public CustomAPIDevice, public Component {
     int color_temp = 0;
     std::string color_mode = "";
     bool onState;
+    int min_mireds = 0;
+    int max_mireds = 0;
 
     void decTemperature() {
         std::stringstream ss;
@@ -95,9 +100,7 @@ class LightService: public CustomAPIDevice, public Component {
     }
 
     bool supportsColorTemperature(){
-        // TODO: research if color lights support color temp as well
-        // return color_mode.compare("color_temp") == 0;
-        return true;
+        return color_mode.compare("color_temp") == 0 || color_mode.compare("rgbww") == 0;
     }
 
     std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
@@ -105,24 +108,29 @@ class LightService: public CustomAPIDevice, public Component {
         out.push_back(std::make_shared<MenuTitleBase>(friendlyName, entityId, onState ? OnMenuTitleState : OffMenuTitleState));
 
         std::stringstream ss;
+        int width_available = id(display_size_x) - 2 * id(slider_margin_size);
         if(supportsBrightness()){
+            float slider_factor = 1;
             if(brightness > 0){
                 float percent = ((float)brightness/255.0);
                 int percentInt = (int)(percent*100);
                 ss << "Brightness - " << percentInt << " %%";
+                slider_factor = width_available / MAX_BRIGHTNESS;
             }else{
                 ss << "Brightness";
             }
-            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(brightness*0.94)));
+            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(brightness * slider_factor)));
             ss.str("");
         }
         if(supportsColorTemperature()){
+            float slider_factor = 1;
             if(color_temp > 0){
-                ss << "Temperature - " << 1000000/color_temp << " K";
+                ss << "Temperature - " << 1000000/color_temp << " K ";
+                slider_factor = width_available / (max_mireds - min_mireds);
             }else{
                 ss << "Temperature";
             }
-            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(color_temp *0.64)));
+            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(color_temp-min_mireds * slider_factor)));
             ss.str("");
         }
       return out;
@@ -137,6 +145,14 @@ class LightService: public CustomAPIDevice, public Component {
         brightness = 0;
         color_temp = 0;
       }
+      display.updateDisplay(false);
+    }
+    void min_mireds_changed(std::string newOnState) {
+      min_mireds = atoi(newOnState.c_str());
+      display.updateDisplay(false);
+    }
+    void max_mireds_changed(std::string newOnState) {
+      max_mireds = atoi(newOnState.c_str());
       display.updateDisplay(false);
     }
     void brightness_changed(std::string newOnState) {
