@@ -57,7 +57,7 @@ Color primaryTextColor() {
 
 Color secondaryTextColor() {
   if(id(dark_mode)) {
-    return id(my_black);
+    return id(my_white);
   } else {
     return id(my_white);
   }
@@ -269,7 +269,7 @@ int drawHeaderTime(int oldXPos) {
     timeString.erase(0,1);
   }
   int xPos = oldXPos - getTextWidth(id(small_font_size), timeString.length());
-  id(my_display).printf(xPos, yPos, &id(small_font), timeString.c_str());
+  id(my_display).printf(xPos, yPos, &id(small_font), id(color_accent_primary), timeString.c_str());
   return xPos - id(margin_size) / 2;
 }
 
@@ -587,6 +587,14 @@ void activeTick() {
 }
 
 void idleTick() {
+  if(activeMenuState == bootMenu) {
+    if (idleTime == id(display_timeout) && !charging) {
+      ESP_LOGD("idle", "turning off display");
+      id(backlight).turn_off();
+    }
+    idleTime ++;
+    return;
+  }
   bool updatedMediaPositions = speakerGroup->updateMediaPosition();
   if (idleTime == 3) {
     optionMenu = noOptionMenu;

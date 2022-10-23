@@ -159,6 +159,8 @@ private:
       playerState = StoppedRemotePlayerState;
     } else if(strcmp(state.c_str(), "idle") == 0) {
       playerState = StoppedRemotePlayerState;
+    } else if(strcmp(state.c_str(), "unavailable") == 0) {
+      playerState = UnavailableRemotePlayerState;
     } else {
       playerState = NoRemotePlayerState;
     }
@@ -839,6 +841,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         return "Stopped";
       case PowerOffRemotePlayerState:
         return "Off";
+      case UnavailableRemotePlayerState:
+        return "Unavailable";
     }
     return "";
   }
@@ -909,6 +913,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     switch(state) {
       case NoRemotePlayerState:
       case PausedRemotePlayerState:
+      case UnavailableRemotePlayerState:
         return;
       case PlayingRemotePlayerState:
         if(activePlayer->playerState != PlayingRemotePlayerState) {
