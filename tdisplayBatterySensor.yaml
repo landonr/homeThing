@@ -1,0 +1,86 @@
+
+- platform: template
+  id: discharge_battery_voltage
+  update_interval: never
+  accuracy_decimals: 5
+  filters:
+  - calibrate_polynomial:
+     degree: 1
+     datapoints:
+      - 3.6000 -> 0.0000
+      - 3.7500 -> 50.0000
+      - 4.0000 -> 90.0000
+      - 4.0500 -> 98.0000
+      - 4.1400 -> 100.0000
+  on_value :
+   then:
+     - sensor.template.publish:
+         id: batteryPercent
+         state: !lambda 'return x;'
+- platform: template
+  id: charge_battery_voltage
+  accuracy_decimals: 5
+  update_interval: never
+  filters:
+  - calibrate_polynomial:
+     degree: 1
+     datapoints:
+      - 4.2000 -> 0.0000
+      - 4.8000 -> 10.0000
+      - 4.8100 -> 20.0000
+      - 4.8200 -> 25.0000
+      - 4.8250 -> 40.0000
+      - 4.8275 -> 60.0000
+      - 4.8300 -> 90.0000
+      - 4.8400 -> 100.0000
+  on_value :
+   then:
+     - sensor.template.publish:
+         id: batteryPercent
+         state: !lambda 'return x;'
+- platform: template
+  id: previousVCCADC
+  update_interval: never
+  accuracy_decimals: 5
+- platform: adc
+  pin: 34
+  attenuation: 11db
+  name: "vccadc"
+  update_interval: 250ms
+  id: vcc_adc
+  internal: false
+  accuracy_decimals: 5
+  filters:
+    - multiply: 2
+    - sliding_window_moving_average:
+        window_size: 9
+        send_every: 4
+        send_first_at: 4
+  on_value:
+    then:
+      lambda: |-
+        if (x >= 4.2) {
+          if (charging == false) {
+            charging = true;
+            id(previousVCCADC).publish_state(0);
+          }
+          if (x <= id(previousVCCADC).state) {
+            return;
+          }
+          id(previousVCCADC).publish_state(x);
+          id(charge_battery_voltage).publish_state(id(previousVCCADC).state);
+        } else {
+          if (charging == true) {
+            charging = false;
+            id(previousVCCADC).publish_state(0);
+          }
+          if (x >= id(previousVCCADC).state && id(previousVCCADC).state != 0) {
+            return;
+          }
+          if(id(previousVCCADC).state == 0) {
+          id(previousVCCADC).publish_state(x);
+          } else if(id(previousVCCADC).state - x > 0.01) {
+            id(previousVCCADC).publish_state(id(previousVCCADC).state - 0.0005);
+          }
+          id(discharge_battery_voltage).publish_state(id(previousVCCADC).state);
+        }
