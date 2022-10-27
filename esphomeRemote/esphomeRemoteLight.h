@@ -23,6 +23,18 @@
  * | WHITE     |          x          |          -          |
  * | XY        |          x          |          -          |
  */
+enum ColorMode{
+    UNKNOWN,
+    ONOFF,
+    BRIGHTNESS,
+    COLOR_TEMP,
+    HS,
+    RGB,
+    RGBW,
+    RGBWW,
+    WHITE,
+    XY
+};
 
 class LightService: public CustomAPIDevice, public Component {
   public:
@@ -40,7 +52,7 @@ class LightService: public CustomAPIDevice, public Component {
     DisplayUpdateInterface& display;
     int brightness = 0;
     int color_temp = 0;
-    std::string color_mode = "";
+    ColorMode color_mode = UNKNOWN;
     bool onState;
     int min_mireds = 0;
     int max_mireds = 0;
@@ -88,11 +100,11 @@ class LightService: public CustomAPIDevice, public Component {
     }
 
     bool supportsBrightness(){
-        return color_mode.compare("onoff") != 0 && color_mode.compare("unknown") != 0;
+        return color_mode != ONOFF && color_mode != UNKNOWN;
     }
 
     bool supportsColorTemperature(){
-        return color_mode.compare("color_temp") == 0 || color_mode.compare("rgbww") == 0;
+        return color_mode == COLOR_TEMP || color_mode == RGBWW;
     }
 
     std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
@@ -159,7 +171,27 @@ class LightService: public CustomAPIDevice, public Component {
     }
     void color_mode_changed(std::string newOnState){
       ESP_LOGI("color_mode_changed", "state changed to %s", newOnState.c_str());
-      color_mode = newOnState.c_str();
+      if (strcmp(newOnState.c_str(), "onoff") == 0){
+          color_mode = ONOFF;
+      } else if (strcmp(newOnState.c_str(), "brightness") == 0){
+          color_mode = BRIGHTNESS;
+      } else if (strcmp(newOnState.c_str(), "color_temp") == 0){
+          color_mode = COLOR_TEMP;
+      } else if (strcmp(newOnState.c_str(), "hs") == 0){
+          color_mode = HS;
+      } else if (strcmp(newOnState.c_str(), "rgb") == 0){
+          color_mode = RGB;
+      } else if (strcmp(newOnState.c_str(), "rgbw") == 0){
+          color_mode = RGBW;
+      } else if (strcmp(newOnState.c_str(), "rgbww") == 0){
+          color_mode = RGBWW;
+      } else if (strcmp(newOnState.c_str(), "white") == 0){
+          color_mode = WHITE;
+      } else if (strcmp(newOnState.c_str(), "xy") == 0){
+          color_mode = XY;
+      } else {
+          color_mode = UNKNOWN;
+      }
       display.updateDisplay(false);
     }
 };
