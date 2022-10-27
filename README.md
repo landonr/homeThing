@@ -160,5 +160,10 @@ Supports many different hardware configurations:
 - case
 - grid ui
 - circuit diagram for tdisplay
-- make sensor for current screen
-
+- add sensors for player state
+	- current screen
+	- active player
+	- dark mode
+- set state from service
+	- change player
+	- dark mode
