@@ -46,41 +46,33 @@ class LightService: public CustomAPIDevice, public Component {
     int max_mireds = 0;
 
     void decTemperature() {
-        std::stringstream ss;
-        ss << (color_temp - id(inc_color_temperature_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"color_temp", ss.str()} ,
+                                                              {"color_temp", to_string(color_temp - id(inc_color_temperature_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void incTemperature() {
-        std::stringstream ss;
-        ss << (color_temp + id(dec_color_temperature_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"color_temp", ss.str()} ,
+                                                              {"color_temp", to_string(color_temp + id(inc_color_temperature_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void decBrightness() {
-        std::stringstream ss;
-        ss << (brightness - id(dec_brightness_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", ss.str()} ,
+                                                              {"brightness", to_string(brightness - id(inc_brightness_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void incBrightness() {
-        std::stringstream ss;
-        ss << (brightness + id(inc_brightness_step));
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", ss.str()} ,
+                                                              {"brightness", to_string(brightness + id(inc_brightness_step))} ,
                                                           };
         setAttribute(data);
     }
