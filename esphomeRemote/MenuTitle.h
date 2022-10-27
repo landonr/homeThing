@@ -51,6 +51,7 @@ enum RemotePlayerMediaSource {
 
 enum RemotePlayerState {
   NoRemotePlayerState,
+  UnavailableRemotePlayerState,
   PowerOffRemotePlayerState,
   StoppedRemotePlayerState,
   PausedRemotePlayerState,

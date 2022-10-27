@@ -242,6 +242,12 @@ globals:
     type: bool
     restore_value: no
     initial_value: ${sync_active_player}
+
+## Black background
+  - id: dark_mode
+    type: bool
+    restore_value: no
+    initial_value: ${dark_mode}
       
 interval:
   - interval: 1s
