@@ -50,41 +50,62 @@ class LightService: public CustomAPIDevice, public Component {
     std::string friendlyName;
     std::string entityId;
     DisplayUpdateInterface& display;
-    int brightness = 0;
-    int color_temp = 0;
+    int local_brightness = -1;
+    int local_color_temp = -1;
+    bool is_brightness_in_sync = false;
+    bool is_color_temp_in_sync = false;
     ColorModeType color_mode = unknown_type;
     bool onState;
     int min_mireds = 0;
     int max_mireds = 0;
 
     void decTemperature() {
+        // only send update to home assistant if
+        // we have received a confirmation for the last
+        // state change (state changed from ha)
+        if(!is_color_temp_in_sync){
+            return;
+        }
+        is_color_temp_in_sync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"color_temp", to_string(color_temp - id(inc_color_temperature_step))} ,
+                                                              {"color_temp", to_string(local_color_temp - id(inc_color_temperature_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void incTemperature() {
+        if(!is_color_temp_in_sync){
+            return;
+        }
+        is_color_temp_in_sync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"color_temp", to_string(color_temp + id(inc_color_temperature_step))} ,
+                                                              {"color_temp", to_string(local_color_temp + id(inc_color_temperature_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void decBrightness() {
+        if(!is_brightness_in_sync){
+            return;
+        }
+        is_brightness_in_sync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(brightness - id(inc_brightness_step))} ,
+                                                              {"brightness", to_string(local_brightness - id(inc_brightness_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void incBrightness() {
+        if(!is_brightness_in_sync){
+            return;
+        }
+        is_brightness_in_sync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(brightness + id(inc_brightness_step))} ,
+                                                              {"brightness", to_string(local_brightness + id(inc_brightness_step))} ,
                                                           };
         setAttribute(data);
     }
@@ -115,26 +136,26 @@ class LightService: public CustomAPIDevice, public Component {
         int width_available = id(display_size_x) - 2 * id(slider_margin_size);
         if(supportsBrightness()){
             float slider_factor = 1;
-            if(brightness > 0){
-                float percent = ((float)brightness/255.0);
+            if(local_brightness > 0){
+                float percent = ((float)local_brightness/255.0);
                 int percentInt = (int)(percent*100);
                 ss << "Brightness - " << percentInt << " %%";
                 slider_factor = width_available / MAX_BRIGHTNESS;
             }else{
                 ss << "Brightness";
             }
-            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(brightness * slider_factor)));
+            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(local_brightness * slider_factor)));
             ss.str("");
         }
         if(supportsColorTemperature()){
             float slider_factor = 1;
-            if(color_temp > 0){
-                ss << "Temperature - " << 1000000/color_temp << " K ";
+            if(local_color_temp > 0){
+                ss << "Temperature - " << 1000000/local_color_temp << " K ";
                 slider_factor = width_available / (max_mireds - min_mireds);
             }else{
                 ss << "Temperature";
             }
-            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(color_temp-min_mireds * slider_factor)));
+            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(local_color_temp-min_mireds * slider_factor)));
             ss.str("");
         }
       return out;
@@ -146,8 +167,8 @@ class LightService: public CustomAPIDevice, public Component {
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
       if (!onState){
-        brightness = 0;
-        color_temp = 0;
+        local_brightness = 0;
+        local_color_temp = 0;
       }
       display.updateDisplay(false);
     }
@@ -161,12 +182,14 @@ class LightService: public CustomAPIDevice, public Component {
     }
     void brightness_changed(std::string newOnState) {
       ESP_LOGI("brightness", "state changed to %s", newOnState.c_str());
-      brightness = atoi(newOnState.c_str());
+      local_brightness = atoi(newOnState.c_str());
+      is_brightness_in_sync = true;
       display.updateDisplay(false);
     }
     void color_temp_changed(std::string newOnState){
       ESP_LOGI("color_temp", "state changed to %s", newOnState.c_str());
-      color_temp = atoi(newOnState.c_str());
+      local_color_temp = atoi(newOnState.c_str());
+      is_color_temp_in_sync = true;
       display.updateDisplay(false);
     }
     void color_mode_changed(std::string newOnState){
