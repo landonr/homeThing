@@ -958,7 +958,7 @@ bool selectMenu() {
   case sourcesMenu: {
     auto sourceTitleState = std::static_pointer_cast<MenuTitleSource>(activeMenuTitle);
     idleMenu(true);
-    speakerGroup -> activePlayer -> playSource(*sourceTitleState);
+    speakerGroup->playSource(*sourceTitleState);
     optionMenu = playingNewSourceMenu;
     displayUpdate.updateDisplay(true);
     break;

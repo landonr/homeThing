@@ -119,6 +119,10 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     return "";
   }
 
+  virtual void clearSource() {
+
+  }
+
 private:
   void selectSource(MenuTitleSource source) {
     ESP_LOGI("player", "%s select source %s", entityId.c_str(), source.friendlyName.c_str());
@@ -144,6 +148,9 @@ private:
     if(state.length() == 0) {
       playerState = StoppedRemotePlayerState;
     } if(strcmp(state.c_str(), "playing") == 0) {
+      if(playerState == PlayingRemotePlayerState) {
+        clearSource();
+      }
       playerState = PlayingRemotePlayerState;
     } else if(strcmp(state.c_str(), "paused") == 0) {
       playerState = PausedRemotePlayerState;
@@ -158,6 +165,7 @@ private:
     } else if(strcmp(state.c_str(), "on") == 0) {
       playerState = StoppedRemotePlayerState;
     } else if(strcmp(state.c_str(), "idle") == 0) {
+      clearSource();
       playerState = StoppedRemotePlayerState;
     } else if(strcmp(state.c_str(), "unavailable") == 0) {
       playerState = UnavailableRemotePlayerState;
@@ -292,6 +300,12 @@ class SonosSpeakerComponent : public BasePlayerComponent {
       {"entity_id", entityIds},
       {"volume_level", to_string(localVolume)},
     });
+  }
+
+  virtual void clearSource() {
+    BasePlayerComponent::clearSource();
+    mediaPlaylist = "";
+    mediaAlbumName = "";
   }
 
 private:
@@ -926,6 +940,15 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         playerSearchFinished = false;
         findActivePlayer(true);
     }
+  }
+
+  void playSource(MenuTitleSource source) {
+    activePlayer->clearSource();
+    if(activePlayer->playerType == SpeakerRemotePlayerType) {
+      SonosSpeakerComponent* activeSpeaker = static_cast<SonosSpeakerComponent*>(activePlayer);
+      activeSpeaker->mediaPlaylist = source.friendlyName;
+    }
+    activePlayer->playSource(source);
   }
 
   private:
