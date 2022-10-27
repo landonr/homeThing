@@ -909,51 +909,6 @@ void drawBootSequence() {
   menuDrawing = false;
 }
 
-void drawMenuLightDetail(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles){
-    //
-    //
-    // ##################################################
-    // LEAVE THAT ONE HERE FOR NOW - REMOVE BEFORE MERGE!
-    // IT'S NOW PART OF DRAWMENU!
-    // ##################################################
-    //
-    //
-    // draw button and sliders to adjust light
-    // std::vector<std::shared_ptr<MenuTitleBase>> menuTitles = lightGroup->lights[lightGroup->currentSelectedLight]->lightTitleItems();
-    activeMenuTitleCount = menuTitles.size();
-    if(menuTitles.size() == 0 ) {
-        return;
-    }
-    scrollMenuPosition();
-
-    int menuState = menuIndex;
-    int yPos = id(header_height);
-    int currentSelectedLight = lightGroup->currentSelectedLight;
-    bool lightDetailSelected = lightGroup->lightDetailSelected;
-    // auto brightness_bar =lightGroup->lights[currentSelectedLight]->brightness ;
-    // auto color_temp_bar =0.64 * lightGroup->lights[currentSelectedLight]->color_temp ;
-    for(int i = 0;i<menuTitles.size();++i){
-        auto mt = menuTitles[i];
-        if(mt->titleType == BaseMenuTitleType){
-            ESP_LOGW("WARNING", "add title");
-            drawTitle(menuState, 0,mt->friendlyName, yPos, true);
-
-            bool onState = mt->titleState == OnMenuTitleState;
-            ESP_LOGW("WARNING", "state: %i", mt->titleState);
-            ESP_LOGW("WARNING", onState ? "true" : "false");
-            drawSwitch(mt->titleState == OnMenuTitleState, yPos);
-            yPos += id(small_font_size) + id(margin_size);
-        } else if(mt->titleType == LightMenuTitleType){
-            auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
-            ESP_LOGW("WARNING", "add slider: %i ",item->slider_width);
-            // drawLightSlider(0, yPos, menuState == i, menuState == i && lightDetailSelected, item->slider_width,mt->friendlyName);
-
-            yPos += (id(medium_font_size) + id(margin_size)) * 2;
-        }
-    }
-    return;
-}
-
 void drawMenu() {
   if(idleTime > 16 && !charging) {
     menuDrawing = false;
