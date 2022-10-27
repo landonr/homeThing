@@ -515,12 +515,16 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       }
     }
     if(newActivePlayer != NULL) {
-      activePlayer = newActivePlayer;
+      setActivePlayer(newActivePlayer);
       playerSearchFinished = true;
       if(!background) {
         display.updateDisplay(true);
       }
     }
+  }
+
+  void setActivePlayer(BasePlayerComponent *newActivePlayer) {
+    activePlayer = newActivePlayer;
   }
 
   void setup(std::vector<TVSetup> newTVSetups, std::vector<SpeakerSetup> newSpeakerSetups) {
@@ -835,11 +839,11 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
   void selectNextMediaPlayer() {
     if(activePlayer != NULL) {
       if(activePlayer->index < tvs.size() - 1) {
-        activePlayer = tvs[activePlayer->index + 1];
+        setActivePlayer(tvs[activePlayer->index + 1]);
       } else if(activePlayer->index - tvs.size() + 1 < speakers.size()) {
-        activePlayer = speakers[activePlayer->index - tvs.size() + 1];
+        setActivePlayer(speakers[activePlayer->index - tvs.size() + 1]);
       } else if(tvs.size() > 0) {
-        activePlayer = tvs[0];
+        setActivePlayer(tvs[0]);
       }
     }
   }
