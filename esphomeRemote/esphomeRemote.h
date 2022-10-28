@@ -425,7 +425,7 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
         id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow,5,  id(my_white));
         id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow,4,  id(color_accent_primary));
 
-        id(my_display).printf(0, yPos + 1, &id(medium_font), id(color_accent_primary), title_extra.c_str());
+        id(my_display).printf(xPos, yPos + 1, &id(medium_font), id(color_accent_primary), title_extra.c_str());
     }
     else if(slider_selection){
         // make current slider white and the background dark grey
@@ -435,13 +435,13 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
         // white dot indicating current value
         id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_white));
 
-        id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
+        id(my_display).printf(xPos, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
     }else{
         // no selection, no hover so just show background slider
         id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width()-2 * id(slider_margin_size), sliderHeight, id(my_gray_dark_2));
         // white dot indicating current value
         id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_gray_dark_2));
-        id(my_display).printf(0, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
+        id(my_display).printf(xPos, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
     }
 }
 
