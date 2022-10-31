@@ -856,7 +856,7 @@ bool drawOptionMenuAndStop() {
     drawTextWrapped(
       id(my_display).get_width() / 2,
       id(header_height) + id(margin_size) * 2 + id(medium_font_size),
-      24,
+      24, 
       & id(large_font),
       primaryTextColor(),
       TextAlign::TOP_CENTER,
