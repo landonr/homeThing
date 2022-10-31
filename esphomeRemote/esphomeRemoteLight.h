@@ -68,9 +68,9 @@ class LightService: public CustomAPIDevice, public Component {
         }
         is_color_temp_in_sync = false;
         const std::map< std::string, std::string > data = {
-                                                              {"entity_id",entityId.c_str()},
-                                                              {"color_temp", to_string(local_color_temp - id(inc_color_temperature_step))} ,
-                                                          };
+            {"entity_id",entityId.c_str()},
+            {"color_temp", to_string(local_color_temp - id(inc_color_temperature_step))}
+        };
         setAttribute(data);
     }
 
