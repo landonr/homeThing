@@ -66,10 +66,11 @@ class LightService: public CustomAPIDevice, public Component {
         if(!is_color_temp_in_sync){
             return;
         }
-        is_color_temp_in_sync = false;
+        // is_color_temp_in_sync = false;
+        local_color_temp = local_color_temp + id(inc_color_temperature_step);
         const std::map< std::string, std::string > data = {
             {"entity_id",entityId.c_str()},
-            {"color_temp", to_string(local_color_temp - id(inc_color_temperature_step))}
+            {"color_temp", to_string(local_color_temp)}
         };
         setAttribute(data);
     }
@@ -78,35 +79,38 @@ class LightService: public CustomAPIDevice, public Component {
         if(!is_color_temp_in_sync){
             return;
         }
-        is_color_temp_in_sync = false;
+        // is_color_temp_in_sync = false;
+        local_color_temp = local_color_temp + id(inc_color_temperature_step);
         const std::map< std::string, std::string > data = {
-                                                              {"entity_id",entityId.c_str()},
-                                                              {"color_temp", to_string(local_color_temp + id(inc_color_temperature_step))} ,
-                                                          };
+            {"entity_id",entityId.c_str()},
+            {"color_temp", to_string(local_color_temp)} ,
+        };
         setAttribute(data);
     }
 
     void decBrightness() {
-        if(!is_brightness_in_sync){
-            return;
-        }
-        is_brightness_in_sync = false;
+        // if(!is_brightness_in_sync){
+        //     return;
+        // }
+        // is_brightness_in_sync = false;
+        local_brightness = local_brightness - id(inc_brightness_step);
         const std::map< std::string, std::string > data = {
-                                                              {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(local_brightness - id(inc_brightness_step))} ,
-                                                          };
+            {"entity_id",entityId.c_str()},
+            {"brightness", to_string(local_brightness)},
+        };
         setAttribute(data);
     }
 
     void incBrightness() {
-        if(!is_brightness_in_sync){
-            return;
-        }
-        is_brightness_in_sync = false;
+        // if(!is_brightness_in_sync){
+        //     return;
+        // }
+        // is_brightness_in_sync = false;
+        local_brightness = local_brightness + id(inc_brightness_step);
         const std::map< std::string, std::string > data = {
-                                                              {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(local_brightness + id(inc_brightness_step))} ,
-                                                          };
+            {"entity_id",entityId.c_str()},
+            {"brightness", to_string(local_brightness)},
+        };
         setAttribute(data);
     }
 
@@ -163,13 +167,13 @@ class LightService: public CustomAPIDevice, public Component {
 
   private:
     void state_changed(std::string newOnState) {
-      ESP_LOGI("brightness", " changed to %s", newOnState.c_str());
+      ESP_LOGI("state", " changed to %s", newOnState.c_str());
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
-      if (!onState){
-        local_brightness = 0;
-        local_color_temp = 0;
-      }
+      // if (!onState){
+      //   local_brightness = 0;
+      //   local_color_temp = 0;
+      // }
       display.updateDisplay(false);
     }
     void min_mireds_changed(std::string newOnState) {
@@ -182,8 +186,10 @@ class LightService: public CustomAPIDevice, public Component {
     }
     void brightness_changed(std::string newOnState) {
       ESP_LOGI("brightness", "state changed to %s", newOnState.c_str());
-      local_brightness = atoi(newOnState.c_str());
-      is_brightness_in_sync = true;
+      if(local_brightness == -1) {
+        local_brightness = atoi(newOnState.c_str());
+      }
+      // is_brightness_in_sync = true;
       display.updateDisplay(false);
     }
     void color_temp_changed(std::string newOnState){
