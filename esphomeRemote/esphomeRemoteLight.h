@@ -6,8 +6,12 @@
 #pragma once
 
 class LightService: public CustomAPIDevice, public Component {
-  public:
-    LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface& newCallback) : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
+ public:
+    LightService(
+      std::string newFriendlyName,
+      std::string newEntityId,
+      DisplayUpdateInterface& newCallback)
+  : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
       onState = false;
       subscribe_homeassistant_state(&LightService::state_changed, newEntityId.c_str());
     }
@@ -22,7 +26,7 @@ class LightService: public CustomAPIDevice, public Component {
       });
     }
 
-  private:
+ private:
     void state_changed(std::string newOnState) {
       ESP_LOGI("Light", "state changed to %s", newOnState.c_str());
       onState = newOnState == "on";
@@ -31,12 +35,12 @@ class LightService: public CustomAPIDevice, public Component {
 };
 
 class LightGroupComponent : public CustomAPIDevice, public Component {
-  public:
-    LightGroupComponent(DisplayUpdateInterface& newCallback) : display(newCallback) { }
+ public:
+    explicit LightGroupComponent(DisplayUpdateInterface& newCallback) : display(newCallback) { }
     std::vector<LightService*> lights;
 
     void setup(std::vector<FriendlyNameEntity> newLights) {
-      for (auto &light: newLights) {
+      for (auto &light : newLights) {
         LightService *newService = new LightService(light.friendlyName, light.entityId, display);
         lights.push_back(newService);
       }
@@ -44,7 +48,7 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
 
     std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches() {
       std::vector<std::shared_ptr<MenuTitleBase>> out;
-      for (auto &light: lights) {
+      for (auto &light : lights) {
         ESP_LOGI("Light", "state %d", light->onState);
         MenuTitleState state = light->onState ? OnMenuTitleState : OffMenuTitleState;
         out.push_back(std::make_shared<MenuTitleBase>(light->friendlyName, light->entityId, state));
@@ -53,13 +57,14 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
     }
 
     bool selectLight(int index) {
-     if(index >= 0 && index < lights.size()) {
+     if (index >= 0 && index < lights.size()) {
         LightService *light = lights[index];
         light->toggleLight();
         return false;
       }
       return true;
     }
-  private:
+
+ private:
     DisplayUpdateInterface& display;
 };

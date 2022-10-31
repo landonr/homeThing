@@ -34,7 +34,7 @@ void buttonPressLeft() {
   }
   if (menuIndex > 0) {
     menuIndex--;
-  } else if(activeMenuState == nowPlayingMenu) {
+  } else if (activeMenuState == nowPlayingMenu) {
     menuIndex = activeMenuTitleCount - 1;
   } else {
     topMenu();

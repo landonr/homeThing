@@ -14,18 +14,18 @@ enum MenuTitleType {
 };
 
 class MenuTitleBase {
-  public:
+ public:
     std::string friendlyName;
     std::string entityId;
     MenuTitleState titleState;
     MenuTitleType titleType;
     MenuTitleBase(
-      std::string newFriendlyName, 
-      std::string newEntityId, 
+      std::string newFriendlyName,
+      std::string newEntityId,
       MenuTitleState newTitleState,
-      MenuTitleType newTitleType = BaseMenuTitleType
-    ) : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState), titleType(newTitleType) { }
-    
+      MenuTitleType newTitleType = BaseMenuTitleType)
+    : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState), titleType(newTitleType) { }
+
     bool indentLine() {
       switch (titleState) {
         case OffMenuTitleState:
@@ -59,7 +59,7 @@ enum RemotePlayerState {
 };
 
 std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
-    switch(playingState) {
+    switch (playingState) {
       case NoRemotePlayerMediaSource:
         return "No";
       case YouTubeRemotePlayerMediaSource:
@@ -77,17 +77,17 @@ std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
   }
 
 class MenuTitlePlayer: public MenuTitleBase {
-  public:
+ public:
     RemotePlayerMediaSource mediaSource;
     RemotePlayerState playerState;
 
     MenuTitlePlayer(
-      std::string newFriendlyName, 
-      std::string newEntityId, 
+      std::string newFriendlyName,
+      std::string newEntityId,
       MenuTitleState newTitleState,
       RemotePlayerMediaSource newMediaSource,
-      RemotePlayerState newPlayerState
-    ) : MenuTitleBase { 
+      RemotePlayerState newPlayerState)
+    : MenuTitleBase {
       newFriendlyName,
       newEntityId,
       newTitleState,
@@ -95,7 +95,7 @@ class MenuTitlePlayer: public MenuTitleBase {
     }, mediaSource(newMediaSource), playerState(newPlayerState) {}
 
     std::string mediaSourceIcon() {
-      switch(mediaSource) {
+      switch (mediaSource) {
         case NoRemotePlayerMediaSource:
           return "󰐊";
         case YouTubeRemotePlayerMediaSource:
@@ -113,7 +113,7 @@ class MenuTitlePlayer: public MenuTitleBase {
     }
 
     Color mediaSourceIconColor() {
-      switch(mediaSource) {
+      switch (mediaSource) {
         case NoRemotePlayerMediaSource:
         case TVRemotePlayerMediaSource:
           return id(color_accent_primary);
@@ -137,22 +137,22 @@ enum RemotePlayerSourceType {
 };
 
 class MenuTitleSource: public MenuTitleBase {
-  public:
+ public:
     RemotePlayerSourceType sourceType;
 
     MenuTitleSource(
-      std::string newFriendlyName, 
-      std::string newEntityId, 
+      std::string newFriendlyName,
+      std::string newEntityId,
       MenuTitleState newTitleState,
-      RemotePlayerSourceType newSourceType
-    ) : MenuTitleBase { 
+      RemotePlayerSourceType newSourceType)
+    : MenuTitleBase {
       newFriendlyName,
       newEntityId,
       newTitleState
     }, sourceType(newSourceType) {}
 
     std::string sourceTypeString() {
-      switch(sourceType) {
+      switch (sourceType) {
         case MusicRemotePlayerSourceType:
           return "music";
         case FavoriteItemIDRemotePlayerSourceType:

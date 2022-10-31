@@ -100,7 +100,7 @@ void buttonPressUp() {
     break;
   case groupMenu:
     menuIndex = 0;
-    if(speakerGroup->newSpeakerGroupParent != NULL) {
+    if (speakerGroup->newSpeakerGroupParent != NULL) {
       speakerGroup->newSpeakerGroupParent = NULL;
     } else {
       activeMenuState = nowPlayingMenu;
@@ -293,7 +293,7 @@ void buttonPressScreenRight() {
 }
 
 void displayUpdateDebounced() {
-  if(idleTime < 2) {
+  if (idleTime < 2) {
     displayUpdate.updateDisplay(true);
   }
 }

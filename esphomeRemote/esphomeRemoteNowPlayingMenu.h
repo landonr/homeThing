@@ -3,11 +3,11 @@
 #pragma once
 
 void selectNowPlayingMenu() {
-  if(activeMenuTitleCount <= 0 && menuIndex < activeMenuTitleCount) {
+  if (activeMenuTitleCount <= 0 && menuIndex < activeMenuTitleCount) {
     return;
   }
   auto menuTitle = getNowPlayingMenuStates()[menuIndex];
-  switch(menuTitle) {
+  switch (menuTitle) {
   case pauseNowPlayingMenuState:
     speakerGroup -> activePlayer -> playPause();
     break;

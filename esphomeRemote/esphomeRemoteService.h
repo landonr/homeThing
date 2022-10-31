@@ -5,7 +5,7 @@
 #pragma once
 
 class BaseService: public CustomAPIDevice {
-  public:
+ public:
     std::string entityId;
     std::string friendlyName;
     std::string serviceType;
@@ -28,19 +28,19 @@ class BaseService: public CustomAPIDevice {
 };
 
 class SceneService: public BaseService {
-  public:
+ public:
     SceneService(std::string newEntityId, std::string newFriendlyName) {
       serviceType = "scene";
-      superSetup(newEntityId, newFriendlyName); 
-   }
+      superSetup(newEntityId, newFriendlyName);
+    }
 };
 
 class ScriptService: public BaseService {
-  public:
+ public:
     ScriptService(std::string newEntityId, std::string newFriendlyName) {
       serviceType = "script";
-      superSetup(newEntityId, newFriendlyName); 
-   }
+      superSetup(newEntityId, newFriendlyName);
+    }
 };
 
 class SceneGroupComponent : public CustomAPIDevice, public Component {
@@ -53,14 +53,14 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
 
   std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    for (auto &service: services) {
+    for (auto &service : services) {
       out.push_back(std::make_shared<MenuTitleBase>(service.getFriendlyName(), "", NoMenuTitleState));
     }
     return out;
   }
 
   bool selectScene(int index) {
-   if(index >= 0 && index < services.size()) {
+    if (index >= 0 && index < services.size()) {
       BaseService service = services[index];
       ESP_LOGI("Scene", "Service called %s", service.getFriendlyName().c_str());
       service.callService();
