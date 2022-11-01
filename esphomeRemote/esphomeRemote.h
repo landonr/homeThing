@@ -501,6 +501,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
             {
                 auto playerTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
                 if(playerTitle != NULL) {
+                    drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
                     int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
                     drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
                     yPos += id(medium_font_size) + id(margin_size);
