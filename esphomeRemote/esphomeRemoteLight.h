@@ -60,52 +60,64 @@ class LightService: public CustomAPIDevice, public Component {
     int maxMireds = 0;
 
     void decTemperature() {
-        // only send update to home assistant if
-        // we have received a confirmation for the last
-        // state change (state changed from ha)
-        if(!isColorTempInSync){
-            return;
+        if(id(keep_states_in_sync)){
+            // only send update to home assistant if
+            // we have received a confirmation for the last
+            // state change (state changed from ha)
+            if(!isColorTempInSync){
+                return;
+            }
+            isColorTempInSync = false;
         }
-        isColorTempInSync = false;
+        localColorTemp -= id(dec_color_temperature_step);
         const std::map< std::string, std::string > data = {
             {"entity_id",entityId.c_str()},
-            {"color_temp", to_string(localColorTemp - id(inc_color_temperature_step))}
+            {"color_temp", to_string(localColorTemp)}
         };
         setAttribute(data);
     }
 
     void incTemperature() {
-        if(!isColorTempInSync){
-            return;
+        if(id(keep_states_in_sync)){
+            if(!isColorTempInSync){
+                return;
+            }
+            isColorTempInSync = false;
         }
-        isColorTempInSync = false;
+        localColorTemp += id(inc_color_temperature_step);
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"color_temp", to_string(localColorTemp + id(inc_color_temperature_step))} ,
+                                                              {"color_temp", to_string(localColorTemp)} ,
                                                           };
         setAttribute(data);
     }
 
     void decBrightness() {
-        if(!isBrightnessInSync){
-            return;
+        if(id(keep_states_in_sync)){
+            if(!isBrightnessInSync){
+                return;
+            }
+            isBrightnessInSync = false;
         }
-        isBrightnessInSync = false;
+        localBrightness -= id(dec_brightness_step);
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(localBrightness - id(inc_brightness_step))} ,
+                                                              {"brightness", to_string(localBrightness)} ,
                                                           };
         setAttribute(data);
     }
 
     void incBrightness() {
-        if(!isBrightnessInSync){
-            return;
+        if(id(keep_states_in_sync)){
+            if(!isBrightnessInSync){
+                return;
+            }
+            isBrightnessInSync = false;
         }
-        isBrightnessInSync = false;
+        localBrightness += id(inc_brightness_step);
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(localBrightness + id(inc_brightness_step))} ,
+                                                              {"brightness", to_string(localBrightness)} ,
                                                           };
         setAttribute(data);
     }
@@ -166,9 +178,11 @@ class LightService: public CustomAPIDevice, public Component {
       ESP_LOGI("state", " changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
-      if (!onState){
-        localBrightness = 0;
-        localColorTemp = 0;
+      if(id(keep_states_in_sync)){
+          if (!onState){
+              localBrightness = 0;
+              localColorTemp = 0;
+          }
       }
       display.updateDisplay(false);
     }
@@ -182,14 +196,18 @@ class LightService: public CustomAPIDevice, public Component {
     }
     void brightness_changed(std::string newOnState) {
       ESP_LOGI("brightness", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
-      localBrightness = atoi(newOnState.c_str());
-      isBrightnessInSync = true;
+      if(id(keep_states_in_sync) || localBrightness == -1){
+          localBrightness = atoi(newOnState.c_str());
+          isBrightnessInSync = true;
+      }
       display.updateDisplay(false);
     }
     void color_temp_changed(std::string newOnState){
       ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
-      localColorTemp = atoi(newOnState.c_str());
-      isColorTempInSync = true;
+      if(id(keep_states_in_sync) || localColorTemp == -1){
+          localColorTemp = atoi(newOnState.c_str());
+          isColorTempInSync = true;
+      }
       display.updateDisplay(false);
     }
     void color_mode_changed(std::string newOnState){

@@ -284,6 +284,14 @@ globals:
     type: bool
     restore_value: no
     initial_value: ${dark_mode}
+
+## true: slider will always be in sync with homeassistant (can be less smooth)
+## false: slider will show local brightness. Local brightness won't show changes
+## made outside of the remote. (should always give a smooth experience)
+  - id: keep_states_in_sync
+    type: bool
+    restore_value: no
+    initial_value: ${keep_states_in_sync}
       
 interval:
   - interval: 1s
