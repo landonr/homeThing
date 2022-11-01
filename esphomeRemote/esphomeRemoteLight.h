@@ -163,7 +163,7 @@ class LightService: public CustomAPIDevice, public Component {
 
   private:
     void state_changed(std::string newOnState) {
-      ESP_LOGI("brightness", " changed to %s", newOnState.c_str());
+      ESP_LOGI("state", " changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
       if (!onState){
@@ -181,19 +181,19 @@ class LightService: public CustomAPIDevice, public Component {
       display.updateDisplay(false);
     }
     void brightness_changed(std::string newOnState) {
-      ESP_LOGI("brightness", "state changed to %s", newOnState.c_str());
+      ESP_LOGI("brightness", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
       localBrightness = atoi(newOnState.c_str());
       isBrightnessInSync = true;
       display.updateDisplay(false);
     }
     void color_temp_changed(std::string newOnState){
-      ESP_LOGI("color_temp", "state changed to %s", newOnState.c_str());
+      ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
       localColorTemp = atoi(newOnState.c_str());
       isColorTempInSync = true;
       display.updateDisplay(false);
     }
     void color_mode_changed(std::string newOnState){
-      ESP_LOGI("color_mode_changed", "state changed to %s", newOnState.c_str());
+      ESP_LOGI("color_mode_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
       if (strcmp(newOnState.c_str(), "onoff") == 0){
           colorMode = onoff_type;
       } else if (strcmp(newOnState.c_str(), "brightness") == 0){
@@ -234,7 +234,7 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
     std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches() {
       std::vector<std::shared_ptr<MenuTitleBase>> out;
       for (auto &light: lights) {
-        ESP_LOGI("Light", "state %d", light->onState);
+        ESP_LOGI("Light", "state %d (%s)", light->onState, light->friendlyName.c_str());
         MenuTitleState state = light->onState ? OnMenuTitleState : OffMenuTitleState;
         out.push_back(std::make_shared<MenuTitleBase>(light->friendlyName, light->entityId, state));
       }
