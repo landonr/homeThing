@@ -50,62 +50,62 @@ class LightService: public CustomAPIDevice, public Component {
     std::string friendlyName;
     std::string entityId;
     DisplayUpdateInterface& display;
-    int local_brightness = -1;
-    int local_color_temp = -1;
-    bool is_brightness_in_sync = false;
-    bool is_color_temp_in_sync = false;
-    ColorModeType color_mode = unknown_type;
+    int localBrightness = -1;
+    int localColorTemp = -1;
+    bool isBrightnessInSync = false;
+    bool isColorTempInSync = false;
+    ColorModeType colorMode = unknown_type;
     bool onState;
-    int min_mireds = 0;
-    int max_mireds = 0;
+    int minMireds = 0;
+    int maxMireds = 0;
 
     void decTemperature() {
         // only send update to home assistant if
         // we have received a confirmation for the last
         // state change (state changed from ha)
-        if(!is_color_temp_in_sync){
+        if(!isColorTempInSync){
             return;
         }
-        is_color_temp_in_sync = false;
+        isColorTempInSync = false;
         const std::map< std::string, std::string > data = {
             {"entity_id",entityId.c_str()},
-            {"color_temp", to_string(local_color_temp - id(inc_color_temperature_step))}
+            {"color_temp", to_string(localColorTemp - id(inc_color_temperature_step))}
         };
         setAttribute(data);
     }
 
     void incTemperature() {
-        if(!is_color_temp_in_sync){
+        if(!isColorTempInSync){
             return;
         }
-        is_color_temp_in_sync = false;
+        isColorTempInSync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"color_temp", to_string(local_color_temp + id(inc_color_temperature_step))} ,
+                                                              {"color_temp", to_string(localColorTemp + id(inc_color_temperature_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void decBrightness() {
-        if(!is_brightness_in_sync){
+        if(!isBrightnessInSync){
             return;
         }
-        is_brightness_in_sync = false;
+        isBrightnessInSync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(local_brightness - id(inc_brightness_step))} ,
+                                                              {"brightness", to_string(localBrightness - id(inc_brightness_step))} ,
                                                           };
         setAttribute(data);
     }
 
     void incBrightness() {
-        if(!is_brightness_in_sync){
+        if(!isBrightnessInSync){
             return;
         }
-        is_brightness_in_sync = false;
+        isBrightnessInSync = false;
         const std::map< std::string, std::string > data = {
                                                               {"entity_id",entityId.c_str()},
-                                                              {"brightness", to_string(local_brightness + id(inc_brightness_step))} ,
+                                                              {"brightness", to_string(localBrightness + id(inc_brightness_step))} ,
                                                           };
         setAttribute(data);
     }
@@ -121,11 +121,11 @@ class LightService: public CustomAPIDevice, public Component {
     }
 
     bool supportsBrightness(){
-        return color_mode != onoff_type && color_mode != unknown_type;
+        return colorMode != onoff_type && colorMode != unknown_type;
     }
 
     bool supportsColorTemperature(){
-        return color_mode == color_temp_type || color_mode == rgbww_type;
+        return colorMode == color_temp_type || colorMode == rgbww_type;
     }
 
     std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
@@ -136,26 +136,26 @@ class LightService: public CustomAPIDevice, public Component {
         int width_available = id(display_size_x) - 2 * id(slider_margin_size);
         if(supportsBrightness()){
             float slider_factor = 1;
-            if(local_brightness > 0){
-                float percent = ((float)local_brightness/255.0);
+            if(localBrightness > 0){
+                float percent = ((float)localBrightness/255.0);
                 int percentInt = (int)(percent*100);
                 ss << "Brightness - " << percentInt << " %%";
                 slider_factor = width_available / MAX_BRIGHTNESS;
             }else{
                 ss << "Brightness";
             }
-            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(local_brightness * slider_factor)));
+            out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(localBrightness * slider_factor)));
             ss.str("");
         }
         if(supportsColorTemperature()){
             float slider_factor = 1;
-            if(local_color_temp > 0){
-                ss << "Temperature - " << 1000000/local_color_temp << " K ";
-                slider_factor = width_available / (max_mireds - min_mireds);
+            if(localColorTemp > 0){
+                ss << "Temperature - " << 1000000/localColorTemp << " K ";
+                slider_factor = width_available / (maxMireds - minMireds);
             }else{
                 ss << "Temperature";
             }
-            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(local_color_temp-min_mireds * slider_factor)));
+            out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId, onState ? OnMenuTitleState : OffMenuTitleState, (int)(localColorTemp-minMireds * slider_factor)));
             ss.str("");
         }
       return out;
@@ -167,53 +167,53 @@ class LightService: public CustomAPIDevice, public Component {
       onState = newOnState == "on";
       // visualize that light is off by resetting brightness and color_temp
       if (!onState){
-        local_brightness = 0;
-        local_color_temp = 0;
+        localBrightness = 0;
+        localColorTemp = 0;
       }
       display.updateDisplay(false);
     }
     void min_mireds_changed(std::string newOnState) {
-      min_mireds = atoi(newOnState.c_str());
+      minMireds = atoi(newOnState.c_str());
       display.updateDisplay(false);
     }
     void max_mireds_changed(std::string newOnState) {
-      max_mireds = atoi(newOnState.c_str());
+      maxMireds = atoi(newOnState.c_str());
       display.updateDisplay(false);
     }
     void brightness_changed(std::string newOnState) {
       ESP_LOGI("brightness", "state changed to %s", newOnState.c_str());
-      local_brightness = atoi(newOnState.c_str());
-      is_brightness_in_sync = true;
+      localBrightness = atoi(newOnState.c_str());
+      isBrightnessInSync = true;
       display.updateDisplay(false);
     }
     void color_temp_changed(std::string newOnState){
       ESP_LOGI("color_temp", "state changed to %s", newOnState.c_str());
-      local_color_temp = atoi(newOnState.c_str());
-      is_color_temp_in_sync = true;
+      localColorTemp = atoi(newOnState.c_str());
+      isColorTempInSync = true;
       display.updateDisplay(false);
     }
     void color_mode_changed(std::string newOnState){
       ESP_LOGI("color_mode_changed", "state changed to %s", newOnState.c_str());
       if (strcmp(newOnState.c_str(), "onoff") == 0){
-          color_mode = onoff_type;
+          colorMode = onoff_type;
       } else if (strcmp(newOnState.c_str(), "brightness") == 0){
-          color_mode = brightness_type;
+          colorMode = brightness_type;
       } else if (strcmp(newOnState.c_str(), "color_temp") == 0){
-          color_mode = color_temp_type;
+          colorMode = color_temp_type;
       } else if (strcmp(newOnState.c_str(), "hs") == 0){
-          color_mode = hs_type;
+          colorMode = hs_type;
       } else if (strcmp(newOnState.c_str(), "rgb") == 0){
-          color_mode = rgb_type;
+          colorMode = rgb_type;
       } else if (strcmp(newOnState.c_str(), "rgbw") == 0){
-          color_mode = rgbw_type;
+          colorMode = rgbw_type;
       } else if (strcmp(newOnState.c_str(), "rgbww") == 0){
-          color_mode = rgbww_type;
+          colorMode = rgbww_type;
       } else if (strcmp(newOnState.c_str(), "white") == 0){
-          color_mode = white_type;
+          colorMode = white_type;
       } else if (strcmp(newOnState.c_str(), "xy") == 0){
-          color_mode = xy_type;
+          colorMode = xy_type;
       } else {
-          color_mode = unknown_type;
+          colorMode = unknown_type;
       }
       display.updateDisplay(false);
     }
