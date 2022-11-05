@@ -517,7 +517,8 @@ void topMenu() {
 void idleMenu(bool force) {
   if (!charging || force) {
     menuIndex = 0;
-    speakerGroup->newSpeakerGroupParent = NULL;
+    if (speakerGroup != NULL)
+      speakerGroup->newSpeakerGroupParent = NULL;
     optionMenu = noOptionMenu;
     activeMenuState = MenuStates::nowPlayingMenu;
     if (force) {
