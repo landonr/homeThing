@@ -18,6 +18,7 @@ void buttonPressSelect() {
           if(lightGroup->lightDetailSelected){
               // deselect ligh if selected and stay in lightsDetailMenu
               lightGroup->lightDetailSelected = false;
+              displayUpdate.updateDisplay(true);
               return;
           }
           break;
@@ -135,6 +136,7 @@ void buttonPressUp() {
       if(lightGroup->lightDetailSelected){
           // deselect ligh if selected and stay in lightsDetailMenu
           lightGroup->lightDetailSelected = false;
+          displayUpdate.updateDisplay(true);
           return;
       }else{
           // if no light is selected go back to lightsMenu
