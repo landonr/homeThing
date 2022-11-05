@@ -238,14 +238,15 @@ class LightService: public CustomAPIDevice, public Component {
 };
 
 class LightGroupComponent : public CustomAPIDevice, public Component {
- public:
-  explicit LightGroupComponent(DisplayUpdateInterface &newCallback) : display(newCallback) {}
-  std::vector<LightService *> lights;
+  public:
+    LightGroupComponent(DisplayUpdateInterface& newCallback) : display(newCallback) { }
+    std::vector<LightService*> lights;
 
-  void setup(std::vector<FriendlyNameEntity> newLights) {
-    for (auto &light : newLights) {
-      LightService *newService = new LightService(light.friendlyName, light.entityId, display);
-      lights.push_back(newService);
+    void setup(std::vector<FriendlyNameEntity> newLights) {
+      for (auto &light: newLights) {
+        LightService *newService = new LightService(light.friendlyName, light.entityId, display);
+        lights.push_back(newService);
+      }
     }
 
     std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches() {
@@ -257,14 +258,14 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
       }
       return out;
     }
-    return out;
-  }
 
-  bool selectLight(int index) {
-    if (index >= 0 && index < lights.size()) {
-      LightService *light = lights[index];
-      light->toggleLight();
-      return false;
+    bool selectLight(int index) {
+     if(index >= 0 && index < lights.size()) {
+        LightService *light = lights[index];
+        light->toggleLight();
+        return false;
+      }
+      return true;
     }
 
     int currentSelectedLight = -1;

@@ -9,17 +9,17 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-    case nowPlayingMenu:
-      if (optionMenu == tvOptionMenu) {
-        optionMenu = noOptionMenu;
-        displayUpdate.updateDisplay(true);
-        return;
-      }
-
-      selectNowPlayingMenu();
+  case nowPlayingMenu:
+    if (optionMenu == tvOptionMenu) {
+      optionMenu = noOptionMenu;
+      displayUpdate.updateDisplay(true);
       return;
-    default:
-      break;
+    }
+
+    selectNowPlayingMenu();
+    return;
+  default:
+    break;
   }
   if (selectMenu()) {
     displayUpdate.updateDisplay(true);
@@ -34,7 +34,7 @@ void buttonPressLeft() {
   }
   if (menuIndex > 0) {
     menuIndex--;
-  } else if (activeMenuState == nowPlayingMenu) {
+  } else if(activeMenuState == nowPlayingMenu) {
     menuIndex = activeMenuTitleCount - 1;
   } else {
     topMenu();

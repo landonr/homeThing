@@ -15,8 +15,16 @@ enum MenuStates {
   sleepMenu
 };
 
-std::vector<MenuStates> rootMenuTitles() {
-  return {nowPlayingMenu, sourcesMenu, mediaPlayersMenu, scenesMenu, lightsMenu, sensorsMenu, sleepMenu};
+std::vector <MenuStates> rootMenuTitles() {
+  return {
+    nowPlayingMenu,
+    sourcesMenu,
+    mediaPlayersMenu,
+    scenesMenu,
+    lightsMenu,
+    sensorsMenu,
+    sleepMenu
+  };
 }
 
 enum NowPlayingMenuState {
@@ -32,19 +40,37 @@ enum NowPlayingMenuState {
   groupNowPlayingMenuState
 };
 
-std::vector<NowPlayingMenuState> speakerNowPlayingMenuStates() {
-  return {pauseNowPlayingMenuState, volumeUpNowPlayingMenuState, volumeDownNowPlayingMenuState,
-          nextNowPlayingMenuState,  shuffleNowPlayingMenuState,  groupNowPlayingMenuState,
-          menuNowPlayingMenuState};
+std::vector <NowPlayingMenuState> speakerNowPlayingMenuStates() {
+  return {
+    pauseNowPlayingMenuState,
+    volumeUpNowPlayingMenuState,
+    volumeDownNowPlayingMenuState,
+    nextNowPlayingMenuState,
+    shuffleNowPlayingMenuState,
+    groupNowPlayingMenuState,
+    menuNowPlayingMenuState
+  };
 }
 
-std::vector<NowPlayingMenuState> TVNowPlayingMenuStates() {
-  return {pauseNowPlayingMenuState, volumeUpNowPlayingMenuState, volumeDownNowPlayingMenuState,
-          backNowPlayingMenuState,  TVPowerNowPlayingMenuState,  homeNowPlayingMenuState,
-          menuNowPlayingMenuState};
+std::vector <NowPlayingMenuState> TVNowPlayingMenuStates() {
+  return {
+    pauseNowPlayingMenuState,
+    volumeUpNowPlayingMenuState,
+    volumeDownNowPlayingMenuState,
+    backNowPlayingMenuState,
+    TVPowerNowPlayingMenuState,
+    homeNowPlayingMenuState,
+    menuNowPlayingMenuState
+  };
 }
 
-enum OptionMenuType { noOptionMenu, volumeOptionMenu, tvOptionMenu, speakerOptionMenu, playingNewSourceMenu };
+enum OptionMenuType {
+  noOptionMenu,
+  volumeOptionMenu,
+  tvOptionMenu,
+  speakerOptionMenu,
+  playingNewSourceMenu
+};
 
 MenuStates activeMenuState = bootMenu;
 int idleTime = -2;
