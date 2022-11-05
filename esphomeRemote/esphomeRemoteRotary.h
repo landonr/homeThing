@@ -14,32 +14,32 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-      case lightsDetailMenu:
-          if(lightGroup->lightDetailSelected){
-              // deselect ligh if selected and stay in lightsDetailMenu
-              lightGroup->lightDetailSelected = false;
-              displayUpdate.updateDisplay(true);
-              return;
-          }
-          break;
-      case nowPlayingMenu:
-          if (optionMenu == tvOptionMenu) {
-              optionMenu = noOptionMenu;
-              speakerGroup->sendActivePlayerRemoteCommand("power");
-              displayUpdate.updateDisplay(true);
-              return;
-          }
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected) {
+        // deselect ligh if selected and stay in lightsDetailMenu
+        lightGroup->lightDetailSelected = false;
+        displayUpdate.updateDisplay(true);
+        return;
+      }
+      break;
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+        speakerGroup->sendActivePlayerRemoteCommand("power");
+        displayUpdate.updateDisplay(true);
+        return;
+      }
 
-          switch (speakerGroup -> activePlayer -> playerType) {
-              case TVRemotePlayerType:
-                  speakerGroup->sendActivePlayerRemoteCommand("select");
-                  break;
-              case SpeakerRemotePlayerType:
-                  break;
-          }
-          return;
-      default:
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          speakerGroup->sendActivePlayerRemoteCommand("select");
           break;
+        case SpeakerRemotePlayerType:
+          break;
+      }
+      return;
+    default:
+      break;
   }
   if (selectMenu()) {
     displayUpdate.updateDisplay(true);
@@ -49,21 +49,21 @@ void buttonPressSelect() {
 void buttonPressNext() {
   resetMarquee();
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    speakerGroup -> increaseSpeakerVolume();
-    optionMenu = volumeOptionMenu;
-    debounceUpdateDisplay();
-    return;
-  case lightsDetailMenu:
-    if(lightGroup->lightDetailSelected && menuIndex == 1){
-        lightGroup -> lights[lightGroup->currentSelectedLight]->incBrightness();
+    case nowPlayingMenu:
+      speakerGroup->increaseSpeakerVolume();
+      optionMenu = volumeOptionMenu;
+      debounceUpdateDisplay();
+      return;
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected && menuIndex == 1) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
         return;
-    }else if(lightGroup->lightDetailSelected && menuIndex == 2){
-        lightGroup -> lights[lightGroup->currentSelectedLight]->incTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
         return;
-    }
-  default:
-    break;
+      }
+    default:
+      break;
   }
   if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
@@ -76,21 +76,21 @@ void buttonPressNext() {
 void buttonPressPrevious() {
   resetMarquee();
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    speakerGroup -> decreaseSpeakerVolume();
-    optionMenu = volumeOptionMenu;
-    debounceUpdateDisplay();
-    return;
-  case lightsDetailMenu:
-    if(lightGroup->lightDetailSelected && menuIndex == 1){
-        lightGroup -> lights[lightGroup->currentSelectedLight]->decBrightness();
+    case nowPlayingMenu:
+      speakerGroup->decreaseSpeakerVolume();
+      optionMenu = volumeOptionMenu;
+      debounceUpdateDisplay();
+      return;
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected && menuIndex == 1) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
         return;
-    }else if(lightGroup->lightDetailSelected && menuIndex == 2){
-        lightGroup -> lights[lightGroup->currentSelectedLight]->decTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
         return;
-    }
-  default:
-    break;
+      }
+    default:
+      break;
   }
   if (menuIndex > 0) {
     menuIndex--;
@@ -132,21 +132,21 @@ void buttonPressUp() {
       }
       displayUpdate.updateDisplay(true);
       return;
-  case lightsDetailMenu:
-      if(lightGroup->lightDetailSelected){
-          // deselect ligh if selected and stay in lightsDetailMenu
-          lightGroup->lightDetailSelected = false;
-          displayUpdate.updateDisplay(true);
-          return;
-      }else{
-          // if no light is selected go back to lightsMenu
-          activeMenuState = lightsMenu;
-          displayUpdate.updateDisplay(true);
-          return;
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected) {
+        // deselect ligh if selected and stay in lightsDetailMenu
+        lightGroup->lightDetailSelected = false;
+        displayUpdate.updateDisplay(true);
+        return;
+      } else {
+        // if no light is selected go back to lightsMenu
+        activeMenuState = lightsMenu;
+        displayUpdate.updateDisplay(true);
+        return;
       }
       break;
-  default:
-    break;
+    default:
+      break;
   }
   if (optionMenu == speakerOptionMenu) {
     speakerGroup->toggleShuffle();
@@ -312,22 +312,22 @@ void buttonPressScreenRight() {
   }
   optionMenu = noOptionMenu;
   switch (activeMenuState) {
-  case rootMenu:
-  case backlightMenu:
-  case sleepMenu:
-  case nowPlayingMenu:
-    speakerGroup->selectNextMediaPlayer();
-    displayUpdate.updateDisplay(true);
-    break;
-  case sourcesMenu:
-  case groupMenu:
-  case mediaPlayersMenu:
-  case scenesMenu:
-  case lightsMenu:
-  case lightsDetailMenu:
-  case sensorsMenu:
-  case bootMenu:
-    break;
+    case rootMenu:
+    case backlightMenu:
+    case sleepMenu:
+    case nowPlayingMenu:
+      speakerGroup->selectNextMediaPlayer();
+      displayUpdate.updateDisplay(true);
+      break;
+    case sourcesMenu:
+    case groupMenu:
+    case mediaPlayersMenu:
+    case scenesMenu:
+    case lightsMenu:
+    case lightsDetailMenu:
+    case sensorsMenu:
+    case bootMenu:
+      break;
   }
 }
 
