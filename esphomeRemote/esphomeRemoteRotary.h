@@ -14,24 +14,24 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup->sendActivePlayerRemoteCommand("power");
-      displayUpdate.updateDisplay(true);
-      return;
-    }
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+        speakerGroup->sendActivePlayerRemoteCommand("power");
+        displayUpdate.updateDisplay(true);
+        return;
+      }
 
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup->sendActivePlayerRemoteCommand("select");
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          speakerGroup->sendActivePlayerRemoteCommand("select");
+          break;
+        case SpeakerRemotePlayerType:
+          break;
+      }
+      return;
+    default:
       break;
-    case SpeakerRemotePlayerType:
-      break;
-    }
-    return;
-  default:
-    break;
   }
   if (selectMenu()) {
     displayUpdate.updateDisplay(true);
@@ -41,18 +41,18 @@ void buttonPressSelect() {
 void buttonPressNext() {
   resetMarquee();
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    speakerGroup -> increaseSpeakerVolume();
-    optionMenu = volumeOptionMenu;
-    debounceUpdateDisplay();
-    return;
-  default:
-    break;
+    case nowPlayingMenu:
+      speakerGroup->increaseSpeakerVolume();
+      optionMenu = volumeOptionMenu;
+      debounceUpdateDisplay();
+      return;
+    default:
+      break;
   }
   if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
   } else if (id(menu_rollover_on) && menuIndex == activeMenuTitleCount - 1) {
-      menuIndex = 0;
+    menuIndex = 0;
   }
   debounceUpdateDisplay();
 }
@@ -60,18 +60,18 @@ void buttonPressNext() {
 void buttonPressPrevious() {
   resetMarquee();
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    speakerGroup -> decreaseSpeakerVolume();
-    optionMenu = volumeOptionMenu;
-    debounceUpdateDisplay();
-    return;
-  default:
-    break;
+    case nowPlayingMenu:
+      speakerGroup->decreaseSpeakerVolume();
+      optionMenu = volumeOptionMenu;
+      debounceUpdateDisplay();
+      return;
+    default:
+      break;
   }
   if (menuIndex > 0) {
     menuIndex--;
   } else if (id(menu_rollover_on) && menuIndex == 0) {
-      menuIndex = activeMenuTitleCount - 1;
+    menuIndex = activeMenuTitleCount - 1;
   }
   debounceUpdateDisplay();
 }
@@ -82,37 +82,37 @@ void buttonPressUp() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      topMenu();
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+        topMenu();
+        displayUpdate.updateDisplay(true);
+        return;
+      }
+
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          speakerGroup->sendActivePlayerRemoteCommand("up");
+          return;
+        case SpeakerRemotePlayerType:
+          break;
+      }
+      break;
+    case groupMenu:
+      menuIndex = 0;
+      if (speakerGroup->newSpeakerGroupParent != NULL) {
+        speakerGroup->newSpeakerGroupParent = NULL;
+      } else {
+        activeMenuState = nowPlayingMenu;
+        optionMenu = noOptionMenu;
+      }
       displayUpdate.updateDisplay(true);
       return;
-    }
-
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup->sendActivePlayerRemoteCommand("up");
-      return;
-    case SpeakerRemotePlayerType:
+    default:
       break;
-    }
-    break;
-  case groupMenu:
-    menuIndex = 0;
-    if(speakerGroup->newSpeakerGroupParent != NULL) {
-      speakerGroup->newSpeakerGroupParent = NULL;
-    } else {
-      activeMenuState = nowPlayingMenu;
-      optionMenu = noOptionMenu;
-    }
-    displayUpdate.updateDisplay(true);
-    return;
-  default:
-    break;
   }
   if (optionMenu == speakerOptionMenu) {
-    speakerGroup -> toggleShuffle();
+    speakerGroup->toggleShuffle();
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
     return;
@@ -128,30 +128,30 @@ void buttonPressDown() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup->sendActivePlayerRemoteCommand("play");
-      displayUpdate.updateDisplay(true);
-      return;
-    }
-
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup->sendActivePlayerRemoteCommand("down");
-      break;
-    case SpeakerRemotePlayerType:
-      if (optionMenu == speakerOptionMenu) {
-        activeMenuState = groupMenu;
-        displayUpdate.updateDisplay(true);
-      } else {
-        speakerGroup -> activePlayer -> playPause();
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
+        speakerGroup->sendActivePlayerRemoteCommand("play");
+        displayUpdate.updateDisplay(true);
+        return;
       }
+
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          speakerGroup->sendActivePlayerRemoteCommand("down");
+          break;
+        case SpeakerRemotePlayerType:
+          if (optionMenu == speakerOptionMenu) {
+            activeMenuState = groupMenu;
+            displayUpdate.updateDisplay(true);
+          } else {
+            speakerGroup->activePlayer->playPause();
+            optionMenu = noOptionMenu;
+          }
+          break;
+      }
+    default:
       break;
-    }
-  default:
-    break;
   }
 }
 
@@ -161,25 +161,25 @@ void buttonPressLeft() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup->sendActivePlayerRemoteCommand("back");
-      displayUpdate.updateDisplay(true);
-      return;
-    }
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+        speakerGroup->sendActivePlayerRemoteCommand("back");
+        displayUpdate.updateDisplay(true);
+        return;
+      }
 
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup->sendActivePlayerRemoteCommand("left");
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          speakerGroup->sendActivePlayerRemoteCommand("left");
+          break;
+        case SpeakerRemotePlayerType:
+          optionMenu = noOptionMenu;
+          break;
+      }
       break;
-    case SpeakerRemotePlayerType:
-      optionMenu = noOptionMenu;
+    default:
       break;
-    }
-    break;
-  default:
-    break;
   }
 }
 
@@ -189,30 +189,30 @@ void buttonPressRight() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      speakerGroup->sendActivePlayerRemoteCommand("menu");
-      displayUpdate.updateDisplay(true);
-      return;
-    }
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      speakerGroup->sendActivePlayerRemoteCommand("right");
-      break;
-    case SpeakerRemotePlayerType:
-      if (optionMenu == speakerOptionMenu) {
-        speakerGroup -> toggleMute();
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+        speakerGroup->sendActivePlayerRemoteCommand("menu");
         displayUpdate.updateDisplay(true);
-      } else {
-        speakerGroup -> activePlayer -> nextTrack();
+        return;
       }
-      optionMenu = noOptionMenu;
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          speakerGroup->sendActivePlayerRemoteCommand("right");
+          break;
+        case SpeakerRemotePlayerType:
+          if (optionMenu == speakerOptionMenu) {
+            speakerGroup->toggleMute();
+            displayUpdate.updateDisplay(true);
+          } else {
+            speakerGroup->activePlayer->nextTrack();
+          }
+          optionMenu = noOptionMenu;
+          break;
+      }
       break;
-    }
-    break;
-  default:
-    break;
+    default:
+      break;
   }
 }
 
@@ -222,17 +222,17 @@ void buttonReleaseScreenLeft() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      displayUpdate.updateDisplay(true);
+    case nowPlayingMenu:
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          displayUpdate.updateDisplay(true);
+          break;
+        case SpeakerRemotePlayerType:
+          break;
+      }
       break;
-    case SpeakerRemotePlayerType:
+    default:
       break;
-    }
-    break;
-  default:
-    break;
   }
 }
 
@@ -242,28 +242,28 @@ void buttonPressScreenLeft() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    switch (speakerGroup -> activePlayer -> playerType) {
-    case TVRemotePlayerType:
-      if (optionMenu == tvOptionMenu) {
-        optionMenu = noOptionMenu;
-      } else {
-        optionMenu = tvOptionMenu;
+    case nowPlayingMenu:
+      switch (speakerGroup->activePlayer->playerType) {
+        case TVRemotePlayerType:
+          if (optionMenu == tvOptionMenu) {
+            optionMenu = noOptionMenu;
+          } else {
+            optionMenu = tvOptionMenu;
+          }
+          displayUpdate.updateDisplay(true);
+          break;
+        case SpeakerRemotePlayerType:
+          if (optionMenu == speakerOptionMenu) {
+            optionMenu = noOptionMenu;
+          } else {
+            optionMenu = speakerOptionMenu;
+          }
+          displayUpdate.updateDisplay(true);
+          break;
       }
-      displayUpdate.updateDisplay(true);
       break;
-    case SpeakerRemotePlayerType:
-      if (optionMenu == speakerOptionMenu) {
-        optionMenu = noOptionMenu;
-      } else {
-        optionMenu = speakerOptionMenu;
-      }
-      displayUpdate.updateDisplay(true);
+    default:
       break;
-    }
-    break;
-  default:
-    break;
   }
 }
 
@@ -274,26 +274,26 @@ void buttonPressScreenRight() {
   }
   optionMenu = noOptionMenu;
   switch (activeMenuState) {
-  case rootMenu:
-  case backlightMenu:
-  case sleepMenu:
-  case nowPlayingMenu:
-    speakerGroup->selectNextMediaPlayer();
-    displayUpdate.updateDisplay(true);
-    break;
-  case sourcesMenu:
-  case groupMenu:
-  case mediaPlayersMenu:
-  case scenesMenu:
-  case lightsMenu:
-  case sensorsMenu:
-  case bootMenu:
-    break;
+    case rootMenu:
+    case backlightMenu:
+    case sleepMenu:
+    case nowPlayingMenu:
+      speakerGroup->selectNextMediaPlayer();
+      displayUpdate.updateDisplay(true);
+      break;
+    case sourcesMenu:
+    case groupMenu:
+    case mediaPlayersMenu:
+    case scenesMenu:
+    case lightsMenu:
+    case sensorsMenu:
+    case bootMenu:
+      break;
   }
 }
 
 void displayUpdateDebounced() {
-  if(idleTime < 2) {
+  if (idleTime < 2) {
     displayUpdate.updateDisplay(true);
   }
 }
