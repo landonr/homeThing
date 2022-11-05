@@ -9,17 +9,17 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
-  case nowPlayingMenu:
-    if (optionMenu == tvOptionMenu) {
-      optionMenu = noOptionMenu;
-      displayUpdate.updateDisplay(true);
-      return;
-    }
+    case nowPlayingMenu:
+      if (optionMenu == tvOptionMenu) {
+        optionMenu = noOptionMenu;
+        displayUpdate.updateDisplay(true);
+        return;
+      }
 
-    selectNowPlayingMenu();
-    return;
-  default:
-    break;
+      selectNowPlayingMenu();
+      return;
+    default:
+      break;
   }
   if (selectMenu()) {
     displayUpdate.updateDisplay(true);
