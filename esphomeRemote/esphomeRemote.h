@@ -1109,11 +1109,6 @@ bool selectMenu() {
         topMenu();
       }
       break;
-    case lightsMenu:
-      if (lightGroup->selectLight(menuIndexForSource)) {
-        topMenu();
-      }
-      break;
     default:
       ESP_LOGW("WARNING", "menu state is bad but its an enum");
       return false;

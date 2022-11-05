@@ -132,20 +132,6 @@ void buttonPressUp() {
       }
       displayUpdate.updateDisplay(true);
       return;
-    default:
-      break;
-    }
-    break;
-  case groupMenu:
-    menuIndex = 0;
-    if(speakerGroup->newSpeakerGroupParent != NULL) {
-      speakerGroup->newSpeakerGroupParent = NULL;
-    } else {
-      activeMenuState = nowPlayingMenu;
-      optionMenu = noOptionMenu;
-    }
-    displayUpdate.updateDisplay(true);
-    return;
   case lightsDetailMenu:
       if(lightGroup->lightDetailSelected){
           // deselect ligh if selected and stay in lightsDetailMenu
