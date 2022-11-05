@@ -457,7 +457,6 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
   int sliderExtra = 0; // fake menu items as the slider uses two rows
   for (int i = scrollTop; i < menuTitles.size(); i++) {
     if (i + sliderExtra > scrollTop + maxItems()) {
-        ESP_LOGW("WARNING", "no more items. these are enough: %i ",i);
         break;
     }
     switch(menuTitles[i]->titleType) {
