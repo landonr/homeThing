@@ -18,7 +18,7 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
       return;
     }
     if (force) {
-      menuDrawing = true;
+menuDrawing = true;
       id(my_display).update();
       if (!id(backlight).state) {
         id(backlight).turn_on();
