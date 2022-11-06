@@ -40,10 +40,10 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 };
 
 auto displayUpdate = DisplayUpdateImpl();
-auto *sceneGroup = new SceneGroupComponent();
-auto *sensorGroup = new SensorGroupComponent();
-auto *speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
-auto *lightGroup = new LightGroupComponent(displayUpdate);
+SceneGroupComponent *sceneGroup;
+SensorGroupComponent *sensorGroup;
+SonosSpeakerGroupComponent *speakerGroup;
+LightGroupComponent *lightGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
 double marqueePosition = 0;
 bool marqueeText = false;
@@ -184,9 +184,13 @@ void drawHeaderTitle() {
     case backlightMenu:
     case sleepMenu:
     case nowPlayingMenu: {
-      auto headerMenuTitle = speakerGroup->headerMediaPlayerTitle();
-      xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-      drawHeaderTitleWithString((headerMenuTitle).friendlyName, xPos);
+      if (speakerGroup != NULL) {
+        auto headerMenuTitle = speakerGroup->headerMediaPlayerTitle();
+        xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
+        drawHeaderTitleWithString((headerMenuTitle).friendlyName, xPos);
+      } else {
+        drawHeaderTitleWithString("Remote", xPos);
+      }
       break;
     }
     case sourcesMenu:
@@ -214,6 +218,9 @@ void drawHeaderTitle() {
 }
 
 int drawVolumeLevel(int oldXPos) {
+  if (speakerGroup == NULL) {
+    return oldXPos;
+  }
   if (!id(draw_volume_level)) {
     return oldXPos;
   }
@@ -226,6 +233,9 @@ int drawVolumeLevel(int oldXPos) {
 }
 
 int drawShuffle(int oldXPos) {
+  if (speakerGroup == NULL) {
+    return oldXPos;
+  }
   if (speakerGroup->activePlayer->playerType == TVRemotePlayerType) {
     return oldXPos;
   }
@@ -476,7 +486,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles());
+      return menuTypesToTitles(
+          rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -498,7 +509,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
 
 void topMenu() {
   menuIndex = 0;
-  speakerGroup->newSpeakerGroupParent = NULL;
+  if (speakerGroup != NULL)
+    speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
   activeMenuState = MenuStates::rootMenu;
 }
@@ -506,7 +518,8 @@ void topMenu() {
 void idleMenu(bool force) {
   if (!charging || force) {
     menuIndex = 0;
-    speakerGroup->newSpeakerGroupParent = NULL;
+    if (speakerGroup != NULL)
+      speakerGroup->newSpeakerGroupParent = NULL;
     optionMenu = noOptionMenu;
     activeMenuState = MenuStates::nowPlayingMenu;
     if (force) {
@@ -545,12 +558,11 @@ void idleTick() {
     idleTime++;
     return;
   }
-  bool updatedMediaPositions = speakerGroup->updateMediaPosition();
   if (idleTime == 3) {
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
   } else if (idleTime == id(display_timeout)) {
-    if (speakerGroup->playerSearchFinished) {
+    if (speakerGroup != NULL && speakerGroup->playerSearchFinished) {
       idleMenu(false);
       displayUpdate.updateDisplay(false);
     }
@@ -571,15 +583,18 @@ void idleTick() {
       return;
     }
   }
-  if (updatedMediaPositions) {
-    switch (activeMenuState) {
-      case nowPlayingMenu:
-        if (idleTime < 16 || charging) {
-          displayUpdate.updateDisplay(true);
-        }
-        break;
-      default:
-        break;
+  if (speakerGroup != NULL) {
+    bool updatedMediaPositions = speakerGroup->updateMediaPosition();
+    if (updatedMediaPositions) {
+      switch (activeMenuState) {
+        case nowPlayingMenu:
+          if (idleTime < 16 || charging) {
+            displayUpdate.updateDisplay(true);
+          }
+          break;
+        default:
+          break;
+      }
     }
   }
   idleTime++;
@@ -910,7 +925,7 @@ void drawMenu() {
   if (!id(dark_mode) && activeMenuState != bootMenu) {
     id(my_display).fill(id(my_white));
   }
-  if (speakerGroup->playerSearchFinished == false) {
+  if (speakerGroup != NULL && speakerGroup->playerSearchFinished == false) {
     drawBootSequence();
     return;
   } else if (activeMenuState == bootMenu) {
@@ -963,7 +978,8 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu = rootMenuTitles()[menuIndex];
+  MenuStates currentMenu =
+      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
@@ -1045,7 +1061,7 @@ bool buttonPressWakeUpDisplay() {
   if (idleTime != -1) {
     idleTime = 0;
   }
-  if (!speakerGroup->playerSearchFinished) {
+  if (speakerGroup != NULL && !speakerGroup->playerSearchFinished) {
     speakerGroup->findActivePlayer();
   }
   if (!id(backlight).state) {
