@@ -40,10 +40,10 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 };
 
 auto displayUpdate = DisplayUpdateImpl();
-auto *sceneGroup = new SceneGroupComponent();
-auto *sensorGroup = new SensorGroupComponent();
+SceneGroupComponent *sceneGroup;
+SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
-auto *lightGroup = new LightGroupComponent(displayUpdate);
+LightGroupComponent *lightGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
 double marqueePosition = 0;
 bool marqueeText = false;
@@ -486,7 +486,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL));
+      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -977,7 +977,7 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu = rootMenuTitles(speakerGroup != NULL)[menuIndex];
+  MenuStates currentMenu = rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;

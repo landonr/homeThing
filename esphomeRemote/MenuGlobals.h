@@ -14,12 +14,22 @@ enum MenuStates {
   sleepMenu
 };
 
-std::vector<MenuStates> rootMenuTitles(bool includeSpeaker) {
+std::vector<MenuStates> rootMenuTitles(bool includeSpeaker, bool includeScene, bool includeSensor, bool includeLight) {
+  std::vector<MenuStates> out;
   if (includeSpeaker) {
-    return {nowPlayingMenu, sourcesMenu, mediaPlayersMenu, scenesMenu, lightsMenu, sensorsMenu, sleepMenu};
-  } else {
-    return {scenesMenu, lightsMenu, sensorsMenu, sleepMenu};
+    out.insert(out.end(),{nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
   }
+  if (includeScene) {
+    out.push_back(scenesMenu);
+  }
+  if (includeSensor) {
+    out.push_back(sensorsMenu);
+  }
+  if (includeLight) {
+    out.push_back(lightsMenu);
+  }
+  out.push_back(sleepMenu);
+  return out;
 }
 
 enum NowPlayingMenuState {
