@@ -486,7 +486,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL));
+      return menuTypesToTitles(
+          rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -977,7 +978,8 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu = rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL)[menuIndex];
+  MenuStates currentMenu =
+      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
