@@ -7,22 +7,7 @@
 #pragma once
 
 #define MAX_BRIGHTNESS 255.0f
-/* Home Assistant entities can have these modes in color_mode/supported_color_mode.
- * Depending on the mode the light supports we want to show sliders or not.
- *
- * |color_mode | supports brightness | supports color_temp |
- * |---------- | ------------------- | ------------------- |
- * | UNKNOWN   |          -          |          -          |
- * | ONOFF     |          -          |          -          |
- * | BRIGHTNESS|          x          |          -          |
- * | COLOR_TEMP|          x          |          x          |
- * | HS        |          x          |          -          |
- * | RGB       |          x          |          -          |
- * | RGBW      |          x          |          -          |
- * | RGBWW     |          x          |          x          |
- * | WHITE     |          x          |          -          |
- * | XY        |          x          |          -          |
- */
+
 enum ColorModeType {
   unknown_type,
   onoff_type,
