@@ -40,22 +40,22 @@ void buttonPressLeft() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if(activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected){
-      if (menuIndex == 1) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
-      } else if (menuIndex == 2) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
-      }
-      if (selectMenu()) {
-        displayUpdate.updateDisplay(true);
-      }
-  }else if (menuIndex > 0) {
+  if (activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected) {
+    if (menuIndex == 1) {
+      lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
+    } else if (menuIndex == 2) {
+      lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
+    }
+    if (selectMenu()) {
+      displayUpdate.updateDisplay(true);
+    }
+  } else if (menuIndex > 0) {
     menuIndex--;
   } else if (activeMenuState == nowPlayingMenu) {
     menuIndex = activeMenuTitleCount - 1;
-  }else if(activeMenuState == lightsDetailMenu && menuIndex == 0){
-        activeMenuState = lightsMenu;
-        displayUpdate.updateDisplay(true);
+  } else if (activeMenuState == lightsDetailMenu && menuIndex == 0) {
+    activeMenuState = lightsMenu;
+    displayUpdate.updateDisplay(true);
   } else {
     topMenu();
   }
@@ -68,16 +68,16 @@ void buttonPressRight() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if(activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected){
-      if (menuIndex == 1) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
-      } else if (menuIndex == 2) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
-      }
-      if (selectMenu()) {
-        displayUpdate.updateDisplay(true);
-      }
-  }else if (menuIndex < activeMenuTitleCount - 1) {
+  if (activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected) {
+    if (menuIndex == 1) {
+      lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
+    } else if (menuIndex == 2) {
+      lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
+    }
+    if (selectMenu()) {
+      displayUpdate.updateDisplay(true);
+    }
+  } else if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
   } else if (menuIndex == activeMenuTitleCount - 1) {
     menuIndex = 0;
