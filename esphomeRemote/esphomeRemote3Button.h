@@ -9,6 +9,14 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected) {
+        // deselect ligh if selected and stay in lightsDetailMenu
+        lightGroup->lightDetailSelected = false;
+        displayUpdate.updateDisplay(true);
+        return;
+      }
+      break;
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
@@ -32,10 +40,22 @@ void buttonPressLeft() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if (menuIndex > 0) {
+  if(activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected){
+      if (menuIndex == 1) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
+      } else if (menuIndex == 2) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
+      }
+      if (selectMenu()) {
+        displayUpdate.updateDisplay(true);
+      }
+  }else if (menuIndex > 0) {
     menuIndex--;
   } else if (activeMenuState == nowPlayingMenu) {
     menuIndex = activeMenuTitleCount - 1;
+  }else if(activeMenuState == lightsDetailMenu && menuIndex == 0){
+        activeMenuState = lightsMenu;
+        displayUpdate.updateDisplay(true);
   } else {
     topMenu();
   }
@@ -48,7 +68,16 @@ void buttonPressRight() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if (menuIndex < activeMenuTitleCount - 1) {
+  if(activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected){
+      if (menuIndex == 1) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
+      } else if (menuIndex == 2) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
+      }
+      if (selectMenu()) {
+        displayUpdate.updateDisplay(true);
+      }
+  }else if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
   } else if (menuIndex == activeMenuTitleCount - 1) {
     menuIndex = 0;
