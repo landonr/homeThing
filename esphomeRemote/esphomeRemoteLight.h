@@ -2,7 +2,6 @@
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
-#include <sstream>
 
 #pragma once
 
@@ -121,35 +120,33 @@ class LightService : public CustomAPIDevice, public Component {
     out.push_back(
         std::make_shared<MenuTitleBase>(friendlyName, entityId, onState ? OnMenuTitleState : OffMenuTitleState));
 
-    std::stringstream ss;
+    std::string s = "Brightness";
     int width_available = id(display_size_x) - 2 * id(slider_margin_size);
     if (supportsBrightness()) {
       float slider_factor = 1;
       if (localBrightness > 0) {
         float percent = ((float) localBrightness / 255.0);
         int percentInt = (int) (percent * 100);
-        ss << "Brightness - " << percentInt << " %%";
+        s += " - " + to_string(percentInt) + " %%";
         slider_factor = width_available / MAX_BRIGHTNESS;
       } else {
-        ss << "Brightness";
       }
-      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", ss.str(), entityId,
+      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId,
                                                       onState ? OnMenuTitleState : OffMenuTitleState,
                                                       (int) (localBrightness * slider_factor)));
-      ss.str("");
     }
+
+    s = "Temperature";
     if (supportsColorTemperature()) {
       float slider_factor = 1;
       if (localColorTemp > 0) {
-        ss << "Temperature - " << 1000000 / localColorTemp << " K ";
+        s += " - " + to_string(1000000 / localColorTemp) + " K ";
         slider_factor = width_available / (maxMireds - minMireds);
       } else {
-        ss << "Temperature";
       }
-      out.push_back(std::make_shared<MenuTitleSlider>("Temperature", ss.str(), entityId,
+      out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId,
                                                       onState ? OnMenuTitleState : OffMenuTitleState,
                                                       (int) (localColorTemp - minMireds * slider_factor)));
-      ss.str("");
     }
     return out;
   }
