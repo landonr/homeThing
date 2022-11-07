@@ -330,8 +330,8 @@ custom_component:
        SpeakerSetup("media_player.bedroom", "Bedroom"),
        SpeakerSetup("media_player.office", "Office")
      };
+     speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
      speakerGroup->setup(tvSetup, speakerSetup);
-     App.register_component(speakerGroup);
      return {speakerGroup};
    id: speaker_group_component
  
@@ -345,8 +345,8 @@ custom_component:
        SceneService("scene.hell", "Hell"),
        ScriptService("script.feed_cat_single", "Feed cat")
      };
+     sceneGroup = new SceneGroupComponent();
      sceneGroup->setup(scenes);
-     App.register_component(sceneGroup);
      return {sceneGroup};
    id: scene_group_component
 
@@ -359,8 +359,8 @@ custom_component:
        FriendlyNameEntity("light.living_room_lights", "Living Room"), 
        FriendlyNameEntity("light.office_lamp", "Office Lamp")
      };
+     lightGroup = new LightGroupComponent(displayUpdate);
      lightGroup->setup(lights);
-     App.register_component(lightGroup);
      return {lightGroup};
    id: light_group_component
 
@@ -373,7 +373,7 @@ custom_component:
        FriendlyNameEntity("sensor.soil_sensor_soil_moisture_2", "Plant Moisture"),
        FriendlyNameEntity("sensor.particulate_matter_2_5um_concentration", "Kitchen Air")
      };
+     sensorGroup = new SensorGroupComponent();
      sensorGroup->setup(sensors);
-     App.register_component(sensorGroup);
      return {sensorGroup};
    id: sensor_group_component
