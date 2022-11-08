@@ -183,19 +183,14 @@ spi:
   mosi_pin: GPIO15
 
 display:
-  - platform: st7735
-    model: "INITR_18BLACKTAB"
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
     id: my_display
-    reset_pin: GPIO18
     cs_pin: GPIO5
     dc_pin: GPIO23
-    rotation: 90
-    device_width: 128
-    device_height: 160
-    col_start: 0
-    row_start: 0
-    eight_bit_color: true
-    update_interval: 5s    
+    reset_pin: GPIO18
+    rotation: 0
+    update_interval: 60s
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");
