@@ -33,26 +33,26 @@ class SwitchGroupComponent : public CustomAPIDevice, public Component {
   std::vector<SwitchService *> switches;
 
   void setup(std::vector<FriendlyNameEntity> newSwitches) {
-    for (auto &swytch : newSwitches) {
-      SwitchService *newService = new SwitchService(swytch.friendlyName, swytch.entityId, display);
+    for (auto &switchObject : newSwitches) {
+      SwitchService *newService = new SwitchService(switchObject.friendlyName, switchObject.entityId, display);
       switches.push_back(newService);
     }
   }
 
   std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    for (auto &swytch : switches) {
-      ESP_LOGI("Switch", "state %d", swytch->onState);
-      MenuTitleState state = swytch->onState ? OnMenuTitleState : OffMenuTitleState;
-      out.push_back(std::make_shared<MenuTitleBase>(swytch->friendlyName, swytch->entityId, state));
+    for (auto &switchObject : switches) {
+      ESP_LOGI("Switch", "state %d", switchObject->onState);
+      MenuTitleState state = switchObject->onState ? OnMenuTitleState : OffMenuTitleState;
+      out.push_back(std::make_shared<MenuTitleBase>(switchObject->friendlyName, switchObject->entityId, state));
     }
     return out;
   }
 
   bool selectSwitch(int index) {
     if (index >= 0 && index < switches.size()) {
-      SwitchService *swytch = switches[index];
-      swytch->toggleSwitch();
+      SwitchService *switchObject = switches[index];
+      switchObject->toggleSwitch();
       return false;
     }
     return true;
