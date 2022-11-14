@@ -10,8 +10,8 @@ enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
 
 struct RemotePlayerStateUpdatedInterface {
  public:
-  virtual void stateUpdated(RemotePlayerState state) {};
-  virtual ~RemotePlayerStateUpdatedInterface(){}
+  virtual void stateUpdated(RemotePlayerState state){};
+  virtual ~RemotePlayerStateUpdatedInterface() {}
 };
 
 class SpeakerSetup {
@@ -471,7 +471,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     for (auto &speaker : speakers) {
       if (speaker->playerState == NoRemotePlayerState) {
         return;
-      } else if (speaker->tv != NULL && speaker->mediaSource == TVRemotePlayerMediaSource && newActivePlayer->playerState < speaker->tv->playerState) {
+      } else if (speaker->tv != NULL && speaker->mediaSource == TVRemotePlayerMediaSource &&
+                 newActivePlayer->playerState < speaker->tv->playerState) {
         newActivePlayer = speaker->tv;
       } else if (newActivePlayer != NULL) {
         if (newActivePlayer->playerState < speaker->playerState && speaker->mediaSource != TVRemotePlayerMediaSource) {
@@ -493,7 +494,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
 
   void setActivePlayer(BasePlayerComponent *newActivePlayer) {
     ESP_LOGI("ACTIVE_PLAYER", "New active player %s", newActivePlayer->entityId.c_str());
-    activePlayer = newActivePlayer; 
+    activePlayer = newActivePlayer;
   }
 
   void setup(std::vector<TVSetup> newTVSetups, std::vector<SpeakerSetup> newSpeakerSetups) {
@@ -882,8 +883,6 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
                                                               SourceRemotePlayerSourceType);
             out.push_back(tvSource);
           }
-          // std::vector<MenuTitleSource*> newSonosFavorites(sonosFavorites);
-          // std::vector<MenuTitleSource*> newSpotifyPlaylists(spotifyPlaylists);
           out.insert(out.end(), spotifyPlaylists.begin(), spotifyPlaylists.end());
           out.insert(out.end(), sonosFavorites.begin(), sonosFavorites.end());
         }
@@ -900,34 +899,30 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
   }
 
   virtual void stateUpdated(RemotePlayerState state) {
-    ESP_LOGI("SYNC", "state update callback %d %d", activePlayer == NULL, id(sync_active_player));
+    ESP_LOGD("SYNC", "state update callback %d %d", activePlayer == NULL, id(sync_active_player));
     if (activePlayer == NULL || id(sync_active_player) == true) {
-      ESP_LOGI("SYNC", "Trying to sync active player, state: %d activePlayerNull: %d, sync_active_player: %d", state, activePlayer == NULL, id(sync_active_player) == true);
+      ESP_LOGD("SYNC", "Trying to sync active player, state: %d activePlayerNull: %d, sync_active_player: %d", state,
+               activePlayer == NULL, id(sync_active_player) == true);
       switch (state) {
         case NoRemotePlayerState:
         case PausedRemotePlayerState:
         case UnavailableRemotePlayerState:
-          ESP_LOGI("SYNC", "Trying to sync active player - 1");
+          ESP_LOGD("SYNC", "Trying to sync active player - 1");
           syncActivePlayer(state);
           return;
         case PlayingRemotePlayerState:
           if (activePlayer == NULL) {
-            ESP_LOGI("SYNC", "Trying to sync active player - 2");
+            ESP_LOGD("SYNC", "Trying to sync active player - 2");
             syncActivePlayer(state);
           } else if (activePlayer->playerState < state) {
-            ESP_LOGI("SYNC", "Trying to sync active player - 3 %d", activePlayer->playerState);
+            ESP_LOGD("SYNC", "Trying to sync active player - 3 %d", activePlayer->playerState);
             syncActivePlayer(state);
           }
           return;
         case PowerOffRemotePlayerState:
         case StoppedRemotePlayerState:
-          // if (activePlayer == NULL) {
-            ESP_LOGI("SYNC", "Trying to sync active player - 4");
-          //   syncActivePlayer(state);
-          // } else if (activePlayer->playerState < state) {
-            // ESP_LOGI("SYNC", "Trying to sync active player- 5 %d", activePlayer->playerState);
-            syncActivePlayer(state);
-          // }
+          ESP_LOGD("SYNC", "Trying to sync active player - 4");
+          syncActivePlayer(state);
       }
     }
   }
