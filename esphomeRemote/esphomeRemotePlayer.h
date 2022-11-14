@@ -8,9 +8,10 @@
 
 enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
 
-class RemotePlayerStateUpdatedInterface {
+struct RemotePlayerStateUpdatedInterface {
  public:
-  void stateUpdated(RemotePlayerState state) {}
+  virtual void stateUpdated(RemotePlayerState state) {};
+  virtual ~RemotePlayerStateUpdatedInterface(){}
 };
 
 class SpeakerSetup {
@@ -33,10 +34,10 @@ class TVSetup {
 class BasePlayerComponent : public CustomAPIDevice, public Component {
  protected:
   DisplayUpdateInterface &display;
-  RemotePlayerStateUpdatedInterface *stateCallback = NULL;
+  RemotePlayerStateUpdatedInterface &stateCallback;
 
  public:
-  BasePlayerComponent(DisplayUpdateInterface &newCallback, RemotePlayerStateUpdatedInterface *newStateCallback,
+  BasePlayerComponent(DisplayUpdateInterface &newCallback, RemotePlayerStateUpdatedInterface &newStateCallback,
                       int newIndex, std::string newEntityId, std::string newFriendlyName,
                       RemotePlayerType newPlayerType)
       : display(newCallback),
@@ -111,6 +112,12 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
 
   virtual void clearSource() {}
 
+  void clearMedia() {
+    clearSource();
+    mediaTitle = "";
+    mediaArtist = "";
+  }
+
  private:
   void selectSource(MenuTitleSource source) {
     ESP_LOGI("player", "%s select source %s", entityId.c_str(), source.friendlyName.c_str());
@@ -142,30 +149,28 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
       playerState = PausedRemotePlayerState;
     } else if (strcmp(state.c_str(), "standby") == 0) {
       playerState = PowerOffRemotePlayerState;
-      mediaTitle = "";
-      mediaArtist = "";
-    } else if (strcmp(state.c_str(), "home") == 0) {
+      clearMedia();
+    } else if (strcmp(state.c_str(), "home") == 0 || strcmp(state.c_str(), "Roku") == 0) {
       playerState = StoppedRemotePlayerState;
-      mediaTitle = "";
-      mediaArtist = "";
+      clearMedia();
     } else if (strcmp(state.c_str(), "on") == 0) {
       playerState = StoppedRemotePlayerState;
     } else if (strcmp(state.c_str(), "idle") == 0) {
-      clearSource();
+      clearMedia();
       playerState = StoppedRemotePlayerState;
     } else if (strcmp(state.c_str(), "unavailable") == 0) {
       playerState = UnavailableRemotePlayerState;
     } else {
       playerState = NoRemotePlayerState;
     }
-    stateCallback->stateUpdated(playerState);
+    stateCallback.stateUpdated(playerState);
     display.updateDisplay(false);
   }
 };
 
 class SonosSpeakerComponent : public BasePlayerComponent {
  public:
-  SonosSpeakerComponent(DisplayUpdateInterface &newCallback, RemotePlayerStateUpdatedInterface *newStateCallback,
+  SonosSpeakerComponent(DisplayUpdateInterface &newCallback, RemotePlayerStateUpdatedInterface &newStateCallback,
                         int newIndex, SpeakerSetup newSpeakerSetup)
       : BasePlayerComponent{newCallback,
                             newStateCallback,
@@ -385,7 +390,7 @@ class SonosSpeakerComponent : public BasePlayerComponent {
 
 class TVPlayerComponent : public BasePlayerComponent {
  public:
-  TVPlayerComponent(DisplayUpdateInterface &newCallback, RemotePlayerStateUpdatedInterface *newStateCallback,
+  TVPlayerComponent(DisplayUpdateInterface &newCallback, RemotePlayerStateUpdatedInterface &newStateCallback,
                     int newIndex, TVSetup newTVSetup, SonosSpeakerComponent *newSoundBar)
       : BasePlayerComponent{newCallback,         newStateCallback,        newIndex,
                             newTVSetup.entityId, newTVSetup.friendlyName, TVRemotePlayerType},
@@ -409,6 +414,8 @@ class TVPlayerComponent : public BasePlayerComponent {
       mediaSource = NetflixRemotePlayerMediaSource;
     } else if (state.find("Plex") != std::string::npos) {
       mediaSource = PlexRemotePlayerMediaSource;
+    } else if (state.find("Roku") != std::string::npos) {
+      mediaSource = HomeRemotePlayerMediaSource;
     } else {
       mediaSource = NoRemotePlayerMediaSource;
     }
@@ -439,7 +446,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
  public:
   explicit SonosSpeakerGroupComponent(DisplayUpdateInterface &newCallback) : display(newCallback) {}
 
-  BasePlayerComponent *activePlayer;
+  BasePlayerComponent *activePlayer = NULL;
   std::vector<SonosSpeakerComponent *> speakers;
   std::vector<TVPlayerComponent *> tvs;
   bool playerSearchFinished = false;
@@ -464,16 +471,10 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     for (auto &speaker : speakers) {
       if (speaker->playerState == NoRemotePlayerState) {
         return;
-      } else if (speaker->tv != NULL && speaker->playerState == PlayingRemotePlayerState &&
-                 speaker->mediaSource == TVRemotePlayerMediaSource) {
-        activePlayer = speaker->tv;
-        playerSearchFinished = true;
-        if (!background) {
-          display.updateDisplay(true);
-        }
-        return;
+      } else if (speaker->tv != NULL && speaker->mediaSource == TVRemotePlayerMediaSource && newActivePlayer->playerState < speaker->tv->playerState) {
+        newActivePlayer = speaker->tv;
       } else if (newActivePlayer != NULL) {
-        if (newActivePlayer->playerState < speaker->playerState) {
+        if (newActivePlayer->playerState < speaker->playerState && speaker->mediaSource != TVRemotePlayerMediaSource) {
           newActivePlayer = speaker;
         }
       } else {
@@ -481,6 +482,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       }
     }
     if (newActivePlayer != NULL) {
+      ESP_LOGI("FIND_ACTIVE_PLAYER", "setting active player %s", newActivePlayer->entityId.c_str());
       setActivePlayer(newActivePlayer);
       playerSearchFinished = true;
       if (!background) {
@@ -489,7 +491,10 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     }
   }
 
-  void setActivePlayer(BasePlayerComponent *newActivePlayer) { activePlayer = newActivePlayer; }
+  void setActivePlayer(BasePlayerComponent *newActivePlayer) {
+    ESP_LOGI("ACTIVE_PLAYER", "New active player %s", newActivePlayer->entityId.c_str());
+    activePlayer = newActivePlayer; 
+  }
 
   void setup(std::vector<TVSetup> newTVSetups, std::vector<SpeakerSetup> newSpeakerSetups) {
     bool first = true;
@@ -501,12 +506,12 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       SonosSpeakerComponent *newSoundBar = NULL;
       if (newTVSetup.soundBar != NULL) {
         auto newSpeaker =
-            new SonosSpeakerComponent(display, this, newTVSetups.size() + speakerIndex, *newTVSetup.soundBar);
+            new SonosSpeakerComponent(display, *this, newTVSetups.size() + speakerIndex, *newTVSetup.soundBar);
         speakers.push_back(newSpeaker);
         speakerIndex++;
         newSoundBar = newSpeaker;
       }
-      auto newTV = new TVPlayerComponent(display, this, tvIndex, newTVSetup, newSoundBar);
+      auto newTV = new TVPlayerComponent(display, *this, tvIndex, newTVSetup, newSoundBar);
       if (newSoundBar != NULL) {
         newSoundBar->tv = newTV;
       }
@@ -514,7 +519,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       tvIndex++;
     }
     for (auto &newSpeakerSetup : newSpeakerSetups) {
-      auto newSpeaker = new SonosSpeakerComponent(display, this, newTVSetups.size() + speakerIndex, newSpeakerSetup);
+      auto newSpeaker = new SonosSpeakerComponent(display, *this, newTVSetups.size() + speakerIndex, newSpeakerSetup);
       speakers.push_back(newSpeaker);
       speakerIndex++;
     }
@@ -888,25 +893,42 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     return out;
   }
 
-  void stateUpdated(RemotePlayerState state) {
-    if (activePlayer == NULL || id(sync_active_player) == false) {
-      return;
-    }
-    switch (state) {
-      case NoRemotePlayerState:
-      case PausedRemotePlayerState:
-      case UnavailableRemotePlayerState:
-        return;
-      case PlayingRemotePlayerState:
-        if (activePlayer->playerState != PlayingRemotePlayerState) {
-          playerSearchFinished = false;
-          findActivePlayer(true);
-        }
-        return;
-      case PowerOffRemotePlayerState:
-      case StoppedRemotePlayerState:
-        playerSearchFinished = false;
-        findActivePlayer(true);
+  void syncActivePlayer(RemotePlayerState state) {
+    ESP_LOGI("SYNC", "Syncing active player %d", state);
+    playerSearchFinished = false;
+    findActivePlayer(true);
+  }
+
+  virtual void stateUpdated(RemotePlayerState state) {
+    ESP_LOGI("SYNC", "state update callback %d %d", activePlayer == NULL, id(sync_active_player));
+    if (activePlayer == NULL || id(sync_active_player) == true) {
+      ESP_LOGI("SYNC", "Trying to sync active player, state: %d activePlayerNull: %d, sync_active_player: %d", state, activePlayer == NULL, id(sync_active_player) == true);
+      switch (state) {
+        case NoRemotePlayerState:
+        case PausedRemotePlayerState:
+        case UnavailableRemotePlayerState:
+          ESP_LOGI("SYNC", "Trying to sync active player - 1");
+          syncActivePlayer(state);
+          return;
+        case PlayingRemotePlayerState:
+          if (activePlayer == NULL) {
+            ESP_LOGI("SYNC", "Trying to sync active player - 2");
+            syncActivePlayer(state);
+          } else if (activePlayer->playerState < state) {
+            ESP_LOGI("SYNC", "Trying to sync active player - 3 %d", activePlayer->playerState);
+            syncActivePlayer(state);
+          }
+          return;
+        case PowerOffRemotePlayerState:
+        case StoppedRemotePlayerState:
+          // if (activePlayer == NULL) {
+            ESP_LOGI("SYNC", "Trying to sync active player - 4");
+          //   syncActivePlayer(state);
+          // } else if (activePlayer->playerState < state) {
+            // ESP_LOGI("SYNC", "Trying to sync active player- 5 %d", activePlayer->playerState);
+            syncActivePlayer(state);
+          // }
+      }
     }
   }
 
