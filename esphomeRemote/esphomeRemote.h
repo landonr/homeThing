@@ -216,6 +216,7 @@ void drawHeaderTitle() {
       break;
     case lightsDetailMenu:
       drawHeaderTitleWithString("LightDetail", xPos);
+      break;
     case switchesMenu:
       drawHeaderTitleWithString("Switches", xPos);
       break;
@@ -1014,6 +1015,7 @@ void drawMenu() {
       break;
     case lightsDetailMenu:
       drawMenu(lightGroup->lights[lightGroup->currentSelectedLight]->lightTitleItems());
+      break;
     case switchesMenu:
       drawMenu(switchGroup->switchTitleSwitches());
       break;
