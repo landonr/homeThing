@@ -31,6 +31,8 @@ class LightService : public CustomAPIDevice, public Component {
     subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(), "brightness");
     subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(), "color_temp");
     subscribe_homeassistant_state(&LightService::color_mode_changed, newEntityId.c_str(), "color_mode");
+    subscribe_homeassistant_state(&LightService::supported_color_modes_changed, newEntityId.c_str(),
+                                  "supported_color_modes");
   }
   std::string friendlyName;
   std::string entityId;
@@ -207,6 +209,31 @@ class LightService : public CustomAPIDevice, public Component {
     } else if (strcmp(newOnState.c_str(), "white") == 0) {
       colorMode = white_type;
     } else if (strcmp(newOnState.c_str(), "xy") == 0) {
+      colorMode = xy_type;
+    } else {
+      colorMode = unknown_type;
+    }
+    display.updateDisplay(false);
+  }
+  void supported_color_modes_changed(std::string newOnState) {
+    ESP_LOGD("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    if (newOnState.find("onoff") != std::string::npos) {
+      colorMode = onoff_type;
+    } else if (newOnState.find("brightness") != std::string::npos) {
+      colorMode = brightness_type;
+    } else if (newOnState.find("color_temp") != std::string::npos) {
+      colorMode = color_temp_type;
+    } else if (newOnState.find("hs") != std::string::npos) {
+      colorMode = hs_type;
+    } else if (newOnState.find("rgb") != std::string::npos) {
+      colorMode = rgb_type;
+    } else if (newOnState.find("rgbw") != std::string::npos) {
+      colorMode = rgbw_type;
+    } else if (newOnState.find("rgbww") != std::string::npos) {
+      colorMode = rgbww_type;
+    } else if (newOnState.find("white") != std::string::npos) {
+      colorMode = white_type;
+    } else if (newOnState.find("xy") != std::string::npos) {
       colorMode = xy_type;
     } else {
       colorMode = unknown_type;
