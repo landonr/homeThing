@@ -57,7 +57,7 @@
 		- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
 	3. Customize **Globals**
 
-4. Update the **Custom Components** in the esphomeRemote/sharedRemoteConfig.yaml to match your config
+4. Update the **Custom Components** in the esphomeRemote/sharedRemoteConfig.yaml to match your config, if you have difficulties looks at the [exempales](sharedRemoteConfig-exempales.md)
 	1. Every component is optional. If you don't want to include the component then remove it
 	2. Set your speaker media players under speaker_group_component
 		1. If you have a supported TV then update it otherwise remove the TV line
