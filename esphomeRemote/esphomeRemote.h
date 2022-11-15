@@ -2,6 +2,7 @@
 #include "TextHelpers.h"
 #include "esphome.h"
 #include "esphomeRemoteLight.h"
+#include "esphomeRemoteSwitch.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteSensor.h"
 #include "esphomeRemoteService.h"
@@ -44,6 +45,7 @@ SceneGroupComponent *sceneGroup;
 SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
+SwitchGroupComponent *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
 double marqueePosition = 0;
 bool marqueeText = false;
@@ -121,6 +123,8 @@ std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType) {
       return std::make_shared<MenuTitleBase>("Lights", "", ArrowMenuTitleState);
     case lightsDetailMenu:
       return std::make_shared<MenuTitleBase>("Light Detail", "", ArrowMenuTitleState);
+    case switchesMenu:
+      return std::make_shared<MenuTitleBase>("Switches", "", ArrowMenuTitleState);
     case scenesMenu:
       return std::make_shared<MenuTitleBase>("Scenes and Actions", "", ArrowMenuTitleState);
     case rootMenu:
@@ -212,6 +216,8 @@ void drawHeaderTitle() {
       break;
     case lightsDetailMenu:
       drawHeaderTitleWithString("LightDetail", xPos);
+    case switchesMenu:
+      drawHeaderTitleWithString("Switches", xPos);
       break;
     case sensorsMenu:
       drawHeaderTitleWithString("Sensors", xPos);
@@ -550,8 +556,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(
-          rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL));
+      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL,
+                                              lightGroup != NULL, switchGroup != NULL));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -1008,6 +1014,8 @@ void drawMenu() {
       break;
     case lightsDetailMenu:
       drawMenu(lightGroup->lights[lightGroup->currentSelectedLight]->lightTitleItems());
+    case switchesMenu:
+      drawMenu(switchGroup->switchTitleSwitches());
       break;
     case groupMenu: {
       if (speakerGroup->newSpeakerGroupParent != NULL) {
@@ -1045,8 +1053,8 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu =
-      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, lightGroup != NULL)[menuIndex];
+  MenuStates currentMenu = rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL,
+                                          lightGroup != NULL, switchGroup != NULL)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
@@ -1059,6 +1067,9 @@ bool selectRootMenu() {
       break;
     case lightsMenu:
       activeMenuState = lightsMenu;
+      break;
+    case switchesMenu:
+      activeMenuState = switchesMenu;
       break;
     case scenesMenu:
       activeMenuState = scenesMenu;
@@ -1124,6 +1135,11 @@ bool selectMenu() {
       break;
     case scenesMenu:
       if (sceneGroup->selectScene(menuIndexForSource)) {
+        topMenu();
+      }
+      break;
+    case switchesMenu:
+      if (switchGroup->selectSwitch(menuIndexForSource)) {
         topMenu();
       }
       break;

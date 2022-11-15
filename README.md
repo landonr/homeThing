@@ -4,7 +4,7 @@
 <p align="center">
 <a href="https://github.com/landonr/esphome-remote/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/workflow/status/landonr/esphome-remote/ESPHome%20Builder?style=for-the-badge"/></a>
 <a href="https://github.com/landonr/esphome-remote/stargazers"><img src="https://img.shields.io/github/stars/landonr/esphome-remote?style=for-the-badge"/></a>
-<a href="https://discord.gg/s2Dnz9fu"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
+<a href="https://discord.gg/BX6ZtGKHTy"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
 
 iPod style wifi remote that uses ESPHome and Home Assistant to integrate with your smart home
@@ -21,7 +21,7 @@ Supports many different hardware configurations:
 
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
- - [Discord](https://discord.gg/s2Dnz9fu) - support / chat with the community and the team
+ - [Discord](https://discord.gg/BX6ZtGKHTy) - support / chat with the community and the team
  
 ## Demo Video 🎬
 [![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
