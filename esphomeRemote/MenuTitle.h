@@ -36,6 +36,7 @@ class MenuTitleBase {
 
 enum RemotePlayerMediaSource {
   NoRemotePlayerMediaSource,
+  HomeRemotePlayerMediaSource,
   YouTubeRemotePlayerMediaSource,
   SpotifyRemotePlayerMediaSource,
   NetflixRemotePlayerMediaSource,
@@ -55,7 +56,9 @@ enum RemotePlayerState {
 std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
   switch (playingState) {
     case NoRemotePlayerMediaSource:
-      return "No";
+      return "No Source";
+    case HomeRemotePlayerMediaSource:
+      return "Home";
     case YouTubeRemotePlayerMediaSource:
       return "YouTube";
     case SpotifyRemotePlayerMediaSource:
@@ -85,6 +88,8 @@ class MenuTitlePlayer : public MenuTitleBase {
     switch (mediaSource) {
       case NoRemotePlayerMediaSource:
         return "󰐊";
+      case HomeRemotePlayerMediaSource:
+        return "󰋜";
       case YouTubeRemotePlayerMediaSource:
         return "󰗃";
       case SpotifyRemotePlayerMediaSource:
@@ -103,6 +108,7 @@ class MenuTitlePlayer : public MenuTitleBase {
     switch (mediaSource) {
       case NoRemotePlayerMediaSource:
       case TVRemotePlayerMediaSource:
+      case HomeRemotePlayerMediaSource:
         return id(color_accent_primary);
       case YouTubeRemotePlayerMediaSource:
         return Color(248, 0, 0);

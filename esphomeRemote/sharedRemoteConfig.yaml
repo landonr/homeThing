@@ -96,6 +96,7 @@ font:
       '󰗃', # mdi-youtube
       '󰓇', # mdi-spotify
       '󰔂', # mdi-television
+      '󰋜', # mdi-home
     ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_small
@@ -114,6 +115,7 @@ font:
       '󰗃', # mdi-youtube
       '󰓇', # mdi-spotify
       '󰔂', # mdi-television
+      '󰋜', # mdi-home
     ]
     
 globals:
