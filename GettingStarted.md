@@ -31,7 +31,7 @@
 # Install guide
 1. Copy project into your ESPHome folder
 2. Find the yaml for your device
-	1. TTGo T-Display: lilygo.yaml
+	1. TTGo T-Display: tdisplayremote.yaml
 	2. TTGo T-Display T4: tdisplayt4.yaml
 	3. M5Stack Fire: fireremote.yaml
 	4. M5Stick C: m5stickc.yaml
