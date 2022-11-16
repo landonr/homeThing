@@ -17,6 +17,7 @@ esphome:
     - esphomeRemote/esphomeRemoteNowPlayingMenu.h
     - esphomeRemote/esphomeRemote3Button.h
     - esphomeRemote/esphomeRemoteFireLight.h
+    - esphomeRemote/esphomeRemoteCommon.h
 
 substitutions:
   boot_name: '"Fire Remote <3"'

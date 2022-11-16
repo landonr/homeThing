@@ -325,6 +325,7 @@ void buttonPressScreenRight() {
     case scenesMenu:
     case lightsMenu:
     case lightsDetailMenu:
+    case switchesMenu:
     case sensorsMenu:
     case bootMenu:
       break;

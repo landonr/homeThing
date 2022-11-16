@@ -1,7 +1,9 @@
 #include "esphome.h"
+#include <algorithm>
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
+#include "esphomeRemoteCommon.h"
 
 #pragma once
 
@@ -30,7 +32,7 @@ class LightService : public CustomAPIDevice, public Component {
     subscribe_homeassistant_state(&LightService::max_mireds_changed, newEntityId.c_str(), "max_mireds");
     subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(), "brightness");
     subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(), "color_temp");
-    subscribe_homeassistant_state(&LightService::color_mode_changed, newEntityId.c_str(), "color_mode");
+    subscribe_homeassistant_state(&LightService::supported_color_modes_changed, newEntityId.c_str(), "color_mode");
     subscribe_homeassistant_state(&LightService::supported_color_modes_changed, newEntityId.c_str(),
                                   "supported_color_modes");
   }
@@ -41,7 +43,7 @@ class LightService : public CustomAPIDevice, public Component {
   int localColorTemp = -1;
   bool isBrightnessInSync = false;
   bool isColorTempInSync = false;
-  ColorModeType colorMode = unknown_type;
+  std::vector<ColorModeType> supportedColorModes = {};
   bool onState;
   int minMireds = 0;
   int maxMireds = 0;
@@ -113,9 +115,19 @@ class LightService : public CustomAPIDevice, public Component {
 
   void toggleLight() { call_homeassistant_service("light.toggle", {{"entity_id", entityId.c_str()}}); }
 
-  bool supportsBrightness() { return colorMode != onoff_type && colorMode != unknown_type; }
-
-  bool supportsColorTemperature() { return colorMode == color_temp_type || colorMode == rgbww_type; }
+  bool supportsBrightness() {
+    // all modes except onoff support brightness
+    return std::find(supportedColorModes.begin(), supportedColorModes.end(), onoff_type) == supportedColorModes.end() &&
+           !supportedColorModes.empty();
+  }
+  bool supportsColorTemperature() {
+    // TODO: I think the color_temp for rgbww cant be controlled if in white mode -> investigate and fix
+    return (std::find(supportedColorModes.begin(), supportedColorModes.end(), color_temp_type) !=
+                supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbww_type) !=
+                supportedColorModes.end()) &&
+           !supportedColorModes.empty();
+  }
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
@@ -190,53 +202,34 @@ class LightService : public CustomAPIDevice, public Component {
     }
     display.updateDisplay(false);
   }
-  void color_mode_changed(std::string newOnState) {
-    ESP_LOGD("color_mode_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
-    if (strcmp(newOnState.c_str(), "onoff") == 0) {
-      colorMode = onoff_type;
-    } else if (strcmp(newOnState.c_str(), "brightness") == 0) {
-      colorMode = brightness_type;
-    } else if (strcmp(newOnState.c_str(), "color_temp") == 0) {
-      colorMode = color_temp_type;
-    } else if (strcmp(newOnState.c_str(), "hs") == 0) {
-      colorMode = hs_type;
-    } else if (strcmp(newOnState.c_str(), "rgb") == 0) {
-      colorMode = rgb_type;
-    } else if (strcmp(newOnState.c_str(), "rgbw") == 0) {
-      colorMode = rgbw_type;
-    } else if (strcmp(newOnState.c_str(), "rgbww") == 0) {
-      colorMode = rgbww_type;
-    } else if (strcmp(newOnState.c_str(), "white") == 0) {
-      colorMode = white_type;
-    } else if (strcmp(newOnState.c_str(), "xy") == 0) {
-      colorMode = xy_type;
-    } else {
-      colorMode = unknown_type;
-    }
-    display.updateDisplay(false);
-  }
+
   void supported_color_modes_changed(std::string newOnState) {
+    // add all modes for the light to supportedColorModes and then check
+    // the vector if the light supports a particular mode when needed
     ESP_LOGD("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
-    if (newOnState.find("onoff") != std::string::npos) {
-      colorMode = onoff_type;
-    } else if (newOnState.find("brightness") != std::string::npos) {
-      colorMode = brightness_type;
-    } else if (newOnState.find("color_temp") != std::string::npos) {
-      colorMode = color_temp_type;
-    } else if (newOnState.find("hs") != std::string::npos) {
-      colorMode = hs_type;
-    } else if (newOnState.find("rgb") != std::string::npos) {
-      colorMode = rgb_type;
-    } else if (newOnState.find("rgbw") != std::string::npos) {
-      colorMode = rgbw_type;
-    } else if (newOnState.find("rgbww") != std::string::npos) {
-      colorMode = rgbww_type;
-    } else if (newOnState.find("white") != std::string::npos) {
-      colorMode = white_type;
-    } else if (newOnState.find("xy") != std::string::npos) {
-      colorMode = xy_type;
-    } else {
-      colorMode = unknown_type;
+    auto modes = StringUtils::split(newOnState, ",");
+    for (auto cmode : modes) {
+      ESP_LOGD("supported_color_modes_changed", "mode: %s (%s)", newOnState.c_str(), friendlyName.c_str());
+      if (cmode.find("onoff") != std::string::npos) {
+        // ignore onoff_type
+        // supportedColorModes.push_back(onoff_type);
+      } else if (newOnState.find("brightness") != std::string::npos) {
+        supportedColorModes.push_back(brightness_type);
+      } else if (cmode.find("color_temp") != std::string::npos) {
+        supportedColorModes.push_back(color_temp_type);
+      } else if (cmode.find("hs") != std::string::npos) {
+        supportedColorModes.push_back(hs_type);
+      } else if (cmode.find("rgb") != std::string::npos) {
+        supportedColorModes.push_back(rgb_type);
+      } else if (cmode.find("rgbw") != std::string::npos) {
+        supportedColorModes.push_back(rgbw_type);
+      } else if (cmode.find("rgbww") != std::string::npos) {
+        supportedColorModes.push_back(rgbww_type);
+      } else if (cmode.find("white") != std::string::npos) {
+        supportedColorModes.push_back(white_type);
+      } else if (cmode.find("xy") != std::string::npos) {
+        supportedColorModes.push_back(xy_type);
+      }
     }
     display.updateDisplay(false);
   }
