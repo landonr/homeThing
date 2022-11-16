@@ -10,8 +10,8 @@
 #define MAX_BRIGHTNESS 255.0f
 
 enum ColorModeType {
-  unknown_type,
-  onoff_type,
+  // unknown_type, <- we only need supported modes
+  // onoff_type, <- we only need supported modes
   brightness_type,
   color_temp_type,
   hs_type,
