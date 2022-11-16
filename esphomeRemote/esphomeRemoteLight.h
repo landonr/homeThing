@@ -116,9 +116,8 @@ class LightService : public CustomAPIDevice, public Component {
   void toggleLight() { call_homeassistant_service("light.toggle", {{"entity_id", entityId.c_str()}}); }
 
   bool supportsBrightness() {
-    // all modes except onoff support brightness
-    return std::find(supportedColorModes.begin(), supportedColorModes.end(), onoff_type) == supportedColorModes.end() &&
-           !supportedColorModes.empty();
+    // as long as there is one mode inside of supportedColorModes brightness is supported
+    return !supportedColorModes.empty();
   }
   bool supportsColorTemperature() {
     // TODO: I think the color_temp for rgbww cant be controlled if in white mode -> investigate and fix
