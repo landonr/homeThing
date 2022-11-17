@@ -96,6 +96,7 @@ font:
       '󰗃', # mdi-youtube
       '󰓇', # mdi-spotify
       '󰔂', # mdi-television
+      '󰋜', # mdi-home
     ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_small
@@ -114,6 +115,7 @@ font:
       '󰗃', # mdi-youtube
       '󰓇', # mdi-spotify
       '󰔂', # mdi-television
+      '󰋜', # mdi-home
     ]
     
 globals:
@@ -319,6 +321,17 @@ custom_component:
      lightGroup->setup(lights);
      return {lightGroup};
    id: light_group_component
+
+ ## Home assistant switches. Set with a friendly name
+ - lambda: |-
+     std::vector<FriendlyNameEntity> switches {
+       FriendlyNameEntity("switch.office_fan", "Office Fan"),
+       FriendlyNameEntity("switch.office_powerstrip", "Office Power Strip")
+     };
+     switchGroup = new SwitchGroupComponent(displayUpdate);
+     switchGroup->setup(switches);
+     return {switchGroup};
+   id: switch_group_component
 
  ## Home assistant sensors. Set with a friendly name
  - lambda: |-
