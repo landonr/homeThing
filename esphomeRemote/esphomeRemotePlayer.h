@@ -150,10 +150,6 @@ class BasePlayerComponent : public CustomAPIDevice, public Component {
     } else if (strcmp(state.c_str(), "standby") == 0) {
       playerState = PowerOffRemotePlayerState;
       clearMedia();
-    } else if (strcmp(state.c_str(), "off") == 0) {
-      playerState = PowerOffRemotePlayerState;
-      mediaTitle = "";
-      mediaArtist = "";     
     } else if (strcmp(state.c_str(), "home") == 0 || strcmp(state.c_str(), "Roku") == 0) {
       playerState = StoppedRemotePlayerState;
       clearMedia();
