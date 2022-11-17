@@ -58,6 +58,10 @@ class LightService : public CustomAPIDevice, public Component {
       }
       isColorTempInSync = false;
     }
+    if (localColorTemp <= minMireds) {
+      localColorTemp = minMireds;
+      return;
+    }
     localColorTemp -= id(dec_color_temperature_step);
     const std::map<std::string, std::string> data = {{"entity_id", entityId.c_str()},
                                                      {"color_temp", to_string(localColorTemp)}};
@@ -70,6 +74,10 @@ class LightService : public CustomAPIDevice, public Component {
         return;
       }
       isColorTempInSync = false;
+    }
+    if (localColorTemp >= maxMireds) {
+      localColorTemp = maxMireds;
+      return;
     }
     localColorTemp += id(inc_color_temperature_step);
     const std::map<std::string, std::string> data = {
@@ -86,6 +94,10 @@ class LightService : public CustomAPIDevice, public Component {
       }
       isBrightnessInSync = false;
     }
+    if (localBrightness <= 0) {
+      localBrightness = 0;
+      return;
+    }
     localBrightness -= id(dec_brightness_step);
     const std::map<std::string, std::string> data = {
         {"entity_id", entityId.c_str()},
@@ -100,6 +112,10 @@ class LightService : public CustomAPIDevice, public Component {
         return;
       }
       isBrightnessInSync = false;
+    }
+    if (localBrightness >= MAX_BRIGHTNESS) {
+      localBrightness = MAX_BRIGHTNESS;
+      return;
     }
     localBrightness += id(inc_brightness_step);
     const std::map<std::string, std::string> data = {
