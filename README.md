@@ -142,7 +142,7 @@ Supports many different hardware configurations:
 - playlist queue count
 - sonos night sound / speech boost
 - repeat/all/single/off
-- light dimming
+- adjust light color
 - weather screen
 - home / room screen
 	- temp display

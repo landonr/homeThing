@@ -12,8 +12,11 @@
 	- change source
 - Smart home stuff
 	- runs scenes and scripts
-	- toggle lights on and off 5
 	- view Home Assistant Sensors
+    - Lights:
+        - toggle lights on and off 
+        - adjust light brightness (if light supports it)
+        - adjust color temperature (if light supports it)
 - more
 	- display sleeps after 16s, powers off after 2h (configure through substitutions)
 
