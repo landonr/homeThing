@@ -465,6 +465,9 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
     id(my_display)
         .filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2,
                           id(color_accent_primary));
+    id(my_display)
+        .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
+                          sliderHeight, id(my_gray_dark_2));
     id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(my_white));
 
     // white dot indicating current value
