@@ -591,6 +591,7 @@ void topMenu() {
 
 void idleMenu(bool force) {
   if (!charging || force) {
+    lightGroup->lightDetailSelected = false;
     menuIndex = 0;
     if (speakerGroup != NULL)
       speakerGroup->newSpeakerGroupParent = NULL;
@@ -652,8 +653,6 @@ void idleTick() {
     return;
   } else if (idleTime > id(sleep_after)) {
     if (!charging) {
-      // deselect light detail to not have a slider active when coming back from sleep
-      lightGroup->lightDetailSelected = false;
       ESP_LOGI("idle", "night night");
       id(sleep_toggle).turn_on();
       return;
