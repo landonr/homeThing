@@ -328,6 +328,7 @@ void buttonPressScreenRight() {
     case switchesMenu:
     case sensorsMenu:
     case bootMenu:
+    case switchesMenu:
       break;
   }
 }
