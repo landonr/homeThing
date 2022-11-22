@@ -1119,7 +1119,12 @@ bool selectMenu() {
       optionMenu = playingNewSourceMenu;
       displayUpdate.updateDisplay(true);
       break;
-    } break;
+    }
+    case groupMenu: {
+      auto playerTitleState = std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
+      speakerGroup->selectGroup(*playerTitleState);
+      break;
+    }
     case lightsMenu:
       lightGroup->currentSelectedLight = menuIndexForSource;  // save the selected light to be able to control later
       // switch light directly if it doesn't support brightness
