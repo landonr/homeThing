@@ -167,15 +167,18 @@ class LightService : public CustomAPIDevice, public Component {
 
     s = "Temperature";
     if (supportsColorTemperature()) {
-      float slider_factor = 1;
+      int miredTransformedHigh = maxMireds - minMireds;
+      float factor = static_cast<float>(width_available) / static_cast<float>(miredTransformedHigh);
+      int localColorTempTransformed = localColorTemp - minMireds;
+
       if (localColorTemp > 0) {
         s += " - " + to_string(1000000 / localColorTemp) + " K ";
-        slider_factor = width_available / (maxMireds - minMireds);
       } else {
       }
+      int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
+
       out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId,
-                                                      onState ? OnMenuTitleState : OffMenuTitleState,
-                                                      (int) (localColorTemp - minMireds * slider_factor)));
+                                                      onState ? OnMenuTitleState : OffMenuTitleState, sliderValue));
     }
     return out;
   }
