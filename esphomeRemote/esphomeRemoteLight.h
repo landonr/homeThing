@@ -161,7 +161,7 @@ class LightService : public CustomAPIDevice, public Component {
       } else {
       }
       out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId,
-                                                      onState ? OnMenuTitleState : OffMenuTitleState,
+                                                      NoMenuTitleState,
                                                       (int) (localBrightness * slider_factor)));
     }
 
@@ -178,7 +178,7 @@ class LightService : public CustomAPIDevice, public Component {
       int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
 
       out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId,
-                                                      onState ? OnMenuTitleState : OffMenuTitleState, sliderValue));
+                                                      NoMenuTitleState, sliderValue));
     }
     return out;
   }
