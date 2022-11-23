@@ -485,6 +485,26 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
   }
 }
 
+void drawTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i, int menuState, int yPos) {
+  switch (menuTitles[i]->titleState) {
+    case NoMenuTitleState:
+      break;
+    case OffMenuTitleState:
+    case OnMenuTitleState:
+      drawSwitch(menuTitles[i]->titleState == OnMenuTitleState, yPos);
+      break;
+    case ArrowMenuTitleState:
+      if (menuState == i) {
+        drawArrow(yPos, menuTitles.size());
+      }
+      break;
+    case GroupedMenuTitleState:
+      bool extend = i < menuTitles.size() - 1 && menuTitles[i + 1]->titleState == GroupedMenuTitleState;
+      drawGroupedBar(yPos, extend);
+      break;
+  }
+}
+
 void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
   activeMenuTitleCount = menuTitles.size();
   if (menuTitles.size() == 0) {
@@ -500,28 +520,11 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
       break;
     }
     switch (menuTitles[i]->titleType) {
-      case BaseMenuTitleType: {
+      case BaseMenuTitleType:
         drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
-        switch (menuTitles[i]->titleState) {
-          case NoMenuTitleState:
-            break;
-          case OffMenuTitleState:
-          case OnMenuTitleState:
-            drawSwitch(menuTitles[i]->titleState == OnMenuTitleState, yPos);
-            break;
-          case ArrowMenuTitleState:
-            if (menuState == i) {
-              drawArrow(yPos, menuTitles.size());
-            }
-            break;
-          case GroupedMenuTitleState:
-            bool extend = i < menuTitles.size() - 1 && menuTitles[i + 1]->titleState == GroupedMenuTitleState;
-            drawGroupedBar(yPos, extend);
-            break;
-        }
+        drawTitleIcon(menuTitles, i, menuState, yPos);
         yPos += id(medium_font_size) + id(margin_size);
         break;
-      }
       case LightMenuTitleType:
         // TODO: this breaks the scrolling if there are more items then can fit on the screen
         // sliderExtra doesn't solve it. Figure out whats missing to get it to work
@@ -531,6 +534,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
           auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
           drawLightSlider(id(slider_margin_size), yPos, menuState == i, menuState == i && lightDetailSelected,
                           item->slider_width, mt->friendlyName, item->title_extra);
+          drawTitleIcon(menuTitles, i, menuState, yPos);
           sliderExtra += 2;
 
           yPos += (id(medium_font_size) + id(margin_size)) * 2;
@@ -542,6 +546,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
           drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
           int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
+          drawTitleIcon(menuTitles, i, menuState, yPos);
           yPos += id(medium_font_size) + id(margin_size);
         }
         break;
