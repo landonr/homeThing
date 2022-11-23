@@ -160,8 +160,7 @@ class LightService : public CustomAPIDevice, public Component {
         slider_factor = width_available / MAX_BRIGHTNESS;
       } else {
       }
-      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId,
-                                                      NoMenuTitleState,
+      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleState,
                                                       (int) (localBrightness * slider_factor)));
     }
 
@@ -177,8 +176,8 @@ class LightService : public CustomAPIDevice, public Component {
       }
       int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
 
-      out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId,
-                                                      NoMenuTitleState, sliderValue));
+      out.push_back(
+          std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleState, sliderValue));
     }
     return out;
   }
