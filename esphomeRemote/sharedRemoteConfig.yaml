@@ -119,6 +119,12 @@ font:
     ]
     
 globals:
+## Width in pixels
+  - id: display_size_x
+    type: int
+    restore_value: no
+    initial_value: ${display_size_x}
+
 ## Size of the large font above
   - id: large_font_size
     type: int
@@ -154,6 +160,12 @@ globals:
     type: int
     restore_value: no
     initial_value: ${margin_size}
+    
+## Global slider_margin size
+  - id: slider_margin_size
+    type: int
+    restore_value: no
+    initial_value: ${slider_margin_size}
     
 ## Scrollbar total width
   - id: scroll_bar_width
@@ -245,11 +257,43 @@ globals:
     restore_value: no
     initial_value: ${sync_active_player}
 
+## brightness decrease step
+  - id: dec_brightness_step
+    type: int
+    restore_value: no
+    initial_value: ${dec_brightness_step}
+
+## brightness increase step
+  - id: inc_brightness_step
+    type: int
+    restore_value: no
+    initial_value: ${inc_brightness_step}
+
+## color temperature decrease step
+  - id: dec_color_temperature_step
+    type: int
+    restore_value: no
+    initial_value: ${dec_color_temperature_step}
+
+## color temperature increase step
+  - id: inc_color_temperature_step
+    type: int
+    restore_value: no
+    initial_value: ${inc_color_temperature_step}
+
 ## Black background
   - id: dark_mode
     type: bool
     restore_value: no
     initial_value: ${dark_mode}
+
+## true: slider will always be in sync with homeassistant (can be less smooth)
+## false: slider will show local brightness. Local brightness won't show changes
+## made outside of the remote. (should always give a smooth experience)
+  - id: keep_states_in_sync
+    type: bool
+    restore_value: no
+    initial_value: ${keep_states_in_sync}
       
 interval:
   - interval: 1s

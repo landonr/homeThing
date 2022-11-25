@@ -8,7 +8,7 @@ enum MenuTitleState {
   GroupedMenuTitleState
 };
 
-enum MenuTitleType { BaseMenuTitleType, PlayerMenuTitleType };
+enum MenuTitleType { BaseMenuTitleType, PlayerMenuTitleType, LightMenuTitleType };
 
 class MenuTitleBase {
  public:
@@ -148,4 +148,17 @@ class MenuTitleSource : public MenuTitleBase {
     }
     return "";
   }
+};
+
+class MenuTitleSlider : public MenuTitleBase {
+ public:
+  bool slider_{false};
+  int slider_width;
+  bool current_state;
+  std::string title_extra;
+  MenuTitleSlider(std::string newTitle, std::string newTitleExtra, std::string newEntityId,
+                  MenuTitleState newTitleState, int sliderWidth)
+      : MenuTitleBase{newTitle, newEntityId, newTitleState, LightMenuTitleType},
+        slider_width(sliderWidth),
+        title_extra(newTitleExtra) {}
 };

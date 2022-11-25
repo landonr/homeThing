@@ -14,6 +14,14 @@ void buttonPressSelect() {
     return;
   }
   switch (activeMenuState) {
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected) {
+        // deselect ligh if selected and stay in lightsDetailMenu
+        lightGroup->lightDetailSelected = false;
+        displayUpdate.updateDisplay(true);
+        return;
+      }
+      break;
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
@@ -46,6 +54,14 @@ void buttonPressNext() {
       optionMenu = volumeOptionMenu;
       debounceUpdateDisplay();
       return;
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected && menuIndex == 1) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
+        return;
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
+        return;
+      }
     default:
       break;
   }
@@ -65,6 +81,14 @@ void buttonPressPrevious() {
       optionMenu = volumeOptionMenu;
       debounceUpdateDisplay();
       return;
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected && menuIndex == 1) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
+        return;
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
+        lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
+        return;
+      }
     default:
       break;
   }
@@ -108,6 +132,19 @@ void buttonPressUp() {
       }
       displayUpdate.updateDisplay(true);
       return;
+    case lightsDetailMenu:
+      if (lightGroup->lightDetailSelected) {
+        // deselect ligh if selected and stay in lightsDetailMenu
+        lightGroup->lightDetailSelected = false;
+        displayUpdate.updateDisplay(true);
+        return;
+      } else {
+        // if no light is selected go back to lightsMenu
+        activeMenuState = lightsMenu;
+        displayUpdate.updateDisplay(true);
+        return;
+      }
+      break;
     default:
       break;
   }
@@ -118,6 +155,7 @@ void buttonPressUp() {
     return;
   }
   optionMenu = noOptionMenu;
+  // currentSelectedLight = -1;
   topMenu();
   displayUpdate.updateDisplay(true);
 }
@@ -286,6 +324,7 @@ void buttonPressScreenRight() {
     case mediaPlayersMenu:
     case scenesMenu:
     case lightsMenu:
+    case lightsDetailMenu:
     case sensorsMenu:
     case bootMenu:
     case switchesMenu:

@@ -14,6 +14,7 @@ esphome:
     - esphomeRemote/esphomeRemote.h
     - esphomeRemote/esphomeRemoteNowPlayingMenu.h
     - esphomeRemote/esphomeRemote2Button.h
+    - esphomeRemote/esphomeRemoteCommon.h
 
 esp32:
   board: m5stick-c
