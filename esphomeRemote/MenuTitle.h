@@ -2,16 +2,9 @@
 
 enum MenuTitleLeftIcon { NoMenuTitleLeftIcon, OffMenuTitleLeftIcon, OnMenuTitleLeftIcon, GroupedMenuTitleLeftIcon };
 
-enum MenuTitleRightIcon {
-  NoMenuTitleRightIcon,
-  ArrowMenuTitleRightIcon
-};
+enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
-enum MenuTitleType {
-  BaseMenuTitleType,
-  PlayerMenuTitleType,
-  LightMenuTitleType
-};
+enum MenuTitleType { BaseMenuTitleType, PlayerMenuTitleType, LightMenuTitleType };
 
 class MenuTitleBase {
  public:
@@ -165,8 +158,7 @@ class MenuTitleSlider : public MenuTitleBase {
   bool current_state;
   std::string title_extra;
   MenuTitleSlider(std::string newTitle, std::string newTitleExtra, std::string newEntityId,
-                  MenuTitleLeftIcon newLeftIconState,
-                  MenuTitleRightIcon newRightIconState, int sliderWidth)
+                  MenuTitleLeftIcon newLeftIconState, MenuTitleRightIcon newRightIconState, int sliderWidth)
       : MenuTitleBase{newTitle, newEntityId, newLeftIconState, newRightIconState, LightMenuTitleType},
         slider_width(sliderWidth),
         title_extra(newTitleExtra) {}

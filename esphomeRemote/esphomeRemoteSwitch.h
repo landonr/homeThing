@@ -44,7 +44,8 @@ class SwitchGroupComponent : public CustomAPIDevice, public Component {
     for (auto &switchObject : switches) {
       ESP_LOGI("Switch", "state %d", switchObject->onState);
       MenuTitleLeftIcon state = switchObject->onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-      out.push_back(std::make_shared<MenuTitleBase>(switchObject->friendlyName, switchObject->entityId, state, NoMenuTitleRightIcon));
+      out.push_back(std::make_shared<MenuTitleBase>(switchObject->friendlyName, switchObject->entityId, state,
+                                                    NoMenuTitleRightIcon));
     }
     return out;
   }

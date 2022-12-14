@@ -676,11 +676,11 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       } else {
         if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(), newSpeakerGroupParent->entityId) !=
             speaker->groupMembers.end()) {
-          out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, OnMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                            speaker->mediaSource, speaker->playerState));
+          out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, OnMenuTitleLeftIcon,
+                                            NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
         } else {
-          out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, OffMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                            speaker->mediaSource, speaker->playerState));
+          out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, OffMenuTitleLeftIcon,
+                                            NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
         }
       }
     }
@@ -702,19 +702,19 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
           // speaker isn't the group parent
           continue;
         }
-        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                          speaker->mediaSource, speaker->playerState));
+        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon,
+                                          NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
         for (auto &groupedSpeaker : speaker->groupMembers) {
           if (groupedSpeaker != speaker->entityId) {
             groupedMembers.push_back(groupedSpeaker);
             std::string groupedSpeakerName = friendlyNameForEntityId(groupedSpeaker);
-            out.push_back(new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker, GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                              speaker->mediaSource, speaker->playerState));
+            out.push_back(new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker, GroupedMenuTitleLeftIcon,
+                                              NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
           }
         }
       } else {
-        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                          speaker->mediaSource, speaker->playerState));
+        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon,
+                                          NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
       }
     }
     return out;
@@ -724,16 +724,16 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
     std::vector<MenuTitlePlayer *> out;
     for (auto &speaker : speakers) {
       if (speaker->mediaSource != TVRemotePlayerMediaSource) {
-        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                          speaker->mediaSource, speaker->playerState));
+        out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon,
+                                          NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
       }
     }
     for (auto &tv : tvs) {
-      out.push_back(
-          new MenuTitlePlayer(tv->friendlyName, tv->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon, tv->mediaSource, tv->playerState));
+      out.push_back(new MenuTitlePlayer(tv->friendlyName, tv->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
+                                        tv->mediaSource, tv->playerState));
       if (tv->speaker != NULL && tv->speaker->mediaSource == TVRemotePlayerMediaSource) {
-        out.push_back(new MenuTitlePlayer(tv->speaker->friendlyName, tv->speaker->entityId, GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                          tv->speaker->mediaSource, tv->speaker->playerState));
+        out.push_back(new MenuTitlePlayer(tv->speaker->friendlyName, tv->speaker->entityId, GroupedMenuTitleLeftIcon,
+                                          NoMenuTitleRightIcon, tv->speaker->mediaSource, tv->speaker->playerState));
       }
     }
     return out;
@@ -749,15 +749,15 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         }
       }
     }
-    return MenuTitlePlayer(friendlyName, activePlayer->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon, activePlayer->mediaSource,
-                           activePlayer->playerState);
+    return MenuTitlePlayer(friendlyName, activePlayer->entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
+                           activePlayer->mediaSource, activePlayer->playerState);
   }
 
   void selectGroup(MenuTitlePlayer selectedMenuTitle) {
     if (newSpeakerGroupParent == NULL) {
-      MenuTitlePlayer *selectedMenuTitleCopy =
-          new MenuTitlePlayer(selectedMenuTitle.friendlyName, selectedMenuTitle.entityId, selectedMenuTitle.leftIconState, selectedMenuTitle.rightIconState,
-                              selectedMenuTitle.mediaSource, selectedMenuTitle.playerState);
+      MenuTitlePlayer *selectedMenuTitleCopy = new MenuTitlePlayer(
+          selectedMenuTitle.friendlyName, selectedMenuTitle.entityId, selectedMenuTitle.leftIconState,
+          selectedMenuTitle.rightIconState, selectedMenuTitle.mediaSource, selectedMenuTitle.playerState);
       newSpeakerGroupParent = selectedMenuTitleCopy;
       return;
     } else if (menuIndex == 0) {
@@ -882,8 +882,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         SonosSpeakerComponent *activeSpeaker = static_cast<SonosSpeakerComponent *>(activePlayer);
         if (activeSpeaker != NULL) {
           if (activeSpeaker->tv != NULL && activeSpeaker->tv->friendlyName.size() > 0) {
-            auto tvSource = std::make_shared<MenuTitleSource>(activeSpeaker->tv->friendlyName, "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                                              SourceRemotePlayerSourceType);
+            auto tvSource = std::make_shared<MenuTitleSource>(activeSpeaker->tv->friendlyName, "", NoMenuTitleLeftIcon,
+                                                              NoMenuTitleRightIcon, SourceRemotePlayerSourceType);
             out.push_back(tvSource);
           }
           out.insert(out.end(), spotifyPlaylists.begin(), spotifyPlaylists.end());

@@ -46,7 +46,8 @@ SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
-std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+std::shared_ptr<MenuTitleBase> activeMenuTitle =
+    std::make_shared<MenuTitleBase>("", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
 double marqueePosition = 0;
 bool marqueeText = false;
 
@@ -513,7 +514,7 @@ void drawTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i
         drawArrow(yPos, menuTitles.size());
       }
       break;
-  }  
+  }
 }
 
 void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {

@@ -146,8 +146,8 @@ class LightComponent : public CustomAPIDevice, public Component {
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    out.push_back(
-        std::make_shared<MenuTitleBase>(friendlyName, entityId, onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon, NoMenuTitleRightIcon));
+    out.push_back(std::make_shared<MenuTitleBase>(
+        friendlyName, entityId, onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon, NoMenuTitleRightIcon));
 
     std::string s = "Brightness";
     int width_available = id(display_size_x) - 2 * id(slider_margin_size);
@@ -160,8 +160,8 @@ class LightComponent : public CustomAPIDevice, public Component {
         slider_factor = width_available / MAX_BRIGHTNESS;
       } else {
       }
-      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                                                      (int) (localBrightness * slider_factor)));
+      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleLeftIcon,
+                                                      NoMenuTitleRightIcon, (int) (localBrightness * slider_factor)));
     }
 
     s = "Temperature";
@@ -176,8 +176,8 @@ class LightComponent : public CustomAPIDevice, public Component {
       }
       int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
 
-      out.push_back(
-          std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon, sliderValue));
+      out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleLeftIcon,
+                                                      NoMenuTitleRightIcon, sliderValue));
     }
     return out;
   }
