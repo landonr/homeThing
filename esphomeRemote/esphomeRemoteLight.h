@@ -144,7 +144,8 @@ class LightComponent : public CustomAPIDevice, public Component {
            !supportedColorModes.empty();
   }
 
-  std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit, int displayUnitMin, int displayUnitMax) {
+  std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit,
+                                              int displayUnitMin, int displayUnitMax) {
     std::string sliderTitle = title;
     float oldRange = max - min;
     float valueMinusMin = value - min;
@@ -167,32 +168,12 @@ class LightComponent : public CustomAPIDevice, public Component {
     int widthAvailable = id(display_size_x) - 2 * id(slider_margin_size);
     if (supportsBrightness()) {
       out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness", "%%", 0, 100));
-      // float sliderFactor = 1;
-      // if (localBrightness > 0) {
-      //   float percent = ((float) localBrightness / 255.0);
-      //   int percentInt = (int) (percent * 100);
-      //   s += " - " + to_string(percentInt) + " %%";
-      //   sliderFactor = widthAvailable / MAX_BRIGHTNESS;
-      // }
-      // out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleLeftIcon,
-      //                                                 NoMenuTitleRightIcon, (int) (localBrightness *
-      //                                                 sliderFactor)));
     }
 
     s = "Temperature";
     if (supportsColorTemperature()) {
-      out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds, 1000000 / maxMireds));
-      // int miredTransformedHigh = maxMireds - minMireds;
-      // float factor = static_cast<float>(widthAvailable) / static_cast<float>(miredTransformedHigh);
-      // int localColorTempTransformed = localColorTemp - minMireds;
-
-      // if (localColorTemp > 0) {
-      //   s += " - " + to_string(1000000 / localColorTemp) + " K ";
-      // }
-      // int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
-
-      // out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleLeftIcon,
-      //                                                 NoMenuTitleRightIcon, sliderValue));
+      out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds,
+                               1000000 / maxMireds));
     }
     return out;
   }
