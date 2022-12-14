@@ -1123,6 +1123,28 @@ bool selectRootMenu() {
   return true;
 }
 
+bool selectMenuHold() {
+  int menuIndexForSource = menuIndex;
+  switch (activeMenuState) {
+    case lightsMenu: {
+      auto selectedLight = lightGroup->lights[menuIndexForSource];
+      if (selectedLight == NULL) {
+        break;
+      }
+      if (selectedLight->supportsBrightness()) {
+        // save light and go to light detail
+        lightGroup->selectLightAtIndex(menuIndexForSource);
+        menuIndex = 0;
+        activeMenuState = lightsDetailMenu;
+      }
+      return true;
+    }
+    default:
+      break;
+  }
+  return false;
+}
+
 bool selectMenu() {
   int menuIndexForSource = menuIndex;
   switch (activeMenuState) {
@@ -1149,17 +1171,8 @@ bool selectMenu() {
       if (selectedLight == NULL) {
         break;
       }
-      if (!selectedLight->supportsBrightness()) {
-        // directly toggle light
-        selectedLight->toggleLight();
-        return true;
-      } else {
-        // save light and go to light detail
-        lightGroup->selectLightAtIndex(menuIndexForSource);
-        menuIndex = 0;
-        activeMenuState = lightsDetailMenu;
-      }
-      break;
+      selectedLight->toggleLight();
+      return true;
     }
     case lightsDetailMenu:
       // First item is the switch and doesn't need selection

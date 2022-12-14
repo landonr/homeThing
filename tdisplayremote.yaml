@@ -240,10 +240,18 @@ binary_sensor:
         input: true
         pullup: true
     id: sw1
-    on_press:
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
       then:
       - lambda: |-
           buttonPressSelect();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          buttonPressSelectHold();
 
 switch:
   - platform: template

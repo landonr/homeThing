@@ -46,6 +46,15 @@ void buttonPressSelect() {
   }
 }
 
+void buttonPressSelectHold() {
+  if (buttonPressWakeUpDisplay()) {
+    return;
+  }
+  if (selectMenuHold()) {
+    displayUpdate.updateDisplay(true);
+  }
+}
+
 void buttonPressNext() {
   resetMarquee();
   switch (activeMenuState) {

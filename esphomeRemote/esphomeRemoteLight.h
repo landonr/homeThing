@@ -146,9 +146,6 @@ class LightComponent : public CustomAPIDevice, public Component {
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    out.push_back(std::make_shared<MenuTitleBase>(
-        friendlyName, entityId, onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon, NoMenuTitleRightIcon));
-
     std::string s = "Brightness";
     int width_available = id(display_size_x) - 2 * id(slider_margin_size);
     if (supportsBrightness()) {
