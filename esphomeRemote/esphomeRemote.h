@@ -1175,16 +1175,7 @@ bool selectMenu() {
       return true;
     }
     case lightsDetailMenu:
-      // First item is the switch and doesn't need selection
-      // sliders need selection
-      if (menuIndexForSource == 0) {
-        auto activeLight = lightGroup->getActiveLight();
-        if (activeLight != NULL) {
-          activeLight->toggleLight();
-        }
-      } else {
-        lightGroup->lightDetailSelected = true;
-      }
+      lightGroup->lightDetailSelected = true;
     case mediaPlayersMenu:
       selectMediaPlayers();
       break;

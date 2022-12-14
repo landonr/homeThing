@@ -64,10 +64,10 @@ void buttonPressNext() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
+      if (lightGroup->lightDetailSelected && menuIndex == 0 && lightGroup->getActiveLight() != NULL) {
         lightGroup->getActiveLight()->incBrightness();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2 && lightGroup->getActiveLight() != NULL) {
+      } else if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
         lightGroup->getActiveLight()->incTemperature();
         return;
       }
@@ -91,10 +91,10 @@ void buttonPressPrevious() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
+      if (lightGroup->lightDetailSelected && menuIndex == 0 && lightGroup->getActiveLight() != NULL) {
         lightGroup->getActiveLight()->decBrightness();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2 && lightGroup->getActiveLight() != NULL) {
+      } else if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
         lightGroup->getActiveLight()->decTemperature();
         return;
       }

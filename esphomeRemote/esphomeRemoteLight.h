@@ -144,37 +144,55 @@ class LightComponent : public CustomAPIDevice, public Component {
            !supportedColorModes.empty();
   }
 
+  std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit, int displayUnitMin, int displayUnitMax) {
+    std::string sliderTitle = title;
+    float oldRange = max - min;
+    float valueMinusMin = value - min;
+    if (value > 0) {
+      float displayNewRange = displayUnitMax - displayUnitMin;
+      int displayValue = (float) ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin;
+      sliderTitle += " - " + to_string(displayValue) + " " + unit;
+    }
+
+    float newMin = id(slider_margin_size);
+    float newRange = id(display_size_x) - 4 * newMin;
+    int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
+    return std::make_shared<MenuTitleSlider>(title.c_str(), sliderTitle.c_str(), entityId, NoMenuTitleLeftIcon,
+                                             NoMenuTitleRightIcon, sliderValue);
+  }
+
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     std::string s = "Brightness";
-    int width_available = id(display_size_x) - 2 * id(slider_margin_size);
+    int widthAvailable = id(display_size_x) - 2 * id(slider_margin_size);
     if (supportsBrightness()) {
-      float slider_factor = 1;
-      if (localBrightness > 0) {
-        float percent = ((float) localBrightness / 255.0);
-        int percentInt = (int) (percent * 100);
-        s += " - " + to_string(percentInt) + " %%";
-        slider_factor = width_available / MAX_BRIGHTNESS;
-      } else {
-      }
-      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleLeftIcon,
-                                                      NoMenuTitleRightIcon, (int) (localBrightness * slider_factor)));
+      out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness", "%%", 0, 100));
+      // float sliderFactor = 1;
+      // if (localBrightness > 0) {
+      //   float percent = ((float) localBrightness / 255.0);
+      //   int percentInt = (int) (percent * 100);
+      //   s += " - " + to_string(percentInt) + " %%";
+      //   sliderFactor = widthAvailable / MAX_BRIGHTNESS;
+      // }
+      // out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleLeftIcon,
+      //                                                 NoMenuTitleRightIcon, (int) (localBrightness *
+      //                                                 sliderFactor)));
     }
 
     s = "Temperature";
     if (supportsColorTemperature()) {
-      int miredTransformedHigh = maxMireds - minMireds;
-      float factor = static_cast<float>(width_available) / static_cast<float>(miredTransformedHigh);
-      int localColorTempTransformed = localColorTemp - minMireds;
+      out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds, 1000000 / maxMireds));
+      // int miredTransformedHigh = maxMireds - minMireds;
+      // float factor = static_cast<float>(widthAvailable) / static_cast<float>(miredTransformedHigh);
+      // int localColorTempTransformed = localColorTemp - minMireds;
 
-      if (localColorTemp > 0) {
-        s += " - " + to_string(1000000 / localColorTemp) + " K ";
-      } else {
-      }
-      int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
+      // if (localColorTemp > 0) {
+      //   s += " - " + to_string(1000000 / localColorTemp) + " K ";
+      // }
+      // int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
 
-      out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleLeftIcon,
-                                                      NoMenuTitleRightIcon, sliderValue));
+      // out.push_back(std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleLeftIcon,
+      //                                                 NoMenuTitleRightIcon, sliderValue));
     }
     return out;
   }
@@ -209,7 +227,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     display.updateDisplay(false);
   }
   void color_temp_changed(std::string newOnState) {
-    ESP_LOGD("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
     if (id(keep_states_in_sync) || localColorTemp == -1) {
       localColorTemp = atoi(newOnState.c_str());
       isColorTempInSync = true;
