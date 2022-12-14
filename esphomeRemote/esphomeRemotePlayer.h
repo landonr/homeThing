@@ -703,18 +703,18 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
           continue;
         }
         out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon,
-                                          NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
+                                          ArrowMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
         for (auto &groupedSpeaker : speaker->groupMembers) {
           if (groupedSpeaker != speaker->entityId) {
             groupedMembers.push_back(groupedSpeaker);
             std::string groupedSpeakerName = friendlyNameForEntityId(groupedSpeaker);
             out.push_back(new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker, GroupedMenuTitleLeftIcon,
-                                              NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
+                                              ArrowMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
           }
         }
       } else {
         out.push_back(new MenuTitlePlayer(speaker->friendlyName, speaker->entityId, NoMenuTitleLeftIcon,
-                                          NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
+                                          ArrowMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
       }
     }
     return out;
