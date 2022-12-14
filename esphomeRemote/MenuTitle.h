@@ -1,33 +1,40 @@
 #pragma once
 
-enum MenuTitleState {
-  NoMenuTitleState,
-  OffMenuTitleState,
-  OnMenuTitleState,
-  ArrowMenuTitleState,
-  GroupedMenuTitleState
+enum MenuTitleLeftIcon { NoMenuTitleLeftIcon, OffMenuTitleLeftIcon, OnMenuTitleLeftIcon, GroupedMenuTitleLeftIcon };
+
+enum MenuTitleRightIcon {
+  NoMenuTitleRightIcon,
+  ArrowMenuTitleRightIcon
 };
 
-enum MenuTitleType { BaseMenuTitleType, PlayerMenuTitleType, LightMenuTitleType };
+enum MenuTitleType {
+  BaseMenuTitleType,
+  PlayerMenuTitleType,
+  LightMenuTitleType
+};
 
 class MenuTitleBase {
  public:
   std::string friendlyName;
   std::string entityId;
-  MenuTitleState titleState;
+  MenuTitleLeftIcon leftIconState;
+  MenuTitleRightIcon rightIconState;
   MenuTitleType titleType;
-  MenuTitleBase(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState,
-                MenuTitleType newTitleType = BaseMenuTitleType)
-      : friendlyName(newFriendlyName), entityId(newEntityId), titleState(newTitleState), titleType(newTitleType) {}
+  MenuTitleBase(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
+                MenuTitleRightIcon newRightIconState, MenuTitleType newTitleType = BaseMenuTitleType)
+      : friendlyName(newFriendlyName),
+        entityId(newEntityId),
+        leftIconState(newLeftIconState),
+        rightIconState(newRightIconState),
+        titleType(newTitleType) {}
 
   bool indentLine() {
-    switch (titleState) {
-      case OffMenuTitleState:
-      case OnMenuTitleState:
-      case GroupedMenuTitleState:
+    switch (leftIconState) {
+      case OffMenuTitleLeftIcon:
+      case OnMenuTitleLeftIcon:
+      case GroupedMenuTitleLeftIcon:
         return true;
-      case NoMenuTitleState:
-      case ArrowMenuTitleState:
+      case NoMenuTitleLeftIcon:
         return false;
     }
     return false;
@@ -78,9 +85,10 @@ class MenuTitlePlayer : public MenuTitleBase {
   RemotePlayerMediaSource mediaSource;
   RemotePlayerState playerState;
 
-  MenuTitlePlayer(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState,
-                  RemotePlayerMediaSource newMediaSource, RemotePlayerState newPlayerState)
-      : MenuTitleBase{newFriendlyName, newEntityId, newTitleState, PlayerMenuTitleType},
+  MenuTitlePlayer(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
+                  MenuTitleRightIcon newRightIconState, RemotePlayerMediaSource newMediaSource,
+                  RemotePlayerState newPlayerState)
+      : MenuTitleBase{newFriendlyName, newEntityId, newLeftIconState, newRightIconState, PlayerMenuTitleType},
         mediaSource(newMediaSource),
         playerState(newPlayerState) {}
 
@@ -133,9 +141,9 @@ class MenuTitleSource : public MenuTitleBase {
  public:
   RemotePlayerSourceType sourceType;
 
-  MenuTitleSource(std::string newFriendlyName, std::string newEntityId, MenuTitleState newTitleState,
-                  RemotePlayerSourceType newSourceType)
-      : MenuTitleBase{newFriendlyName, newEntityId, newTitleState}, sourceType(newSourceType) {}
+  MenuTitleSource(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
+                  MenuTitleRightIcon newRightIconState, RemotePlayerSourceType newSourceType)
+      : MenuTitleBase{newFriendlyName, newEntityId, newLeftIconState, newRightIconState}, sourceType(newSourceType) {}
 
   std::string sourceTypeString() {
     switch (sourceType) {
@@ -157,8 +165,9 @@ class MenuTitleSlider : public MenuTitleBase {
   bool current_state;
   std::string title_extra;
   MenuTitleSlider(std::string newTitle, std::string newTitleExtra, std::string newEntityId,
-                  MenuTitleState newTitleState, int sliderWidth)
-      : MenuTitleBase{newTitle, newEntityId, newTitleState, LightMenuTitleType},
+                  MenuTitleLeftIcon newLeftIconState,
+                  MenuTitleRightIcon newRightIconState, int sliderWidth)
+      : MenuTitleBase{newTitle, newEntityId, newLeftIconState, newRightIconState, LightMenuTitleType},
         slider_width(sliderWidth),
         title_extra(newTitleExtra) {}
 };

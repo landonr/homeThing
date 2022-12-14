@@ -46,7 +46,7 @@ SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
-std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
+std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
 double marqueePosition = 0;
 bool marqueeText = false;
 
@@ -110,33 +110,33 @@ int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
 std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType) {
   switch (stringType) {
     case nowPlayingMenu:
-      return std::make_shared<MenuTitleBase>("Now Playing", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Now Playing", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case sourcesMenu:
-      return std::make_shared<MenuTitleBase>("Sources", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Sources", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case backlightMenu:
-      return std::make_shared<MenuTitleBase>("Backlight", "", NoMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Backlight", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
     case sleepMenu:
-      return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
     case mediaPlayersMenu:
-      return std::make_shared<MenuTitleBase>("Media Players", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Media Players", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case lightsMenu:
-      return std::make_shared<MenuTitleBase>("Lights", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Lights", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case lightsDetailMenu:
-      return std::make_shared<MenuTitleBase>("Light Detail", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Light Detail", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case switchesMenu:
-      return std::make_shared<MenuTitleBase>("Switches", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Switches", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case scenesMenu:
-      return std::make_shared<MenuTitleBase>("Scenes and Actions", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Scenes and Actions", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case rootMenu:
-      return std::make_shared<MenuTitleBase>("Home", "", NoMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Home", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
     case groupMenu:
-      return std::make_shared<MenuTitleBase>("Speaker Group", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Speaker Group", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case sensorsMenu:
-      return std::make_shared<MenuTitleBase>("Sensors", "", ArrowMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Sensors", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
     case bootMenu:
-      return std::make_shared<MenuTitleBase>("Boot", "", NoMenuTitleState);
+      return std::make_shared<MenuTitleBase>("Boot", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
   }
-  return std::make_shared<MenuTitleBase>("", "", NoMenuTitleState);
+  return std::make_shared<MenuTitleBase>("", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
 }
 
 void goToScreenFromString(std::string screenName) {
@@ -214,9 +214,15 @@ void drawHeaderTitle() {
     case lightsMenu:
       drawHeaderTitleWithString("Lights", xPos);
       break;
-    case lightsDetailMenu:
-      drawHeaderTitleWithString("LightDetail", xPos);
+    case lightsDetailMenu: {
+      if (lightGroup->getActiveLight() != NULL) {
+        auto headerMenuTitle = lightGroup->getActiveLight()->friendlyName;
+        drawHeaderTitleWithString(headerMenuTitle, xPos);
+      } else {
+        drawHeaderTitleWithString("LightDetail", xPos);
+      }
       break;
+    }
     case switchesMenu:
       drawHeaderTitleWithString("Switches", xPos);
       break;
@@ -486,23 +492,28 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
 }
 
 void drawTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i, int menuState, int yPos) {
-  switch (menuTitles[i]->titleState) {
-    case NoMenuTitleState:
+  switch (menuTitles[i]->leftIconState) {
+    case NoMenuTitleLeftIcon:
       break;
-    case OffMenuTitleState:
-    case OnMenuTitleState:
-      drawSwitch(menuTitles[i]->titleState == OnMenuTitleState, yPos);
+    case OffMenuTitleLeftIcon:
+    case OnMenuTitleLeftIcon:
+      drawSwitch(menuTitles[i]->leftIconState == OnMenuTitleLeftIcon, yPos);
       break;
-    case ArrowMenuTitleState:
+    case GroupedMenuTitleLeftIcon:
+      bool extend = i < menuTitles.size() - 1 && menuTitles[i + 1]->leftIconState == GroupedMenuTitleLeftIcon;
+      drawGroupedBar(yPos, extend);
+      break;
+  }
+
+  switch (menuTitles[i]->rightIconState) {
+    case NoMenuTitleRightIcon:
+      break;
+    case ArrowMenuTitleRightIcon:
       if (menuState == i) {
         drawArrow(yPos, menuTitles.size());
       }
       break;
-    case GroupedMenuTitleState:
-      bool extend = i < menuTitles.size() - 1 && menuTitles[i + 1]->titleState == GroupedMenuTitleState;
-      drawGroupedBar(yPos, extend);
-      break;
-  }
+  }  
 }
 
 void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
@@ -599,7 +610,7 @@ void topMenu() {
 
 void idleMenu(bool force) {
   if (!charging || force) {
-    lightGroup->lightDetailSelected = false;
+    lightGroup->clearActiveLight();
     menuIndex = 0;
     if (speakerGroup != NULL)
       speakerGroup->newSpeakerGroupParent = NULL;
@@ -1026,7 +1037,9 @@ void drawMenu() {
       drawMenu(lightGroup->lightTitleSwitches());
       break;
     case lightsDetailMenu:
-      drawMenu(lightGroup->lights[lightGroup->currentSelectedLight]->lightTitleItems());
+      if (lightGroup->getActiveLight() != NULL) {
+        drawMenu(lightGroup->getActiveLight()->lightTitleItems());
+      }
       break;
     case switchesMenu:
       drawMenu(switchGroup->switchTitleSwitches());
@@ -1130,22 +1143,31 @@ bool selectMenu() {
       speakerGroup->selectGroup(*playerTitleState);
       break;
     }
-    case lightsMenu:
-      lightGroup->currentSelectedLight = menuIndexForSource;  // save the selected light to be able to control later
-      // switch light directly if it doesn't support brightness
-      if (!lightGroup->lights[lightGroup->currentSelectedLight]->supportsBrightness()) {
-        lightGroup->selectLight(lightGroup->currentSelectedLight);
+    case lightsMenu: {
+      auto selectedLight = lightGroup->lights[menuIndexForSource];
+      if (selectedLight == NULL) {
+        break;
+      }
+      if (!selectedLight->supportsBrightness()) {
+        // directly toggle light
+        selectedLight->toggleLight();
         return true;
       } else {
-        menuIndex = 0;  // highlight first item in menu
+        // save light and go to light detail
+        lightGroup->selectLightAtIndex(menuIndexForSource);
+        menuIndex = 0;
         activeMenuState = lightsDetailMenu;
       }
       break;
+    }
     case lightsDetailMenu:
       // First item is the switch and doesn't need selection
       // sliders need selection
       if (menuIndexForSource == 0) {
-        lightGroup->selectLight(lightGroup->currentSelectedLight);
+        auto activeLight = lightGroup->getActiveLight();
+        if (activeLight != NULL) {
+          activeLight->toggleLight();
+        }
       } else {
         lightGroup->lightDetailSelected = true;
       }

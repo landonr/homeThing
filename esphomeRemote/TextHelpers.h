@@ -46,7 +46,7 @@ class TextHelpers {
       std::string sourceName = v.as<std::string>();
       ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(), entityId.c_str());
       auto newsource =
-          std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleState, SourceRemotePlayerSourceType);
+          std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon, SourceRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
@@ -77,7 +77,7 @@ class TextHelpers {
       std::string playlistId = v[valueKey].as<std::string>();
       ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(), playlistName.c_str());
       auto newsource =
-          std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, MusicRemotePlayerSourceType);
+          std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon, MusicRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
@@ -97,7 +97,7 @@ class TextHelpers {
       std::string playlistName(v.value().as<std::string>());
       std::string playlistId(v.key().c_str());
       ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(), playlistName.c_str());
-      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState,
+      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
                                                          FavoriteItemIDRemotePlayerSourceType);
       sources.push_back(newsource);
     }

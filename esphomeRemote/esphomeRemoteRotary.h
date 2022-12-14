@@ -55,11 +55,11 @@ void buttonPressNext() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 1) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
+      if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incBrightness();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incTemperature();
         return;
       }
     default:
@@ -82,11 +82,11 @@ void buttonPressPrevious() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 1) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
+      if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decBrightness();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decTemperature();
         return;
       }
     default:
@@ -155,7 +155,7 @@ void buttonPressUp() {
     return;
   }
   optionMenu = noOptionMenu;
-  // currentSelectedLight = -1;
+  lightGroup->clearActiveLight();
   topMenu();
   displayUpdate.updateDisplay(true);
 }
