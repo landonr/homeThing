@@ -1,4 +1,5 @@
 #pragma once
+#include <sstream>
 
 class TextHelpers {
  public:
@@ -102,6 +103,18 @@ class TextHelpers {
       sources.push_back(newsource);
     }
     return sources;
+  }
+
+  static int extractFirstNumber(std::string input) {
+    // Remove the opening and closing parentheses
+    input = input.substr(1, input.size() - 2);
+    // Split the string on the comma
+    std::istringstream iss(input);
+    std::string first, second;
+    std::getline(iss, first, ',');
+    // Convert the first part to a int
+    int num = std::stod(first);
+    return num;
   }
 
  private:

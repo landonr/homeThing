@@ -32,6 +32,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     subscribe_homeassistant_state(&LightComponent::max_mireds_changed, newEntityId.c_str(), "max_mireds");
     subscribe_homeassistant_state(&LightComponent::brightness_changed, newEntityId.c_str(), "brightness");
     subscribe_homeassistant_state(&LightComponent::color_temp_changed, newEntityId.c_str(), "color_temp");
+    subscribe_homeassistant_state(&LightComponent::color_changed, newEntityId.c_str(), "hs_color");
     subscribe_homeassistant_state(&LightComponent::supported_color_modes_changed, newEntityId.c_str(), "color_mode");
     subscribe_homeassistant_state(&LightComponent::supported_color_modes_changed, newEntityId.c_str(),
                                   "supported_color_modes");
@@ -41,6 +42,7 @@ class LightComponent : public CustomAPIDevice, public Component {
   DisplayUpdateInterface &display;
   int localBrightness = -1;
   int localColorTemp = -1;
+  int localColor = -1;
   bool isBrightnessInSync = false;
   bool isColorTempInSync = false;
   std::vector<ColorModeType> supportedColorModes = {};
@@ -48,81 +50,88 @@ class LightComponent : public CustomAPIDevice, public Component {
   int minMireds = 0;
   int maxMireds = 0;
 
-  void decTemperature() {
+  void increaseProperty(int max, bool &inSync, int &localValue, int incStep, std::string serviceProperty,
+                        bool wrapData = false) {
     if (id(keep_states_in_sync)) {
-      // only send update to home assistant if
-      // we have received a confirmation for the last
-      // state change (state changed from ha)
-      if (!isColorTempInSync) {
+      if (!inSync) {
         return;
       }
-      isColorTempInSync = false;
+      inSync = false;
     }
-    if (localColorTemp <= minMireds) {
-      localColorTemp = minMireds;
-      return;
+    if (localValue + incStep >= max) {
+      localValue = max;
+    } else {
+      localValue += incStep;
     }
-    localColorTemp -= id(dec_color_temperature_step);
-    const std::map<std::string, std::string> data = {{"entity_id", entityId.c_str()},
-                                                     {"color_temp", to_string(localColorTemp)}};
-    setAttribute(data);
+    if (wrapData) {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {"hue", to_string(localValue).c_str()},
+          {"saturation", "100"},
+      };
+      call_homeassistant_service("script.hs_light_set", data);
+    } else {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {serviceProperty, to_string(localValue).c_str()},
+      };
+      setAttribute(data);
+    }
+  }
+
+  void decreaseProperty(int min, bool &inSync, int &localValue, int decStep, std::string serviceProperty,
+                        bool wrapData = false) {
+    if (id(keep_states_in_sync)) {
+      if (!inSync) {
+        return;
+      }
+      inSync = false;
+    }
+    if (localValue - decStep <= min) {
+      localValue = min;
+    } else {
+      localValue -= decStep;
+    }
+    if (wrapData) {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {"hue", to_string(localValue).c_str()},
+          {"saturation", "100"},
+      };
+      call_homeassistant_service("script.hs_light_set", data);
+    } else {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {serviceProperty, to_string(localValue).c_str()},
+      };
+      setAttribute(data);
+    }
+  }
+
+  void decTemperature() {
+    decreaseProperty(minMireds, isColorTempInSync, localColorTemp, id(dec_color_temperature_step), "color_temp");
   }
 
   void incTemperature() {
-    if (id(keep_states_in_sync)) {
-      if (!isColorTempInSync) {
-        return;
-      }
-      isColorTempInSync = false;
-    }
-    if (localColorTemp >= maxMireds) {
-      localColorTemp = maxMireds;
-      return;
-    }
-    localColorTemp += id(inc_color_temperature_step);
-    const std::map<std::string, std::string> data = {
-        {"entity_id", entityId.c_str()},
-        {"color_temp", to_string(localColorTemp)},
-    };
-    setAttribute(data);
+    increaseProperty(maxMireds, isColorTempInSync, localColorTemp, id(inc_color_temperature_step), "color_temp");
   }
 
   void decBrightness() {
-    if (id(keep_states_in_sync)) {
-      if (!isBrightnessInSync) {
-        return;
-      }
-      isBrightnessInSync = false;
-    }
-    if (localBrightness <= 0) {
-      localBrightness = 0;
-      return;
-    }
-    localBrightness -= id(dec_brightness_step);
-    const std::map<std::string, std::string> data = {
-        {"entity_id", entityId.c_str()},
-        {"brightness", to_string(localBrightness)},
-    };
-    setAttribute(data);
+    decreaseProperty(0, isBrightnessInSync, localBrightness, id(dec_brightness_step), "brightness");
   }
 
   void incBrightness() {
-    if (id(keep_states_in_sync)) {
-      if (!isBrightnessInSync) {
-        return;
-      }
-      isBrightnessInSync = false;
-    }
-    if (localBrightness >= MAX_BRIGHTNESS) {
-      localBrightness = MAX_BRIGHTNESS;
-      return;
-    }
-    localBrightness += id(inc_brightness_step);
-    const std::map<std::string, std::string> data = {
-        {"entity_id", entityId.c_str()},
-        {"brightness", to_string(localBrightness)},
-    };
-    setAttribute(data);
+    increaseProperty(MAX_BRIGHTNESS, isBrightnessInSync, localBrightness, id(inc_brightness_step), "brightness");
+  }
+
+  void decColor() {
+    bool temp = true;
+    decreaseProperty(0, temp, localColor, 10, "hs_color", true);
+  }
+
+  void incColor() {
+    bool temp = true;
+    increaseProperty(360, temp, localColor, 10, "hs_color", true);
   }
 
   void setAttribute(const std::map<std::string, std::string> &data) {
@@ -141,6 +150,15 @@ class LightComponent : public CustomAPIDevice, public Component {
                 supportedColorModes.end() ||
             std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbww_type) !=
                 supportedColorModes.end()) &&
+           !supportedColorModes.empty();
+  }
+  bool supportsColor() {
+    return (std::find(supportedColorModes.begin(), supportedColorModes.end(), rgb_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbw_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbww_type) !=
+                supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), hs_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), xy_type) != supportedColorModes.end()) &&
            !supportedColorModes.empty();
   }
 
@@ -174,6 +192,11 @@ class LightComponent : public CustomAPIDevice, public Component {
     if (supportsColorTemperature()) {
       out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds,
                                1000000 / maxMireds));
+    }
+
+    s = "Color";
+    if (supportsColor()) {
+      out.push_back(makeSlider(0, 360, localColor, "Color", "", 0, 360));
     }
     return out;
   }
@@ -215,11 +238,18 @@ class LightComponent : public CustomAPIDevice, public Component {
     }
     display.updateDisplay(false);
   }
+  void color_changed(std::string newOnState) {
+    ESP_LOGI("color", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    if (id(keep_states_in_sync) || localColor == -1) {
+      localColor = TextHelpers::extractFirstNumber(newOnState);
+    }
+    display.updateDisplay(false);
+  }
 
   void supported_color_modes_changed(std::string newOnState) {
     // add all modes for the light to supportedColorModes and then check
     // the vector if the light supports a particular mode when needed
-    ESP_LOGD("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
     auto modes = StringUtils::split(newOnState, ",");
     for (auto cmode : modes) {
       ESP_LOGD("supported_color_modes_changed", "mode: %s (%s)", newOnState.c_str(), friendlyName.c_str());

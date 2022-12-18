@@ -547,7 +547,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
           drawLightSlider(id(slider_margin_size), yPos, menuState == i, menuState == i && lightDetailSelected,
                           item->slider_width, mt->friendlyName, item->title_extra);
           drawTitleIcon(menuTitles, i, menuState, yPos);
-          sliderExtra += 2;
+          sliderExtra += 0;
 
           yPos += (id(medium_font_size) + id(margin_size)) * 2;
           break;
