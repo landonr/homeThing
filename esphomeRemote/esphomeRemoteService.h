@@ -50,8 +50,7 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
   std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     for (auto &service : services) {
-      out.push_back(
-          std::make_shared<MenuTitleBase>(service.getFriendlyName(), "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon));
+      out.push_back(std::make_shared<MenuTitleBase>(service.getFriendlyName(), "", NoMenuTitleRightIcon));
     }
     return out;
   }

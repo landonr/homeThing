@@ -882,8 +882,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
         SonosSpeakerComponent *activeSpeaker = static_cast<SonosSpeakerComponent *>(activePlayer);
         if (activeSpeaker != NULL) {
           if (activeSpeaker->tv != NULL && activeSpeaker->tv->friendlyName.size() > 0) {
-            auto tvSource = std::make_shared<MenuTitleSource>(activeSpeaker->tv->friendlyName, "", NoMenuTitleLeftIcon,
-                                                              NoMenuTitleRightIcon, SourceRemotePlayerSourceType);
+            auto tvSource = std::make_shared<MenuTitleSource>(activeSpeaker->tv->friendlyName, "", NoMenuTitleRightIcon,
+                                                              SourceRemotePlayerSourceType);
             out.push_back(tvSource);
           }
           out.insert(out.end(), spotifyPlaylists.begin(), spotifyPlaylists.end());

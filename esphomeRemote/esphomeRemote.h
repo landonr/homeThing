@@ -46,8 +46,7 @@ SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
-std::shared_ptr<MenuTitleBase> activeMenuTitle =
-    std::make_shared<MenuTitleBase>("", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 double marqueePosition = 0;
 bool marqueeText = false;
 
@@ -111,33 +110,33 @@ int getCharacterLimit(int xPos, int fontSize, TextAlign alignment) {
 std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType) {
   switch (stringType) {
     case nowPlayingMenu:
-      return std::make_shared<MenuTitleBase>("Now Playing", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Now Playing", "", ArrowMenuTitleRightIcon);
     case sourcesMenu:
-      return std::make_shared<MenuTitleBase>("Sources", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Sources", "", ArrowMenuTitleRightIcon);
     case backlightMenu:
-      return std::make_shared<MenuTitleBase>("Backlight", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Backlight", "", NoMenuTitleRightIcon);
     case sleepMenu:
-      return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleRightIcon);
     case mediaPlayersMenu:
-      return std::make_shared<MenuTitleBase>("Media Players", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Media Players", "", ArrowMenuTitleRightIcon);
     case lightsMenu:
-      return std::make_shared<MenuTitleBase>("Lights", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Lights", "", ArrowMenuTitleRightIcon);
     case lightsDetailMenu:
-      return std::make_shared<MenuTitleBase>("Light Detail", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Light Detail", "", ArrowMenuTitleRightIcon);
     case switchesMenu:
-      return std::make_shared<MenuTitleBase>("Switches", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Switches", "", ArrowMenuTitleRightIcon);
     case scenesMenu:
-      return std::make_shared<MenuTitleBase>("Scenes and Actions", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Scenes and Actions", "", ArrowMenuTitleRightIcon);
     case rootMenu:
-      return std::make_shared<MenuTitleBase>("Home", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Home", "", NoMenuTitleRightIcon);
     case groupMenu:
-      return std::make_shared<MenuTitleBase>("Speaker Group", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Speaker Group", "", ArrowMenuTitleRightIcon);
     case sensorsMenu:
-      return std::make_shared<MenuTitleBase>("Sensors", "", NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Sensors", "", ArrowMenuTitleRightIcon);
     case bootMenu:
-      return std::make_shared<MenuTitleBase>("Boot", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+      return std::make_shared<MenuTitleBase>("Boot", "", NoMenuTitleRightIcon);
   }
-  return std::make_shared<MenuTitleBase>("", "", NoMenuTitleLeftIcon, NoMenuTitleRightIcon);
+  return std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 }
 
 void goToScreenFromString(std::string screenName) {
@@ -492,20 +491,29 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
   }
 }
 
-void drawTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i, int menuState, int yPos) {
-  switch (menuTitles[i]->leftIconState) {
+void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
+                       std::shared_ptr<MenuTitleToggle> toggleTitle, int i, int menuState, int yPos) {
+  switch (toggleTitle->leftIconState) {
     case NoMenuTitleLeftIcon:
       break;
     case OffMenuTitleLeftIcon:
     case OnMenuTitleLeftIcon:
-      drawSwitch(menuTitles[i]->leftIconState == OnMenuTitleLeftIcon, yPos);
+      drawSwitch(toggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos);
       break;
     case GroupedMenuTitleLeftIcon:
-      bool extend = i < menuTitles.size() - 1 && menuTitles[i + 1]->leftIconState == GroupedMenuTitleLeftIcon;
+      bool extend = false;
+      if (i < menuTitles.size() - 1) {
+        auto nextToggleTitle = std::static_pointer_cast<MenuTitleToggle>(menuTitles[i + 1]);
+        if (nextToggleTitle != NULL) {
+          extend = nextToggleTitle->leftIconState == GroupedMenuTitleLeftIcon;
+        }
+      }
       drawGroupedBar(yPos, extend);
       break;
   }
+}
 
+void drawRightTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i, int menuState, int yPos) {
   switch (menuTitles[i]->rightIconState) {
     case NoMenuTitleRightIcon:
       break;
@@ -533,11 +541,21 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
     }
     switch (menuTitles[i]->titleType) {
       case BaseMenuTitleType:
-        drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
-        drawTitleIcon(menuTitles, i, menuState, yPos);
+        drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, false);
+        drawRightTitleIcon(menuTitles, i, menuState, yPos);
         yPos += id(medium_font_size) + id(margin_size);
         break;
-      case LightMenuTitleType:
+      case ToggleMenuTitleType: {
+        auto toggleTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
+        if (toggleTitle != NULL) {
+          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, toggleTitle->indentLine());
+          drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
+          drawRightTitleIcon(menuTitles, i, menuState, yPos);
+          yPos += id(medium_font_size) + id(margin_size);
+        }
+        break;
+      }
+      case SliderMenuTitleType:
         // TODO: this breaks the scrolling if there are more items then can fit on the screen
         // sliderExtra doesn't solve it. Figure out whats missing to get it to work
         {
@@ -546,7 +564,6 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
           auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
           drawLightSlider(id(slider_margin_size), yPos, menuState == i, menuState == i && lightDetailSelected,
                           item->slider_width, mt->friendlyName, item->title_extra);
-          drawTitleIcon(menuTitles, i, menuState, yPos);
           sliderExtra += 0;
 
           yPos += (id(medium_font_size) + id(margin_size)) * 2;
@@ -555,10 +572,11 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
       case PlayerMenuTitleType: {
         auto playerTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
         if (playerTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, menuTitles[i]->indentLine());
+          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, playerTitle->indentLine());
           int length = playerTitle->friendlyName.length() + (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->playerState, menuState == i);
-          drawTitleIcon(menuTitles, i, menuState, yPos);
+          drawLeftTitleIcon(menuTitles, playerTitle, i, menuState, yPos);
+          drawRightTitleIcon(menuTitles, i, menuState, yPos);
           yPos += id(medium_font_size) + id(margin_size);
         }
         break;

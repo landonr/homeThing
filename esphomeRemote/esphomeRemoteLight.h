@@ -176,8 +176,8 @@ class LightComponent : public CustomAPIDevice, public Component {
     float newMin = id(slider_margin_size);
     float newRange = id(display_size_x) - 4 * newMin;
     int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
-    return std::make_shared<MenuTitleSlider>(title.c_str(), sliderTitle.c_str(), entityId, NoMenuTitleLeftIcon,
-                                             NoMenuTitleRightIcon, sliderValue);
+    return std::make_shared<MenuTitleSlider>(title.c_str(), sliderTitle.c_str(), entityId, NoMenuTitleRightIcon,
+                                             sliderValue);
   }
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
@@ -296,7 +296,7 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
       ESP_LOGD("Light", "state %d (%s)", light->onState, light->friendlyName.c_str());
       MenuTitleLeftIcon state = light->onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
       MenuTitleRightIcon rightIcon = light->supportsBrightness() ? ArrowMenuTitleRightIcon : NoMenuTitleRightIcon;
-      out.push_back(std::make_shared<MenuTitleBase>(light->friendlyName, light->entityId, state, rightIcon));
+      out.push_back(std::make_shared<MenuTitleToggle>(light->friendlyName, light->entityId, state, rightIcon));
     }
     return out;
   }
