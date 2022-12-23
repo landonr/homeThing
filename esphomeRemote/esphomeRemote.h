@@ -474,6 +474,7 @@ void drawRGBLightBar(int xPos, int yPos) {
     double hue = ((double) 360 / (double) rgbBarWidth) * ((double) i);
     Color dotColor = TextHelpers::hsvToRGB(hue, 1, 1);
     id(my_display).draw_pixel_at(i + id(slider_margin_size), yPos + sliderOffset + oneRow, dotColor);
+    id(my_display).draw_pixel_at(i + id(slider_margin_size), yPos + sliderOffset + oneRow + 1, dotColor);
   }
 }
 
@@ -544,7 +545,12 @@ void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
       if (toggleTitle->titleType == LightMenuTitleType) {
         auto lightToggleTitle = std::static_pointer_cast<MenuTitleLight>(toggleTitle);
         if (lightToggleTitle != NULL) {
-          drawLightSwitch(lightToggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos, lightToggleTitle->lightColor);
+          auto lightColor =
+              lightToggleTitle->leftIconState == OnMenuTitleLeftIcon ? lightToggleTitle->lightColor : id(my_white);
+          drawLightSwitch(lightToggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos, lightColor);
+          if (lightToggleTitle->leftIconState == OnMenuTitleLeftIcon && menuState == i) {
+            drawLightSwitch(false, yPos, id(my_white));
+          }
         }
       } else {
         drawSwitch(toggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos);
