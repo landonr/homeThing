@@ -470,10 +470,10 @@ void drawRGBLightBar(int xPos, int yPos) {
   int oneRow = id(medium_font_size) + id(margin_size);
   int sliderOffset = (int) (id(medium_font_size) + id(margin_size)) / 2;
   int rgbBarWidth = id(my_display).get_width() - 2 * id(slider_margin_size);
-  for (int i = id(slider_margin_size); i < rgbBarWidth; i++) {
+  for (int i = 0; i < rgbBarWidth; i++) {
     double hue = ((double) 360 / (double) rgbBarWidth) * ((double) i);
     Color dotColor = TextHelpers::hsvToRGB(hue, 1, 1);
-    id(my_display).draw_pixel_at(i, yPos + sliderOffset + oneRow, dotColor);
+    id(my_display).draw_pixel_at(i + id(slider_margin_size), yPos + sliderOffset + oneRow, dotColor);
   }
 }
 
