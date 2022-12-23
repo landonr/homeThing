@@ -183,6 +183,12 @@ void drawHeaderTitleWithString(std::string title, int xPos) {
   id(my_display).printf(xPos, yPos, &id(small_font), primaryTextColor(), title.c_str());
 }
 
+int drawHeaderIcon(std::string title, int xPos, Color iconColor) {
+  int yPos = getHeaderTextYPos();
+  id(my_display).printf(xPos, yPos, &id(material_font_small), iconColor, title.c_str());
+  return xPos + id(icon_size) + id(margin_size) / 2;
+}
+
 void drawHeaderTitle() {
   int xPos = 2;
   switch (activeMenuState) {
@@ -216,8 +222,10 @@ void drawHeaderTitle() {
       break;
     case lightsDetailMenu: {
       if (lightGroup->getActiveLight() != NULL) {
-        auto headerMenuTitle = lightGroup->getActiveLight()->friendlyName;
-        drawHeaderTitleWithString(headerMenuTitle, xPos);
+        auto activeLight = lightGroup->getActiveLight();
+        auto headerMenuTitle = activeLight->friendlyName;
+        int newXPos = drawHeaderIcon(activeLight->icon(), xPos, activeLight->rgbLightColor());
+        drawHeaderTitleWithString(headerMenuTitle, newXPos + 1);
       } else {
         drawHeaderTitleWithString("LightDetail", xPos);
       }
@@ -389,6 +397,19 @@ void drawSwitch(bool switchState, int yPos) {
   }
 }
 
+void drawLightSwitch(bool switchState, int yPos, Color lightColor) {
+  int circleSize = id(small_font_size) / 2;
+  int xPos = id(margin_size) - 2;
+  yPos += (id(margin_size) / 4);
+  // int centerYPos = yPos + (id(medium_font_size) + id(margin_size)) / 2;
+  // id(my_display).circle(xPos, centerYPos, circleSize, primaryTextColor());
+  if (switchState) {
+    id(my_display).printf(xPos, yPos, &id(material_font_small), lightColor, "󰌵");
+  } else {
+    id(my_display).printf(xPos, yPos, &id(material_font_small), lightColor, "󰌶");
+  }
+}
+
 void drawArrow(int yPos, int menuTitlesCount) {
   int xPos = id(my_display).get_width() - 8;
   if (menuTitlesCount > maxItems() + 1) {
@@ -445,8 +466,19 @@ void drawGroupedBar(int yPos, bool extend) {
             yPos + (id(medium_font_size) + id(margin_size)) / 2, primaryTextColor());
 }
 
+void drawRGBLightBar(int xPos, int yPos) {
+  int oneRow = id(medium_font_size) + id(margin_size);
+  int sliderOffset = (int) (id(medium_font_size) + id(margin_size)) / 2;
+  int rgbBarWidth = id(my_display).get_width() - 2 * id(slider_margin_size);
+  for (int i = id(slider_margin_size); i < rgbBarWidth; i++) {
+    double hue = ((double) 360 / (double) rgbBarWidth) * ((double) i);
+    Color dotColor = TextHelpers::hsvToRGB(hue, 1, 1);
+    id(my_display).draw_pixel_at(i, yPos + sliderOffset + oneRow, dotColor);
+  }
+}
+
 void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_selection_active, int bar_width,
-                     const std::string &title, const std::string &title_extra) {
+                     const std::string &title, const std::string &title_extra, bool drawRGB) {
   // draw second item (brightness slider). Only fill with color_accent_primary if slider is selected
   int sliderHeight = 3;
   // position slider in the middle of the row
@@ -455,12 +487,15 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
   int dotPosition_x = bar_width + id(slider_margin_size);
   if (slider_selection_active) {
     // current value slider
-    id(my_display)
-        .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
-                          sliderHeight, id(my_gray_dark_2));
-    id(my_display)
-        .filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(color_accent_primary));
-
+    if (drawRGB) {
+      drawRGBLightBar(xPos, yPos);
+    } else {
+      id(my_display)
+          .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
+                            sliderHeight, id(my_gray_dark_2));
+      id(my_display)
+          .filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(color_accent_primary));
+    }
     // two colored dot indicating current value
     id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_white));
     id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 4, id(color_accent_primary));
@@ -471,20 +506,28 @@ void drawLightSlider(int xPos, int yPos, bool slider_selection, bool slider_sele
     id(my_display)
         .filled_rectangle(0, yPos, id(my_display).get_width(), (id(margin_size) + id(medium_font_size)) * 2,
                           id(color_accent_primary));
-    id(my_display)
-        .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
-                          sliderHeight, id(my_gray_dark_2));
-    id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(my_white));
 
+    if (drawRGB) {
+      drawRGBLightBar(xPos, yPos);
+    } else {
+      id(my_display)
+          .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
+                            sliderHeight, id(my_gray_dark_2));
+      id(my_display).filled_rectangle(xPos, yPos + sliderOffset + oneRow, bar_width, sliderHeight, id(my_white));
+    }
     // white dot indicating current value
     id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_white));
 
     id(my_display).printf(xPos, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
   } else {
     // no selection, no hover so just show background slider
-    id(my_display)
-        .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
-                          sliderHeight, id(my_gray_dark_2));
+    if (drawRGB) {
+      drawRGBLightBar(xPos, yPos);
+    } else {
+      id(my_display)
+          .filled_rectangle(xPos, yPos + sliderOffset + oneRow, id(my_display).get_width() - 2 * id(slider_margin_size),
+                            sliderHeight, id(my_gray_dark_2));
+    }
     // white dot indicating current value
     id(my_display).filled_circle(dotPosition_x, yPos + sliderOffset + oneRow, 5, id(my_white));
     id(my_display).printf(xPos, yPos + 1, &id(medium_font), id(my_white), title_extra.c_str());
@@ -498,7 +541,14 @@ void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
       break;
     case OffMenuTitleLeftIcon:
     case OnMenuTitleLeftIcon:
-      drawSwitch(toggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos);
+      if (toggleTitle->titleType == LightMenuTitleType) {
+        auto lightToggleTitle = std::static_pointer_cast<MenuTitleLight>(toggleTitle);
+        if (lightToggleTitle != NULL) {
+          drawLightSwitch(lightToggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos, lightToggleTitle->lightColor);
+        }
+      } else {
+        drawSwitch(toggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos);
+      }
       break;
     case GroupedMenuTitleLeftIcon:
       bool extend = false;
@@ -545,8 +595,18 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
         drawRightTitleIcon(menuTitles, i, menuState, yPos);
         yPos += id(medium_font_size) + id(margin_size);
         break;
+      case LightMenuTitleType: {
+        auto lightTitle = std::static_pointer_cast<MenuTitleLight>(menuTitles[i]);
+        if (lightTitle != NULL) {
+          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, lightTitle->indentLine());
+          drawLeftTitleIcon(menuTitles, lightTitle, i, menuState, yPos);
+          drawRightTitleIcon(menuTitles, i, menuState, yPos);
+          yPos += id(medium_font_size) + id(margin_size);
+        }
+        break;
+      }
       case ToggleMenuTitleType: {
-        auto toggleTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
+        auto toggleTitle = std::static_pointer_cast<MenuTitleToggle>(menuTitles[i]);
         if (toggleTitle != NULL) {
           drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, toggleTitle->indentLine());
           drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
@@ -555,20 +615,17 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
         }
         break;
       }
-      case SliderMenuTitleType:
-        // TODO: this breaks the scrolling if there are more items then can fit on the screen
-        // sliderExtra doesn't solve it. Figure out whats missing to get it to work
-        {
-          bool lightDetailSelected = lightGroup->lightDetailSelected;
-          auto mt = menuTitles[i];
-          auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
-          drawLightSlider(id(slider_margin_size), yPos, menuState == i, menuState == i && lightDetailSelected,
-                          item->slider_width, mt->friendlyName, item->title_extra);
-          sliderExtra += 0;
+      case SliderMenuTitleType: {
+        bool lightDetailSelected = lightGroup->lightDetailSelected;
+        auto mt = menuTitles[i];
+        auto item = std::static_pointer_cast<MenuTitleSlider>(mt);
+        drawLightSlider(id(slider_margin_size), yPos, menuState == i, menuState == i && lightDetailSelected,
+                        item->slider_width, mt->friendlyName, item->title_extra, i == 2);
+        sliderExtra += 0;
 
-          yPos += (id(medium_font_size) + id(margin_size)) * 2;
-          break;
-        }
+        yPos += (id(medium_font_size) + id(margin_size)) * 2;
+        break;
+      }
       case PlayerMenuTitleType: {
         auto playerTitle = std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
         if (playerTitle != NULL) {

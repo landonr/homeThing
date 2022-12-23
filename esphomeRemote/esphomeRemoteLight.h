@@ -201,6 +201,81 @@ class LightComponent : public CustomAPIDevice, public Component {
     return out;
   }
 
+  Color hsvToRGB(double hue, double saturation, double value) {
+    double r = 0, g = 0, b = 0;
+    if (saturation == 0) {
+      r = value;
+      g = value;
+      b = value;
+    } else {
+      int i;
+      double f, p, q, t;
+
+      if (hue == 360)
+        hue = 0;
+      else
+        hue = hue / 60;
+
+      i = (int) trunc(hue);
+      f = hue - i;
+
+      p = value * (1.0 - saturation);
+      q = value * (1.0 - (saturation * f));
+      t = value * (1.0 - (saturation * (1.0 - f)));
+
+      switch (i) {
+        case 0:
+          r = value;
+          g = t;
+          b = p;
+          break;
+        case 1:
+          r = q;
+          g = value;
+          b = p;
+          break;
+        case 2:
+          r = p;
+          g = value;
+          b = t;
+          break;
+        case 3:
+          r = p;
+          g = q;
+          b = value;
+          break;
+        case 4:
+          r = t;
+          g = p;
+          b = value;
+          break;
+        default:
+          r = value;
+          g = p;
+          b = q;
+          break;
+      }
+    }
+    return Color((unsigned char) (r * 255), (unsigned char) (g * 255), (unsigned char) (b * 255));
+  }
+
+  Color rgbLightColor() {
+    if (!supportsBrightness()) {
+      return Color(255, 255, 255);
+    }
+
+    return hsvToRGB((double) localColor, 1, 1);
+    // return hsvToRGB((double) localColor, 1, ((double) localBrightness) / 100);
+  }
+
+  std::string icon() {
+    if (onState != OnMenuTitleLeftIcon) {
+      return "󰌵";
+    } else {
+      return "󰌶";
+    }
+  }
+
  private:
   void state_changed(std::string newOnState) {
     ESP_LOGD("state", " changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
@@ -296,7 +371,8 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
       ESP_LOGD("Light", "state %d (%s)", light->onState, light->friendlyName.c_str());
       MenuTitleLeftIcon state = light->onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
       MenuTitleRightIcon rightIcon = light->supportsBrightness() ? ArrowMenuTitleRightIcon : NoMenuTitleRightIcon;
-      out.push_back(std::make_shared<MenuTitleToggle>(light->friendlyName, light->entityId, state, rightIcon));
+      out.push_back(std::make_shared<MenuTitleLight>(light->friendlyName, light->entityId, state, rightIcon,
+                                                     light->rgbLightColor()));
     }
     return out;
   }

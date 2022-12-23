@@ -117,6 +117,64 @@ class TextHelpers {
     return num;
   }
 
+  static Color hsvToRGB(double hue, double saturation, double value) {
+    double r = 0, g = 0, b = 0;
+    if (saturation == 0) {
+      r = value;
+      g = value;
+      b = value;
+    } else {
+      int i;
+      double f, p, q, t;
+
+      if (hue == 360)
+        hue = 0;
+      else
+        hue = hue / 60;
+
+      i = (int) trunc(hue);
+      f = hue - i;
+
+      p = value * (1.0 - saturation);
+      q = value * (1.0 - (saturation * f));
+      t = value * (1.0 - (saturation * (1.0 - f)));
+
+      switch (i) {
+        case 0:
+          r = value;
+          g = t;
+          b = p;
+          break;
+        case 1:
+          r = q;
+          g = value;
+          b = p;
+          break;
+        case 2:
+          r = p;
+          g = value;
+          b = t;
+          break;
+        case 3:
+          r = p;
+          g = q;
+          b = value;
+          break;
+        case 4:
+          r = t;
+          g = p;
+          b = value;
+          break;
+        default:
+          r = value;
+          g = p;
+          b = q;
+          break;
+      }
+    }
+    return Color((unsigned char) (r * 255), (unsigned char) (g * 255), (unsigned char) (b * 255));
+  }
+
  private:
   TextHelpers() {}
 };

@@ -4,7 +4,13 @@ enum MenuTitleLeftIcon { NoMenuTitleLeftIcon, OffMenuTitleLeftIcon, OnMenuTitleL
 
 enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
-enum MenuTitleType { BaseMenuTitleType, PlayerMenuTitleType, SliderMenuTitleType, ToggleMenuTitleType };
+enum MenuTitleType {
+  BaseMenuTitleType,
+  PlayerMenuTitleType,
+  SliderMenuTitleType,
+  ToggleMenuTitleType,
+  LightMenuTitleType
+};
 
 class MenuTitleBase {
  public:
@@ -168,4 +174,14 @@ class MenuTitleSlider : public MenuTitleBase {
       : MenuTitleBase{newTitle, newEntityId, newRightIconState, SliderMenuTitleType},
         slider_width(sliderWidth),
         title_extra(newTitleExtra) {}
+};
+
+class MenuTitleLight : public MenuTitleToggle {
+ public:
+  Color lightColor;
+
+  MenuTitleLight(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
+                 MenuTitleRightIcon newRightIconState, Color newLightColor)
+      : MenuTitleToggle{newFriendlyName, newEntityId, newLeftIconState, newRightIconState, LightMenuTitleType},
+        lightColor(newLightColor) {}
 };
