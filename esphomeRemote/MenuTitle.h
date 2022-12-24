@@ -166,14 +166,16 @@ class MenuTitleSource : public MenuTitleBase {
 class MenuTitleSlider : public MenuTitleBase {
  public:
   bool slider_{false};
-  int slider_width;
-  bool current_state;
-  std::string title_extra;
-  MenuTitleSlider(std::string newTitle, std::string newTitleExtra, std::string newEntityId,
-                  MenuTitleRightIcon newRightIconState, int sliderWidth)
+  bool currentState;
+  int sliderValue;
+  int displayValue;
+  std::string sliderUnit;
+  MenuTitleSlider(std::string newTitle, std::string newEntityId, MenuTitleRightIcon newRightIconState,
+                  int newSliderValue, int newDisplayValue, std::string newSliderUnit)
       : MenuTitleBase{newTitle, newEntityId, newRightIconState, SliderMenuTitleType},
-        slider_width(sliderWidth),
-        title_extra(newTitleExtra) {}
+        sliderValue(newSliderValue),
+        displayValue(newDisplayValue),
+        sliderUnit(newSliderUnit) {}
 };
 
 class MenuTitleLight : public MenuTitleToggle {

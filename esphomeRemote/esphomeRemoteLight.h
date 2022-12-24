@@ -164,20 +164,19 @@ class LightComponent : public CustomAPIDevice, public Component {
 
   std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit,
                                               int displayUnitMin, int displayUnitMax) {
-    std::string sliderTitle = title;
+    int displayValue = value;
     float oldRange = max - min;
     float valueMinusMin = value - min;
     if (value > 0) {
       float displayNewRange = displayUnitMax - displayUnitMin;
-      int displayValue = (float) ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin;
-      sliderTitle += " - " + to_string(displayValue) + " " + unit;
+      displayValue = (float) ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin;
     }
 
     float newMin = id(slider_margin_size);
     float newRange = id(display_size_x) - 4 * newMin;
     int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
-    return std::make_shared<MenuTitleSlider>(title.c_str(), sliderTitle.c_str(), entityId, NoMenuTitleRightIcon,
-                                             sliderValue);
+    return std::make_shared<MenuTitleSlider>(title.c_str(), entityId, NoMenuTitleRightIcon, sliderValue, displayValue,
+                                             unit);
   }
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
