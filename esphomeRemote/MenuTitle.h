@@ -12,6 +12,8 @@ enum MenuTitleType {
   LightMenuTitleType
 };
 
+enum SliderSelectionState { SliderSelectionStateNone, SliderSelectionStateActive, SliderSelectionStateHover };
+
 class MenuTitleBase {
  public:
   std::string friendlyName;
