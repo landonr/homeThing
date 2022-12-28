@@ -125,11 +125,17 @@ class LightComponent : public CustomAPIDevice, public Component {
   }
 
   void decColor() {
+    if (localColorTemp != -1) {
+      localColorTemp = -1;
+    }
     bool temp = true;
     decreaseProperty(0, temp, localColor, 10, "hs_color", true);
   }
 
   void incColor() {
+    if (localColorTemp != -1) {
+      localColorTemp = -1;
+    }
     bool temp = true;
     increaseProperty(360, temp, localColor, 10, "hs_color", true);
   }
