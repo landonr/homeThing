@@ -37,9 +37,9 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
     for (auto &sensor : sensors) {
       if (sensor->friendlyName != "") {
         out.push_back(std::make_shared<MenuTitleBase>(sensor->friendlyName + " " + sensor->state, sensor->entityId,
-                                                      NoMenuTitleState));
+                                                      NoMenuTitleRightIcon));
       } else {
-        out.push_back(std::make_shared<MenuTitleBase>(sensor->state, sensor->entityId, NoMenuTitleState));
+        out.push_back(std::make_shared<MenuTitleBase>(sensor->state, sensor->entityId, NoMenuTitleRightIcon));
       }
     }
     return out;

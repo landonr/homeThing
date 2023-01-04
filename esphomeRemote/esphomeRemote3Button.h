@@ -42,9 +42,9 @@ void buttonPressLeft() {
   }
   if (activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected) {
     if (menuIndex == 1) {
-      lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
+      lightGroup->getActiveLight()->incBrightness();
     } else if (menuIndex == 2) {
-      lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
+      lightGroup->getActiveLight()->incTemperature();
     }
     if (selectMenu()) {
       displayUpdate.updateDisplay(true);
@@ -70,9 +70,9 @@ void buttonPressRight() {
   }
   if (activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected) {
     if (menuIndex == 1) {
-      lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
+      lightGroup->getActiveLight()->decBrightness();
     } else if (menuIndex == 2) {
-      lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
+      lightGroup->getActiveLight()->decTemperature();
     }
     if (selectMenu()) {
       displayUpdate.updateDisplay(true);

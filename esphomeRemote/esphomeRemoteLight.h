@@ -22,18 +22,19 @@ enum ColorModeType {
   xy_type
 };
 
-class LightService : public CustomAPIDevice, public Component {
+class LightComponent : public CustomAPIDevice, public Component {
  public:
-  LightService(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface &newCallback)
+  LightComponent(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface &newCallback)
       : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
     onState = false;
-    subscribe_homeassistant_state(&LightService::state_changed, newEntityId.c_str());
-    subscribe_homeassistant_state(&LightService::min_mireds_changed, newEntityId.c_str(), "min_mireds");
-    subscribe_homeassistant_state(&LightService::max_mireds_changed, newEntityId.c_str(), "max_mireds");
-    subscribe_homeassistant_state(&LightService::brightness_changed, newEntityId.c_str(), "brightness");
-    subscribe_homeassistant_state(&LightService::color_temp_changed, newEntityId.c_str(), "color_temp");
-    subscribe_homeassistant_state(&LightService::supported_color_modes_changed, newEntityId.c_str(), "color_mode");
-    subscribe_homeassistant_state(&LightService::supported_color_modes_changed, newEntityId.c_str(),
+    subscribe_homeassistant_state(&LightComponent::state_changed, newEntityId.c_str());
+    subscribe_homeassistant_state(&LightComponent::min_mireds_changed, newEntityId.c_str(), "min_mireds");
+    subscribe_homeassistant_state(&LightComponent::max_mireds_changed, newEntityId.c_str(), "max_mireds");
+    subscribe_homeassistant_state(&LightComponent::brightness_changed, newEntityId.c_str(), "brightness");
+    subscribe_homeassistant_state(&LightComponent::color_temp_changed, newEntityId.c_str(), "color_temp");
+    subscribe_homeassistant_state(&LightComponent::color_changed, newEntityId.c_str(), "hs_color");
+    subscribe_homeassistant_state(&LightComponent::supported_color_modes_changed, newEntityId.c_str(), "color_mode");
+    subscribe_homeassistant_state(&LightComponent::supported_color_modes_changed, newEntityId.c_str(),
                                   "supported_color_modes");
   }
   std::string friendlyName;
@@ -41,6 +42,7 @@ class LightService : public CustomAPIDevice, public Component {
   DisplayUpdateInterface &display;
   int localBrightness = -1;
   int localColorTemp = -1;
+  int localColor = -1;
   bool isBrightnessInSync = false;
   bool isColorTempInSync = false;
   std::vector<ColorModeType> supportedColorModes = {};
@@ -48,81 +50,94 @@ class LightService : public CustomAPIDevice, public Component {
   int minMireds = 0;
   int maxMireds = 0;
 
-  void decTemperature() {
+  void increaseProperty(int max, bool &inSync, int &localValue, int incStep, std::string serviceProperty,
+                        bool wrapData = false) {
     if (id(keep_states_in_sync)) {
-      // only send update to home assistant if
-      // we have received a confirmation for the last
-      // state change (state changed from ha)
-      if (!isColorTempInSync) {
+      if (!inSync) {
         return;
       }
-      isColorTempInSync = false;
+      inSync = false;
     }
-    if (localColorTemp <= minMireds) {
-      localColorTemp = minMireds;
-      return;
+    if (localValue + incStep >= max) {
+      localValue = max;
+    } else {
+      localValue += incStep;
     }
-    localColorTemp -= id(dec_color_temperature_step);
-    const std::map<std::string, std::string> data = {{"entity_id", entityId.c_str()},
-                                                     {"color_temp", to_string(localColorTemp)}};
-    setAttribute(data);
+    if (wrapData) {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {"hue", to_string(localValue).c_str()},
+          {"saturation", "100"},
+      };
+      call_homeassistant_service("script.hs_light_set", data);
+    } else {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {serviceProperty, to_string(localValue).c_str()},
+      };
+      setAttribute(data);
+    }
+  }
+
+  void decreaseProperty(int min, bool &inSync, int &localValue, int decStep, std::string serviceProperty,
+                        bool wrapData = false) {
+    if (id(keep_states_in_sync)) {
+      if (!inSync) {
+        return;
+      }
+      inSync = false;
+    }
+    if (localValue - decStep <= min) {
+      localValue = min;
+    } else {
+      localValue -= decStep;
+    }
+    if (wrapData) {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {"hue", to_string(localValue).c_str()},
+          {"saturation", "100"},
+      };
+      call_homeassistant_service("script.hs_light_set", data);
+    } else {
+      const std::map<std::string, std::string> data = {
+          {"entity_id", entityId.c_str()},
+          {serviceProperty, to_string(localValue).c_str()},
+      };
+      setAttribute(data);
+    }
+  }
+
+  void decTemperature() {
+    decreaseProperty(minMireds, isColorTempInSync, localColorTemp, id(dec_color_temperature_step), "color_temp");
   }
 
   void incTemperature() {
-    if (id(keep_states_in_sync)) {
-      if (!isColorTempInSync) {
-        return;
-      }
-      isColorTempInSync = false;
-    }
-    if (localColorTemp >= maxMireds) {
-      localColorTemp = maxMireds;
-      return;
-    }
-    localColorTemp += id(inc_color_temperature_step);
-    const std::map<std::string, std::string> data = {
-        {"entity_id", entityId.c_str()},
-        {"color_temp", to_string(localColorTemp)},
-    };
-    setAttribute(data);
+    increaseProperty(maxMireds, isColorTempInSync, localColorTemp, id(inc_color_temperature_step), "color_temp");
   }
 
   void decBrightness() {
-    if (id(keep_states_in_sync)) {
-      if (!isBrightnessInSync) {
-        return;
-      }
-      isBrightnessInSync = false;
-    }
-    if (localBrightness <= 0) {
-      localBrightness = 0;
-      return;
-    }
-    localBrightness -= id(dec_brightness_step);
-    const std::map<std::string, std::string> data = {
-        {"entity_id", entityId.c_str()},
-        {"brightness", to_string(localBrightness)},
-    };
-    setAttribute(data);
+    decreaseProperty(0, isBrightnessInSync, localBrightness, id(dec_brightness_step), "brightness");
   }
 
   void incBrightness() {
-    if (id(keep_states_in_sync)) {
-      if (!isBrightnessInSync) {
-        return;
-      }
-      isBrightnessInSync = false;
+    increaseProperty(MAX_BRIGHTNESS, isBrightnessInSync, localBrightness, id(inc_brightness_step), "brightness");
+  }
+
+  void decColor() {
+    if (localColorTemp != -1) {
+      localColorTemp = -1;
     }
-    if (localBrightness >= MAX_BRIGHTNESS) {
-      localBrightness = MAX_BRIGHTNESS;
-      return;
+    bool temp = true;
+    decreaseProperty(0, temp, localColor, 10, "hs_color", true);
+  }
+
+  void incColor() {
+    if (localColorTemp != -1) {
+      localColorTemp = -1;
     }
-    localBrightness += id(inc_brightness_step);
-    const std::map<std::string, std::string> data = {
-        {"entity_id", entityId.c_str()},
-        {"brightness", to_string(localBrightness)},
-    };
-    setAttribute(data);
+    bool temp = true;
+    increaseProperty(360, temp, localColor, 10, "hs_color", true);
   }
 
   void setAttribute(const std::map<std::string, std::string> &data) {
@@ -143,43 +158,127 @@ class LightService : public CustomAPIDevice, public Component {
                 supportedColorModes.end()) &&
            !supportedColorModes.empty();
   }
+  bool supportsColor() {
+    return (std::find(supportedColorModes.begin(), supportedColorModes.end(), rgb_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbw_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbww_type) !=
+                supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), hs_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(), xy_type) != supportedColorModes.end()) &&
+           !supportedColorModes.empty();
+  }
+
+  std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit,
+                                              int displayUnitMin, int displayUnitMax) {
+    int displayValue = value;
+    float oldRange = max - min;
+    float valueMinusMin = value - min;
+    if (value > 0) {
+      float displayNewRange = displayUnitMax - displayUnitMin;
+      displayValue = (float) ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin;
+    }
+
+    float newMin = id(slider_margin_size);
+    float newRange = id(display_size_x) - 4 * newMin;
+    int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
+    return std::make_shared<MenuTitleSlider>(title.c_str(), entityId, NoMenuTitleRightIcon, sliderValue, displayValue,
+                                             unit);
+  }
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    out.push_back(
-        std::make_shared<MenuTitleBase>(friendlyName, entityId, onState ? OnMenuTitleState : OffMenuTitleState));
-
     std::string s = "Brightness";
-    int width_available = id(display_size_x) - 2 * id(slider_margin_size);
+    int widthAvailable = id(display_size_x) - 2 * id(slider_margin_size);
     if (supportsBrightness()) {
-      float slider_factor = 1;
-      if (localBrightness > 0) {
-        float percent = ((float) localBrightness / 255.0);
-        int percentInt = (int) (percent * 100);
-        s += " - " + to_string(percentInt) + " %%";
-        slider_factor = width_available / MAX_BRIGHTNESS;
-      } else {
-      }
-      out.push_back(std::make_shared<MenuTitleSlider>("Brightness", s.c_str(), entityId, NoMenuTitleState,
-                                                      (int) (localBrightness * slider_factor)));
+      out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness", "%%", 0, 100));
     }
 
     s = "Temperature";
     if (supportsColorTemperature()) {
-      int miredTransformedHigh = maxMireds - minMireds;
-      float factor = static_cast<float>(width_available) / static_cast<float>(miredTransformedHigh);
-      int localColorTempTransformed = localColorTemp - minMireds;
+      out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds,
+                               1000000 / maxMireds));
+    }
 
-      if (localColorTemp > 0) {
-        s += " - " + to_string(1000000 / localColorTemp) + " K ";
-      } else {
-      }
-      int sliderValue = static_cast<int>(factor * static_cast<float>(localColorTempTransformed));
-
-      out.push_back(
-          std::make_shared<MenuTitleSlider>("Temperature", s.c_str(), entityId, NoMenuTitleState, sliderValue));
+    s = "Color";
+    if (supportsColor()) {
+      out.push_back(makeSlider(0, 360, localColor, "Color", "", 0, 360));
     }
     return out;
+  }
+
+  Color hsvToRGB(double hue, double saturation, double value) {
+    double r = 0, g = 0, b = 0;
+    if (saturation == 0) {
+      r = value;
+      g = value;
+      b = value;
+    } else {
+      int i;
+      double f, p, q, t;
+
+      if (hue == 360)
+        hue = 0;
+      else
+        hue = hue / 60;
+
+      i = (int) trunc(hue);
+      f = hue - i;
+
+      p = value * (1.0 - saturation);
+      q = value * (1.0 - (saturation * f));
+      t = value * (1.0 - (saturation * (1.0 - f)));
+
+      switch (i) {
+        case 0:
+          r = value;
+          g = t;
+          b = p;
+          break;
+        case 1:
+          r = q;
+          g = value;
+          b = p;
+          break;
+        case 2:
+          r = p;
+          g = value;
+          b = t;
+          break;
+        case 3:
+          r = p;
+          g = q;
+          b = value;
+          break;
+        case 4:
+          r = t;
+          g = p;
+          b = value;
+          break;
+        default:
+          r = value;
+          g = p;
+          b = q;
+          break;
+      }
+    }
+    return Color((unsigned char) (r * 255), (unsigned char) (g * 255), (unsigned char) (b * 255));
+  }
+
+  Color rgbLightColor() {
+    if (!supportsBrightness()) {
+      return Color(255, 255, 255);
+    }
+
+    return hsvToRGB((double) localColor, 1, 1);
+    // return hsvToRGB((double) localColor, 1, ((double) localBrightness) / 100);
+  }
+
+  std::string icon() {
+    if (onState != OnMenuTitleLeftIcon) {
+      return "󰌵";
+    } else {
+      return "󰌶";
+    }
   }
 
  private:
@@ -212,10 +311,17 @@ class LightService : public CustomAPIDevice, public Component {
     display.updateDisplay(false);
   }
   void color_temp_changed(std::string newOnState) {
-    ESP_LOGD("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
     if (id(keep_states_in_sync) || localColorTemp == -1) {
       localColorTemp = atoi(newOnState.c_str());
       isColorTempInSync = true;
+    }
+    display.updateDisplay(false);
+  }
+  void color_changed(std::string newOnState) {
+    ESP_LOGI("color", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    if (id(keep_states_in_sync) || localColor == -1) {
+      localColor = TextHelpers::extractFirstNumber(newOnState);
     }
     display.updateDisplay(false);
   }
@@ -223,7 +329,7 @@ class LightService : public CustomAPIDevice, public Component {
   void supported_color_modes_changed(std::string newOnState) {
     // add all modes for the light to supportedColorModes and then check
     // the vector if the light supports a particular mode when needed
-    ESP_LOGD("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
     auto modes = StringUtils::split(newOnState, ",");
     for (auto cmode : modes) {
       ESP_LOGD("supported_color_modes_changed", "mode: %s (%s)", newOnState.c_str(), friendlyName.c_str());
@@ -255,11 +361,11 @@ class LightService : public CustomAPIDevice, public Component {
 class LightGroupComponent : public CustomAPIDevice, public Component {
  public:
   explicit LightGroupComponent(DisplayUpdateInterface &newCallback) : display(newCallback) {}
-  std::vector<LightService *> lights;
+  std::vector<LightComponent *> lights;
 
   void setup(std::vector<FriendlyNameEntity> newLights) {
     for (auto &light : newLights) {
-      LightService *newService = new LightService(light.friendlyName, light.entityId, display);
+      LightComponent *newService = new LightComponent(light.friendlyName, light.entityId, display);
       lights.push_back(newService);
     }
   }
@@ -268,24 +374,29 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     for (auto &light : lights) {
       ESP_LOGD("Light", "state %d (%s)", light->onState, light->friendlyName.c_str());
-      MenuTitleState state = light->onState ? OnMenuTitleState : OffMenuTitleState;
-      out.push_back(std::make_shared<MenuTitleBase>(light->friendlyName, light->entityId, state));
+      MenuTitleLeftIcon state = light->onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
+      MenuTitleRightIcon rightIcon = light->supportsBrightness() ? ArrowMenuTitleRightIcon : NoMenuTitleRightIcon;
+      out.push_back(std::make_shared<MenuTitleLight>(light->friendlyName, light->entityId, state, rightIcon,
+                                                     light->rgbLightColor()));
     }
     return out;
   }
 
-  bool selectLight(int index) {
-    if (index >= 0 && index < lights.size()) {
-      LightService *light = lights[index];
-      light->toggleLight();
-      return false;
+  void selectLightAtIndex(int index) {
+    if (lights.size() < index) {
+      ESP_LOGE("light", "selecting out of bounds light");
+      return;
     }
-    return true;
+    _activeLight = lights[index];
   }
 
-  int currentSelectedLight = -1;
+  void clearActiveLight() { _activeLight = NULL; }
+
+  LightComponent *getActiveLight() { return _activeLight; }
+
   bool lightDetailSelected = false;
 
  private:
   DisplayUpdateInterface &display;
+  LightComponent *_activeLight = NULL;
 };

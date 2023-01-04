@@ -46,6 +46,15 @@ void buttonPressSelect() {
   }
 }
 
+void buttonPressSelectHold() {
+  if (buttonPressWakeUpDisplay()) {
+    return;
+  }
+  if (selectMenuHold()) {
+    displayUpdate.updateDisplay(true);
+  }
+}
+
 void buttonPressNext() {
   resetMarquee();
   switch (activeMenuState) {
@@ -55,11 +64,17 @@ void buttonPressNext() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 1) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->incBrightness();
+      if (lightGroup->lightDetailSelected && menuIndex == 0 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incBrightness();
+        debounceUpdateDisplay();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->incTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incTemperature();
+        debounceUpdateDisplay();
+        return;
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incColor();
+        debounceUpdateDisplay();
         return;
       }
     default:
@@ -82,11 +97,17 @@ void buttonPressPrevious() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 1) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->decBrightness();
+      if (lightGroup->lightDetailSelected && menuIndex == 0 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decBrightness();
+        debounceUpdateDisplay();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2) {
-        lightGroup->lights[lightGroup->currentSelectedLight]->decTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 1 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decTemperature();
+        debounceUpdateDisplay();
+        return;
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2 && lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decColor();
+        debounceUpdateDisplay();
         return;
       }
     default:
@@ -155,7 +176,7 @@ void buttonPressUp() {
     return;
   }
   optionMenu = noOptionMenu;
-  // currentSelectedLight = -1;
+  lightGroup->clearActiveLight();
   topMenu();
   displayUpdate.updateDisplay(true);
 }

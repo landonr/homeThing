@@ -1,4 +1,5 @@
 #pragma once
+#include <sstream>
 
 class TextHelpers {
  public:
@@ -46,7 +47,7 @@ class TextHelpers {
       std::string sourceName = v.as<std::string>();
       ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(), entityId.c_str());
       auto newsource =
-          std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleState, SourceRemotePlayerSourceType);
+          std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleRightIcon, SourceRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
@@ -76,8 +77,8 @@ class TextHelpers {
       std::string playlistName = v[nameKey].as<std::string>();
       std::string playlistId = v[valueKey].as<std::string>();
       ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(), playlistName.c_str());
-      auto newsource =
-          std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState, MusicRemotePlayerSourceType);
+      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleRightIcon,
+                                                         MusicRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
@@ -97,11 +98,81 @@ class TextHelpers {
       std::string playlistName(v.value().as<std::string>());
       std::string playlistId(v.key().c_str());
       ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(), playlistName.c_str());
-      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleState,
+      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleRightIcon,
                                                          FavoriteItemIDRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
+  }
+
+  static int extractFirstNumber(std::string input) {
+    // Remove the opening and closing parentheses
+    input = input.substr(1, input.size() - 2);
+    // Split the string on the comma
+    std::istringstream iss(input);
+    std::string first, second;
+    std::getline(iss, first, ',');
+    // Convert the first part to a int
+    int num = std::stod(first);
+    return num;
+  }
+
+  static Color hsvToRGB(double hue, double saturation, double value) {
+    double r = 0, g = 0, b = 0;
+    if (saturation == 0) {
+      r = value;
+      g = value;
+      b = value;
+    } else {
+      int i;
+      double f, p, q, t;
+
+      if (hue == 360)
+        hue = 0;
+      else
+        hue = hue / 60;
+
+      i = (int) trunc(hue);
+      f = hue - i;
+
+      p = value * (1.0 - saturation);
+      q = value * (1.0 - (saturation * f));
+      t = value * (1.0 - (saturation * (1.0 - f)));
+
+      switch (i) {
+        case 0:
+          r = value;
+          g = t;
+          b = p;
+          break;
+        case 1:
+          r = q;
+          g = value;
+          b = p;
+          break;
+        case 2:
+          r = p;
+          g = value;
+          b = t;
+          break;
+        case 3:
+          r = p;
+          g = q;
+          b = value;
+          break;
+        case 4:
+          r = t;
+          g = p;
+          b = value;
+          break;
+        default:
+          r = value;
+          g = p;
+          b = q;
+          break;
+      }
+    }
+    return Color((unsigned char) (r * 255), (unsigned char) (g * 255), (unsigned char) (b * 255));
   }
 
  private:
