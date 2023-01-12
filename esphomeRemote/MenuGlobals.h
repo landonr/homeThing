@@ -72,4 +72,6 @@ int scrollTop = 0;
 int menuIndex = 0;
 int rotaryPosition = 0;
 int activeMenuTitleCount = 0;
+bool animating = false;
+int animationTick = 0;
 OptionMenuType optionMenu = noOptionMenu;

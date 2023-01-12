@@ -2,6 +2,7 @@ logger:
   level: INFO
 
 api:
+  id: homeassistant_api_id
   services:
     - service: goto_screen
       variables:
@@ -16,7 +17,7 @@ wifi:
   ssid: ${wifi_ssid}
   password: ${wifi_password}
   fast_connect: true
-
+  id: wifi_id
   ap:
     ssid: "${friendly_name} Fallback"
     password: ${wifi_fallback_password}
@@ -32,6 +33,10 @@ color:
     red: 100%
     green: 0%
     blue: 0%
+  - id: my_pink
+    red: 100%
+    green: 16%
+    blue: 100%
   - id: my_yellow
     red: 100%
     green: 75%
@@ -40,6 +45,10 @@ color:
     red: 0%
     green: 100%
     blue: 0%
+  - id: my_blue
+    red: 0%
+    green: 0%
+    blue: 100%
   - id: color_accent_primary
     red: ${color_accent_primary_red}
     green: ${color_accent_primary_green}
@@ -67,18 +76,28 @@ color:
 
 font:
 ## Font needs to be monospace!
+  - file: "fonts/iosevka-heavy.ttf"
+    id: extra_large_font
+    size: ${large_font_size}
+    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: ${large_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: ${medium_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: ${small_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+  - file: 'fonts/homeThingFontLogo.ttf' 
+    id: home_thing_logo
+    size: ${boot_logo_size}
+    glyphs: [
+      '',
+    ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_large
     size: ${icon_size_large}

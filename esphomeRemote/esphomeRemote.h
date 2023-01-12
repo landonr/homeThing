@@ -1093,29 +1093,57 @@ void drawNowPlaying() {
 
 int autoClearState = 0;
 
-void drawBootSequence() {
-  if (autoClearState == 0) {
-    id(my_display).set_auto_clear(false);
-    autoClearState = abs((int) esp_random()) + 1;  // add 1 in case its 0
+void drawBootSequenceRainbow(int xPos, int imageYPos) {
+  std::string bootTitle = "homeThing";
+  int loopLimit = bootTitle.length();
+  int delayTime = 6;
+  int animationStartTime = delayTime;
+  int animationLength = animationStartTime + loopLimit + delayTime * 2;
+  if (animationTick > animationStartTime && animationTick < animationLength) {
+    int currentAnimationTick = animationTick - animationStartTime;
+    int activeCharacter = currentAnimationTick;
+    int maxCharacters = loopLimit;
+    std::vector<Color> colors = {id(my_black), id(my_yellow), id(my_red), id(my_pink), id(my_green), id(my_blue)};
+    int textWidth = maxCharacters * id(large_font_size) * id(font_size_width_ratio);
+    for (int i = 0; i < maxCharacters; i++) {
+      int colorIndex = i <= currentAnimationTick ? currentAnimationTick - i : 0;
+      if (colorIndex > 0) {
+        auto color = colors.size() > colorIndex ? colors[colorIndex] : id(color_accent_primary);
+        int characterXPos = xPos - textWidth / 2 + (i * id(large_font_size) * id(font_size_width_ratio));
+        id(my_display)
+            .printf(characterXPos, imageYPos + 48, &id(extra_large_font), color, TextAlign::TOP_LEFT, "%c",
+                    bootTitle[i]);
+      }
+    }
+  } else if (animationTick >= animationLength) {
+    id(my_display)
+        .printf(xPos, imageYPos + 48, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+                "wifi connecting...");
   }
+
+  // id(my_display)
+  //     .printf(id(my_display).get_width() / 2, imageYPos + 64, &id(extra_large_font), id(my_white),
+  //             TextAlign::TOP_CENTER, "%d", animationTick);
+  animationTick++;
+}
+
+void drawBootSequence() {
   speakerGroup->findActivePlayer();
 
-  std::vector<std::string> glyphs = {
-      "󰐊", "󰓛", "󰏤", "󰽥", "󰒝", "󰒞", "󰕾", "󰕿",
-  };
+  int imageYPos = 32;
+  int xPos = id(my_display).get_width() / 2;
+  id(my_display).printf(xPos, imageYPos, &id(home_thing_logo), id(my_white), TextAlign::TOP_CENTER, "");
 
-  std::vector<Color> colors = {id(my_green), id(color_accent_primary), id(my_yellow), id(my_red)};
-  id(my_display)
-      .printf((int) esp_random() % (id(my_display).get_width() - id(icon_size_large) * 2),
-              (int) esp_random() % (id(my_display).get_height() - id(icon_size_large) * 2), &id(material_font_large),
-              colors[esp_random() % colors.size()], glyphs[esp_random() % glyphs.size()].c_str());
-  for (int i = 0; i < 3; i++) {
-    int xPos = autoClearState % (id(my_display).get_width() / 3);
-    int yPos = autoClearState % (id(my_display).get_height() - id(large_font_size) * 2);
-    auto wrappedBootText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_LEFT, id(boot_device_name));
-    drawTextWrapped(xPos, yPos, id(large_font_size), &id(large_font), colors[esp_random() % colors.size()],
-                    TextAlign::TOP_LEFT, wrappedBootText, 0);
-    autoClearState++;
+  if (id(homeassistant_api_id).is_connected()) {
+    id(my_display)
+        .printf(xPos, imageYPos + 48, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+                "api connected!");
+  } else if (id(wifi_id).is_connected()) {
+    id(my_display)
+        .printf(xPos, imageYPos + 48, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+                "api connecting...");
+  } else {
+    drawBootSequenceRainbow(xPos, imageYPos);
   }
   menuDrawing = false;
 }

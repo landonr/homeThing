@@ -19,6 +19,7 @@ esphome:
 
 substitutions:
   boot_name: '"TDisplay Remote <3"'
+  boot_logo_size: "48"
   friendly_name: "TDisplay Remote"
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
@@ -294,7 +295,7 @@ display:
     dc_pin: GPIO16
     reset_pin: GPIO23
     rotation: 90
-    update_interval: 60s
+    update_interval: 40ms
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");
