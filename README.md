@@ -142,7 +142,8 @@ Supports many different hardware configurations:
 - playlist queue count
 - sonos night sound / speech boost
 - repeat/all/single/off
-- adjust light color
+- graphs
+- media album art
 - weather screen
 - home / room screen
 	- temp display
@@ -156,7 +157,6 @@ Supports many different hardware configurations:
 	- display menu code
 	- rotary and button control code
 	- tdisplay battery / charging
-	- m5stack fire battery / charging
 - case
 - grid ui
 - circuit diagram for tdisplay
