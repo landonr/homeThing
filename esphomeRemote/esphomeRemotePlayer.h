@@ -454,12 +454,16 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
   std::vector<TVPlayerComponent *> tvs;
   bool playerSearchFinished = false;
   std::string playingNewSourceText = "";
+  int loadedPlayers = 0;
+
+  int totalPlayers() { return speakers.size() + tvs.size(); }
 
   void findActivePlayer(bool background = false) {
     if (playerSearchFinished) {
       return;
     }
     BasePlayerComponent *newActivePlayer = NULL;
+    int tempLoadedPlayers = 0;
     for (auto &tv : tvs) {
       if (tv->playerState == NoRemotePlayerState) {
         return;
@@ -470,6 +474,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       } else {
         newActivePlayer = tv;
       }
+      tempLoadedPlayers++;
+      loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     }
     for (auto &speaker : speakers) {
       if (speaker->playerState == NoRemotePlayerState) {
@@ -484,6 +490,8 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       } else {
         newActivePlayer = speaker;
       }
+      tempLoadedPlayers++;
+      loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     }
     if (newActivePlayer != NULL) {
       ESP_LOGI("FIND_ACTIVE_PLAYER", "setting active player %s", newActivePlayer->entityId.c_str());
