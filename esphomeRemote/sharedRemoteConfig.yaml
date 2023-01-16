@@ -171,6 +171,12 @@ globals:
     type: double
     restore_value: no
     initial_value: "0.6"
+
+## Size for boot logo font
+  - id: boot_logo_size
+    type: int
+    restore_value: no
+    initial_value: ${boot_logo_size}
     
 ## Status bar height
   - id: header_height

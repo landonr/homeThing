@@ -23,6 +23,7 @@ esp32:
 
 substitutions:
   boot_name: '"Kitchen Remote <3"'
+  boot_logo_size: "64"
   friendly_name: "Kitchen Remote"
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
@@ -152,7 +153,7 @@ display:
     dc_pin: 32
     led_pin: 04  ### see note below ###
     reset_pin: 05
-    update_interval: 600s
+    update_interval: 40ms
     rotation: 90
     lambda: |-
       if (idleTime < 0) {
@@ -161,7 +162,6 @@ display:
         idleTime = 0;
       } else if (!id(backlight).state) {
         ESP_LOGD("drawing menu", "turning off %d", idleTime);
-        id(my_display).set_update_interval(60000);
         return;
       }
       charging = true;

@@ -497,6 +497,7 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
       ESP_LOGI("FIND_ACTIVE_PLAYER", "setting active player %s", newActivePlayer->entityId.c_str());
       setActivePlayer(newActivePlayer);
       playerSearchFinished = true;
+      display.setUpdateInterval(60000);
       if (!background) {
         display.updateDisplay(true);
       }
