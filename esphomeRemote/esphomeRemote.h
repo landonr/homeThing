@@ -14,12 +14,6 @@ bool menuDrawing = false;
 class DisplayUpdateImpl : public DisplayUpdateInterface {
  public:
   virtual void updateDisplay(bool force) {
-    switch (activeMenuState) {
-      case bootMenu:
-        return;
-      default:
-        break;
-    }
     if (menuDrawing && id(backlight).state) {
       ESP_LOGW("WARNING", "menu already drawing");
       return;
@@ -44,12 +38,6 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
       }
     }
   }
-
-  virtual void setUpdateInterval(int updateInterval) {
-    ESP_LOGI("setUpdateInterval", "setting display update interval %d", updateInterval);
-    id(my_display).set_update_interval(updateInterval);
-    id(my_display).call_setup();
-  }
 };
 
 auto displayUpdate = DisplayUpdateImpl();
@@ -59,8 +47,6 @@ SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
-double marqueePosition = 0;
-bool marqueeText = false;
 
 Color primaryTextColor() {
   if (id(dark_mode)) {
@@ -77,8 +63,6 @@ Color secondaryTextColor() {
     return id(my_white);
   }
 }
-
-void resetMarquee() { marqueePosition = 0; }
 
 std::string textWrap(std::string text, unsigned per_line) {
   unsigned line_begin = 0;
@@ -352,18 +336,18 @@ void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpa
   int textYPos = yPos + (id(margin_size) / 4);
   if (menuState == i) {
     int characterLimit = getCharacterLimit(xPos, id(medium_font_size), TextAlign::TOP_LEFT);
-    if (marqueePosition > title.length() - characterLimit + 4) {
-      marqueePosition = -6;
+    if (animationTick > title.length() - characterLimit + 4) {
+      animationTick = -6;
     }
     int marqueePositionMaxed = 0;
     if (title.length() > characterLimit) {
-      marqueeText = true;
-      marqueePositionMaxed = marqueePosition < title.length() ? marqueePosition : title.length();
+      animating = true;
+      marqueePositionMaxed = animationTick < title.length() ? animationTick : title.length();
       if (marqueePositionMaxed < 0) {
         marqueePositionMaxed = 0;
       }
     } else {
-      marqueeText = false;
+      animating = false;
     }
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
     id(my_display)
@@ -721,7 +705,16 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   }
 }
 
+void resetAnimation() {
+  animating = false;
+  animationTick = 0;
+}
+
 void topMenu() {
+  if (activeMenuState == bootMenu) {
+    return;
+  }
+  resetAnimation();
   menuIndex = 0;
   if (speakerGroup != NULL)
     speakerGroup->newSpeakerGroupParent = NULL;
@@ -730,41 +723,64 @@ void topMenu() {
 }
 
 void idleMenu(bool force) {
+  if (activeMenuState == bootMenu) {
+    return;
+  }
   if (!charging || force) {
     lightGroup->clearActiveLight();
     menuIndex = 0;
-    if (speakerGroup != NULL)
-      speakerGroup->newSpeakerGroupParent = NULL;
+    resetAnimation();
     optionMenu = noOptionMenu;
     activeMenuState = MenuStates::nowPlayingMenu;
+    if (speakerGroup != NULL) {
+      speakerGroup->newSpeakerGroupParent = NULL;
+    }
     if (force) {
       displayUpdate.updateDisplay(true);
     }
   }
 }
 
+void updateMarqueePosition() {
+  if ((charging || idleTime < 15) && idleTime > 1 && (animating || charging)) {
+    if (animating) {
+      animationTick += 1;
+    } else if (animationTick != 0) {
+      animationTick = 0;
+    }
+    if (animationTick >= 0) {
+      displayUpdate.updateDisplay(true);
+    }
+  } else if (animationTick != 0) {
+    animationTick = 0;
+    if (animating) {
+      displayUpdate.updateDisplay(true);
+    }
+  }
+}
+
 void activeTick() {
+  if (!animating) {
+    return;
+  }
+  switch (activeMenuState) {
+    case bootMenu:
+      displayUpdate.updateDisplay(true);
+      return;
+    default:
+      return;
+  }
+}
+
+void marqueeTick() {
+  // sensors is the only menu with marqueed text currently
   switch (activeMenuState) {
     case sensorsMenu:
       break;
     default:
       return;
   }
-  if ((charging || idleTime < 15) && idleTime > 1 && (marqueeText || charging)) {
-    if (marqueeText) {
-      marqueePosition += 1.5;
-    } else if (marqueePosition != 0) {
-      marqueePosition = 0;
-    }
-    if (marqueePosition >= 0) {
-      displayUpdate.updateDisplay(true);
-    }
-  } else if (marqueePosition != 0) {
-    marqueePosition = 0;
-    if (marqueeText) {
-      displayUpdate.updateDisplay(true);
-    }
-  }
+  updateMarqueePosition();
 }
 
 void idleTick() {
@@ -781,6 +797,8 @@ void idleTick() {
     displayUpdate.updateDisplay(true);
   } else if (idleTime == id(display_timeout)) {
     if (speakerGroup != NULL && speakerGroup->playerSearchFinished) {
+      activeMenuState = MenuStates::rootMenu;
+      resetAnimation();
       idleMenu(false);
       displayUpdate.updateDisplay(false);
     }
@@ -1136,7 +1154,7 @@ void drawBootSequenceTitleRainbow(int xPos, int yPos) {
   }
 }
 
-void drawBootSequenceLogo(int xPos, int imageYPos) {
+int drawBootSequenceLogo(int xPos, int imageYPos) {
   int animationLength = 6;
   int delayTime = 2;
   int totalDuration = delayTime + animationLength;
@@ -1147,9 +1165,10 @@ void drawBootSequenceLogo(int xPos, int imageYPos) {
   } else if (animationTick >= totalDuration) {
     id(my_display).printf(xPos, imageYPos, &id(home_thing_logo), id(my_white), TextAlign::TOP_CENTER, "");
   }
+  return totalDuration;
 }
 
-void drawBootSequenceHeader() {
+int drawBootSequenceHeader() {
   int animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
@@ -1160,6 +1179,7 @@ void drawBootSequenceHeader() {
   } else if (animationTick >= totalDuration) {
     drawHeader(0);
   }
+  return totalDuration;
 }
 
 float bootSequenceLoadingProgress() {
@@ -1192,11 +1212,11 @@ void drawBootSequenceLoadingBar(int yPosOffset, float progress) {
                         id(color_accent_primary));
 }
 
-void drawBootSequenceLoadingBarAnimation() {
+int drawBootSequenceLoadingBarAnimation() {
   int animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
-  int maxValue = id(bottom_bar_margin);
+  int maxValue = id(small_font_size) + id(bottom_bar_margin);
 
   if (animationTick > delayTime && animationTick < totalDuration) {
     int yPosOffset = maxValue - (float(animationTick - delayTime) / float(animationLength)) * maxValue;
@@ -1204,6 +1224,7 @@ void drawBootSequenceLoadingBarAnimation() {
   } else if (animationTick >= totalDuration) {
     drawBootSequenceLoadingBar(0, bootSequenceLoadingProgress());
   }
+  return totalDuration;
 }
 
 void drawBootSequenceTitle(int xPos, int imageYPos) {
@@ -1233,12 +1254,18 @@ void drawBootSequence() {
 
   int imageYPos = id(header_height) + id(margin_size) * 2;
   int xPos = id(my_display).get_width() / 2;
-
-  drawBootSequenceHeader();
-  drawBootSequenceLogo(xPos, imageYPos);
+  int maxAnimationDuration = 0;
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceHeader());
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceLogo(xPos, imageYPos));
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceLoadingBarAnimation());
   drawBootSequenceTitle(xPos, imageYPos);
-  drawBootSequenceLoadingBarAnimation();
-  animationTick++;
+  if (animationTick < maxAnimationDuration) {
+    animationTick++;
+  } else {
+    if (id(wifi_id).is_connected() && id(esptime).now().is_valid()) {
+      animating = false;
+    }
+  }
   menuDrawing = false;
 }
 

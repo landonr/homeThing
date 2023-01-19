@@ -191,7 +191,7 @@ display:
     led_pin: 32  ### see note below ###
     reset_pin: 33
     id: my_display
-    update_interval: 40ms 
+    update_interval: 3600s 
     lambda: |-
       manageLight();
       if (idleTime < 0) {

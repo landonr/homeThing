@@ -153,7 +153,7 @@ display:
     dc_pin: 32
     led_pin: 04  ### see note below ###
     reset_pin: 05
-    update_interval: 40ms
+    update_interval: 3600s
     rotation: 90
     lambda: |-
       if (idleTime < 0) {

@@ -4,7 +4,7 @@
 #pragma once
 
 void buttonPressSelect() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -27,7 +27,7 @@ void buttonPressSelect() {
 }
 
 void buttonPressRight() {
-  resetMarquee();
+  resetAnimation();
   optionMenu = noOptionMenu;
   if (buttonPressWakeUpDisplay()) {
     return;

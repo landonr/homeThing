@@ -329,10 +329,14 @@ interval:
     then:
     - lambda: |-
         idleTick();
-  - interval: 0.3s
+  - interval: 40ms
     then:
     - lambda: |-
         activeTick();
+  - interval: 75ms
+    then:
+    - lambda: |-
+        marqueeTick();
 
 deep_sleep:
   id: deep_sleep_1
@@ -345,6 +349,10 @@ binary_sensor:
 time:
   - platform: homeassistant
     id: esptime
+    on_time_sync:
+      then:
+        - lambda: |-
+            displayUpdate.updateDisplay(false);
 
 custom_component:
 # Home assistant speakers and tv. Set TV up with a sound bar

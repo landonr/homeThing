@@ -295,7 +295,7 @@ display:
     dc_pin: GPIO16
     reset_pin: GPIO23
     rotation: 90
-    update_interval: 40ms
+    update_interval: 3600s
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");

@@ -9,7 +9,7 @@ void debounceUpdateDisplay() {
 }
 
 void buttonPressSelect() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -56,7 +56,7 @@ void buttonPressSelectHold() {
 }
 
 void buttonPressNext() {
-  resetMarquee();
+  resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
       speakerGroup->increaseSpeakerVolume();
@@ -89,7 +89,7 @@ void buttonPressNext() {
 }
 
 void buttonPressPrevious() {
-  resetMarquee();
+  resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
       speakerGroup->decreaseSpeakerVolume();
@@ -122,7 +122,7 @@ void buttonPressPrevious() {
 }
 
 void buttonPressUp() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -182,7 +182,7 @@ void buttonPressUp() {
 }
 
 void buttonPressDown() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -215,7 +215,7 @@ void buttonPressDown() {
 }
 
 void buttonPressLeft() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -243,7 +243,7 @@ void buttonPressLeft() {
 }
 
 void buttonPressRight() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -276,7 +276,7 @@ void buttonPressRight() {
 }
 
 void buttonReleaseScreenLeft() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -296,7 +296,7 @@ void buttonReleaseScreenLeft() {
 }
 
 void buttonPressScreenLeft() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -327,7 +327,7 @@ void buttonPressScreenLeft() {
 }
 
 void buttonPressScreenRight() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
