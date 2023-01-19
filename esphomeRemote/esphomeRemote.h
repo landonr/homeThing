@@ -14,11 +14,11 @@ bool menuDrawing = false;
 class DisplayUpdateImpl : public DisplayUpdateInterface {
  public:
   virtual void updateDisplay(bool force) {
-    switch(activeMenuState) {
-    case bootMenu:
-      return;
-    default:
-      break;
+    switch (activeMenuState) {
+      case bootMenu:
+        return;
+      default:
+        break;
     }
     if (menuDrawing && id(backlight).state) {
       ESP_LOGW("WARNING", "menu already drawing");
@@ -745,10 +745,10 @@ void idleMenu(bool force) {
 
 void activeTick() {
   switch (activeMenuState) {
-  case sensorsMenu:
-    break;
-  default:
-    return;
+    case sensorsMenu:
+      break;
+    default:
+      return;
   }
   if ((charging || idleTime < 15) && idleTime > 1 && (marqueeText || charging)) {
     if (marqueeText) {
@@ -1126,8 +1126,7 @@ void drawBootSequenceTitleRainbow(int xPos, int yPos) {
         auto color = colors.size() > colorIndex ? colors[colorIndex] : id(color_accent_primary);
         int characterXPos = xPos - textWidth / 2 + (i * id(large_font_size) * id(font_size_width_ratio));
         id(my_display)
-            .printf(characterXPos, yPos, &id(extra_large_font), color, TextAlign::TOP_LEFT, "%c",
-                    bootTitle[i]);
+            .printf(characterXPos, yPos, &id(extra_large_font), color, TextAlign::TOP_LEFT, "%c", bootTitle[i]);
       }
     }
   } else if (animationTick >= animationLength) {
@@ -1218,8 +1217,7 @@ void drawBootSequenceTitle(int xPos, int imageYPos) {
                   "%d/%d players loaded", loadedPlayers, totalPlayers);
     } else {
       id(my_display)
-          .printf(xPos, yPos, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
-                  "api connected!");
+          .printf(xPos, yPos, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER, "api connected!");
     }
   } else if (id(wifi_id).is_connected()) {
     id(my_display)
