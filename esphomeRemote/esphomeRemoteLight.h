@@ -169,7 +169,7 @@ class LightComponent : public CustomAPIDevice, public Component {
   }
 
   std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit,
-                                              int displayUnitMin, int displayUnitMax) {
+                                              int displayUnitMin, int displayUnitMax, int displayWidth) {
     int displayValue = value;
     float oldRange = max - min;
     float valueMinusMin = value - min;
@@ -179,29 +179,23 @@ class LightComponent : public CustomAPIDevice, public Component {
     }
 
     float newMin = id(slider_margin_size);
-    float newRange = id(display_size_x) - 4 * newMin;
+    float newRange = displayWidth * newMin;
     int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
     return std::make_shared<MenuTitleSlider>(title.c_str(), entityId, NoMenuTitleRightIcon, sliderValue, displayValue,
                                              unit);
   }
 
-  std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems() {
+  std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(int displayWidth) {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    std::string s = "Brightness";
-    int widthAvailable = id(display_size_x) - 2 * id(slider_margin_size);
     if (supportsBrightness()) {
-      out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness", "%%", 0, 100));
+      out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness", "%%", 0, 100, displayWidth));
     }
-
-    s = "Temperature";
     if (supportsColorTemperature()) {
       out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds,
-                               1000000 / maxMireds));
+                               1000000 / maxMireds, displayWidth));
     }
-
-    s = "Color";
     if (supportsColor()) {
-      out.push_back(makeSlider(0, 360, localColor, "Color", "", 0, 360));
+      out.push_back(makeSlider(0, 360, localColor, "Color", "", 0, 360, displayWidth));
     }
     return out;
   }

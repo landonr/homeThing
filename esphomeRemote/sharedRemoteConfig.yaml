@@ -77,21 +77,21 @@ color:
 font:
 ## Font needs to be monospace!
   - file: "fonts/iosevka-heavy.ttf"
-    id: extra_large_font
+    id: large_heavy_font
     size: ${large_font_size}
-    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: 'ñãõ…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: ${large_font_size}
-    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: 'ñãõ…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: ${medium_font_size}
-    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: 'ñãõ…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: ${small_font_size}
-    glyphs: '*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: 'ñãõ…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
   - file: 'fonts/homeThingFontLogo.ttf' 
     id: home_thing_logo
     size: ${boot_logo_size}
@@ -142,12 +142,6 @@ font:
     ]
     
 globals:
-## Width in pixels
-  - id: display_size_x
-    type: int
-    restore_value: no
-    initial_value: ${display_size_x}
-
 ## Size of the large font above
   - id: large_font_size
     type: int
@@ -406,7 +400,7 @@ custom_component:
  ## Home assistant switches. Set with a friendly name
  - lambda: |-
      std::vector<FriendlyNameEntity> switches {
-       FriendlyNameEntity("switch.kitchen_fan", "Kitchen Fan")
+       FriendlyNameEntity("switch.oven_fan", "Kitchen Fan")
      };
      switchGroup = new SwitchGroupComponent(displayUpdate);
      switchGroup->setup(switches);

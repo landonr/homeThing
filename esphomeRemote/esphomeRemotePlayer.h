@@ -458,6 +458,28 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
 
   int totalPlayers() { return speakers.size() + tvs.size(); }
 
+  void selectFirstActivePlayer() {
+    if (playerSearchFinished || loadedPlayers < 1) {
+      return;
+    }
+    for (auto &tv : tvs) {
+      if (tv->playerState != NoRemotePlayerState) {
+        playerSearchFinished = true;
+        setActivePlayer(tv);
+        display.updateDisplay(true);
+        return;
+      }
+    }
+    for (auto &speaker : speakers) {
+      if (speaker->playerState != NoRemotePlayerState) {
+        playerSearchFinished = true;
+        setActivePlayer(speaker);
+        display.updateDisplay(true);
+        return;
+      }
+    }
+  }
+
   void findActivePlayer(bool background = false) {
     if (playerSearchFinished) {
       return;
@@ -904,6 +926,9 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
   }
 
   void syncActivePlayer(RemotePlayerState state) {
+    if (loadedPlayers < totalPlayers()) {
+      return;
+    }
     ESP_LOGI("SYNC", "Syncing active player %d", state);
     playerSearchFinished = false;
     findActivePlayer(true);
@@ -911,30 +936,32 @@ class SonosSpeakerGroupComponent : public CustomAPIDevice, public Component, pub
 
   virtual void stateUpdated(RemotePlayerState state) {
     ESP_LOGD("SYNC", "state update callback %d %d", activePlayer == NULL, id(sync_active_player));
-    if (activePlayer == NULL || id(sync_active_player) == true) {
-      ESP_LOGD("SYNC", "Trying to sync active player, state: %d activePlayerNull: %d, sync_active_player: %d", state,
-               activePlayer == NULL, id(sync_active_player) == true);
-      switch (state) {
-        case NoRemotePlayerState:
-        case PausedRemotePlayerState:
-        case UnavailableRemotePlayerState:
-          ESP_LOGD("SYNC", "Trying to sync active player - 1");
+    if (activePlayer != NULL || !id(sync_active_player)) {
+      return;
+    }
+
+    ESP_LOGD("SYNC", "Trying to sync active player, state: %d activePlayerNull: %d, sync_active_player: %d", state,
+             activePlayer == NULL, id(sync_active_player) == true);
+    switch (state) {
+      case NoRemotePlayerState:
+      case PausedRemotePlayerState:
+      case UnavailableRemotePlayerState:
+        ESP_LOGD("SYNC", "Trying to sync active player - 1");
+        syncActivePlayer(state);
+        return;
+      case PlayingRemotePlayerState:
+        if (activePlayer == NULL) {
+          ESP_LOGD("SYNC", "Trying to sync active player - 2");
           syncActivePlayer(state);
-          return;
-        case PlayingRemotePlayerState:
-          if (activePlayer == NULL) {
-            ESP_LOGD("SYNC", "Trying to sync active player - 2");
-            syncActivePlayer(state);
-          } else if (activePlayer->playerState < state) {
-            ESP_LOGD("SYNC", "Trying to sync active player - 3 %d", activePlayer->playerState);
-            syncActivePlayer(state);
-          }
-          return;
-        case PowerOffRemotePlayerState:
-        case StoppedRemotePlayerState:
-          ESP_LOGD("SYNC", "Trying to sync active player - 4");
+        } else if (activePlayer->playerState < state) {
+          ESP_LOGD("SYNC", "Trying to sync active player - 3 %d", activePlayer->playerState);
           syncActivePlayer(state);
-      }
+        }
+        return;
+      case PowerOffRemotePlayerState:
+      case StoppedRemotePlayerState:
+        ESP_LOGD("SYNC", "Trying to sync active player - 4");
+        syncActivePlayer(state);
     }
   }
 

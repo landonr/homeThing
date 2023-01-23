@@ -55,7 +55,7 @@ void buttonPressSelectHold() {
   }
 }
 
-void buttonPressNext() {
+void rotaryScrollClockwise() {
   resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
@@ -88,7 +88,7 @@ void buttonPressNext() {
   debounceUpdateDisplay();
 }
 
-void buttonPressPrevious() {
+void rotaryScrollCounterClockwise() {
   resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
@@ -248,6 +248,9 @@ void buttonPressRight() {
     return;
   }
   switch (activeMenuState) {
+    case bootMenu:
+      skipBootSequence();
+      break;
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;

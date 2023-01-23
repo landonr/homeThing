@@ -705,7 +705,10 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   }
 }
 
-void resetAnimation() {
+void resetAnimation(bool force = false) {
+  if (activeMenuState == bootMenu && !force) {
+    return;
+  }
   animating = false;
   animationTick = 0;
 }
@@ -802,7 +805,7 @@ void idleTick() {
       idleMenu(false);
       displayUpdate.updateDisplay(false);
     }
-    if (!charging) {
+    if (!charging || activeMenuState != bootMenu) {
       ESP_LOGD("idle", "turning off display");
       id(backlight).turn_off();
     }
@@ -870,14 +873,20 @@ void drawSpeakerOptionMenu() {
               primaryTextColor(), TextAlign::TOP_CENTER, speakerGroup->muteString().c_str());
 }
 
+int getBottomBarYPosition(bool spaceForMenu) {
+  int barHeight = id(small_font_size);
+  int menuSpace = spaceForMenu && id(draw_now_playing_menu) ? id(large_font_size) : 0;
+  int yPos = id(my_display).get_height() - id(margin_size) - menuSpace - id(bottom_bar_margin) - barHeight;
+  return yPos;
+}
+
 void drawVolumeOptionMenu() {
   int barMargin = 1;
   int barHeight = id(small_font_size);
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
   int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * (speakerGroup->getVolumeLevel() / 100);
-  int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
-
+  int yPos = getBottomBarYPosition(true);
   id(my_display)
       .printf(iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(color_accent_primary), "󰕿");
   id(my_display)
@@ -914,7 +923,7 @@ void drawMediaDuration() {
       barWidth = (totalBarWidth - 4) * (static_cast<double>(mediaPosition) / static_cast<double>(mediaDuration));
     }
 
-    int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
+    int yPos = getBottomBarYPosition(true);
     id(my_display).rectangle(textWidth, yPos, totalBarWidth, barHeight, primaryTextColor());
     id(my_display)
         .filled_rectangle(textWidth + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2,
@@ -1144,12 +1153,12 @@ void drawBootSequenceTitleRainbow(int xPos, int yPos) {
         auto color = colors.size() > colorIndex ? colors[colorIndex] : id(color_accent_primary);
         int characterXPos = xPos - textWidth / 2 + (i * id(large_font_size) * id(font_size_width_ratio));
         id(my_display)
-            .printf(characterXPos, yPos, &id(extra_large_font), color, TextAlign::TOP_LEFT, "%c", bootTitle[i]);
+            .printf(characterXPos, yPos, &id(large_heavy_font), color, TextAlign::TOP_LEFT, "%c", bootTitle[i]);
       }
     }
   } else if (animationTick >= animationLength) {
     id(my_display)
-        .printf(xPos, yPos, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+        .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
                 "wifi connecting...");
   }
 }
@@ -1204,7 +1213,7 @@ void drawBootSequenceLoadingBar(int yPosOffset, float progress) {
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
   int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * progress;
-  int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin) + yPosOffset;
+  int yPos = getBottomBarYPosition(false) + yPosOffset;
 
   id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(color_accent_primary));
   id(my_display)
@@ -1227,6 +1236,24 @@ int drawBootSequenceLoadingBarAnimation() {
   return totalDuration;
 }
 
+bool bootSequenceCanSkip() {
+  return activeMenuState == bootMenu && speakerGroup != NULL && speakerGroup->loadedPlayers > 0;
+}
+
+void drawBootSequenceSkipTitle(int xPos, int imageYPos) {
+  if (bootSequenceCanSkip()) {
+    int yPos = getBottomBarYPosition(false) - id(margin_size) / 2 - id(small_font_size);
+    id(my_display).printf(xPos, yPos, &id(small_font), id(color_accent_primary), TextAlign::TOP_CENTER, "skip >");
+  }
+}
+
+void skipBootSequence() {
+  if (!bootSequenceCanSkip()) {
+    return;
+  }
+  speakerGroup->selectFirstActivePlayer();
+}
+
 void drawBootSequenceTitle(int xPos, int imageYPos) {
   int yPos = imageYPos + id(boot_logo_size) + id(margin_size);
   if (id(homeassistant_api_id).is_connected()) {
@@ -1234,19 +1261,20 @@ void drawBootSequenceTitle(int xPos, int imageYPos) {
       int totalPlayers = speakerGroup->totalPlayers();
       int loadedPlayers = speakerGroup->loadedPlayers;
       id(my_display)
-          .printf(xPos, yPos, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+          .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
                   "%d/%d players loaded", loadedPlayers, totalPlayers);
     } else {
       id(my_display)
-          .printf(xPos, yPos, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER, "api connected!");
+          .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER, "api connected!");
     }
   } else if (id(wifi_id).is_connected()) {
     id(my_display)
-        .printf(xPos, yPos, &id(extra_large_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+        .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
                 "api connecting...");
   } else {
     drawBootSequenceTitleRainbow(xPos, yPos);
   }
+  drawBootSequenceSkipTitle(xPos, imageYPos);
 }
 
 void drawBootSequence() {
@@ -1296,7 +1324,7 @@ void drawMenu() {
       break;
     case lightsDetailMenu:
       if (lightGroup->getActiveLight() != NULL) {
-        drawMenu(lightGroup->getActiveLight()->lightTitleItems());
+        drawMenu(lightGroup->getActiveLight()->lightTitleItems(id(my_display).get_width()));
       }
       break;
     case switchesMenu:

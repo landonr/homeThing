@@ -78,11 +78,11 @@ sensor:
     on_clockwise:
       - lambda: |-
           buttonPressWakeUpDisplay();
-          buttonPressNext();
+          rotaryScrollClockwise();
     on_anticlockwise:
       - lambda: |-
           buttonPressWakeUpDisplay();
-          buttonPressPrevious();
+          rotaryScrollCounterClockwise();
 
 ## Needed to debounce screen updates for rotary. 17ms is close to 60fps for st7789v
   - platform: template
