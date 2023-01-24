@@ -26,7 +26,6 @@ substitutions:
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
   wifi_fallback_password: !secret wifi_fallback_password
-  display_size_x: "240"
   large_font_size: "24"
   medium_font_size: "20"
   small_font_size: "18"
@@ -36,7 +35,7 @@ substitutions:
   margin_size: "8"
   slider_margin_size: "6"
   scroll_bar_width: "8"
-  bottom_bar_margin: "42"
+  bottom_bar_margin: "8"
   now_playing_max_lines: "5"
   draw_now_playing_menu: "true"
   draw_battery_level: "true"
@@ -199,7 +198,6 @@ display:
         id(backlight).turn_on();
         idleTime = 0;
       }
-      ESP_LOGI("drawing menu", "hi");
       drawMenu();
       return;
       

@@ -800,12 +800,16 @@ void idleTick() {
     displayUpdate.updateDisplay(true);
   } else if (idleTime == id(display_timeout)) {
     if (speakerGroup != NULL && speakerGroup->playerSearchFinished) {
+      if(charging && activeMenuState != bootMenu) {
+        idleTime++;
+        return;
+      }
       activeMenuState = MenuStates::rootMenu;
       resetAnimation();
       idleMenu(false);
       displayUpdate.updateDisplay(false);
     }
-    if (!charging || activeMenuState != bootMenu) {
+    if (!charging) {
       ESP_LOGD("idle", "turning off display");
       id(backlight).turn_off();
     }
