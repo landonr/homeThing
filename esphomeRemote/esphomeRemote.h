@@ -800,7 +800,7 @@ void idleTick() {
     displayUpdate.updateDisplay(true);
   } else if (idleTime == id(display_timeout)) {
     if (speakerGroup != NULL && speakerGroup->playerSearchFinished) {
-      if(charging && activeMenuState != bootMenu) {
+      if (charging && activeMenuState != bootMenu) {
         idleTime++;
         return;
       }
