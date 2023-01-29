@@ -1139,12 +1139,17 @@ void drawNowPlaying() {
 
 int autoClearState = 0;
 
-void drawBootSequenceTitleRainbow(int xPos, int yPos) {
+bool bootSequenceCanSleep() {
+  return activeMenuState == bootMenu && !id(wifi_id).is_connected() || !id(homeassistant_api_id).is_connected();
+}
+
+int drawBootSequenceTitleRainbow(int xPos, int yPos) {
   std::string bootTitle = "homeThing";
   int loopLimit = bootTitle.length();
   int delayTime = 6;
   int animationStartTime = delayTime;
   int animationLength = animationStartTime + loopLimit + delayTime * 2;
+  int showSleepLength = animationLength + delayTime * 2;
   if (animationTick > animationStartTime && animationTick < animationLength) {
     int currentAnimationTick = animationTick - animationStartTime;
     int activeCharacter = currentAnimationTick;
@@ -1164,7 +1169,12 @@ void drawBootSequenceTitleRainbow(int xPos, int yPos) {
     id(my_display)
         .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
                 "wifi connecting...");
+    if (animationTick >= showSleepLength && bootSequenceCanSleep()) {
+      yPos = getBottomBarYPosition(false) - id(margin_size) / 2 - id(small_font_size);
+      id(my_display).printf(xPos, yPos, &id(small_font), id(color_accent_primary), TextAlign::TOP_CENTER, "sleep >");
+    }
   }
+  return showSleepLength;
 }
 
 int drawBootSequenceLogo(int xPos, int imageYPos) {
@@ -1253,13 +1263,17 @@ void drawBootSequenceSkipTitle(int xPos, int imageYPos) {
 
 void skipBootSequence() {
   if (!bootSequenceCanSkip()) {
+    if (bootSequenceCanSleep()) {
+      id(sleep_toggle).turn_on();
+    }
     return;
   }
   speakerGroup->selectFirstActivePlayer();
 }
 
-void drawBootSequenceTitle(int xPos, int imageYPos) {
+int drawBootSequenceTitle(int xPos, int imageYPos) {
   int yPos = imageYPos + id(boot_logo_size) + id(margin_size);
+  int maxAnimationDuration = 0;
   if (id(homeassistant_api_id).is_connected()) {
     if (speakerGroup != NULL) {
       int totalPlayers = speakerGroup->totalPlayers();
@@ -1276,9 +1290,10 @@ void drawBootSequenceTitle(int xPos, int imageYPos) {
         .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
                 "api connecting...");
   } else {
-    drawBootSequenceTitleRainbow(xPos, yPos);
+    maxAnimationDuration = drawBootSequenceTitleRainbow(xPos, yPos);
   }
   drawBootSequenceSkipTitle(xPos, imageYPos);
+  return maxAnimationDuration;
 }
 
 void drawBootSequence() {
@@ -1290,7 +1305,7 @@ void drawBootSequence() {
   maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceHeader());
   maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceLogo(xPos, imageYPos));
   maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceLoadingBarAnimation());
-  drawBootSequenceTitle(xPos, imageYPos);
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceTitle(xPos, imageYPos));
   if (animationTick < maxAnimationDuration) {
     animationTick++;
   } else {
