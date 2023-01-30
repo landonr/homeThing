@@ -35,6 +35,7 @@ substitutions:
   icon_size_large: "19"
   header_height: "16"
   margin_size: "4"
+  slider_margin_size: "6"
   scroll_bar_width: "6"
   bottom_bar_margin: "32"
   now_playing_max_lines: "8"
@@ -50,7 +51,12 @@ substitutions:
   sleep_after: "7200"
   menu_rollover_on: "false"
   sync_active_player: "true"
+  dec_brightness_step: "10"
+  inc_brightness_step: "10"
+  dec_color_temperature_step: "10"
+  inc_color_temperature_step: "10"
   dark_mode: "true"
+  keep_states_in_sync: "false"
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
 

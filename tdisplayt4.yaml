@@ -56,7 +56,7 @@ substitutions:
   dec_color_temperature_step: "10"
   inc_color_temperature_step: "10"
   dark_mode: "true"
-  keep_states_in_sync: "false"
+  keep_states_in_sync: "true"
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
 
