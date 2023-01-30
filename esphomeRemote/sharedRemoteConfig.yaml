@@ -79,19 +79,19 @@ font:
   - file: "fonts/iosevka-heavy.ttf"
     id: large_heavy_font
     size: ${large_font_size}
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢñãõÑÃÕ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: ${large_font_size}
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢñãõÑÃÕ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: ${medium_font_size}
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢñãõÑÃÕ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: ${small_font_size}
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢñãõÑÃÕ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: 'fonts/homeThingFontLogo.ttf' 
     id: home_thing_logo
     size: ${boot_logo_size}
@@ -327,7 +327,7 @@ interval:
     then:
     - lambda: |-
         activeTick();
-  - interval: 75ms
+  - interval: 100ms
     then:
     - lambda: |-
         marqueeTick();
