@@ -2,6 +2,7 @@ logger:
   level: INFO
 
 api:
+  id: homeassistant_api_id
   services:
     - service: goto_screen
       variables:
@@ -16,7 +17,7 @@ wifi:
   ssid: ${wifi_ssid}
   password: ${wifi_password}
   fast_connect: true
-
+  id: wifi_id
   ap:
     ssid: "${friendly_name} Fallback"
     password: ${wifi_fallback_password}
@@ -32,6 +33,10 @@ color:
     red: 100%
     green: 0%
     blue: 0%
+  - id: my_pink
+    red: 100%
+    green: 16%
+    blue: 100%
   - id: my_yellow
     red: 100%
     green: 75%
@@ -40,6 +45,10 @@ color:
     red: 0%
     green: 100%
     blue: 0%
+  - id: my_blue
+    red: 0%
+    green: 0%
+    blue: 100%
   - id: color_accent_primary
     red: ${color_accent_primary_red}
     green: ${color_accent_primary_green}
@@ -67,18 +76,28 @@ color:
 
 font:
 ## Font needs to be monospace!
+  - file: "fonts/iosevka-heavy.ttf"
+    id: large_heavy_font
+    size: ${large_font_size}
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: "fonts/iosevka.ttf"
     id: large_font
     size: ${large_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: "fonts/iosevka.ttf"
     id: medium_font
     size: ${medium_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
   - file: "fonts/iosevka.ttf"
     id: small_font
     size: ${small_font_size}
-    glyphs: '*/\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏṣṢ''’'
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+  - file: 'fonts/homeThingFontLogo.ttf' 
+    id: home_thing_logo
+    size: ${boot_logo_size}
+    glyphs: [
+      '',
+    ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_large
     size: ${icon_size_large}
@@ -123,12 +142,6 @@ font:
     ]
     
 globals:
-## Width in pixels
-  - id: display_size_x
-    type: int
-    restore_value: no
-    initial_value: ${display_size_x}
-
 ## Size of the large font above
   - id: large_font_size
     type: int
@@ -152,6 +165,12 @@ globals:
     type: double
     restore_value: no
     initial_value: "0.6"
+
+## Size for boot logo font
+  - id: boot_logo_size
+    type: int
+    restore_value: no
+    initial_value: ${boot_logo_size}
     
 ## Status bar height
   - id: header_height
@@ -304,10 +323,14 @@ interval:
     then:
     - lambda: |-
         idleTick();
-  - interval: 0.3s
+  - interval: 40ms
     then:
     - lambda: |-
         activeTick();
+  - interval: 100ms
+    then:
+    - lambda: |-
+        marqueeTick();
 
 deep_sleep:
   id: deep_sleep_1
@@ -320,6 +343,10 @@ binary_sensor:
 time:
   - platform: homeassistant
     id: esptime
+    on_time_sync:
+      then:
+        - lambda: |-
+            displayUpdate.updateDisplay(false);
 
 custom_component:
 # Home assistant speakers and tv. Set TV up with a sound bar
@@ -373,7 +400,7 @@ custom_component:
  ## Home assistant switches. Set with a friendly name
  - lambda: |-
      std::vector<FriendlyNameEntity> switches {
-       FriendlyNameEntity("switch.kitchen_fan", "Kitchen Fan")
+       FriendlyNameEntity("switch.oven_fan", "Kitchen Fan")
      };
      switchGroup = new SwitchGroupComponent(displayUpdate);
      switchGroup->setup(switches);

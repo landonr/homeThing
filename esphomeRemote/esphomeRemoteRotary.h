@@ -9,7 +9,7 @@ void debounceUpdateDisplay() {
 }
 
 void buttonPressSelect() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -55,8 +55,8 @@ void buttonPressSelectHold() {
   }
 }
 
-void buttonPressNext() {
-  resetMarquee();
+void rotaryScrollClockwise() {
+  resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
       speakerGroup->increaseSpeakerVolume();
@@ -88,8 +88,8 @@ void buttonPressNext() {
   debounceUpdateDisplay();
 }
 
-void buttonPressPrevious() {
-  resetMarquee();
+void rotaryScrollCounterClockwise() {
+  resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
       speakerGroup->decreaseSpeakerVolume();
@@ -122,7 +122,7 @@ void buttonPressPrevious() {
 }
 
 void buttonPressUp() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -182,7 +182,7 @@ void buttonPressUp() {
 }
 
 void buttonPressDown() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -215,7 +215,7 @@ void buttonPressDown() {
 }
 
 void buttonPressLeft() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -243,11 +243,14 @@ void buttonPressLeft() {
 }
 
 void buttonPressRight() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
   switch (activeMenuState) {
+    case bootMenu:
+      skipBootSequence();
+      break;
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
@@ -276,7 +279,7 @@ void buttonPressRight() {
 }
 
 void buttonReleaseScreenLeft() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -296,7 +299,7 @@ void buttonReleaseScreenLeft() {
 }
 
 void buttonPressScreenLeft() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }
@@ -327,7 +330,7 @@ void buttonPressScreenLeft() {
 }
 
 void buttonPressScreenRight() {
-  resetMarquee();
+  resetAnimation();
   if (buttonPressWakeUpDisplay()) {
     return;
   }

@@ -19,11 +19,11 @@ esphome:
 
 substitutions:
   boot_name: '"TDisplay Remote <3"'
+  boot_logo_size: "48"
   friendly_name: "TDisplay Remote"
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
   wifi_fallback_password: !secret wifi_fallback_password
-  display_size_x: "240"
   large_font_size: "24"
   medium_font_size: "15"
   small_font_size: "14"
@@ -77,11 +77,11 @@ sensor:
     on_clockwise:
       - lambda: |-
           buttonPressWakeUpDisplay();
-          buttonPressNext();
+          rotaryScrollClockwise();
     on_anticlockwise:
       - lambda: |-
           buttonPressWakeUpDisplay();
-          buttonPressPrevious();
+          rotaryScrollCounterClockwise();
 
 ## Needed to debounce screen updates for rotary. 17ms is close to 60fps for st7789v
   - platform: template
@@ -294,7 +294,7 @@ display:
     dc_pin: GPIO16
     reset_pin: GPIO23
     rotation: 90
-    update_interval: 60s
+    update_interval: 3600s
     lambda: |-
       if (idleTime < 0) {
         ESP_LOGD("drawing menu", "turning on");

@@ -47,8 +47,6 @@ SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
-double marqueePosition = 0;
-bool marqueeText = false;
 
 Color primaryTextColor() {
   if (id(dark_mode)) {
@@ -65,8 +63,6 @@ Color secondaryTextColor() {
     return id(my_white);
   }
 }
-
-void resetMarquee() { marqueePosition = 0; }
 
 std::string textWrap(std::string text, unsigned per_line) {
   unsigned line_begin = 0;
@@ -151,10 +147,10 @@ void goToScreenFromString(std::string screenName) {
 
 int getTextWidth(int fontSize, int characterCount) { return (fontSize * id(font_size_width_ratio) * characterCount); }
 
-int getHeaderTextYPos() { return ((id(header_height) - id(small_font_size) * 1.2) / 2); }
+int getHeaderTextYPos(int yPosOffset) { return ((id(header_height) - id(small_font_size) * 1.2) / 2) - yPosOffset; }
 
 int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle) {
-  int yPos = getHeaderTextYPos();
+  int yPos = getHeaderTextYPos(0);
   int xPos = oldXPos;
   switch (menuTitle.playerState) {
     case PlayingRemotePlayerState: {
@@ -178,18 +174,18 @@ int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle) {
   return xPos + id(icon_size) + id(margin_size) / 2;
 }
 
-void drawHeaderTitleWithString(std::string title, int xPos) {
-  int yPos = getHeaderTextYPos();
+void drawHeaderTitleWithString(std::string title, int xPos, int yPosOffset = 0) {
+  int yPos = getHeaderTextYPos(yPosOffset);
   id(my_display).printf(xPos, yPos, &id(small_font), primaryTextColor(), title.c_str());
 }
 
 int drawHeaderIcon(std::string title, int xPos, Color iconColor) {
-  int yPos = getHeaderTextYPos();
+  int yPos = getHeaderTextYPos(0);
   id(my_display).printf(xPos, yPos, &id(material_font_small), iconColor, title.c_str());
   return xPos + id(icon_size) + id(margin_size) / 2;
 }
 
-void drawHeaderTitle() {
+void drawHeaderTitle(int yPosOffset) {
   int xPos = 2;
   switch (activeMenuState) {
     case rootMenu:
@@ -238,12 +234,12 @@ void drawHeaderTitle() {
       drawHeaderTitleWithString("Sensors", xPos);
       break;
     case bootMenu:
-      drawHeaderTitleWithString("Boot", xPos);
+      drawHeaderTitleWithString(id(boot_device_name), xPos, yPosOffset);
       break;
   }
 }
 
-int drawVolumeLevel(int oldXPos) {
+int drawVolumeLevel(int oldXPos, int yPosOffset) {
   if (speakerGroup == NULL) {
     return oldXPos;
   }
@@ -251,15 +247,15 @@ int drawVolumeLevel(int oldXPos) {
     return oldXPos;
   }
   int xPos = oldXPos - id(margin_size) / 2;
-  int yPos = getHeaderTextYPos();
+  int yPos = getHeaderTextYPos(yPosOffset);
   id(my_display)
       .printf(xPos, yPos, &id(small_font), primaryTextColor(), TextAlign::TOP_RIGHT, "%.0f%%",
               speakerGroup->getVolumeLevel());
   return xPos;
 }
 
-int drawShuffle(int oldXPos) {
-  if (speakerGroup == NULL) {
+int drawShuffle(int oldXPos, int yPosOffset) {
+  if (speakerGroup == NULL || speakerGroup->activePlayer == NULL) {
     return oldXPos;
   }
   if (speakerGroup->activePlayer->playerType == TVRemotePlayerType) {
@@ -267,7 +263,7 @@ int drawShuffle(int oldXPos) {
   }
   if (speakerGroup->activePlayer->playerState != StoppedRemotePlayerState) {
     int xPos = oldXPos - id(icon_size) + id(margin_size) / 2;
-    int yPos = getHeaderTextYPos();
+    int yPos = getHeaderTextYPos(yPosOffset);
     if (speakerGroup->mediaShuffling()) {
       id(my_display).printf(xPos, yPos, &id(material_font_small), id(color_accent_primary), "󰒝");
     } else if (id(draw_shuffle_disabled)) {
@@ -280,8 +276,8 @@ int drawShuffle(int oldXPos) {
   return oldXPos;
 }
 
-int drawHeaderTime(int oldXPos) {
-  if (!id(draw_header_time)) {
+int drawHeaderTime(int oldXPos, int yPosOffset) {
+  if (!id(draw_header_time) || !id(esptime).now().is_valid()) {
     return oldXPos;
   }
   switch (activeMenuState) {
@@ -294,7 +290,7 @@ int drawHeaderTime(int oldXPos) {
       }
       break;
   }
-  int yPos = getHeaderTextYPos();
+  int yPos = getHeaderTextYPos(yPosOffset);
   std::string timeString = id(esptime).now().strftime("%I:%M%P");
   if (timeString.length() > 0 && timeString[0] == '0') {
     timeString.erase(0, 1);
@@ -304,13 +300,13 @@ int drawHeaderTime(int oldXPos) {
   return xPos - id(margin_size) / 2;
 }
 
-int drawBattery(int oldXPos) {
+int drawBattery(int oldXPos, int yPosOffset) {
   if (!id(draw_battery_level)) {
     return oldXPos;
   }
   int batteryWidth = 24;
   int batteryHeight = id(header_height) - 5;
-  int yPos = 2;
+  int yPos = 2 - yPosOffset;
   int capHeight = 6;
   int capWidth = 3;
   int xPos = oldXPos - batteryWidth;
@@ -328,11 +324,11 @@ int drawBattery(int oldXPos) {
   return xPos - id(margin_size);
 }
 
-void drawHeader() {
-  id(my_display).rectangle(0, id(header_height), id(my_display).get_width(), 1, id(color_accent_primary));
-  drawHeaderTitle();
+void drawHeader(int yPosOffset) {
+  id(my_display).rectangle(0, id(header_height) - yPosOffset, id(my_display).get_width(), 1, id(color_accent_primary));
+  drawHeaderTitle(yPosOffset);
   int xPos = id(my_display).get_width() - id(margin_size) / 2;
-  drawVolumeLevel(drawHeaderTime(drawShuffle(drawBattery(xPos))));
+  drawVolumeLevel(drawHeaderTime(drawShuffle(drawBattery(xPos, yPosOffset), yPosOffset), yPosOffset), yPosOffset);
 }
 
 void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpace) {
@@ -340,18 +336,18 @@ void drawTitle(int menuState, int i, std::string title, int yPos, bool buttonSpa
   int textYPos = yPos + (id(margin_size) / 4);
   if (menuState == i) {
     int characterLimit = getCharacterLimit(xPos, id(medium_font_size), TextAlign::TOP_LEFT);
-    if (marqueePosition > title.length() - characterLimit + 4) {
-      marqueePosition = -6;
+    if (animationTick > title.length() - characterLimit + 4) {
+      animationTick = -6;
     }
     int marqueePositionMaxed = 0;
     if (title.length() > characterLimit) {
-      marqueeText = true;
-      marqueePositionMaxed = marqueePosition < title.length() ? marqueePosition : title.length();
+      animating = true;
+      marqueePositionMaxed = animationTick < title.length() ? animationTick : title.length();
       if (marqueePositionMaxed < 0) {
         marqueePositionMaxed = 0;
       }
     } else {
-      marqueeText = false;
+      animating = false;
     }
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
     id(my_display)
@@ -709,7 +705,19 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   }
 }
 
+void resetAnimation(bool force = false) {
+  if (activeMenuState == bootMenu && !force) {
+    return;
+  }
+  animating = false;
+  animationTick = 0;
+}
+
 void topMenu() {
+  if (activeMenuState == bootMenu) {
+    return;
+  }
+  resetAnimation();
   menuIndex = 0;
   if (speakerGroup != NULL)
     speakerGroup->newSpeakerGroupParent = NULL;
@@ -718,38 +726,64 @@ void topMenu() {
 }
 
 void idleMenu(bool force) {
+  if (activeMenuState == bootMenu) {
+    return;
+  }
   if (!charging || force) {
     lightGroup->clearActiveLight();
     menuIndex = 0;
-    if (speakerGroup != NULL)
-      speakerGroup->newSpeakerGroupParent = NULL;
+    resetAnimation();
     optionMenu = noOptionMenu;
     activeMenuState = MenuStates::nowPlayingMenu;
+    if (speakerGroup != NULL) {
+      speakerGroup->newSpeakerGroupParent = NULL;
+    }
     if (force) {
       displayUpdate.updateDisplay(true);
     }
   }
 }
 
+void updateMarqueePosition() {
+  if ((charging || idleTime < 15) && idleTime > 1 && (animating || charging)) {
+    if (animating) {
+      animationTick += 1;
+    } else if (animationTick != 0) {
+      animationTick = 0;
+    }
+    if (animationTick >= 0) {
+      displayUpdate.updateDisplay(true);
+    }
+  } else if (animationTick != 0) {
+    animationTick = 0;
+    if (animating) {
+      displayUpdate.updateDisplay(true);
+    }
+  }
+}
+
 void activeTick() {
-  if (activeMenuState == bootMenu) {
+  if (!animating) {
     return;
   }
-  if ((charging || idleTime < 15) && idleTime > 1 && (marqueeText || charging)) {
-    if (marqueeText) {
-      marqueePosition += 1.5;
-    } else if (marqueePosition != 0) {
-      marqueePosition = 0;
-    }
-    if (marqueePosition >= 0) {
+  switch (activeMenuState) {
+    case bootMenu:
       displayUpdate.updateDisplay(true);
-    }
-  } else if (marqueePosition != 0) {
-    marqueePosition = 0;
-    if (marqueeText) {
-      displayUpdate.updateDisplay(true);
-    }
+      return;
+    default:
+      return;
   }
+}
+
+void marqueeTick() {
+  // sensors is the only menu with marqueed text currently
+  switch (activeMenuState) {
+    case sensorsMenu:
+      break;
+    default:
+      return;
+  }
+  updateMarqueePosition();
 }
 
 void idleTick() {
@@ -766,6 +800,12 @@ void idleTick() {
     displayUpdate.updateDisplay(true);
   } else if (idleTime == id(display_timeout)) {
     if (speakerGroup != NULL && speakerGroup->playerSearchFinished) {
+      if (charging && activeMenuState != bootMenu) {
+        idleTime++;
+        return;
+      }
+      activeMenuState = MenuStates::rootMenu;
+      resetAnimation();
       idleMenu(false);
       displayUpdate.updateDisplay(false);
     }
@@ -837,14 +877,20 @@ void drawSpeakerOptionMenu() {
               primaryTextColor(), TextAlign::TOP_CENTER, speakerGroup->muteString().c_str());
 }
 
+int getBottomBarYPosition(bool spaceForMenu) {
+  int barHeight = id(small_font_size);
+  int menuSpace = spaceForMenu && id(draw_now_playing_menu) ? id(large_font_size) : 0;
+  int yPos = id(my_display).get_height() - id(margin_size) - menuSpace - id(bottom_bar_margin) - barHeight;
+  return yPos;
+}
+
 void drawVolumeOptionMenu() {
   int barMargin = 1;
   int barHeight = id(small_font_size);
   int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
   int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * (speakerGroup->getVolumeLevel() / 100);
-  int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
-
+  int yPos = getBottomBarYPosition(true);
   id(my_display)
       .printf(iconMargin / 2 - id(icon_size) / 2, yPos + 1, &id(material_font_small), id(color_accent_primary), "󰕿");
   id(my_display)
@@ -881,7 +927,7 @@ void drawMediaDuration() {
       barWidth = (totalBarWidth - 4) * (static_cast<double>(mediaPosition) / static_cast<double>(mediaDuration));
     }
 
-    int yPos = id(my_display).get_height() - barHeight - id(bottom_bar_margin);
+    int yPos = getBottomBarYPosition(true);
     id(my_display).rectangle(textWidth, yPos, totalBarWidth, barHeight, primaryTextColor());
     id(my_display)
         .filled_rectangle(textWidth + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2,
@@ -1093,29 +1139,179 @@ void drawNowPlaying() {
 
 int autoClearState = 0;
 
-void drawBootSequence() {
-  if (autoClearState == 0) {
-    id(my_display).set_auto_clear(false);
-    autoClearState = abs((int) esp_random()) + 1;  // add 1 in case its 0
+bool bootSequenceCanSleep() {
+  return activeMenuState == bootMenu && !id(wifi_id).is_connected() || !id(homeassistant_api_id).is_connected();
+}
+
+int drawBootSequenceTitleRainbow(int xPos, int yPos) {
+  std::string bootTitle = "homeThing";
+  int loopLimit = bootTitle.length();
+  int delayTime = 6;
+  int animationStartTime = delayTime;
+  int animationLength = animationStartTime + loopLimit + delayTime * 2;
+  int showSleepLength = animationLength + delayTime * 2;
+  if (animationTick > animationStartTime && animationTick < animationLength) {
+    int currentAnimationTick = animationTick - animationStartTime;
+    int activeCharacter = currentAnimationTick;
+    int maxCharacters = loopLimit;
+    std::vector<Color> colors = {id(my_black), id(my_yellow), id(my_red), id(my_pink), id(my_green), id(my_blue)};
+    int textWidth = maxCharacters * id(large_font_size) * id(font_size_width_ratio);
+    for (int i = 0; i < maxCharacters; i++) {
+      int colorIndex = i <= currentAnimationTick ? currentAnimationTick - i : 0;
+      if (colorIndex > 0) {
+        auto color = colors.size() > colorIndex ? colors[colorIndex] : id(color_accent_primary);
+        int characterXPos = xPos - textWidth / 2 + (i * id(large_font_size) * id(font_size_width_ratio));
+        id(my_display)
+            .printf(characterXPos, yPos, &id(large_heavy_font), color, TextAlign::TOP_LEFT, "%c", bootTitle[i]);
+      }
+    }
+  } else if (animationTick >= animationLength) {
+    id(my_display)
+        .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+                "wifi connecting...");
+    if (animationTick >= showSleepLength && bootSequenceCanSleep()) {
+      yPos = getBottomBarYPosition(false) - id(margin_size) / 2 - id(small_font_size);
+      id(my_display).printf(xPos, yPos, &id(small_font), id(color_accent_primary), TextAlign::TOP_CENTER, "sleep >");
+    }
   }
+  return showSleepLength;
+}
+
+int drawBootSequenceLogo(int xPos, int imageYPos) {
+  int animationLength = 6;
+  int delayTime = 2;
+  int totalDuration = delayTime + animationLength;
+  if (animationTick > delayTime && animationTick < totalDuration) {
+    int colorValue = (float(animationTick - delayTime) / float(animationLength)) * 255;
+    auto color = Color(colorValue, colorValue, colorValue);
+    id(my_display).printf(xPos, imageYPos, &id(home_thing_logo), color, TextAlign::TOP_CENTER, "");
+  } else if (animationTick >= totalDuration) {
+    id(my_display).printf(xPos, imageYPos, &id(home_thing_logo), id(my_white), TextAlign::TOP_CENTER, "");
+  }
+  return totalDuration;
+}
+
+int drawBootSequenceHeader() {
+  int animationLength = 8;
+  int delayTime = 20;
+  int totalDuration = delayTime + animationLength;
+  int maxValue = id(header_height);
+  if (animationTick > delayTime && animationTick < totalDuration) {
+    int yPosOffset = maxValue - (float(animationTick - delayTime) / float(animationLength)) * maxValue;
+    drawHeader(yPosOffset);
+  } else if (animationTick >= totalDuration) {
+    drawHeader(0);
+  }
+  return totalDuration;
+}
+
+float bootSequenceLoadingProgress() {
+  if (id(homeassistant_api_id).is_connected()) {
+    if (speakerGroup != NULL) {
+      int totalPlayers = speakerGroup->totalPlayers();
+      int loadedPlayers = speakerGroup->loadedPlayers;
+      float progress = 0.8 * (float(loadedPlayers) / float(totalPlayers));
+      return 0.25 + progress;
+    }
+    return 0.2;
+  } else if (id(wifi_id).is_connected()) {
+    return 0.1;
+  } else {
+    return 0;
+  }
+}
+
+void drawBootSequenceLoadingBar(int yPosOffset, float progress) {
+  int barMargin = 1;
+  int barHeight = id(small_font_size);
+  int iconMargin = id(small_font_size) * id(font_size_width_ratio) * 3;
+  int totalBarWidth = id(my_display).get_width() - iconMargin * 2;
+  int barWidth = (totalBarWidth - 4) * progress;
+  int yPos = getBottomBarYPosition(false) + yPosOffset;
+
+  id(my_display).rectangle(iconMargin, yPos, totalBarWidth, barHeight, id(color_accent_primary));
+  id(my_display)
+      .filled_rectangle(iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth, barHeight - 2 - barMargin * 2,
+                        id(color_accent_primary));
+}
+
+int drawBootSequenceLoadingBarAnimation() {
+  int animationLength = 8;
+  int delayTime = 20;
+  int totalDuration = delayTime + animationLength;
+  int maxValue = id(small_font_size) + id(bottom_bar_margin);
+
+  if (animationTick > delayTime && animationTick < totalDuration) {
+    int yPosOffset = maxValue - (float(animationTick - delayTime) / float(animationLength)) * maxValue;
+    drawBootSequenceLoadingBar(yPosOffset, bootSequenceLoadingProgress());
+  } else if (animationTick >= totalDuration) {
+    drawBootSequenceLoadingBar(0, bootSequenceLoadingProgress());
+  }
+  return totalDuration;
+}
+
+bool bootSequenceCanSkip() {
+  return activeMenuState == bootMenu && speakerGroup != NULL && speakerGroup->loadedPlayers > 0;
+}
+
+void drawBootSequenceSkipTitle(int xPos, int imageYPos) {
+  if (bootSequenceCanSkip()) {
+    int yPos = getBottomBarYPosition(false) - id(margin_size) / 2 - id(small_font_size);
+    id(my_display).printf(xPos, yPos, &id(small_font), id(color_accent_primary), TextAlign::TOP_CENTER, "skip >");
+  }
+}
+
+void skipBootSequence() {
+  if (!bootSequenceCanSkip()) {
+    if (bootSequenceCanSleep()) {
+      id(sleep_toggle).turn_on();
+    }
+    return;
+  }
+  speakerGroup->selectFirstActivePlayer();
+}
+
+int drawBootSequenceTitle(int xPos, int imageYPos) {
+  int yPos = imageYPos + id(boot_logo_size) + id(margin_size);
+  int maxAnimationDuration = 0;
+  if (id(homeassistant_api_id).is_connected()) {
+    if (speakerGroup != NULL) {
+      int totalPlayers = speakerGroup->totalPlayers();
+      int loadedPlayers = speakerGroup->loadedPlayers;
+      id(my_display)
+          .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+                  "%d/%d players loaded", loadedPlayers, totalPlayers);
+    } else {
+      id(my_display)
+          .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER, "api connected!");
+    }
+  } else if (id(wifi_id).is_connected()) {
+    id(my_display)
+        .printf(xPos, yPos, &id(large_heavy_font), id(color_accent_primary), TextAlign::TOP_CENTER,
+                "api connecting...");
+  } else {
+    maxAnimationDuration = drawBootSequenceTitleRainbow(xPos, yPos);
+  }
+  drawBootSequenceSkipTitle(xPos, imageYPos);
+  return maxAnimationDuration;
+}
+
+void drawBootSequence() {
   speakerGroup->findActivePlayer();
 
-  std::vector<std::string> glyphs = {
-      "󰐊", "󰓛", "󰏤", "󰽥", "󰒝", "󰒞", "󰕾", "󰕿",
-  };
-
-  std::vector<Color> colors = {id(my_green), id(color_accent_primary), id(my_yellow), id(my_red)};
-  id(my_display)
-      .printf((int) esp_random() % (id(my_display).get_width() - id(icon_size_large) * 2),
-              (int) esp_random() % (id(my_display).get_height() - id(icon_size_large) * 2), &id(material_font_large),
-              colors[esp_random() % colors.size()], glyphs[esp_random() % glyphs.size()].c_str());
-  for (int i = 0; i < 3; i++) {
-    int xPos = autoClearState % (id(my_display).get_width() / 3);
-    int yPos = autoClearState % (id(my_display).get_height() - id(large_font_size) * 2);
-    auto wrappedBootText = getWrappedTitles(xPos, id(large_font_size), TextAlign::TOP_LEFT, id(boot_device_name));
-    drawTextWrapped(xPos, yPos, id(large_font_size), &id(large_font), colors[esp_random() % colors.size()],
-                    TextAlign::TOP_LEFT, wrappedBootText, 0);
-    autoClearState++;
+  int imageYPos = id(header_height) + id(margin_size) * 2;
+  int xPos = id(my_display).get_width() / 2;
+  int maxAnimationDuration = 0;
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceHeader());
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceLogo(xPos, imageYPos));
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceLoadingBarAnimation());
+  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceTitle(xPos, imageYPos));
+  if (animationTick < maxAnimationDuration) {
+    animationTick++;
+  } else {
+    if (id(wifi_id).is_connected() && id(esptime).now().is_valid()) {
+      animating = false;
+    }
   }
   menuDrawing = false;
 }
@@ -1147,7 +1343,7 @@ void drawMenu() {
       break;
     case lightsDetailMenu:
       if (lightGroup->getActiveLight() != NULL) {
-        drawMenu(lightGroup->getActiveLight()->lightTitleItems());
+        drawMenu(lightGroup->getActiveLight()->lightTitleItems(id(my_display).get_width()));
       }
       break;
     case switchesMenu:
@@ -1167,7 +1363,7 @@ void drawMenu() {
       drawMenu(activeMenu());
       break;
   }
-  drawHeader();
+  drawHeader(0);
   menuDrawing = false;
 }
 

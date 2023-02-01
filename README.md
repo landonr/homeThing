@@ -1,8 +1,7 @@
 
-<h1 align = "center">ESPHome Remote ⚙️</h1>
-
+<h1 align = "center">homeThing Remote ⚙️</h1>
+<h5 align = "center">(esphome remote)</h1>
 <p align="center">
-<a href="https://github.com/landonr/esphome-remote/actions/workflows/codeql-analysis.yml"><img src="https://img.shields.io/github/workflow/status/landonr/esphome-remote/ESPHome%20Builder?style=for-the-badge"/></a>
 <a href="https://github.com/landonr/esphome-remote/stargazers"><img src="https://img.shields.io/github/stars/landonr/esphome-remote?style=for-the-badge"/></a>
 <a href="https://discord.gg/BX6ZtGKHTy"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
