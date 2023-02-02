@@ -417,7 +417,7 @@ custom_component:
        FriendlyNameEntity("sensor.particulate_matter_2_5um_concentration", "Kitchen Air"),
        FriendlyNameEntity("sensor.oven_temp_temperature_probe_1", "Oven Temp")
      };
-     sensorGroup = new SensorGroupComponent();
+     sensorGroup = new SensorGroupComponent(id(my_display));
      sensorGroup->setup(sensors);
      return {sensorGroup};
    id: sensor_group_component

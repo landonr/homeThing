@@ -6,6 +6,7 @@
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteSensor.h"
 #include "esphomeRemoteService.h"
+#include <memory>
 
 #pragma once
 
@@ -47,6 +48,7 @@ SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
+std::shared_ptr<MenuTitleBase> sensorSelected = nullptr;
 
 Color primaryTextColor() {
   if (id(dark_mode)) {
@@ -119,6 +121,8 @@ std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType) {
       return std::make_shared<MenuTitleBase>("Lights", "", ArrowMenuTitleRightIcon);
     case lightsDetailMenu:
       return std::make_shared<MenuTitleBase>("Light Detail", "", ArrowMenuTitleRightIcon);
+    case sensorsDetailMenu:
+      return std::make_shared<MenuTitleBase>("Sensor Detail", "", ArrowMenuTitleRightIcon);
     case switchesMenu:
       return std::make_shared<MenuTitleBase>("Switches", "", ArrowMenuTitleRightIcon);
     case scenesMenu:
@@ -233,6 +237,11 @@ void drawHeaderTitle(int yPosOffset) {
     case sensorsMenu:
       drawHeaderTitleWithString("Sensors", xPos);
       break;
+    case sensorsDetailMenu: {
+       // draw the title of the currently selected sensor
+      drawHeaderTitleWithString(sensorGroup->getActiveSensor()->friendlyName, xPos);
+      break;
+    }
     case bootMenu:
       drawHeaderTitleWithString(id(boot_device_name), xPos, yPosOffset);
       break;
@@ -646,9 +655,9 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
       case SliderMenuTitleType: {
         bool lightDetailSelected = lightGroup->lightDetailSelected;
         auto item = std::static_pointer_cast<MenuTitleSlider>(menuTitles[i]);
-        SliderSelectionState sliderState = menuState == i && lightDetailSelected ? SliderSelectionStateActive
-                                           : menuState == i                      ? SliderSelectionStateHover
-                                                                                 : SliderSelectionStateNone;
+        SliderSelectionState sliderState = menuState == i && lightDetailSelected
+                                               ? SliderSelectionStateActive
+                                               : menuState == i ? SliderSelectionStateHover : SliderSelectionStateNone;
         drawLightSlider(id(slider_margin_size), yPos, sliderState, item, i == 2);
         sliderExtra += 0;
 
@@ -1359,6 +1368,16 @@ void drawMenu() {
       drawMenu({playerStrings.begin(), playerStrings.end()});
       break;
     }
+    case sensorsMenu: {
+      auto sen = sensorGroup->sensorTitles();
+      drawMenu(sen);
+      break;
+    }
+    case sensorsDetailMenu: {
+      // now draw a nice little graph
+      sensorGroup->draw();
+      break;
+    }
     default:
       drawMenu(activeMenu());
       break;
@@ -1417,6 +1436,7 @@ bool selectRootMenu() {
       activeMenuState = sensorsMenu;
       break;
     case lightsDetailMenu:
+    case sensorsDetailMenu:
     case groupMenu:
     case rootMenu:
     case bootMenu:
@@ -1441,6 +1461,19 @@ bool selectMenuHold() {
         menuIndex = 0;
         activeMenuState = lightsDetailMenu;
       }
+      return true;
+    }
+    case sensorsMenu: {
+      auto selectedSensor = sensorGroup->sensors[menuIndexForSource];
+      if (selectedSensor == NULL) {
+        ESP_LOGD("ERROR", "selected SEENSOR isNULL");
+        break;
+      }
+      // save sensor and go to sensor detail
+      sensorGroup->selectSensorAtIndex(menuIndexForSource);
+      menuIndex = 0;
+      activeMenuState = sensorsDetailMenu;
+      ESP_LOGD("WARNING", "selected SEENSOR: %s", selectedSensor->friendlyName.c_str());
       return true;
     }
     default:
@@ -1480,6 +1513,18 @@ bool selectMenu() {
     }
     case lightsDetailMenu:
       lightGroup->lightDetailSelected = true;
+      break;
+    case sensorsMenu: {
+      auto selectedSensor = sensorGroup->sensors[menuIndexForSource];
+      if (selectedSensor == NULL) {
+        break;
+      }
+      ESP_LOGD("WARNING", "selected SEENSOR: %s", selectedSensor->friendlyName.c_str());
+      break;
+    }
+    case sensorsDetailMenu:
+      sensorGroup->sensorDetailSelected = true;
+      break;
     case mediaPlayersMenu:
       selectMediaPlayers();
       break;

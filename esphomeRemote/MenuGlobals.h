@@ -12,6 +12,7 @@ enum MenuStates {
   switchesMenu,
   nowPlayingMenu,
   sensorsMenu,
+  sensorsDetailMenu,
   backlightMenu,
   sleepMenu
 };
