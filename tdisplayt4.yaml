@@ -9,7 +9,9 @@ esphome:
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h
     - esphomeRemote/HomeAssistantSwitch.h
+    - esphomeRemote/HomeAssistantSwitch.cpp
     - esphomeRemote/HomeAssistantSwitchGroup.h
+    - esphomeRemote/HomeAssistantSwitchGroup.cpp
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h

@@ -1,4 +1,3 @@
-#pragma once
 #include "HomeAssistantSwitch.h"
 namespace home_assistant_switch {
 HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName, std::string newEntityId,

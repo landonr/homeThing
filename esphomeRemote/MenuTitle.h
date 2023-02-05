@@ -69,7 +69,7 @@ enum RemotePlayerState {
   PlayingRemotePlayerState
 };
 
-std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
+static std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
   switch (playingState) {
     case NoRemotePlayerMediaSource:
       return "No Source";
