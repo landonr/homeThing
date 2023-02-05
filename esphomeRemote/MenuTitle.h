@@ -1,4 +1,6 @@
 #pragma once
+#include "esphome.h"
+using namespace esphome;
 
 enum MenuTitleLeftIcon { NoMenuTitleLeftIcon, OffMenuTitleLeftIcon, OnMenuTitleLeftIcon, GroupedMenuTitleLeftIcon };
 
@@ -119,12 +121,12 @@ class MenuTitlePlayer : public MenuTitleToggle {
     return "";
   }
 
-  Color mediaSourceIconColor() {
+  Color mediaSourceIconColor(Color defaultColor) {
     switch (mediaSource) {
       case NoRemotePlayerMediaSource:
       case TVRemotePlayerMediaSource:
       case HomeRemotePlayerMediaSource:
-        return id(color_accent_primary);
+        return defaultColor;
       case YouTubeRemotePlayerMediaSource:
         return Color(248, 0, 0);
       case SpotifyRemotePlayerMediaSource:
@@ -134,7 +136,7 @@ class MenuTitlePlayer : public MenuTitleToggle {
       case PlexRemotePlayerMediaSource:
         return Color(223, 156, 13);
     }
-    return id(color_accent_primary);
+    return defaultColor;
   }
 };
 

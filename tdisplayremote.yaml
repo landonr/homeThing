@@ -10,7 +10,8 @@ esphome:
     - esphomeRemote/esphomeRemotePlayer.h
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSwitch.h
+    - esphomeRemote/HomeAssistantSwitch.h
+    - esphomeRemote/HomeAssistantSwitchGroup.h
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h
@@ -147,6 +148,9 @@ sensor:
           id(sleep_toggle).turn_on();
 
 binary_sensor:
+  - platform: homeassistant
+    entity_id: switch.fake_sensor
+    name: fake_sensor
   - platform: gpio
     pin:
       number: GPIO0

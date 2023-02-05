@@ -10,7 +10,8 @@ esphome:
     - esphomeRemote/esphomeRemotePlayer.h
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSwitch.h
+    - esphomeRemote/HomeAssistantSwitch.h
+    - esphomeRemote/HomeAssistantSwitchGroup.h
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h
@@ -116,6 +117,9 @@ deep_sleep:
   wakeup_pin_mode: INVERT_WAKEUP
 
 binary_sensor:
+  - platform: homeassistant
+    entity_id: switch.fake_sensor
+    name: fake_sensor
   - platform: gpio
     id: M5_BtnA
     pin:

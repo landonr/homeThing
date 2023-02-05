@@ -8,7 +8,8 @@ esphome:
     - esphomeRemote/esphomeRemotePlayer.h
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSwitch.h
+    - esphomeRemote/HomeAssistantSwitch.h
+    - esphomeRemote/HomeAssistantSwitchGroup.h
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h
@@ -113,6 +114,9 @@ output:
     id: builtin_led
 
 binary_sensor:
+  - platform: homeassistant
+    entity_id: switch.fake_sensor
+    name: fake_sensor
   - platform: axp192
     axp192_id: axp
     type: charging

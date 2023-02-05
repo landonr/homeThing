@@ -1,14 +1,16 @@
+#pragma once
+
 #include "MenuGlobals.h"
 #include "TextHelpers.h"
 #include "esphome.h"
 #include "esphomeRemoteLight.h"
+#include "HomeAssistantSwitch.h"
 #include "esphomeRemoteSwitch.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteSensor.h"
 #include "esphomeRemoteService.h"
 
-#pragma once
-
+using namespace home_assistant_switch_group;
 bool menuDrawing = false;
 
 class DisplayUpdateImpl : public DisplayUpdateInterface {
@@ -45,7 +47,7 @@ SceneGroupComponent *sceneGroup;
 SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
-SwitchGroupComponent *switchGroup;
+HomeAssistantSwitchGroup *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 
 Color primaryTextColor() {
@@ -155,7 +157,7 @@ int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle) {
   switch (menuTitle.playerState) {
     case PlayingRemotePlayerState: {
       id(my_display)
-          .printf(xPos, yPos, &id(material_font_small), menuTitle.mediaSourceIconColor(),
+          .printf(xPos, yPos, &id(material_font_small), menuTitle.mediaSourceIconColor(id(color_accent_primary)),
                   menuTitle.mediaSourceIcon().c_str());
       break;
     }
