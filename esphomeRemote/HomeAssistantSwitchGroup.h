@@ -1,11 +1,12 @@
 #pragma once
-#include "esphome.h"
-#include "DisplayUpdateInterface.h"
+#include "HomeAssistantSwitch.h"
 #include "MenuTitle.h"
-#include "FriendlyNameEntity.h"
+
+using namespace esphome;
+using namespace api;
+using namespace home_assistant_switch;
 
 namespace home_assistant_switch_group {
-using namespace home_assistant_switch;
 
 class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
  public:

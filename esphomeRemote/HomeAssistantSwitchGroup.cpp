@@ -1,7 +1,6 @@
 #include "HomeAssistantSwitchGroup.h"
 
 namespace home_assistant_switch_group {
-using namespace home_assistant_switch;
 HomeAssistantSwitchGroup::HomeAssistantSwitchGroup(DisplayUpdateInterface &newCallback) : display(newCallback) {}
 
 void HomeAssistantSwitchGroup::setup(std::vector<FriendlyNameEntity> newSwitches) {

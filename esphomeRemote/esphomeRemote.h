@@ -1,11 +1,10 @@
 #pragma once
 
-#include "MenuGlobals.h"
 #include "TextHelpers.h"
 #include "esphome.h"
 #include "esphomeRemoteLight.h"
 #include "HomeAssistantSwitch.h"
-#include "esphomeRemoteSwitch.h"
+#include "HomeAssistantSwitchGroup.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteSensor.h"
 #include "esphomeRemoteService.h"
