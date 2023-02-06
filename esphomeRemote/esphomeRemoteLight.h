@@ -29,7 +29,7 @@ enum ColorModeType {
 class LightComponent : public CustomAPIDevice, public Component {
  public:
   LightComponent(std::string newFriendlyName, std::string newEntityId,
-                 DisplayUpdateInterface &newCallback)
+                 DisplayUpdateInterface *newCallback)
       : friendlyName(newFriendlyName),
         entityId(newEntityId),
         display(newCallback) {
@@ -55,7 +55,7 @@ class LightComponent : public CustomAPIDevice, public Component {
   }
   std::string friendlyName;
   std::string entityId;
-  DisplayUpdateInterface &display;
+  DisplayUpdateInterface *display;
   int localBrightness = -1;
   int localColorTemp = -1;
   int localColor = -1;
@@ -66,81 +66,81 @@ class LightComponent : public CustomAPIDevice, public Component {
   int minMireds = 0;
   int maxMireds = 0;
 
-  void increaseProperty(int max, bool &inSync, int &localValue, int incStep,
+  void increaseProperty(int max, bool *inSync, int *localValue, int incStep,
                         std::string serviceProperty, bool wrapData = false) {
     if (id(keep_states_in_sync)) {
-      if (!inSync) {
+      if (!*inSync) {
         return;
       }
-      inSync = false;
+      *inSync = false;
     }
-    if (localValue + incStep >= max) {
-      localValue = max;
+    if (*localValue + incStep >= max) {
+      *localValue = max;
     } else {
-      localValue += incStep;
+      *localValue += incStep;
     }
     if (wrapData) {
       const std::map<std::string, std::string> data = {
           {"entity_id", entityId.c_str()},
-          {"hue", to_string(localValue).c_str()},
+          {"hue", to_string(*localValue).c_str()},
           {"saturation", "100"},
       };
       call_homeassistant_service("script.hs_light_set", data);
     } else {
       const std::map<std::string, std::string> data = {
           {"entity_id", entityId.c_str()},
-          {serviceProperty, to_string(localValue).c_str()},
+          {serviceProperty, to_string(*localValue).c_str()},
       };
       setAttribute(data);
     }
   }
 
-  void decreaseProperty(int min, bool &inSync, int &localValue, int decStep,
+  void decreaseProperty(int min, bool *inSync, int *localValue, int decStep,
                         std::string serviceProperty, bool wrapData = false) {
     if (id(keep_states_in_sync)) {
-      if (!inSync) {
+      if (!*inSync) {
         return;
       }
-      inSync = false;
+      *inSync = false;
     }
-    if (localValue - decStep <= min) {
-      localValue = min;
+    if (*localValue - decStep <= min) {
+      *localValue = min;
     } else {
-      localValue -= decStep;
+      *localValue -= decStep;
     }
     if (wrapData) {
       const std::map<std::string, std::string> data = {
           {"entity_id", entityId.c_str()},
-          {"hue", to_string(localValue).c_str()},
+          {"hue", to_string(*localValue).c_str()},
           {"saturation", "100"},
       };
       call_homeassistant_service("script.hs_light_set", data);
     } else {
       const std::map<std::string, std::string> data = {
           {"entity_id", entityId.c_str()},
-          {serviceProperty, to_string(localValue).c_str()},
+          {serviceProperty, to_string(*localValue).c_str()},
       };
       setAttribute(data);
     }
   }
 
   void decTemperature() {
-    decreaseProperty(minMireds, isColorTempInSync, localColorTemp,
+    decreaseProperty(minMireds, &isColorTempInSync, &localColorTemp,
                      id(dec_color_temperature_step), "color_temp");
   }
 
   void incTemperature() {
-    increaseProperty(maxMireds, isColorTempInSync, localColorTemp,
+    increaseProperty(maxMireds, &isColorTempInSync, &localColorTemp,
                      id(inc_color_temperature_step), "color_temp");
   }
 
   void decBrightness() {
-    decreaseProperty(0, isBrightnessInSync, localBrightness,
+    decreaseProperty(0, &isBrightnessInSync, &localBrightness,
                      id(dec_brightness_step), "brightness");
   }
 
   void incBrightness() {
-    increaseProperty(MAX_BRIGHTNESS, isBrightnessInSync, localBrightness,
+    increaseProperty(MAX_BRIGHTNESS, &isBrightnessInSync, &localBrightness,
                      id(inc_brightness_step), "brightness");
   }
 
@@ -149,7 +149,7 @@ class LightComponent : public CustomAPIDevice, public Component {
       localColorTemp = -1;
     }
     bool temp = true;
-    decreaseProperty(0, temp, localColor, 10, "hs_color", true);
+    decreaseProperty(0, &temp, &localColor, 10, "hs_color", true);
   }
 
   void incColor() {
@@ -157,7 +157,7 @@ class LightComponent : public CustomAPIDevice, public Component {
       localColorTemp = -1;
     }
     bool temp = true;
-    increaseProperty(360, temp, localColor, 10, "hs_color", true);
+    increaseProperty(360, &temp, &localColor, 10, "hs_color", true);
   }
 
   void setAttribute(const std::map<std::string, std::string> &data) {
@@ -175,8 +175,8 @@ class LightComponent : public CustomAPIDevice, public Component {
     return !supportedColorModes.empty();
   }
   bool supportsColorTemperature() {
-    // TODO: I think the color_temp for rgbww cant be controlled if in white
-    // mode -> investigate and fix
+    // TODO(landonr): I think the color_temp for rgbww cant be controlled if in
+    // white mode -> investigate and fix
     return (std::find(supportedColorModes.begin(), supportedColorModes.end(),
                       color_temp_type) != supportedColorModes.end() ||
             std::find(supportedColorModes.begin(), supportedColorModes.end(),
@@ -206,7 +206,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     if (value > 0) {
       float displayNewRange = displayUnitMax - displayUnitMin;
       displayValue = static_cast<float>(
-          ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin);
+          ((valueMinusMin * displayNewRange) / oldRange)) + displayUnitMin;
     }
 
     float newMin = id(slider_margin_size);
@@ -266,15 +266,15 @@ class LightComponent : public CustomAPIDevice, public Component {
         localColorTemp = 0;
       }
     }
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
   void min_mireds_changed(std::string newOnState) {
     minMireds = atoi(newOnState.c_str());
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
   void max_mireds_changed(std::string newOnState) {
     maxMireds = atoi(newOnState.c_str());
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
   void brightness_changed(std::string newOnState) {
     ESP_LOGD("brightness", "state changed to %s (%s)", newOnState.c_str(),
@@ -283,7 +283,7 @@ class LightComponent : public CustomAPIDevice, public Component {
       localBrightness = atoi(newOnState.c_str());
       isBrightnessInSync = true;
     }
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
   void color_temp_changed(std::string newOnState) {
     ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(),
@@ -292,7 +292,7 @@ class LightComponent : public CustomAPIDevice, public Component {
       localColorTemp = atoi(newOnState.c_str());
       isColorTempInSync = true;
     }
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
   void color_changed(std::string newOnState) {
     ESP_LOGI("color", "state changed to %s (%s)", newOnState.c_str(),
@@ -300,7 +300,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     if (id(keep_states_in_sync) || localColor == -1) {
       localColor = TextHelpers::extractFirstNumber(newOnState);
     }
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
 
   void supported_color_modes_changed(std::string newOnState) {
@@ -333,13 +333,13 @@ class LightComponent : public CustomAPIDevice, public Component {
         supportedColorModes.push_back(xy_type);
       }
     }
-    display.updateDisplay(false);
+    display->updateDisplay(false);
   }
 };
 
 class LightGroupComponent : public CustomAPIDevice, public Component {
  public:
-  explicit LightGroupComponent(DisplayUpdateInterface &newCallback)
+  explicit LightGroupComponent(DisplayUpdateInterface *newCallback)
       : display(newCallback) {}
   std::vector<LightComponent *> lights;
 
@@ -383,6 +383,6 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
   bool lightDetailSelected = false;
 
  private:
-  DisplayUpdateInterface &display;
+  DisplayUpdateInterface *display;
   LightComponent *_activeLight = NULL;
 };

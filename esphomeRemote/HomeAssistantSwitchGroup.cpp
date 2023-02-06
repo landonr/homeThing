@@ -5,7 +5,7 @@ namespace api {
 namespace home_assistant_switch {
 namespace home_assistant_switch_group {
 HomeAssistantSwitchGroup::HomeAssistantSwitchGroup(
-    DisplayUpdateInterface &newCallback)
+    DisplayUpdateInterface *newCallback)
     : display(newCallback) {}
 
 void HomeAssistantSwitchGroup::setup(

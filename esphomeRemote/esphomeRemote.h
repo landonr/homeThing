@@ -544,12 +544,12 @@ void drawGroupedBar(int yPos, bool extend) {
 }
 
 void drawLightSliderRGBBar(int xPos, int yPos, int sliderHeight) {
-  int rgbBarWidth = id(my_display).get_width() - 2 * id(slider_margin_size);
+  double rgbBarWidth = id(my_display).get_width() - 2 * id(slider_margin_size);
   id(my_display)
       .filled_rectangle(xPos - 1, yPos - 1, rgbBarWidth + 2, sliderHeight + 2,
                         id(my_gray_dark_2));
-  for (int i = 0; i < rgbBarWidth; i++) {
-    double hue = ((double) 360 / (double) rgbBarWidth) * ((double) i);
+  for (double i = 0; i < rgbBarWidth; i++) {
+    double hue = (360.0f / rgbBarWidth) * i;
     Color dotColor = TextHelpers::hsvToRGB(hue, 1, 1);
     id(my_display)
         .line(i + id(slider_margin_size), yPos, i + id(slider_margin_size),
@@ -663,7 +663,8 @@ void drawLightSlider(int xPos, int yPos, SliderSelectionState sliderState,
                           (id(margin_size) + id(medium_font_size)) * 2,
                           id(color_accent_primary));
   }
-  int sliderOffset = (int) (id(medium_font_size) + id(margin_size)) / 2;
+  int sliderOffset =
+      static_cast<int>((id(medium_font_size) + id(margin_size)) / 2);
   int oneRow = id(medium_font_size) + id(margin_size);
   drawLightSliderBar(xPos, yPos + sliderOffset + oneRow, sliderHeight,
                      sliderState, slider, drawRGB);
@@ -1105,10 +1106,10 @@ void drawMediaDuration() {
   }
 }
 
-std::vector<std::string> getWrappedTitles(int xPos, int fontSize,
-                                          TextAlign alignment,
-                                          std::string text) {
-  std::vector<std::string> output;
+std::vector<std::string> *getWrappedTitles(int xPos, int fontSize,
+                                           TextAlign alignment,
+                                           std::string text) {
+  std::vector<std::string> *output = new std::vector<std::string>();
   if (text.size() == 0) {
     return output;
   }
@@ -1170,7 +1171,7 @@ bool drawOptionMenuAndStop() {
           id(my_display).get_width() / 2,
           id(header_height) + id(margin_size) * 2 + id(medium_font_size), 24,
           &id(large_font), primaryTextColor(), TextAlign::TOP_CENTER,
-          playingNewSourceWrappedText, 0);
+          *playingNewSourceWrappedText, 0);
       return true;
   }
   return true;
@@ -1288,20 +1289,22 @@ void drawNowPlaying() {
   auto mediaTitleWrappedText =
       getWrappedTitles(xPos, id(medium_font_size), TextAlign::TOP_CENTER,
                        speakerGroup->mediaSubtitleString());
-  int lineCount = nowPlayingWrappedText.size() + mediaArtistWrappedText.size() +
-                  mediaTitleWrappedText.size();
+  int lineCount = nowPlayingWrappedText->size() +
+                  mediaArtistWrappedText->size() +
+                  mediaTitleWrappedText->size();
   int maxLines = 0;
   if (lineCount > id(now_playing_max_lines)) {
     maxLines = 1;
-    if (nowPlayingWrappedText.size() > 1) {
+    if (nowPlayingWrappedText->size() > 1) {
       lineCount =
-          1 + mediaArtistWrappedText.size() + mediaTitleWrappedText.size();
+          1 + mediaArtistWrappedText->size() + mediaTitleWrappedText->size();
     }
   }
   yPos = drawTextWrapped(id(margin_size), yPos, id(medium_font_size),
                          &id(medium_font), primaryTextColor(),
-                         TextAlign::TOP_LEFT, nowPlayingWrappedText, maxLines);
-  if (mediaArtistWrappedText.size() == 0 && mediaTitleWrappedText.size() == 0) {
+                         TextAlign::TOP_LEFT, *nowPlayingWrappedText, maxLines);
+  if (mediaArtistWrappedText->size() == 0 &&
+      mediaTitleWrappedText->size() == 0) {
     id(my_display)
         .printf(id(my_display).get_width() / 2, yPos, &id(large_font),
                 primaryTextColor(), TextAlign::TOP_CENTER, "Nothing!");
@@ -1313,16 +1316,16 @@ void drawNowPlaying() {
     maxLines = 0;
   }
   yPos = yPos + id(margin_size) / 2;
-  if (mediaArtistWrappedText.size() > 0) {
+  if (mediaArtistWrappedText->size() > 0) {
     yPos = drawTextWrapped(xPos, yPos, id(large_font_size), &id(large_font),
                            primaryTextColor(), TextAlign::TOP_CENTER,
-                           mediaArtistWrappedText, maxLines);
+                           *mediaArtistWrappedText, maxLines);
   }
-  if (mediaTitleWrappedText.size() > 0) {
+  if (mediaTitleWrappedText->size() > 0) {
     yPos = yPos + id(margin_size);
     drawTextWrapped(id(my_display).get_width() / 2, yPos, id(medium_font_size),
                     &id(medium_font), primaryTextColor(), TextAlign::TOP_CENTER,
-                    mediaTitleWrappedText, maxLines);
+                    *mediaTitleWrappedText, maxLines);
   }
   if (optionMenu == volumeOptionMenu) {
     drawVolumeOptionMenu();
@@ -1382,12 +1385,12 @@ int drawBootSequenceTitleRainbow(int xPos, int yPos) {
 }
 
 int drawBootSequenceLogo(int xPos, int imageYPos) {
-  int animationLength = 6;
+  float animationLength = 6;
   int delayTime = 2;
   int totalDuration = delayTime + animationLength;
   if (animationTick > delayTime && animationTick < totalDuration) {
     int colorValue =
-        (float(animationTick - delayTime) / float(animationLength)) * 255;
+        (static_cast<float>(animationTick - delayTime) / animationLength) * 255;
     auto color = Color(colorValue, colorValue, colorValue);
     id(my_display)
         .printf(xPos, imageYPos, &id(home_thing_logo), color,
@@ -1401,14 +1404,14 @@ int drawBootSequenceLogo(int xPos, int imageYPos) {
 }
 
 int drawBootSequenceHeader() {
-  int animationLength = 8;
+  float animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
   int maxValue = id(header_height);
   if (animationTick > delayTime && animationTick < totalDuration) {
-    int yPosOffset =
-        maxValue -
-        (float(animationTick - delayTime) / float(animationLength)) * maxValue;
+    int yPosOffset = maxValue - static_cast<float>((animationTick - delayTime) /
+                                                   animationLength) *
+                                    maxValue;
     drawHeader(yPosOffset);
   } else if (animationTick >= totalDuration) {
     drawHeader(0);
@@ -1419,9 +1422,9 @@ int drawBootSequenceHeader() {
 float bootSequenceLoadingProgress() {
   if (id(homeassistant_api_id).is_connected()) {
     if (speakerGroup != NULL) {
-      int totalPlayers = speakerGroup->totalPlayers();
-      int loadedPlayers = speakerGroup->loadedPlayers;
-      float progress = 0.8 * (float(loadedPlayers) / float(totalPlayers));
+      float totalPlayers = static_cast<float>(speakerGroup->totalPlayers());
+      float loadedPlayers = static_cast<float>(speakerGroup->loadedPlayers);
+      float progress = 0.8 * (loadedPlayers / totalPlayers);
       return 0.25 + progress;
     }
     return 0.2;
@@ -1450,15 +1453,15 @@ void drawBootSequenceLoadingBar(int yPosOffset, float progress) {
 }
 
 int drawBootSequenceLoadingBarAnimation() {
-  int animationLength = 8;
+  float animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
   int maxValue = id(small_font_size) + id(bottom_bar_margin);
 
   if (animationTick > delayTime && animationTick < totalDuration) {
-    int yPosOffset =
-        maxValue -
-        (float(animationTick - delayTime) / float(animationLength)) * maxValue;
+    int yPosOffset = maxValue - (static_cast<float>(animationTick - delayTime) /
+                                 animationLength) *
+                                    maxValue;
     drawBootSequenceLoadingBar(yPosOffset, bootSequenceLoadingProgress());
   } else if (animationTick >= totalDuration) {
     drawBootSequenceLoadingBar(0, bootSequenceLoadingProgress());

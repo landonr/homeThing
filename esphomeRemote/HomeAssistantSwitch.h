@@ -13,12 +13,12 @@ class HomeAssistantSwitch : public CustomAPIDevice,
  public:
   explicit HomeAssistantSwitch(std::string newFriendlyName,
                                std::string newEntityId,
-                               DisplayUpdateInterface &newCallback);
+                               DisplayUpdateInterface *newCallback);
   void toggleSwitch();
   std::string getEntityId();
 
  private:
-  DisplayUpdateInterface &display;
+  DisplayUpdateInterface *display;
 };
 }  // namespace home_assistant_switch
 }  // namespace api

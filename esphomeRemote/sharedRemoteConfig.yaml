@@ -363,7 +363,7 @@ custom_component:
        SpeakerSetup("media_player.bedroom", "Bedroom"),
        SpeakerSetup("media_player.office", "Office")
      };
-     speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
+     speakerGroup = new SonosSpeakerGroupComponent(&displayUpdate);
      speakerGroup->setup(tvSetup, speakerSetup);
      return {speakerGroup};
    id: speaker_group_component
@@ -392,7 +392,7 @@ custom_component:
        FriendlyNameEntity("light.living_room_lights", "Living Room"), 
        FriendlyNameEntity("light.office_lamp", "Office Lamp")
      };
-     lightGroup = new LightGroupComponent(displayUpdate);
+     lightGroup = new LightGroupComponent(&displayUpdate);
      lightGroup->setup(lights);
      return {lightGroup};
    id: light_group_component
@@ -402,7 +402,7 @@ custom_component:
      std::vector<FriendlyNameEntity> switches {
        FriendlyNameEntity("switch.oven_fan", "Kitchen Fan")
      };
-     switchGroup = new esphome::api::home_assistant_switch::home_assistant_switch_group::HomeAssistantSwitchGroup(displayUpdate);
+     switchGroup = new esphome::api::home_assistant_switch::home_assistant_switch_group::HomeAssistantSwitchGroup(&displayUpdate);
      switchGroup->setup(switches);
      return {switchGroup};
    id: switch_group_component

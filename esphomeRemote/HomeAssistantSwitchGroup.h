@@ -11,7 +11,7 @@ namespace home_assistant_switch_group {
 
 class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
  public:
-  explicit HomeAssistantSwitchGroup(DisplayUpdateInterface &newCallback);
+  explicit HomeAssistantSwitchGroup(DisplayUpdateInterface *newCallback);
   std::vector<HomeAssistantSwitch *> switches;
 
   void setup(std::vector<FriendlyNameEntity> newSwitches);
@@ -19,7 +19,7 @@ class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
   bool selectSwitch(int index);
 
  private:
-  DisplayUpdateInterface &display;
+  DisplayUpdateInterface *display;
 };
 
 }  // namespace home_assistant_switch_group
