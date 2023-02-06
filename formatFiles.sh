@@ -1,3 +1,3 @@
 echo "formatting..."
-clang-format esphomeRemote/*.h --style=file:.clang-format --i
+clang-format --style=file:.clang-format --i esphomeRemote/*.h esphomeRemote/*.cpp
 echo "formatted"
