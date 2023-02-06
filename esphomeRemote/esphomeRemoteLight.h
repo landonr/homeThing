@@ -210,7 +210,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     }
 
     float newMin = id(slider_margin_size);
-    float newRange = displayWidth * newMin;
+    float newRange = displayWidth - 4 * newMin;
     int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
     return std::make_shared<MenuTitleSlider>(title.c_str(), entityId,
                                              NoMenuTitleRightIcon, sliderValue,
@@ -241,9 +241,7 @@ class LightComponent : public CustomAPIDevice, public Component {
       return Color(255, 255, 255);
     }
 
-    return TextHelpers::hsvToRGB(static_cast<double>(localColor), 1, 1);
-    // return hsvToRGB((double) localColor, 1, ((double) localBrightness) /
-    // 100);
+    return TextHelpers::hsvToRGB(static_cast<double>(localColor), 1, 1);\
   }
 
   std::string icon() {
