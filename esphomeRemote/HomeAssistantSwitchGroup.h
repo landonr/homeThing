@@ -1,11 +1,12 @@
 #pragma once
+#include <memory>
+#include <vector>
 #include "HomeAssistantSwitch.h"
 #include "MenuTitle.h"
 
-using namespace esphome;
-using namespace api;
-using namespace home_assistant_switch;
-
+namespace esphome {
+namespace api {
+namespace home_assistant_switch {
 namespace home_assistant_switch_group {
 
 class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
@@ -22,3 +23,6 @@ class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
 };
 
 }  // namespace home_assistant_switch_group
+}  // namespace home_assistant_switch
+}  // namespace api
+}  // namespace esphome

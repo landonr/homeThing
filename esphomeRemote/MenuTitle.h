@@ -1,8 +1,14 @@
 #pragma once
+#include <string>
 #include "esphome.h"
-using namespace esphome;
+namespace esphome {
 
-enum MenuTitleLeftIcon { NoMenuTitleLeftIcon, OffMenuTitleLeftIcon, OnMenuTitleLeftIcon, GroupedMenuTitleLeftIcon };
+enum MenuTitleLeftIcon {
+  NoMenuTitleLeftIcon,
+  OffMenuTitleLeftIcon,
+  OnMenuTitleLeftIcon,
+  GroupedMenuTitleLeftIcon
+};
 
 enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
@@ -14,7 +20,11 @@ enum MenuTitleType {
   LightMenuTitleType
 };
 
-enum SliderSelectionState { SliderSelectionStateNone, SliderSelectionStateActive, SliderSelectionStateHover };
+enum SliderSelectionState {
+  SliderSelectionStateNone,
+  SliderSelectionStateActive,
+  SliderSelectionStateHover
+};
 
 class MenuTitleBase {
  public:
@@ -22,7 +32,8 @@ class MenuTitleBase {
   std::string entityId;
   MenuTitleRightIcon rightIconState;
   MenuTitleType titleType;
-  MenuTitleBase(std::string newFriendlyName, std::string newEntityId, MenuTitleRightIcon newRightIconState,
+  MenuTitleBase(std::string newFriendlyName, std::string newEntityId,
+                MenuTitleRightIcon newRightIconState,
                 MenuTitleType newTitleType = BaseMenuTitleType)
       : friendlyName(newFriendlyName),
         entityId(newEntityId),
@@ -34,9 +45,13 @@ class MenuTitleToggle : public MenuTitleBase {
  public:
   MenuTitleLeftIcon leftIconState;
 
-  MenuTitleToggle(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
-                  MenuTitleRightIcon newRightIconState, MenuTitleType newTitleType = ToggleMenuTitleType)
-      : MenuTitleBase{newFriendlyName, newEntityId, newRightIconState, newTitleType}, leftIconState(newLeftIconState) {}
+  MenuTitleToggle(std::string newFriendlyName, std::string newEntityId,
+                  MenuTitleLeftIcon newLeftIconState,
+                  MenuTitleRightIcon newRightIconState,
+                  MenuTitleType newTitleType = ToggleMenuTitleType)
+      : MenuTitleBase{newFriendlyName, newEntityId, newRightIconState,
+                      newTitleType},
+        leftIconState(newLeftIconState) {}
   bool indentLine() {
     switch (leftIconState) {
       case OffMenuTitleLeftIcon:
@@ -69,7 +84,8 @@ enum RemotePlayerState {
   PlayingRemotePlayerState
 };
 
-static std::string playerSourceStateString(RemotePlayerMediaSource playingState) {
+static std::string playerSourceStateString(
+    RemotePlayerMediaSource playingState) {
   switch (playingState) {
     case NoRemotePlayerMediaSource:
       return "No Source";
@@ -94,10 +110,13 @@ class MenuTitlePlayer : public MenuTitleToggle {
   RemotePlayerMediaSource mediaSource;
   RemotePlayerState playerState;
 
-  MenuTitlePlayer(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
-                  MenuTitleRightIcon newRightIconState, RemotePlayerMediaSource newMediaSource,
+  MenuTitlePlayer(std::string newFriendlyName, std::string newEntityId,
+                  MenuTitleLeftIcon newLeftIconState,
+                  MenuTitleRightIcon newRightIconState,
+                  RemotePlayerMediaSource newMediaSource,
                   RemotePlayerState newPlayerState)
-      : MenuTitleToggle{newFriendlyName, newEntityId, newLeftIconState, newRightIconState, PlayerMenuTitleType},
+      : MenuTitleToggle{newFriendlyName, newEntityId, newLeftIconState,
+                        newRightIconState, PlayerMenuTitleType},
         mediaSource(newMediaSource),
         playerState(newPlayerState) {}
 
@@ -150,9 +169,11 @@ class MenuTitleSource : public MenuTitleBase {
  public:
   RemotePlayerSourceType sourceType;
 
-  MenuTitleSource(std::string newFriendlyName, std::string newEntityId, MenuTitleRightIcon newRightIconState,
+  MenuTitleSource(std::string newFriendlyName, std::string newEntityId,
+                  MenuTitleRightIcon newRightIconState,
                   RemotePlayerSourceType newSourceType)
-      : MenuTitleBase{newFriendlyName, newEntityId, newRightIconState}, sourceType(newSourceType) {}
+      : MenuTitleBase{newFriendlyName, newEntityId, newRightIconState},
+        sourceType(newSourceType) {}
 
   std::string sourceTypeString() {
     switch (sourceType) {
@@ -174,9 +195,11 @@ class MenuTitleSlider : public MenuTitleBase {
   int sliderValue;
   int displayValue;
   std::string sliderUnit;
-  MenuTitleSlider(std::string newTitle, std::string newEntityId, MenuTitleRightIcon newRightIconState,
-                  int newSliderValue, int newDisplayValue, std::string newSliderUnit)
-      : MenuTitleBase{newTitle, newEntityId, newRightIconState, SliderMenuTitleType},
+  MenuTitleSlider(std::string newTitle, std::string newEntityId,
+                  MenuTitleRightIcon newRightIconState, int newSliderValue,
+                  int newDisplayValue, std::string newSliderUnit)
+      : MenuTitleBase{newTitle, newEntityId, newRightIconState,
+                      SliderMenuTitleType},
         sliderValue(newSliderValue),
         displayValue(newDisplayValue),
         sliderUnit(newSliderUnit) {}
@@ -186,8 +209,11 @@ class MenuTitleLight : public MenuTitleToggle {
  public:
   Color lightColor;
 
-  MenuTitleLight(std::string newFriendlyName, std::string newEntityId, MenuTitleLeftIcon newLeftIconState,
+  MenuTitleLight(std::string newFriendlyName, std::string newEntityId,
+                 MenuTitleLeftIcon newLeftIconState,
                  MenuTitleRightIcon newRightIconState, Color newLightColor)
-      : MenuTitleToggle{newFriendlyName, newEntityId, newLeftIconState, newRightIconState, LightMenuTitleType},
+      : MenuTitleToggle{newFriendlyName, newEntityId, newLeftIconState,
+                        newRightIconState, LightMenuTitleType},
         lightColor(newLightColor) {}
 };
+}  // namespace esphome

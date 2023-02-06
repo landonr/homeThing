@@ -40,7 +40,8 @@ void buttonPressLeft() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if (activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected) {
+  if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
+      lightGroup->lightDetailSelected) {
     if (menuIndex == 1) {
       lightGroup->getActiveLight()->incBrightness();
     } else if (menuIndex == 2) {
@@ -68,7 +69,8 @@ void buttonPressRight() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if (activeMenuState == lightsDetailMenu && menuIndex > 0 && lightGroup->lightDetailSelected) {
+  if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
+      lightGroup->lightDetailSelected) {
     if (menuIndex == 1) {
       lightGroup->getActiveLight()->decBrightness();
     } else if (menuIndex == 2) {

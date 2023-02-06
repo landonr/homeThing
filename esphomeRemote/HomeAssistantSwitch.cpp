@@ -1,6 +1,10 @@
 #include "HomeAssistantSwitch.h"
+
+namespace esphome {
+namespace api {
 namespace home_assistant_switch {
-HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName, std::string newEntityId,
+HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName,
+                                         std::string newEntityId,
                                          DisplayUpdateInterface &newCallback)
     : display(newCallback) {
   set_entity_id(newEntityId);
@@ -12,8 +16,11 @@ HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName, std::strin
 }
 
 void HomeAssistantSwitch::toggleSwitch() {
-  call_homeassistant_service("switch.toggle", {{"entity_id", entity_id_.c_str()}});
+  call_homeassistant_service("switch.toggle",
+                             {{"entity_id", entity_id_.c_str()}});
 }
 
 std::string HomeAssistantSwitch::getEntityId() { return entity_id_; }
 }  // namespace home_assistant_switch
+}  // namespace api
+}  // namespace esphome

@@ -1,6 +1,9 @@
-#include "esphome.h"
+#include <memory>
+#include <string>
+#include <vector>
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
+#include "esphome.h"
 
 #pragma once
 
@@ -15,7 +18,8 @@ class BaseService : public CustomAPIDevice {
     if (serviceType == "script") {
       call_homeassistant_service(entityId.c_str());
     } else {
-      call_homeassistant_service("scene.turn_on", {{"entity_id", entityId.c_str()}});
+      call_homeassistant_service("scene.turn_on",
+                                 {{"entity_id", entityId.c_str()}});
     }
   }
 
@@ -50,7 +54,8 @@ class SceneGroupComponent : public CustomAPIDevice, public Component {
   std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     for (auto &service : services) {
-      out.push_back(std::make_shared<MenuTitleBase>(service.getFriendlyName(), "", NoMenuTitleRightIcon));
+      out.push_back(std::make_shared<MenuTitleBase>(service.getFriendlyName(),
+                                                    "", NoMenuTitleRightIcon));
     }
     return out;
   }

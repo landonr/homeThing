@@ -1,24 +1,33 @@
 #include "HomeAssistantSwitchGroup.h"
 
+namespace esphome {
+namespace api {
+namespace home_assistant_switch {
 namespace home_assistant_switch_group {
-HomeAssistantSwitchGroup::HomeAssistantSwitchGroup(DisplayUpdateInterface &newCallback) : display(newCallback) {}
+HomeAssistantSwitchGroup::HomeAssistantSwitchGroup(
+    DisplayUpdateInterface &newCallback)
+    : display(newCallback) {}
 
-void HomeAssistantSwitchGroup::setup(std::vector<FriendlyNameEntity> newSwitches) {
+void HomeAssistantSwitchGroup::setup(
+    std::vector<FriendlyNameEntity> newSwitches) {
   for (auto &switchObject : newSwitches) {
-    HomeAssistantSwitch *newService =
-        new HomeAssistantSwitch(switchObject.friendlyName, switchObject.entityId, display);
+    HomeAssistantSwitch *newService = new HomeAssistantSwitch(
+        switchObject.friendlyName, switchObject.entityId, display);
     App.register_component(newService);
     switches.push_back(newService);
   }
 }
 
-std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantSwitchGroup::switchTitleSwitches() {
+std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantSwitchGroup::
+    switchTitleSwitches() {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto &switchObject : switches) {
     ESP_LOGI("Switch", "state %d", switchObject->state);
-    MenuTitleLeftIcon state = switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-    out.push_back(std::make_shared<MenuTitleToggle>(switchObject->get_name(), switchObject->getEntityId(), state,
-                                                    NoMenuTitleRightIcon));
+    MenuTitleLeftIcon state =
+        switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
+    out.push_back(std::make_shared<MenuTitleToggle>(
+        switchObject->get_name(), switchObject->getEntityId(), state,
+        NoMenuTitleRightIcon));
   }
   return out;
 }
@@ -32,3 +41,6 @@ bool HomeAssistantSwitchGroup::selectSwitch(int index) {
   return true;
 }
 }  // namespace home_assistant_switch_group
+}  // namespace home_assistant_switch
+}  // namespace api
+}  // namespace esphome

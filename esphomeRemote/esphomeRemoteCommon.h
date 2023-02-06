@@ -1,11 +1,13 @@
-#include "esphome.h"
 #include <iterator>
+#include <string>
 #include <vector>
+#include "esphome.h"
 #pragma once
 
 class StringUtils {
  public:
-  static std::vector<std::string> split(std::string &s, const std::string &delim) {
+  static std::vector<std::string> split(std::string &s,
+                                        const std::string &delim) {
     size_t pos = 0;
     std::vector<std::string> elems;
     std::string token;

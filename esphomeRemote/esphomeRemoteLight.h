@@ -1,8 +1,12 @@
-#include "esphome.h"
 #include <algorithm>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 #include "DisplayUpdateInterface.h"
-#include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
+#include "MenuTitle.h"
+#include "esphome.h"
 #include "esphomeRemoteCommon.h"
 
 #pragma once
@@ -24,18 +28,30 @@ enum ColorModeType {
 
 class LightComponent : public CustomAPIDevice, public Component {
  public:
-  LightComponent(std::string newFriendlyName, std::string newEntityId, DisplayUpdateInterface &newCallback)
-      : friendlyName(newFriendlyName), entityId(newEntityId), display(newCallback) {
+  LightComponent(std::string newFriendlyName, std::string newEntityId,
+                 DisplayUpdateInterface &newCallback)
+      : friendlyName(newFriendlyName),
+        entityId(newEntityId),
+        display(newCallback) {
     onState = false;
-    subscribe_homeassistant_state(&LightComponent::state_changed, newEntityId.c_str());
-    subscribe_homeassistant_state(&LightComponent::min_mireds_changed, newEntityId.c_str(), "min_mireds");
-    subscribe_homeassistant_state(&LightComponent::max_mireds_changed, newEntityId.c_str(), "max_mireds");
-    subscribe_homeassistant_state(&LightComponent::brightness_changed, newEntityId.c_str(), "brightness");
-    subscribe_homeassistant_state(&LightComponent::color_temp_changed, newEntityId.c_str(), "color_temp");
-    subscribe_homeassistant_state(&LightComponent::color_changed, newEntityId.c_str(), "hs_color");
-    subscribe_homeassistant_state(&LightComponent::supported_color_modes_changed, newEntityId.c_str(), "color_mode");
-    subscribe_homeassistant_state(&LightComponent::supported_color_modes_changed, newEntityId.c_str(),
-                                  "supported_color_modes");
+    subscribe_homeassistant_state(&LightComponent::state_changed,
+                                  newEntityId.c_str());
+    subscribe_homeassistant_state(&LightComponent::min_mireds_changed,
+                                  newEntityId.c_str(), "min_mireds");
+    subscribe_homeassistant_state(&LightComponent::max_mireds_changed,
+                                  newEntityId.c_str(), "max_mireds");
+    subscribe_homeassistant_state(&LightComponent::brightness_changed,
+                                  newEntityId.c_str(), "brightness");
+    subscribe_homeassistant_state(&LightComponent::color_temp_changed,
+                                  newEntityId.c_str(), "color_temp");
+    subscribe_homeassistant_state(&LightComponent::color_changed,
+                                  newEntityId.c_str(), "hs_color");
+    subscribe_homeassistant_state(
+        &LightComponent::supported_color_modes_changed, newEntityId.c_str(),
+        "color_mode");
+    subscribe_homeassistant_state(
+        &LightComponent::supported_color_modes_changed, newEntityId.c_str(),
+        "supported_color_modes");
   }
   std::string friendlyName;
   std::string entityId;
@@ -50,8 +66,8 @@ class LightComponent : public CustomAPIDevice, public Component {
   int minMireds = 0;
   int maxMireds = 0;
 
-  void increaseProperty(int max, bool &inSync, int &localValue, int incStep, std::string serviceProperty,
-                        bool wrapData = false) {
+  void increaseProperty(int max, bool &inSync, int &localValue, int incStep,
+                        std::string serviceProperty, bool wrapData = false) {
     if (id(keep_states_in_sync)) {
       if (!inSync) {
         return;
@@ -79,8 +95,8 @@ class LightComponent : public CustomAPIDevice, public Component {
     }
   }
 
-  void decreaseProperty(int min, bool &inSync, int &localValue, int decStep, std::string serviceProperty,
-                        bool wrapData = false) {
+  void decreaseProperty(int min, bool &inSync, int &localValue, int decStep,
+                        std::string serviceProperty, bool wrapData = false) {
     if (id(keep_states_in_sync)) {
       if (!inSync) {
         return;
@@ -109,19 +125,23 @@ class LightComponent : public CustomAPIDevice, public Component {
   }
 
   void decTemperature() {
-    decreaseProperty(minMireds, isColorTempInSync, localColorTemp, id(dec_color_temperature_step), "color_temp");
+    decreaseProperty(minMireds, isColorTempInSync, localColorTemp,
+                     id(dec_color_temperature_step), "color_temp");
   }
 
   void incTemperature() {
-    increaseProperty(maxMireds, isColorTempInSync, localColorTemp, id(inc_color_temperature_step), "color_temp");
+    increaseProperty(maxMireds, isColorTempInSync, localColorTemp,
+                     id(inc_color_temperature_step), "color_temp");
   }
 
   void decBrightness() {
-    decreaseProperty(0, isBrightnessInSync, localBrightness, id(dec_brightness_step), "brightness");
+    decreaseProperty(0, isBrightnessInSync, localBrightness,
+                     id(dec_brightness_step), "brightness");
   }
 
   void incBrightness() {
-    increaseProperty(MAX_BRIGHTNESS, isBrightnessInSync, localBrightness, id(inc_brightness_step), "brightness");
+    increaseProperty(MAX_BRIGHTNESS, isBrightnessInSync, localBrightness,
+                     id(inc_brightness_step), "brightness");
   }
 
   void decColor() {
@@ -144,118 +164,76 @@ class LightComponent : public CustomAPIDevice, public Component {
     call_homeassistant_service("light.turn_on", data);
   }
 
-  void toggleLight() { call_homeassistant_service("light.toggle", {{"entity_id", entityId.c_str()}}); }
+  void toggleLight() {
+    call_homeassistant_service("light.toggle",
+                               {{"entity_id", entityId.c_str()}});
+  }
 
   bool supportsBrightness() {
-    // as long as there is one mode inside of supportedColorModes brightness is supported
+    // as long as there is one mode inside of supportedColorModes brightness is
+    // supported
     return !supportedColorModes.empty();
   }
   bool supportsColorTemperature() {
-    // TODO: I think the color_temp for rgbww cant be controlled if in white mode -> investigate and fix
-    return (std::find(supportedColorModes.begin(), supportedColorModes.end(), color_temp_type) !=
-                supportedColorModes.end() ||
-            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbww_type) !=
-                supportedColorModes.end()) &&
+    // TODO: I think the color_temp for rgbww cant be controlled if in white
+    // mode -> investigate and fix
+    return (std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      color_temp_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      rgbww_type) != supportedColorModes.end()) &&
            !supportedColorModes.empty();
   }
   bool supportsColor() {
-    return (std::find(supportedColorModes.begin(), supportedColorModes.end(), rgb_type) != supportedColorModes.end() ||
-            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbw_type) != supportedColorModes.end() ||
-            std::find(supportedColorModes.begin(), supportedColorModes.end(), rgbww_type) !=
-                supportedColorModes.end() ||
-            std::find(supportedColorModes.begin(), supportedColorModes.end(), hs_type) != supportedColorModes.end() ||
-            std::find(supportedColorModes.begin(), supportedColorModes.end(), xy_type) != supportedColorModes.end()) &&
+    return (std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      rgb_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      rgbw_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      rgbww_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      hs_type) != supportedColorModes.end() ||
+            std::find(supportedColorModes.begin(), supportedColorModes.end(),
+                      xy_type) != supportedColorModes.end()) &&
            !supportedColorModes.empty();
   }
 
-  std::shared_ptr<MenuTitleSlider> makeSlider(int min, int max, int value, std::string title, std::string unit,
-                                              int displayUnitMin, int displayUnitMax, int displayWidth) {
+  std::shared_ptr<MenuTitleSlider> makeSlider(
+      int min, int max, int value, std::string title, std::string unit,
+      int displayUnitMin, int displayUnitMax, int displayWidth) {
     int displayValue = value;
     float oldRange = max - min;
     float valueMinusMin = value - min;
     if (value > 0) {
       float displayNewRange = displayUnitMax - displayUnitMin;
-      displayValue = (float) ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin;
+      displayValue = static_cast<float>(
+          ((valueMinusMin * displayNewRange) / oldRange) + displayUnitMin);
     }
 
     float newMin = id(slider_margin_size);
     float newRange = displayWidth * newMin;
     int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
-    return std::make_shared<MenuTitleSlider>(title.c_str(), entityId, NoMenuTitleRightIcon, sliderValue, displayValue,
-                                             unit);
+    return std::make_shared<MenuTitleSlider>(title.c_str(), entityId,
+                                             NoMenuTitleRightIcon, sliderValue,
+                                             displayValue, unit);
   }
 
-  std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(int displayWidth) {
+  std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
+      int displayWidth) {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     if (supportsBrightness()) {
-      out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness", "%%", 0, 100, displayWidth));
+      out.push_back(makeSlider(0, MAX_BRIGHTNESS, localBrightness, "Brightness",
+                               "%%", 0, 100, displayWidth));
     }
     if (supportsColorTemperature()) {
-      out.push_back(makeSlider(minMireds, maxMireds, localColorTemp, "Temperature", "K", 1000000 / minMireds,
+      out.push_back(makeSlider(minMireds, maxMireds, localColorTemp,
+                               "Temperature", "K", 1000000 / minMireds,
                                1000000 / maxMireds, displayWidth));
     }
     if (supportsColor()) {
-      out.push_back(makeSlider(0, 360, localColor, "Color", "", 0, 360, displayWidth));
+      out.push_back(
+          makeSlider(0, 360, localColor, "Color", "", 0, 360, displayWidth));
     }
     return out;
-  }
-
-  Color hsvToRGB(double hue, double saturation, double value) {
-    double r = 0, g = 0, b = 0;
-    if (saturation == 0) {
-      r = value;
-      g = value;
-      b = value;
-    } else {
-      int i;
-      double f, p, q, t;
-
-      if (hue == 360)
-        hue = 0;
-      else
-        hue = hue / 60;
-
-      i = (int) trunc(hue);
-      f = hue - i;
-
-      p = value * (1.0 - saturation);
-      q = value * (1.0 - (saturation * f));
-      t = value * (1.0 - (saturation * (1.0 - f)));
-
-      switch (i) {
-        case 0:
-          r = value;
-          g = t;
-          b = p;
-          break;
-        case 1:
-          r = q;
-          g = value;
-          b = p;
-          break;
-        case 2:
-          r = p;
-          g = value;
-          b = t;
-          break;
-        case 3:
-          r = p;
-          g = q;
-          b = value;
-          break;
-        case 4:
-          r = t;
-          g = p;
-          b = value;
-          break;
-        default:
-          r = value;
-          g = p;
-          b = q;
-          break;
-      }
-    }
-    return Color((unsigned char) (r * 255), (unsigned char) (g * 255), (unsigned char) (b * 255));
   }
 
   Color rgbLightColor() {
@@ -263,8 +241,9 @@ class LightComponent : public CustomAPIDevice, public Component {
       return Color(255, 255, 255);
     }
 
-    return hsvToRGB((double) localColor, 1, 1);
-    // return hsvToRGB((double) localColor, 1, ((double) localBrightness) / 100);
+    return TextHelpers::hsvToRGB(static_cast<double>(localColor), 1, 1);
+    // return hsvToRGB((double) localColor, 1, ((double) localBrightness) /
+    // 100);
   }
 
   std::string icon() {
@@ -277,7 +256,8 @@ class LightComponent : public CustomAPIDevice, public Component {
 
  private:
   void state_changed(std::string newOnState) {
-    ESP_LOGD("state", " changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGD("state", " changed to %s (%s)", newOnState.c_str(),
+             friendlyName.c_str());
     onState = newOnState == "on";
     // visualize that light is off by resetting brightness and color_temp
     if (id(keep_states_in_sync)) {
@@ -297,7 +277,8 @@ class LightComponent : public CustomAPIDevice, public Component {
     display.updateDisplay(false);
   }
   void brightness_changed(std::string newOnState) {
-    ESP_LOGD("brightness", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGD("brightness", "state changed to %s (%s)", newOnState.c_str(),
+             friendlyName.c_str());
     if (id(keep_states_in_sync) || localBrightness == -1) {
       localBrightness = atoi(newOnState.c_str());
       isBrightnessInSync = true;
@@ -305,7 +286,8 @@ class LightComponent : public CustomAPIDevice, public Component {
     display.updateDisplay(false);
   }
   void color_temp_changed(std::string newOnState) {
-    ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("color_temp", "state changed to %s (%s)", newOnState.c_str(),
+             friendlyName.c_str());
     if (id(keep_states_in_sync) || localColorTemp == -1) {
       localColorTemp = atoi(newOnState.c_str());
       isColorTempInSync = true;
@@ -313,7 +295,8 @@ class LightComponent : public CustomAPIDevice, public Component {
     display.updateDisplay(false);
   }
   void color_changed(std::string newOnState) {
-    ESP_LOGI("color", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("color", "state changed to %s (%s)", newOnState.c_str(),
+             friendlyName.c_str());
     if (id(keep_states_in_sync) || localColor == -1) {
       localColor = TextHelpers::extractFirstNumber(newOnState);
     }
@@ -323,10 +306,12 @@ class LightComponent : public CustomAPIDevice, public Component {
   void supported_color_modes_changed(std::string newOnState) {
     // add all modes for the light to supportedColorModes and then check
     // the vector if the light supports a particular mode when needed
-    ESP_LOGI("supported_color_modes_changed", "state changed to %s (%s)", newOnState.c_str(), friendlyName.c_str());
+    ESP_LOGI("supported_color_modes_changed", "state changed to %s (%s)",
+             newOnState.c_str(), friendlyName.c_str());
     auto modes = StringUtils::split(newOnState, ",");
     for (auto cmode : modes) {
-      ESP_LOGD("supported_color_modes_changed", "mode: %s (%s)", newOnState.c_str(), friendlyName.c_str());
+      ESP_LOGD("supported_color_modes_changed", "mode: %s (%s)",
+               newOnState.c_str(), friendlyName.c_str());
       if (cmode.find("onoff") != std::string::npos) {
         // ignore onoff_type
         // supportedColorModes.push_back(onoff_type);
@@ -354,12 +339,14 @@ class LightComponent : public CustomAPIDevice, public Component {
 
 class LightGroupComponent : public CustomAPIDevice, public Component {
  public:
-  explicit LightGroupComponent(DisplayUpdateInterface &newCallback) : display(newCallback) {}
+  explicit LightGroupComponent(DisplayUpdateInterface &newCallback)
+      : display(newCallback) {}
   std::vector<LightComponent *> lights;
 
   void setup(std::vector<FriendlyNameEntity> newLights) {
     for (auto &light : newLights) {
-      LightComponent *newService = new LightComponent(light.friendlyName, light.entityId, display);
+      LightComponent *newService =
+          new LightComponent(light.friendlyName, light.entityId, display);
       lights.push_back(newService);
     }
   }
@@ -367,11 +354,16 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     for (auto &light : lights) {
-      ESP_LOGD("Light", "state %d (%s)", light->onState, light->friendlyName.c_str());
-      MenuTitleLeftIcon state = light->onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-      MenuTitleRightIcon rightIcon = light->supportsBrightness() ? ArrowMenuTitleRightIcon : NoMenuTitleRightIcon;
-      out.push_back(std::make_shared<MenuTitleLight>(light->friendlyName, light->entityId, state, rightIcon,
-                                                     light->rgbLightColor()));
+      ESP_LOGD("Light", "state %d (%s)", light->onState,
+               light->friendlyName.c_str());
+      MenuTitleLeftIcon state =
+          light->onState ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
+      MenuTitleRightIcon rightIcon = light->supportsBrightness()
+                                         ? ArrowMenuTitleRightIcon
+                                         : NoMenuTitleRightIcon;
+      out.push_back(std::make_shared<MenuTitleLight>(
+          light->friendlyName, light->entityId, state, rightIcon,
+          light->rgbLightColor()));
     }
     return out;
   }

@@ -1,9 +1,13 @@
 #pragma once
+#include <memory>
 #include <sstream>
+#include <string>
+#include <vector>
 
 class TextHelpers {
  public:
-  static void tokenize(std::string const &str, std::string delim, std::vector<std::string> &out) {
+  static void tokenize(std::string const &str, std::string delim,
+                       std::vector<std::string> &out) {
     size_t start;
     size_t end = 0;
 
@@ -15,11 +19,13 @@ class TextHelpers {
 
   static std::string filter(std::string str) {
     std::string output;
-    output.reserve(str.size());  // optional, avoids buffer reallocations in the loop
+    output.reserve(
+        str.size());  // optional, avoids buffer reallocations in the loop
     for (size_t i = 0; i < str.size(); ++i) {
       if (i == 0 && str[i] == ' ')
         continue;
-      if (i < str.size() - 3 && str[i] == '\\' && str[i + 1] == 'x' && str[i + 2] == 'a') {
+      if (i < str.size() - 3 && str[i] == '\\' && str[i + 1] == 'x' &&
+          str[i + 2] == 'a') {
         // replace \xa with space
         output += ' ';
         i += 3;
@@ -33,7 +39,8 @@ class TextHelpers {
     return output;
   }
 
-  static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonArray(std::string state, std::string entityId) {
+  static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonArray(
+      std::string state, std::string entityId) {
     StaticJsonDocument<3072> doc;
     DeserializationError err = deserializeJson(doc, state);
     std::vector<std::shared_ptr<MenuTitleSource>> sources;
@@ -45,25 +52,29 @@ class TextHelpers {
     JsonArray array = doc.as<JsonArray>();
     for (JsonVariant v : array) {
       std::string sourceName = v.as<std::string>();
-      ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(), entityId.c_str());
-      auto newsource =
-          std::make_shared<MenuTitleSource>(sourceName, entityId, NoMenuTitleRightIcon, SourceRemotePlayerSourceType);
+      ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(),
+               entityId.c_str());
+      auto newsource = std::make_shared<MenuTitleSource>(
+          sourceName, entityId, NoMenuTitleRightIcon,
+          SourceRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
   }
 
-  static std::string replaceAll(std::string str, const std::string &from, const std::string &to) {
+  static std::string replaceAll(std::string str, const std::string &from,
+                                const std::string &to) {
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
       str.replace(start_pos, from.length(), to);
-      start_pos += to.length();  // Handles case where 'to' is a substring of 'from'
+      start_pos +=
+          to.length();  // Handles case where 'to' is a substring of 'from'
     }
     return str;
   }
 
-  static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonSource(std::string state, std::string nameKey,
-                                                                       std::string valueKey) {
+  static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonSource(
+      std::string state, std::string nameKey, std::string valueKey) {
     StaticJsonDocument<3072> doc;
     DeserializationError err = deserializeJson(doc, state);
     std::vector<std::shared_ptr<MenuTitleSource>> sources;
@@ -76,15 +87,18 @@ class TextHelpers {
     for (JsonVariant v : array) {
       std::string playlistName = v[nameKey].as<std::string>();
       std::string playlistId = v[valueKey].as<std::string>();
-      ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(), playlistName.c_str());
-      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleRightIcon,
-                                                         MusicRemotePlayerSourceType);
+      ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(),
+               playlistName.c_str());
+      auto newsource = std::make_shared<MenuTitleSource>(
+          playlistName, playlistId, NoMenuTitleRightIcon,
+          MusicRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
   }
 
-  static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonKeyValue(std::string state) {
+  static std::vector<std::shared_ptr<MenuTitleSource>> parseJsonKeyValue(
+      std::string state) {
     StaticJsonDocument<3072> doc;
     DeserializationError err = deserializeJson(doc, state);
     std::vector<std::shared_ptr<MenuTitleSource>> sources;
@@ -97,9 +111,11 @@ class TextHelpers {
     for (JsonPair v : array) {
       std::string playlistName(v.value().as<std::string>());
       std::string playlistId(v.key().c_str());
-      ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(), playlistName.c_str());
-      auto newsource = std::make_shared<MenuTitleSource>(playlistName, playlistId, NoMenuTitleRightIcon,
-                                                         FavoriteItemIDRemotePlayerSourceType);
+      ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(),
+               playlistName.c_str());
+      auto newsource = std::make_shared<MenuTitleSource>(
+          playlistName, playlistId, NoMenuTitleRightIcon,
+          FavoriteItemIDRemotePlayerSourceType);
       sources.push_back(newsource);
     }
     return sources;
@@ -132,7 +148,7 @@ class TextHelpers {
       else
         hue = hue / 60;
 
-      i = (int) trunc(hue);
+      i = static_cast<int>(trunc(hue));
       f = hue - i;
 
       p = value * (1.0 - saturation);
@@ -172,7 +188,8 @@ class TextHelpers {
           break;
       }
     }
-    return Color((unsigned char) (r * 255), (unsigned char) (g * 255), (unsigned char) (b * 255));
+    return Color((unsigned char) (r * 255), (unsigned char) (g * 255),
+                 (unsigned char) (b * 255));
   }
 
  private:

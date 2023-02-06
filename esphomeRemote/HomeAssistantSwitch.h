@@ -1,15 +1,18 @@
 #pragma once
-#include "esphome.h"
+#include <string>
 #include "DisplayUpdateInterface.h"
 #include "FriendlyNameEntity.h"
+#include "esphome.h"
 #include "esphome/components/homeassistant/binary_sensor/homeassistant_binary_sensor.h"
 
-using namespace esphome;
-using namespace api;
+namespace esphome {
+namespace api {
 namespace home_assistant_switch {
-class HomeAssistantSwitch : public CustomAPIDevice, public homeassistant::HomeassistantBinarySensor {
+class HomeAssistantSwitch : public CustomAPIDevice,
+                            public homeassistant::HomeassistantBinarySensor {
  public:
-  explicit HomeAssistantSwitch(std::string newFriendlyName, std::string newEntityId,
+  explicit HomeAssistantSwitch(std::string newFriendlyName,
+                               std::string newEntityId,
                                DisplayUpdateInterface &newCallback);
   void toggleSwitch();
   std::string getEntityId();
@@ -18,3 +21,5 @@ class HomeAssistantSwitch : public CustomAPIDevice, public homeassistant::Homeas
   DisplayUpdateInterface &display;
 };
 }  // namespace home_assistant_switch
+}  // namespace api
+}  // namespace esphome

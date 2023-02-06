@@ -2,7 +2,12 @@
 
 #pragma once
 
-enum RemoteLightState { OffRemoteLightState, OnRemoteLightState, ChargingLightState, EffectRemoteLightState };
+enum RemoteLightState {
+  OffRemoteLightState,
+  OnRemoteLightState,
+  ChargingLightState,
+  EffectRemoteLightState
+};
 
 RemoteLightState lightState = OffRemoteLightState;
 int previousBatteryLevel = 0;
@@ -23,7 +28,8 @@ void manageLight() {
       call.perform();
       lightState = OffRemoteLightState;
     }
-  } else if (lightState == OffRemoteLightState && !speakerGroup->playerSearchFinished) {
+  } else if (lightState == OffRemoteLightState &&
+             !speakerGroup->playerSearchFinished) {
     auto call = id(side_light).turn_on();
     call.set_effect("Rainbow Effect");
     call.perform();
