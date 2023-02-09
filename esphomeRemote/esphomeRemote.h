@@ -48,7 +48,7 @@ SceneGroupComponent *sceneGroup;
 SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
-esphome::api::home_assistant_switch::home_assistant_switch_group::
+esphome::home_assistant_switch::home_assistant_switch_group::
     HomeAssistantSwitchGroup *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle =
     std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);

@@ -205,8 +205,9 @@ class LightComponent : public CustomAPIDevice, public Component {
     float valueMinusMin = value - min;
     if (value > 0) {
       float displayNewRange = displayUnitMax - displayUnitMin;
-      displayValue = static_cast<float>(
-          ((valueMinusMin * displayNewRange) / oldRange)) + displayUnitMin;
+      displayValue =
+          static_cast<float>(((valueMinusMin * displayNewRange) / oldRange)) +
+          displayUnitMin;
     }
 
     float newMin = id(slider_margin_size);
@@ -241,7 +242,7 @@ class LightComponent : public CustomAPIDevice, public Component {
       return Color(255, 255, 255);
     }
 
-    return TextHelpers::hsvToRGB(static_cast<double>(localColor), 1, 1);\
+    return TextHelpers::hsvToRGB(static_cast<double>(localColor), 1, 1);
   }
 
   std::string icon() {

@@ -1,7 +1,6 @@
 #include "HomeAssistantSwitchGroup.h"
 
 namespace esphome {
-namespace api {
 namespace home_assistant_switch {
 namespace home_assistant_switch_group {
 HomeAssistantSwitchGroup::HomeAssistantSwitchGroup(
@@ -42,5 +41,4 @@ bool HomeAssistantSwitchGroup::selectSwitch(int index) {
 }
 }  // namespace home_assistant_switch_group
 }  // namespace home_assistant_switch
-}  // namespace api
 }  // namespace esphome

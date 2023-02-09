@@ -5,11 +5,10 @@
 #include "MenuTitle.h"
 
 namespace esphome {
-namespace api {
 namespace home_assistant_switch {
 namespace home_assistant_switch_group {
 
-class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
+class HomeAssistantSwitchGroup : public api::CustomAPIDevice, public Component {
  public:
   explicit HomeAssistantSwitchGroup(DisplayUpdateInterface *newCallback);
   std::vector<HomeAssistantSwitch *> switches;
@@ -24,5 +23,4 @@ class HomeAssistantSwitchGroup : public CustomAPIDevice, public Component {
 
 }  // namespace home_assistant_switch_group
 }  // namespace home_assistant_switch
-}  // namespace api
 }  // namespace esphome
