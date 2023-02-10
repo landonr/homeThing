@@ -1172,6 +1172,7 @@ bool drawOptionMenuAndStop() {
           id(header_height) + id(margin_size) * 2 + id(medium_font_size), 24,
           &id(large_font), primaryTextColor(), TextAlign::TOP_CENTER,
           *playingNewSourceWrappedText, 0);
+      delete playingNewSourceWrappedText;
       return true;
   }
   return true;
@@ -1303,11 +1304,14 @@ void drawNowPlaying() {
   yPos = drawTextWrapped(id(margin_size), yPos, id(medium_font_size),
                          &id(medium_font), primaryTextColor(),
                          TextAlign::TOP_LEFT, *nowPlayingWrappedText, maxLines);
+  delete nowPlayingWrappedText;
   if (mediaArtistWrappedText->size() == 0 &&
       mediaTitleWrappedText->size() == 0) {
     id(my_display)
         .printf(id(my_display).get_width() / 2, yPos, &id(large_font),
                 primaryTextColor(), TextAlign::TOP_CENTER, "Nothing!");
+    delete mediaArtistWrappedText;
+    delete mediaTitleWrappedText;
     return;
   }
   if (lineCount > id(now_playing_max_lines)) {
@@ -1321,12 +1325,14 @@ void drawNowPlaying() {
                            primaryTextColor(), TextAlign::TOP_CENTER,
                            *mediaArtistWrappedText, maxLines);
   }
+  delete mediaArtistWrappedText;
   if (mediaTitleWrappedText->size() > 0) {
     yPos = yPos + id(margin_size);
     drawTextWrapped(id(my_display).get_width() / 2, yPos, id(medium_font_size),
                     &id(medium_font), primaryTextColor(), TextAlign::TOP_CENTER,
                     *mediaTitleWrappedText, maxLines);
   }
+  delete mediaTitleWrappedText;
   if (optionMenu == volumeOptionMenu) {
     drawVolumeOptionMenu();
   } else {

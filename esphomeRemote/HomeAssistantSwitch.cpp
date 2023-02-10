@@ -11,7 +11,8 @@ HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName,
   subscribe_homeassistant_state(&HomeAssistantSwitch::state_changed,
                                 newEntityId.c_str());
   add_on_state_callback([this](bool state) {
-    ESP_LOGI("Switch", "%s state changed to %d", this->get_name(), state);
+    ESP_LOGI("Switch", "%s state changed to %d", this->get_name().c_str(),
+             state);
     this->display->updateDisplay(false);
   });
 }
@@ -33,7 +34,8 @@ void HomeAssistantSwitch::toggleSwitch() {
 std::string HomeAssistantSwitch::getEntityId() { return entity_id_; }
 
 void HomeAssistantSwitch::state_changed(std::string newOnState) {
-  ESP_LOGI("Switch", "state changed to %s", newOnState.c_str());
+  ESP_LOGD("Switch", "%s state changed to %s", this->get_name().c_str(),
+           newOnState);
   write_state(newOnState == "on");
 }
 }  // namespace home_assistant_switch
