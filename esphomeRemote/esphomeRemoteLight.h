@@ -268,7 +268,7 @@ class LightComponent : public CustomAPIDevice, public Component {
   }
 
   std::string icon() {
-    if (onState != OnMenuTitleLeftIcon) {
+    if (onState) {
       return "󰌵";
     } else {
       return "󰌶";
