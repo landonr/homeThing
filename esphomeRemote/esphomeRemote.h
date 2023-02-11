@@ -1342,8 +1342,8 @@ void drawNowPlaying() {
 int autoClearState = 0;
 
 bool bootSequenceCanSleep() {
-  return activeMenuState == bootMenu && !id(wifi_id).is_connected() ||
-         !id(homeassistant_api_id).is_connected();
+  return activeMenuState == bootMenu && (!id(wifi_id).is_connected() ||
+         !id(homeassistant_api_id).is_connected());
 }
 
 int drawBootSequenceTitleRainbow(int xPos, int yPos) {
