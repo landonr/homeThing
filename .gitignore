@@ -106,3 +106,4 @@ cat-feeder.yaml
 secrets.yaml
 .vscode/settings.json
 homeThingTTGO.yaml
+*.pyc

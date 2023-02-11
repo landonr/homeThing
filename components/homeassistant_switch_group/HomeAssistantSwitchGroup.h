@@ -1,17 +1,17 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include "HomeAssistantSwitch.h"
+#include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
+#include "esphome/components/homeassistant_switch/HomeAssistantSwitch.h"
+#include "esphome/core/component.h"
 
 namespace esphome {
-namespace home_assistant_switch {
-namespace home_assistant_switch_group {
+namespace homeassistant_switch_group {
 
 class HomeAssistantSwitchGroup : public api::CustomAPIDevice, public Component {
  public:
-  explicit HomeAssistantSwitchGroup(DisplayUpdateInterface *newCallback);
-  std::vector<HomeAssistantSwitch *> switches;
+  // std::vector<HomeAssistantSwitch *> switches;
 
   void setup(std::vector<FriendlyNameEntity> newSwitches);
   std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches();
@@ -21,6 +21,5 @@ class HomeAssistantSwitchGroup : public api::CustomAPIDevice, public Component {
   DisplayUpdateInterface *display;
 };
 
-}  // namespace home_assistant_switch_group
-}  // namespace home_assistant_switch
+}  // namespace homeassistant_switch
 }  // namespace esphome

@@ -116,9 +116,6 @@ output:
     id: builtin_led
 
 binary_sensor:
-  - platform: homeassistant
-    entity_id: switch.fake_sensor
-    name: fake_sensor
   - platform: axp192
     axp192_id: axp
     type: charging

@@ -402,8 +402,8 @@ custom_component:
      std::vector<FriendlyNameEntity> switches {
        FriendlyNameEntity("switch.oven_fan", "Kitchen Fan")
      };
-     switchGroup = new esphome::home_assistant_switch::home_assistant_switch_group::HomeAssistantSwitchGroup(&displayUpdate);
-     switchGroup->setup(switches);
+     switchGroup = new homeassistant_switch_group::HomeAssistantSwitchGroup();
+     // switchGroup->setup(switches);
      return {switchGroup};
    id: switch_group_component
 

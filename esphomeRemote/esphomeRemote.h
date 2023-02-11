@@ -3,10 +3,10 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "HomeAssistantSwitch.h"
-#include "HomeAssistantSwitchGroup.h"
 #include "TextHelpers.h"
 #include "esphome.h"
+#include "esphome/components/homeassistant_switch/HomeAssistantSwitch.h"
+#include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #include "esphomeRemoteLight.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteSensor.h"
@@ -48,8 +48,7 @@ SceneGroupComponent *sceneGroup;
 SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
 LightGroupComponent *lightGroup;
-esphome::home_assistant_switch::home_assistant_switch_group::
-    HomeAssistantSwitchGroup *switchGroup;
+homeassistant_switch_group::HomeAssistantSwitchGroup *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle =
     std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 
