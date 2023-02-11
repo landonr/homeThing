@@ -21,5 +21,5 @@ class HomeAssistantSwitchGroup : public api::CustomAPIDevice, public Component {
   DisplayUpdateInterface *display;
 };
 
-}  // namespace homeassistant_switch
+}  // namespace homeassistant_switch_group
 }  // namespace esphome

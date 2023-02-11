@@ -28,5 +28,5 @@ class HomeAssistantSwitch : public switch_::Switch, public Component {
   void state_changed(std::string newOnState);
   void subscribeState();
 };
-}  // namespace home_assistant_switch
+}  // namespace homeassistant_switch
 }  // namespace esphome
