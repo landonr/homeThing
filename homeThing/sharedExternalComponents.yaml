@@ -1,4 +1,4 @@
 - source:
     type: local
     path: components
-  components: [ homeassistant_switch_group ]
+  components: [ homeassistant_switch_group, homeassistant_sensor_group ]

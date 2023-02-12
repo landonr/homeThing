@@ -10,7 +10,6 @@ esphome:
     - homeThing/esphomeRemotePlayer.h
     - homeThing/esphomeRemoteService.h
     - homeThing/esphomeRemoteLight.h
-    - homeThing/esphomeRemoteSensor.h
     - homeThing/DisplayUpdateInterface.h
     - homeThing/esphomeRemote.h
     - homeThing/esphomeRemoteRotary.h
@@ -58,6 +57,9 @@ substitutions:
 external_components:
   - <<: !include homeThing/sharedExternalComponents.yaml
 
+text_sensor:
+  !include homeThing/sharedTextSensors.yaml
+  
 sensor:
 ## Rotary
   - platform: rotary_encoder

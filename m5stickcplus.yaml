@@ -8,7 +8,6 @@ esphome:
     - homeThing/esphomeRemotePlayer.h
     - homeThing/esphomeRemoteService.h
     - homeThing/esphomeRemoteLight.h
-    - homeThing/esphomeRemoteSensor.h
     - homeThing/DisplayUpdateInterface.h
     - homeThing/esphomeRemote.h
     - homeThing/esphomeRemoteNowPlayingMenu.h
@@ -78,6 +77,9 @@ axp192:
   address: 0x34
   i2c_id: bus_a
   update_interval: 60s
+
+text_sensor:
+  !include homeThing/sharedTextSensors.yaml
 
 sensor:
     # AXP192 power management - must be present to initialize TFT power on

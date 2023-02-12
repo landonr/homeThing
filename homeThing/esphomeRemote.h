@@ -9,7 +9,6 @@
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #include "esphomeRemoteLight.h"
 #include "esphomeRemotePlayer.h"
-#include "esphomeRemoteSensor.h"
 #include "esphomeRemoteService.h"
 
 bool menuDrawing = false;
@@ -45,7 +44,6 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 
 auto displayUpdate = DisplayUpdateImpl();
 SceneGroupComponent* sceneGroup;
-SensorGroupComponent* sensorGroup;
 SonosSpeakerGroupComponent* speakerGroup;
 LightGroupComponent* lightGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle =
@@ -814,9 +812,9 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(
-          rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL,
-                         sensorGroup != NULL, lightGroup != NULL, true));
+      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL,
+                                              sceneGroup != NULL, true,
+                                              lightGroup != NULL, true));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -828,7 +826,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
     case scenesMenu:
       return sceneGroup->sceneTitleStrings();
     case sensorsMenu:
-      return sensorGroup->sensorTitles();
+      return id(sensor_group_component).sensorTitles();
     default:
       ESP_LOGW("WARNING", "menu is bad  %d", x);
       std::vector<std::shared_ptr<MenuTitleBase>> out;
@@ -1531,6 +1529,7 @@ bool setupFinished = false;
 void drawBootSequence() {
   if (!setupFinished) {
     id(switch_group_component).set_display(&displayUpdate);
+    id(sensor_group_component).set_display(&displayUpdate);
     setupFinished = true;
   }
   speakerGroup->findActivePlayer();
@@ -1626,8 +1625,8 @@ void selectMediaPlayers() {
 
 bool selectRootMenu() {
   MenuStates currentMenu =
-      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL,
-                     sensorGroup != NULL, lightGroup != NULL, true)[menuIndex];
+      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, true,
+                     lightGroup != NULL, true)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
