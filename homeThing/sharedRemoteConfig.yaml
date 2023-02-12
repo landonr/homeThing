@@ -349,7 +349,7 @@ time:
             displayUpdate.updateDisplay(false);
 
 homeassistant_switch_group:
-  id: "switch_group_component"
+  id: switch_group_component
   switches:
     - id: "oven_fan_switch"
 

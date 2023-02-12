@@ -48,7 +48,6 @@ SceneGroupComponent* sceneGroup;
 SensorGroupComponent* sensorGroup;
 SonosSpeakerGroupComponent* speakerGroup;
 LightGroupComponent* lightGroup;
-homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle =
     std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 
@@ -815,9 +814,9 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles(
-          speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL,
-          lightGroup != NULL, switchGroup != NULL));
+      return menuTypesToTitles(
+          rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL,
+                         sensorGroup != NULL, lightGroup != NULL, true));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -1527,7 +1526,13 @@ int drawBootSequenceTitle(int xPos, int imageYPos) {
   return maxAnimationDuration;
 }
 
+bool setupFinished = false;
+
 void drawBootSequence() {
+  if (!setupFinished) {
+    id(switch_group_component).set_display(&displayUpdate);
+    setupFinished = true;
+  }
   speakerGroup->findActivePlayer();
 
   int imageYPos = id(header_height) + id(margin_size) * 2;
@@ -1582,7 +1587,7 @@ void drawMenu() {
       }
       break;
     case switchesMenu:
-      drawMenu(switchGroup->switchTitleSwitches());
+      drawMenu(id(switch_group_component).switchTitleSwitches());
       break;
     case groupMenu: {
       if (speakerGroup->newSpeakerGroupParent != NULL) {
@@ -1620,9 +1625,9 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu = rootMenuTitles(
-      speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL,
-      lightGroup != NULL, switchGroup != NULL)[menuIndex];
+  MenuStates currentMenu =
+      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL,
+                     sensorGroup != NULL, lightGroup != NULL, true)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
@@ -1727,7 +1732,7 @@ bool selectMenu() {
       }
       break;
     case switchesMenu:
-      if (switchGroup->selectSwitch(menuIndexForSource)) {
+      if (id(switch_group_component).selectSwitch(menuIndexForSource)) {
         topMenu();
       }
       break;

@@ -13,7 +13,7 @@ class BaseService : public CustomAPIDevice {
   std::string entityId;
   std::string friendlyName;
   std::string serviceType;
-  std::string getEntityId() { return entityId; }
+  std::string get_entity_id() { return entityId; }
   std::string getFriendlyName() { return friendlyName; }
   void callService() {
     if (serviceType == "script") {
