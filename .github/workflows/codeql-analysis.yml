@@ -23,7 +23,7 @@ jobs:
         with:
           source: 'homeThing', 'components'
           extensions: 'h,cpp'
-          style: 'Google'
+          style: google
           clangFormatVersion: 14
       - name: Create file
         run: |
