@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: DoozyX/clang-format-lint-action@v0.14
         with:
-          source: 'homeThing', 'components'
+          source: '.'
           extensions: 'h,cpp'
           style: google
           clangFormatVersion: 14
