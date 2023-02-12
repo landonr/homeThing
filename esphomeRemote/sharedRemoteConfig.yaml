@@ -348,6 +348,11 @@ time:
         - lambda: |-
             displayUpdate.updateDisplay(false);
 
+homeassistant_switch_group:
+  id: "switch_group_component"
+  switches:
+    - id: "oven_fan_switch"
+
 custom_component:
 # Home assistant speakers and tv. Set TV up with a sound bar
  - lambda: |-
@@ -396,16 +401,6 @@ custom_component:
      lightGroup->setup(lights);
      return {lightGroup};
    id: light_group_component
-
- ## Home assistant switches. Set with a friendly name
- - lambda: |-
-     std::vector<FriendlyNameEntity> switches {
-       FriendlyNameEntity("switch.oven_fan", "Kitchen Fan")
-     };
-     switchGroup = new homeassistant_switch_group::HomeAssistantSwitchGroup();
-     // switchGroup->setup(switches);
-     return {switchGroup};
-   id: switch_group_component
 
  ## Home assistant sensors. Set with a friendly name
  - lambda: |-

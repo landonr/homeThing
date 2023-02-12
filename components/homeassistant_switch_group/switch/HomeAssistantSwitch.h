@@ -3,17 +3,18 @@
 #include <string>
 #include "DisplayUpdateInterface.h"
 #include "FriendlyNameEntity.h"
-#include "esphome.h"
+#include "esphome/core/component.h"
 #include "esphome/components/api/api_server.h"
 
 namespace esphome {
 namespace homeassistant_switch {
+
 class HomeAssistantSwitch : public switch_::Switch, public Component {
  public:
-  HomeAssistantSwitch();
-  explicit HomeAssistantSwitch(std::string newFriendlyName,
-                               std::string newEntityId,
-                               DisplayUpdateInterface *newCallback);
+  explicit HomeAssistantSwitch();
+  // explicit HomeAssistantSwitch(std::string newFriendlyName,
+  //                              std::string newEntityId,
+  //                              DisplayUpdateInterface *newCallback) { };
   void set_entity_id(const std::string &entity_id) { entity_id_ = entity_id; }
   void set_attribute(const std::string &attribute) { attribute_ = attribute; }
   void setup() override;
@@ -28,5 +29,6 @@ class HomeAssistantSwitch : public switch_::Switch, public Component {
   void state_changed(std::string newOnState);
   void subscribeState();
 };
+
 }  // namespace homeassistant_switch
 }  // namespace esphome

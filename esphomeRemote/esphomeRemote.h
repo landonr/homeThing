@@ -5,7 +5,6 @@
 #include <vector>
 #include "TextHelpers.h"
 #include "esphome.h"
-#include "esphome/components/homeassistant_switch/HomeAssistantSwitch.h"
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #include "esphomeRemoteLight.h"
 #include "esphomeRemotePlayer.h"

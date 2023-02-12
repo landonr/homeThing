@@ -1,0 +1,4 @@
+- source:
+    type: local
+    path: components
+  components: [ homeassistant_switch_group ]

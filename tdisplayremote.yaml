@@ -10,10 +10,6 @@ esphome:
     - esphomeRemote/esphomeRemotePlayer.h
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/HomeAssistantSwitch.h
-    - esphomeRemote/HomeAssistantSwitch.cpp
-    - esphomeRemote/HomeAssistantSwitchGroup.h
-    - esphomeRemote/HomeAssistantSwitchGroup.cpp
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h
@@ -58,7 +54,10 @@ substitutions:
   keep_states_in_sync: "false"
 
 <<: !include esphomeRemote/sharedRemoteConfig.yaml
-  
+
+external_components:
+  - <<: !include esphomeRemote/sharedExternalComponents.yaml
+
 sensor:
 ## Rotary
   - platform: rotary_encoder
@@ -260,6 +259,9 @@ binary_sensor:
           buttonPressSelectHold();
 
 switch:
+  - platform: homeassistant_switch_group
+    entity_id: "sensor.oven_fan"
+    id: "oven_fan_switch"
   - platform: template
     name: Sleep Toggle
     id: sleep_toggle

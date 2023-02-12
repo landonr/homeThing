@@ -3,22 +3,22 @@
 
 namespace esphome {
 namespace homeassistant_switch {
-  HomeAssistantSwitch::HomeAssistantSwitch() {}
-HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName,
-                                         std::string newEntityId,
-                                         DisplayUpdateInterface *newCallback)
-    : display(newCallback) {
-  set_entity_id(newEntityId);
-  set_name(newFriendlyName);
-  // subscribe_homeassistant_state(&HomeAssistantSwitch::state_changed,
-  // newEntityId.c_str());
-  subscribeState();
-  add_on_state_callback([this](bool state) {
-    ESP_LOGI("HomeAssistantSwitch", "%s state changed to %d",
-             this->get_name().c_str(), state);
-    this->display->updateDisplay(false);
-  });
-}
+HomeAssistantSwitch::HomeAssistantSwitch() {}
+// HomeAssistantSwitch::HomeAssistantSwitch(std::string newFriendlyName,
+//                                          std::string newEntityId,
+//                                          DisplayUpdateInterface *newCallback)
+//     : display(newCallback) {
+//   set_entity_id(newEntityId);
+//   set_name(newFriendlyName);
+//   // subscribe_homeassistant_state(&HomeAssistantSwitch::state_changed,
+//   // newEntityId.c_str());
+//   subscribeState();
+//   add_on_state_callback([this](bool state) {
+//     ESP_LOGI("HomeAssistantSwitch", "%s state changed to %d",
+//              this->get_name().c_str(), state);
+//     this->display->updateDisplay(false);
+//   });
+// }
 
 void HomeAssistantSwitch::setup() {
   // This will be called by App.setup()
@@ -69,5 +69,5 @@ void HomeAssistantSwitch::subscribeState() {
         }
       });
 }
-}  // namespace home_assistant_switch
+}  // namespace homeassistant_switch
 }  // namespace esphome

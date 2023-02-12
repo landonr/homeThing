@@ -1,5 +1,7 @@
 bash ./formatFiles.sh
-esphome run m5stickc.yaml --no-logs
-esphome run tdisplayt4.yaml --no-logs
-esphome run tdisplayremote.yaml --no-logs
-esphome run fireremote.yaml --no-logs
+esphome run --no-logs m5stickc.yaml 
+esphome run --no-logs m5stickcplus.yaml 
+esphome run --no-logs tdisplayt4.yaml 
+esphome run --no-logs tdisplayremote.yaml 
+esphome run --no-logs fireremote.yaml 
+esphome run --nologs homeThingTTGO.yaml 

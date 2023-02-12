@@ -2,6 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import switch
 from esphome.const import CONF_ATTRIBUTE, CONF_ENTITY_ID, CONF_ID
+from esphome.core import coroutine_with_priority, CORE
 
 homeassistant_switch_ns = cg.esphome_ns.namespace("homeassistant_switch")
 
@@ -19,7 +20,9 @@ CONFIG_SCHEMA = switch.SWITCH_SCHEMA.extend(
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
+@coroutine_with_priority(100.0)
 async def to_code(config):
+    cg.add_global(homeassistant_switch_ns.using)
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await switch.register_switch(var, config)

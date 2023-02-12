@@ -8,10 +8,6 @@ esphome:
     - esphomeRemote/esphomeRemotePlayer.h
     - esphomeRemote/esphomeRemoteService.h
     - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/HomeAssistantSwitch.h
-    - esphomeRemote/HomeAssistantSwitch.cpp
-    - esphomeRemote/HomeAssistantSwitchGroup.h
-    - esphomeRemote/HomeAssistantSwitchGroup.cpp
     - esphomeRemote/esphomeRemoteSensor.h
     - esphomeRemote/DisplayUpdateInterface.h
     - esphomeRemote/esphomeRemote.h
@@ -70,6 +66,7 @@ i2c:
      scan: true
 
 external_components:
+  - <<: !include esphomeRemote/sharedExternalComponents.yaml
   - source:
       type: git
       url: https://gitlab.com/geiseri/esphome_extras.git
@@ -163,6 +160,9 @@ deep_sleep:
   wakeup_pin_mode: INVERT_WAKEUP
 
 switch:
+  - platform: homeassistant_switch_group
+    entity_id: "sensor.oven_fan"
+    id: "oven_fan_switch"
   - platform: template
     id: sleep_toggle
     internal: true
