@@ -113,9 +113,6 @@ output:
     id: builtin_led
 
 binary_sensor:
-  - platform: homeassistant
-    entity_id: switch.fake_sensor
-    name: fake_sensor
   - platform: axp192
     axp192_id: axp
     type: charging
@@ -163,9 +160,7 @@ deep_sleep:
   wakeup_pin_mode: INVERT_WAKEUP
 
 switch:
-  - platform: homeassistant_switch_group
-    entity_id: "sensor.oven_fan"
-    id: "oven_fan_switch"
+  - <<: !include homeThing/sharedSwitches.yaml
   - platform: template
     id: sleep_toggle
     internal: true

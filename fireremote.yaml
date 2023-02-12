@@ -116,9 +116,6 @@ deep_sleep:
   wakeup_pin_mode: INVERT_WAKEUP
 
 binary_sensor:
-  - platform: homeassistant
-    entity_id: switch.fake_sensor
-    name: fake_sensor
   - platform: gpio
     id: M5_BtnA
     pin:
@@ -149,9 +146,7 @@ binary_sensor:
 
 # We can still control the backlight independently
 switch:
-  - platform: homeassistant_switch_group
-    entity_id: "sensor.oven_fan"
-    id: "oven_fan_switch"
+  - <<: !include homeThing/sharedSwitches.yaml
   - platform: template
     name: ${friendly_name} Sleep Toggle
     id: sleep_toggle

@@ -149,9 +149,6 @@ sensor:
           id(sleep_toggle).turn_on();
 
 binary_sensor:
-  - platform: homeassistant
-    entity_id: switch.fake_sensor
-    name: fake_sensor
   - platform: gpio
     pin:
       number: GPIO0
@@ -259,9 +256,7 @@ binary_sensor:
           buttonPressSelectHold();
 
 switch:
-  - platform: homeassistant_switch_group
-    entity_id: "sensor.oven_fan"
-    id: "oven_fan_switch"
+  - <<: !include homeThing/sharedSwitches.yaml
   - platform: template
     name: Sleep Toggle
     id: sleep_toggle

@@ -1,4 +1,5 @@
 #include "HomeAssistantSwitch.h"
+#include <map>
 #include "esphome/core/log.h"
 
 namespace esphome {

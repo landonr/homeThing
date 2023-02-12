@@ -17,9 +17,7 @@ class HomeAssistantSwitchGroup : public api::CustomAPIDevice, public Component {
   std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches();
   bool selectSwitch(int index);
   void register_switch(homeassistant_switch::HomeAssistantSwitch* newSwitch);
-  void set_display(DisplayUpdateInterface* newDisplay) {
-    display = newDisplay;
-  };
+  void set_display(DisplayUpdateInterface* newDisplay) { display = newDisplay; }
 
  private:
   DisplayUpdateInterface* display;
