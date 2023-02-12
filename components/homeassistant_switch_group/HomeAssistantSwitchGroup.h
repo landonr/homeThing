@@ -1,11 +1,12 @@
 #pragma once
 #include <memory>
 #include <vector>
+
 #include "DisplayUpdateInterface.h"
 #include "MenuTitle.h"
+#include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/homeassistant_switch_group/switch/HomeAssistantSwitch.h"
 #include "esphome/core/component.h"
-#include "esphome/components/api/custom_api_device.h"
 
 namespace esphome {
 namespace homeassistant_switch_group {

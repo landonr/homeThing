@@ -22,8 +22,7 @@ class TextHelpers {
     output.reserve(
         str.size());  // optional, avoids buffer reallocations in the loop
     for (size_t i = 0; i < str.size(); ++i) {
-      if (i == 0 && str[i] == ' ')
-        continue;
+      if (i == 0 && str[i] == ' ') continue;
       if (i < str.size() - 3 && str[i] == '\\' && str[i + 1] == 'x' &&
           str[i + 2] == 'a') {
         // replace \xa with space
@@ -31,8 +30,7 @@ class TextHelpers {
         i += 3;
         continue;
       }
-      if (i == str.size() - 1 && str[i] == '}')
-        return output;
+      if (i == str.size() - 1 && str[i] == '}') return output;
       if (str[i] != '[' && str[i] != ']' && str[i] != '\'' && str[i] != '"')
         output += str[i];
     }
@@ -188,8 +186,8 @@ class TextHelpers {
           break;
       }
     }
-    return Color((unsigned char) (r * 255), (unsigned char) (g * 255),
-                 (unsigned char) (b * 255));
+    return Color((unsigned char)(r * 255), (unsigned char)(g * 255),
+                 (unsigned char)(b * 255));
   }
 
  private:

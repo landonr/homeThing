@@ -1,10 +1,11 @@
 #include "HomeAssistantSwitchGroup.h"
+
 #include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_switch_group {
-std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantSwitchGroup::
-    switchTitleSwitches() {
+std::vector<std::shared_ptr<MenuTitleBase>>
+HomeAssistantSwitchGroup::switchTitleSwitches() {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto &switchObject : switches) {
     ESP_LOGI("Switch", "state %d", switchObject->state);
@@ -26,7 +27,8 @@ bool HomeAssistantSwitchGroup::selectSwitch(int index) {
   return true;
 }
 
-void HomeAssistantSwitchGroup::register_switch(homeassistant_switch::HomeAssistantSwitch* newSwitch) {
+void HomeAssistantSwitchGroup::register_switch(
+    homeassistant_switch::HomeAssistantSwitch *newSwitch) {
   switches.push_back(newSwitch);
 }
 }  // namespace homeassistant_switch_group

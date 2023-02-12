@@ -3,20 +3,20 @@ esphome:
   platform: ESP32
   board: m5stack-fire
   includes:
-    - esphomeRemote/MenuGlobals.h
-    - esphomeRemote/MenuTitle.h
-    - esphomeRemote/FriendlyNameEntity.h
-    - esphomeRemote/TextHelpers.h
-    - esphomeRemote/esphomeRemotePlayer.h
-    - esphomeRemote/esphomeRemoteService.h
-    - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSensor.h
-    - esphomeRemote/DisplayUpdateInterface.h
-    - esphomeRemote/esphomeRemote.h
-    - esphomeRemote/esphomeRemoteNowPlayingMenu.h
-    - esphomeRemote/esphomeRemote3Button.h
-    - esphomeRemote/esphomeRemoteFireLight.h
-    - esphomeRemote/esphomeRemoteCommon.h
+    - homeThing/MenuGlobals.h
+    - homeThing/MenuTitle.h
+    - homeThing/FriendlyNameEntity.h
+    - homeThing/TextHelpers.h
+    - homeThing/esphomeRemotePlayer.h
+    - homeThing/esphomeRemoteService.h
+    - homeThing/esphomeRemoteLight.h
+    - homeThing/esphomeRemoteSensor.h
+    - homeThing/DisplayUpdateInterface.h
+    - homeThing/esphomeRemote.h
+    - homeThing/esphomeRemoteNowPlayingMenu.h
+    - homeThing/esphomeRemote3Button.h
+    - homeThing/esphomeRemoteFireLight.h
+    - homeThing/esphomeRemoteCommon.h
 
 substitutions:
   boot_name: '"Fire Remote <3"'
@@ -55,10 +55,10 @@ substitutions:
   dark_mode: "true"
   keep_states_in_sync: "false"
 
-<<: !include esphomeRemote/sharedRemoteConfig.yaml
+<<: !include homeThing/sharedRemoteConfig.yaml
 
 external_components:
-  - <<: !include esphomeRemote/sharedExternalComponents.yaml
+  - <<: !include homeThing/sharedExternalComponents.yaml
   - source:
       type: git
       url: https://github.com/ssieb/custom_components

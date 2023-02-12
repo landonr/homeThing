@@ -3,18 +3,18 @@ esphome:
   platform: ESP32
   board: featheresp32
   includes:
-    - esphomeRemote/MenuGlobals.h
-    - esphomeRemote/MenuTitle.h
-    - esphomeRemote/FriendlyNameEntity.h
-    - esphomeRemote/TextHelpers.h
-    - esphomeRemote/esphomeRemotePlayer.h
-    - esphomeRemote/esphomeRemoteService.h
-    - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSensor.h
-    - esphomeRemote/DisplayUpdateInterface.h
-    - esphomeRemote/esphomeRemote.h
-    - esphomeRemote/esphomeRemoteRotary.h
-    - esphomeRemote/esphomeRemoteCommon.h
+    - homeThing/MenuGlobals.h
+    - homeThing/MenuTitle.h
+    - homeThing/FriendlyNameEntity.h
+    - homeThing/TextHelpers.h
+    - homeThing/esphomeRemotePlayer.h
+    - homeThing/esphomeRemoteService.h
+    - homeThing/esphomeRemoteLight.h
+    - homeThing/esphomeRemoteSensor.h
+    - homeThing/DisplayUpdateInterface.h
+    - homeThing/esphomeRemote.h
+    - homeThing/esphomeRemoteRotary.h
+    - homeThing/esphomeRemoteCommon.h
 
 substitutions:
   boot_name: '"TDisplay Remote <3"'
@@ -53,10 +53,10 @@ substitutions:
   dark_mode: "true"
   keep_states_in_sync: "false"
 
-<<: !include esphomeRemote/sharedRemoteConfig.yaml
+<<: !include homeThing/sharedRemoteConfig.yaml
 
 external_components:
-  - <<: !include esphomeRemote/sharedExternalComponents.yaml
+  - <<: !include homeThing/sharedExternalComponents.yaml
 
 sensor:
 ## Rotary

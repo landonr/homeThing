@@ -1,19 +1,19 @@
 esphome:
   name: m5stickc
   includes:
-    - esphomeRemote/MenuGlobals.h
-    - esphomeRemote/MenuTitle.h
-    - esphomeRemote/FriendlyNameEntity.h
-    - esphomeRemote/TextHelpers.h
-    - esphomeRemote/esphomeRemotePlayer.h
-    - esphomeRemote/esphomeRemoteService.h
-    - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSensor.h
-    - esphomeRemote/DisplayUpdateInterface.h
-    - esphomeRemote/esphomeRemote.h
-    - esphomeRemote/esphomeRemoteNowPlayingMenu.h
-    - esphomeRemote/esphomeRemote2Button.h
-    - esphomeRemote/esphomeRemoteCommon.h
+    - homeThing/MenuGlobals.h
+    - homeThing/MenuTitle.h
+    - homeThing/FriendlyNameEntity.h
+    - homeThing/TextHelpers.h
+    - homeThing/esphomeRemotePlayer.h
+    - homeThing/esphomeRemoteService.h
+    - homeThing/esphomeRemoteLight.h
+    - homeThing/esphomeRemoteSensor.h
+    - homeThing/DisplayUpdateInterface.h
+    - homeThing/esphomeRemote.h
+    - homeThing/esphomeRemoteNowPlayingMenu.h
+    - homeThing/esphomeRemote2Button.h
+    - homeThing/esphomeRemoteCommon.h
 
 esp32:
   board: m5stick-c
@@ -57,7 +57,7 @@ substitutions:
   dark_mode: "true"
   keep_states_in_sync: "false"
 
-<<: !include esphomeRemote/sharedRemoteConfig.yaml
+<<: !include homeThing/sharedRemoteConfig.yaml
 
 i2c:
    - id: bus_a
@@ -66,7 +66,7 @@ i2c:
      scan: true
 
 external_components:
-  - <<: !include esphomeRemote/sharedExternalComponents.yaml
+  - <<: !include homeThing/sharedExternalComponents.yaml
   - source:
       type: git
       url: https://gitlab.com/geiseri/esphome_extras.git

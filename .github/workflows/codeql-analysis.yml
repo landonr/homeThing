@@ -21,8 +21,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: DoozyX/clang-format-lint-action@v0.14
         with:
-          source: 'esphomeRemote'
+          source: 'homeThing', 'components'
           extensions: 'h,cpp'
+          style: 'Google'
           clangFormatVersion: 14
       - name: Create file
         run: |
