@@ -7,7 +7,7 @@ namespace homeassistant_switch_group {
 std::vector<std::shared_ptr<MenuTitleBase>>
 HomeAssistantSwitchGroup::switchTitleSwitches() {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto &switchObject : switches) {
+  for (auto& switchObject : switches) {
     ESP_LOGI("Switch", "state %d", switchObject->state);
     MenuTitleLeftIcon state =
         switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
@@ -20,7 +20,7 @@ HomeAssistantSwitchGroup::switchTitleSwitches() {
 
 bool HomeAssistantSwitchGroup::selectSwitch(int index) {
   if (index >= 0 && index < switches.size()) {
-    auto *switchObject = switches[index];
+    auto* switchObject = switches[index];
     switchObject->toggleSwitch();
     return false;
   }
@@ -28,7 +28,7 @@ bool HomeAssistantSwitchGroup::selectSwitch(int index) {
 }
 
 void HomeAssistantSwitchGroup::register_switch(
-    homeassistant_switch::HomeAssistantSwitch *newSwitch) {
+    homeassistant_switch::HomeAssistantSwitch* newSwitch) {
   switches.push_back(newSwitch);
 }
 }  // namespace homeassistant_switch_group

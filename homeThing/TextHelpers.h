@@ -6,8 +6,8 @@
 
 class TextHelpers {
  public:
-  static void tokenize(std::string const &str, std::string delim,
-                       std::vector<std::string> *out) {
+  static void tokenize(std::string const& str, std::string delim,
+                       std::vector<std::string>* out) {
     size_t start;
     size_t end = 0;
 
@@ -22,7 +22,8 @@ class TextHelpers {
     output.reserve(
         str.size());  // optional, avoids buffer reallocations in the loop
     for (size_t i = 0; i < str.size(); ++i) {
-      if (i == 0 && str[i] == ' ') continue;
+      if (i == 0 && str[i] == ' ')
+        continue;
       if (i < str.size() - 3 && str[i] == '\\' && str[i + 1] == 'x' &&
           str[i + 2] == 'a') {
         // replace \xa with space
@@ -30,7 +31,8 @@ class TextHelpers {
         i += 3;
         continue;
       }
-      if (i == str.size() - 1 && str[i] == '}') return output;
+      if (i == str.size() - 1 && str[i] == '}')
+        return output;
       if (str[i] != '[' && str[i] != ']' && str[i] != '\'' && str[i] != '"')
         output += str[i];
     }
@@ -60,8 +62,8 @@ class TextHelpers {
     return sources;
   }
 
-  static std::string replaceAll(std::string str, const std::string &from,
-                                const std::string &to) {
+  static std::string replaceAll(std::string str, const std::string& from,
+                                const std::string& to) {
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
       str.replace(start_pos, from.length(), to);

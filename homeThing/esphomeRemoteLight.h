@@ -30,7 +30,7 @@ enum ColorModeType {
 class LightComponent : public CustomAPIDevice, public Component {
  public:
   LightComponent(std::string newFriendlyName, std::string newEntityId,
-                 DisplayUpdateInterface *newCallback)
+                 DisplayUpdateInterface* newCallback)
       : friendlyName(newFriendlyName),
         entityId(newEntityId),
         display(newCallback) {
@@ -56,7 +56,7 @@ class LightComponent : public CustomAPIDevice, public Component {
   }
   std::string friendlyName;
   std::string entityId;
-  DisplayUpdateInterface *display;
+  DisplayUpdateInterface* display;
   int localBrightness = -1;
   int localColorTemp = -1;
   int localColor = -1;
@@ -67,7 +67,7 @@ class LightComponent : public CustomAPIDevice, public Component {
   int minMireds = 0;
   int maxMireds = 0;
 
-  void increaseProperty(int max, bool *inSync, int *localValue, int incStep,
+  void increaseProperty(int max, bool* inSync, int* localValue, int incStep,
                         std::string serviceProperty, bool wrapData = false) {
     if (id(keep_states_in_sync)) {
       if (!*inSync) {
@@ -96,7 +96,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     }
   }
 
-  void decreaseProperty(int min, bool *inSync, int *localValue, int decStep,
+  void decreaseProperty(int min, bool* inSync, int* localValue, int decStep,
                         std::string serviceProperty, bool wrapData = false) {
     if (id(keep_states_in_sync)) {
       if (!*inSync) {
@@ -161,7 +161,7 @@ class LightComponent : public CustomAPIDevice, public Component {
     increaseProperty(360, &temp, &localColor, 10, "hs_color", true);
   }
 
-  void setAttribute(const std::map<std::string, std::string> &data) {
+  void setAttribute(const std::map<std::string, std::string>& data) {
     call_homeassistant_service("light.turn_on", data);
   }
 
@@ -339,13 +339,13 @@ class LightComponent : public CustomAPIDevice, public Component {
 
 class LightGroupComponent : public CustomAPIDevice, public Component {
  public:
-  explicit LightGroupComponent(DisplayUpdateInterface *newCallback)
+  explicit LightGroupComponent(DisplayUpdateInterface* newCallback)
       : display(newCallback) {}
-  std::vector<LightComponent *> lights;
+  std::vector<LightComponent*> lights;
 
   void setup(std::vector<FriendlyNameEntity> newLights) {
-    for (auto &light : newLights) {
-      LightComponent *newService =
+    for (auto& light : newLights) {
+      LightComponent* newService =
           new LightComponent(light.friendlyName, light.entityId, display);
       lights.push_back(newService);
     }
@@ -353,7 +353,7 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
 
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    for (auto &light : lights) {
+    for (auto& light : lights) {
       ESP_LOGD("Light", "state %d (%s)", light->onState,
                light->friendlyName.c_str());
       MenuTitleLeftIcon state =
@@ -378,11 +378,11 @@ class LightGroupComponent : public CustomAPIDevice, public Component {
 
   void clearActiveLight() { _activeLight = NULL; }
 
-  LightComponent *getActiveLight() { return _activeLight; }
+  LightComponent* getActiveLight() { return _activeLight; }
 
   bool lightDetailSelected = false;
 
  private:
-  DisplayUpdateInterface *display;
-  LightComponent *_activeLight = NULL;
+  DisplayUpdateInterface* display;
+  LightComponent* _activeLight = NULL;
 };

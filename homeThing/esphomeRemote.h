@@ -44,11 +44,11 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 };
 
 auto displayUpdate = DisplayUpdateImpl();
-SceneGroupComponent *sceneGroup;
-SensorGroupComponent *sensorGroup;
-SonosSpeakerGroupComponent *speakerGroup;
-LightGroupComponent *lightGroup;
-homeassistant_switch_group::HomeAssistantSwitchGroup *switchGroup;
+SceneGroupComponent* sceneGroup;
+SensorGroupComponent* sensorGroup;
+SonosSpeakerGroupComponent* speakerGroup;
+LightGroupComponent* lightGroup;
+homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle =
     std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 
@@ -82,7 +82,8 @@ std::string textWrap(std::string text, unsigned per_line) {
     } else {
       // backtrack
       unsigned end = line_end;
-      while (end > line_begin && !std::isspace(text[end])) --end;
+      while (end > line_begin && !std::isspace(text[end]))
+        --end;
 
       if (end != line_begin) {
         line_end = end;
@@ -804,7 +805,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
 std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
     std::vector<MenuStates> menu) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto &menuItem : menu) {
+  for (auto& menuItem : menu) {
     out.push_back(menuTitleForType(menuItem));
   }
   return out;
@@ -850,7 +851,8 @@ void topMenu() {
   }
   resetAnimation();
   menuIndex = 0;
-  if (speakerGroup != NULL) speakerGroup->newSpeakerGroupParent = NULL;
+  if (speakerGroup != NULL)
+    speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
   activeMenuState = MenuStates::rootMenu;
 }
@@ -1062,8 +1064,8 @@ std::string secondsToString(int seconds) {
 
 void drawMediaDuration() {
   if (speakerGroup->activePlayer->playerType != TVRemotePlayerType) {
-    SonosSpeakerComponent *activeSpeaker =
-        static_cast<SonosSpeakerComponent *>(speakerGroup->activePlayer);
+    SonosSpeakerComponent* activeSpeaker =
+        static_cast<SonosSpeakerComponent*>(speakerGroup->activePlayer);
     int mediaDuration = activeSpeaker->mediaDuration;
     int mediaPosition = activeSpeaker->mediaPosition;
     if (mediaDuration <= 0 && mediaPosition <= 0) {
@@ -1103,10 +1105,10 @@ void drawMediaDuration() {
   }
 }
 
-std::vector<std::string> *getWrappedTitles(int xPos, int fontSize,
+std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
                                            TextAlign alignment,
                                            std::string text) {
-  std::vector<std::string> *output = new std::vector<std::string>();
+  std::vector<std::string>* output = new std::vector<std::string>();
   if (text.size() == 0) {
     return output;
   }
@@ -1116,7 +1118,7 @@ std::vector<std::string> *getWrappedTitles(int xPos, int fontSize,
   return output;
 }
 
-int drawTextWrapped(int xPos, int yPos, int fontSize, Font *font, Color color,
+int drawTextWrapped(int xPos, int yPos, int fontSize, Font* font, Color color,
                     TextAlign alignment, std::vector<std::string> wrappedTitles,
                     int maxLines) {
   int characterLimit = getCharacterLimit(xPos, fontSize, alignment);
@@ -1269,8 +1271,8 @@ void drawNowPlaying() {
   std::string nowPlayingText = "Now Playing,";
 
   if (speakerGroup->activePlayer->playerType != TVRemotePlayerType) {
-    SonosSpeakerComponent *activeSpeaker =
-        static_cast<SonosSpeakerComponent *>(speakerGroup->activePlayer);
+    SonosSpeakerComponent* activeSpeaker =
+        static_cast<SonosSpeakerComponent*>(speakerGroup->activePlayer);
     if (activeSpeaker->mediaPlaylist != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->mediaPlaylist;
     } else if (activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
@@ -1601,14 +1603,14 @@ void drawMenu() {
 }
 
 void selectMediaPlayers() {
-  for (auto &speaker : speakerGroup->speakers) {
+  for (auto& speaker : speakerGroup->speakers) {
     if (speaker->entityId == activeMenuTitle->entityId) {
       speakerGroup->activePlayer = speaker;
       topMenu();
       return;
     }
   }
-  for (auto &tv : speakerGroup->tvs) {
+  for (auto& tv : speakerGroup->tvs) {
     if (tv->entityId == activeMenuTitle->entityId) {
       speakerGroup->activePlayer = tv;
       topMenu();

@@ -30,18 +30,18 @@ class SensorComponent : public CustomAPIDevice, public Component {
 
 class SensorGroupComponent : public CustomAPIDevice, public Component {
  public:
-  std::vector<SensorComponent *> sensors;
+  std::vector<SensorComponent*> sensors;
 
   void setup(std::vector<FriendlyNameEntity> newSensors) {
-    for (auto &sensor : newSensors) {
-      SensorComponent *newSensor = new SensorComponent(sensor);
+    for (auto& sensor : newSensors) {
+      SensorComponent* newSensor = new SensorComponent(sensor);
       sensors.push_back(newSensor);
     }
   }
 
   std::vector<std::shared_ptr<MenuTitleBase>> sensorTitles() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
-    for (auto &sensor : sensors) {
+    for (auto& sensor : sensors) {
       if (sensor->friendlyName != "") {
         out.push_back(std::make_shared<MenuTitleBase>(
             sensor->friendlyName + " " + sensor->state, sensor->entityId,

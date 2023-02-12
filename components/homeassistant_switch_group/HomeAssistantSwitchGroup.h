@@ -12,14 +12,14 @@ namespace esphome {
 namespace homeassistant_switch_group {
 class HomeAssistantSwitchGroup : public api::CustomAPIDevice, public Component {
  public:
-  std::vector<esphome::homeassistant_switch::HomeAssistantSwitch *> switches;
+  std::vector<esphome::homeassistant_switch::HomeAssistantSwitch*> switches;
 
   std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches();
   bool selectSwitch(int index);
-  void register_switch(homeassistant_switch::HomeAssistantSwitch *newSwitch);
+  void register_switch(homeassistant_switch::HomeAssistantSwitch* newSwitch);
 
  private:
-  DisplayUpdateInterface *display;
+  DisplayUpdateInterface* display;
 };
 
 }  // namespace homeassistant_switch_group
