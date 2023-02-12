@@ -34,7 +34,9 @@ void HomeAssistantSwitch::toggleSwitch() {
   //                            {{"entity_id", entity_id_.c_str()}});
 }
 
-std::string HomeAssistantSwitch::getEntityId() { return entity_id_; }
+std::string HomeAssistantSwitch::getEntityId() {
+  return entity_id_;
+}
 
 void HomeAssistantSwitch::state_changed(std::string newOnState) {
   ESP_LOGD("HomeAssistantSwitch", "%s state changed to %s",
@@ -44,7 +46,7 @@ void HomeAssistantSwitch::state_changed(std::string newOnState) {
 
 void HomeAssistantSwitch::subscribeState() {
   api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, this->attribute_, [this](const std::string &state) {
+      this->entity_id_, this->attribute_, [this](const std::string& state) {
         auto val = parse_on_off(state.c_str());
         switch (val) {
           case PARSE_NONE:
