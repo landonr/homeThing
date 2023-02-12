@@ -1,7 +1,7 @@
 bash ./formatFiles.sh
-esphome run --no-logs m5stickc.yaml 
-esphome run --no-logs m5stickcplus.yaml 
-esphome run --no-logs tdisplayt4.yaml 
-esphome run --no-logs tdisplayremote.yaml 
-esphome run --no-logs fireremote.yaml 
-esphome run --nologs homeThingTTGO.yaml 
+echo $files
+for device in m5stickc m5stickcplus tdisplayt4 tdisplayremote fireremote homeThingTTGO
+do
+    echo building $device
+    esphome run --no-logs $device.yaml
+done
