@@ -407,6 +407,14 @@ custom_component:
      return {switchGroup};
    id: switch_group_component
 
+ ## Home assistant kodis. Set with a friendly name
+ - lambda: |-
+     std::vector<FriendlyNameEntity> kodis {
+       FriendlyNameEntity("media_player.libreelec", "my Kodi"),
+     };
+     kodiGroup = new KodiGroupComponent(displayUpdate);
+     kodiGroup->setup(kodis);
+     return {kodiGroup};
  ## Home assistant sensors. Set with a friendly name
  - lambda: |-
      std::vector<FriendlyNameEntity> sensors {

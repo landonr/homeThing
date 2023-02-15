@@ -347,6 +347,7 @@ void buttonPressScreenRight() {
     case groupMenu:
     case mediaPlayersMenu:
     case scenesMenu:
+    case kodiMenu:
     case lightsMenu:
     case lightsDetailMenu:
     case sensorsMenu:

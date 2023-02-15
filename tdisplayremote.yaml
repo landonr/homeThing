@@ -16,6 +16,7 @@ esphome:
     - esphomeRemote/esphomeRemote.h
     - esphomeRemote/esphomeRemoteRotary.h
     - esphomeRemote/esphomeRemoteCommon.h
+    - esphomeRemote/esphomeRemoteKodi.h
 
 substitutions:
   boot_name: '"TDisplay Remote <3"'

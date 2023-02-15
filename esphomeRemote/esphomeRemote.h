@@ -1,6 +1,7 @@
 #include "MenuGlobals.h"
 #include "TextHelpers.h"
 #include "esphome.h"
+#include "esphomeRemoteKodi.h"
 #include "esphomeRemoteLight.h"
 #include "esphomeRemoteSwitch.h"
 #include "esphomeRemotePlayer.h"
@@ -44,6 +45,7 @@ auto displayUpdate = DisplayUpdateImpl();
 SceneGroupComponent *sceneGroup;
 SensorGroupComponent *sensorGroup;
 SonosSpeakerGroupComponent *speakerGroup;
+KodiGroupComponent *kodiGroup;
 LightGroupComponent *lightGroup;
 SwitchGroupComponent *switchGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle = std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
@@ -115,6 +117,8 @@ std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType) {
       return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleRightIcon);
     case mediaPlayersMenu:
       return std::make_shared<MenuTitleBase>("Media Players", "", ArrowMenuTitleRightIcon);
+    case kodiMenu:
+      return std::make_shared<MenuTitleBase>("Kodi", "", ArrowMenuTitleRightIcon);
     case lightsMenu:
       return std::make_shared<MenuTitleBase>("Lights", "", ArrowMenuTitleRightIcon);
     case lightsDetailMenu:
@@ -212,6 +216,11 @@ void drawHeaderTitle(int yPosOffset) {
       break;
     case scenesMenu:
       drawHeaderTitleWithString("Scenes/Actions", xPos);
+      break;
+    case kodiMenu:
+      ESP_LOGI("kodi","kodi draw headerMenuTitle");
+      // id(my_display).printf(5, 15, font, color, alignment, "Nothing yet");
+      drawHeaderTitleWithString("Kodi", xPos);
       break;
     case lightsMenu:
       drawHeaderTitleWithString("Lights", xPos);
@@ -684,7 +693,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL,
+      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, kodiGroup != NULL,
                                               lightGroup != NULL, switchGroup != NULL));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
@@ -1338,7 +1347,12 @@ void drawMenu() {
     case nowPlayingMenu:
       drawNowPlaying();
       break;
+    case kodiMenu:
+      ESP_LOGI("kodi","kodiTitleSwitches");
+      drawMenu(kodiGroup->kodiTitleSwitches());
+      break;
     case lightsMenu:
+      ESP_LOGI("kodi","lightTitleSwitches");
       drawMenu(lightGroup->lightTitleSwitches());
       break;
     case lightsDetailMenu:
@@ -1385,7 +1399,7 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu = rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL,
+  MenuStates currentMenu = rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, sensorGroup != NULL, kodiGroup != NULL, 
                                           lightGroup != NULL, switchGroup != NULL)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
@@ -1396,6 +1410,9 @@ bool selectRootMenu() {
       break;
     case mediaPlayersMenu:
       activeMenuState = mediaPlayersMenu;
+      break;
+    case kodiMenu:
+      activeMenuState = kodiMenu;
       break;
     case lightsMenu:
       activeMenuState = lightsMenu;
@@ -1430,6 +1447,10 @@ bool selectRootMenu() {
 bool selectMenuHold() {
   int menuIndexForSource = menuIndex;
   switch (activeMenuState) {
+    case kodiMenu: {
+      ESP_LOGI("kodi","kodi break only");
+                       break;
+                   }
     case lightsMenu: {
       auto selectedLight = lightGroup->lights[menuIndexForSource];
       if (selectedLight == NULL) {
@@ -1470,6 +1491,10 @@ bool selectMenu() {
       speakerGroup->selectGroup(*playerTitleState);
       break;
     }
+    case kodiMenu: {
+      ESP_LOGI("kodi","kodi break only2");
+       break;
+   }
     case lightsMenu: {
       auto selectedLight = lightGroup->lights[menuIndexForSource];
       if (selectedLight == NULL) {

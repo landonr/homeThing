@@ -7,6 +7,7 @@ enum MenuStates {
   groupMenu,
   mediaPlayersMenu,
   scenesMenu,
+  kodiMenu,
   lightsMenu,
   lightsDetailMenu,
   switchesMenu,
@@ -16,7 +17,7 @@ enum MenuStates {
   sleepMenu
 };
 
-std::vector<MenuStates> rootMenuTitles(bool includeSpeaker, bool includeScene, bool includeSensor, bool includeLight,
+std::vector<MenuStates> rootMenuTitles(bool includeSpeaker, bool includeScene, bool includeSensor, bool includeKodi, bool includeLight,
                                        bool includeSwitch) {
   std::vector<MenuStates> out;
   if (includeSpeaker) {
@@ -27,6 +28,9 @@ std::vector<MenuStates> rootMenuTitles(bool includeSpeaker, bool includeScene, b
   }
   if (includeSensor) {
     out.push_back(sensorsMenu);
+  }
+  if (includeKodi) {
+    out.push_back(kodiMenu);
   }
   if (includeLight) {
     out.push_back(lightsMenu);
