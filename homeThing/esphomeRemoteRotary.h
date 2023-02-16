@@ -15,9 +15,9 @@ void buttonPressSelect() {
   }
   switch (activeMenuState) {
     case lightsDetailMenu:
-      if (id(light_group_component).lightDetailSelected) {
+      if (lightGroup->lightDetailSelected) {
         // deselect ligh if selected and stay in lightsDetailMenu
-        id(light_group_component).lightDetailSelected = false;
+        lightGroup->lightDetailSelected = false;
         displayUpdate.updateDisplay(true);
         return;
       }
@@ -64,21 +64,19 @@ void rotaryScrollClockwise() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (id(light_group_component).lightDetailSelected && menuIndex == 0 &&
-          id(light_group_component).getActiveLight() != NULL) {
-        id(light_group_component).getActiveLight()->incBrightness();
+      if (lightGroup->lightDetailSelected && menuIndex == 0 &&
+          lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incBrightness();
         debounceUpdateDisplay();
         return;
-      } else if (id(light_group_component).lightDetailSelected &&
-                 menuIndex == 1 &&
-                 id(light_group_component).getActiveLight() != NULL) {
-        id(light_group_component).getActiveLight()->incTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 1 &&
+                 lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incTemperature();
         debounceUpdateDisplay();
         return;
-      } else if (id(light_group_component).lightDetailSelected &&
-                 menuIndex == 2 &&
-                 id(light_group_component).getActiveLight() != NULL) {
-        id(light_group_component).getActiveLight()->incColor();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2 &&
+                 lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->incColor();
         debounceUpdateDisplay();
         return;
       }
@@ -102,21 +100,19 @@ void rotaryScrollCounterClockwise() {
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (id(light_group_component).lightDetailSelected && menuIndex == 0 &&
-          id(light_group_component).getActiveLight() != NULL) {
-        id(light_group_component).getActiveLight()->decBrightness();
+      if (lightGroup->lightDetailSelected && menuIndex == 0 &&
+          lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decBrightness();
         debounceUpdateDisplay();
         return;
-      } else if (id(light_group_component).lightDetailSelected &&
-                 menuIndex == 1 &&
-                 id(light_group_component).getActiveLight() != NULL) {
-        id(light_group_component).getActiveLight()->decTemperature();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 1 &&
+                 lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decTemperature();
         debounceUpdateDisplay();
         return;
-      } else if (id(light_group_component).lightDetailSelected &&
-                 menuIndex == 2 &&
-                 id(light_group_component).getActiveLight() != NULL) {
-        id(light_group_component).getActiveLight()->decColor();
+      } else if (lightGroup->lightDetailSelected && menuIndex == 2 &&
+                 lightGroup->getActiveLight() != NULL) {
+        lightGroup->getActiveLight()->decColor();
         debounceUpdateDisplay();
         return;
       }
@@ -164,9 +160,9 @@ void buttonPressUp() {
       displayUpdate.updateDisplay(true);
       return;
     case lightsDetailMenu:
-      if (id(light_group_component).lightDetailSelected) {
+      if (lightGroup->lightDetailSelected) {
         // deselect ligh if selected and stay in lightsDetailMenu
-        id(light_group_component).lightDetailSelected = false;
+        lightGroup->lightDetailSelected = false;
         displayUpdate.updateDisplay(true);
         return;
       } else {
@@ -186,7 +182,7 @@ void buttonPressUp() {
     return;
   }
   optionMenu = noOptionMenu;
-  id(light_group_component).clearActiveLight();
+  lightGroup->clearActiveLight();
   topMenu();
   displayUpdate.updateDisplay(true);
 }

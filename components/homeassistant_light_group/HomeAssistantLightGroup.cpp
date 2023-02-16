@@ -23,12 +23,19 @@ HomeAssistantLightGroup::lightTitleSwitches() {
   return out;
 }
 
-void HomeAssistantLightGroup::selectLightAtIndex(int index) {
+bool HomeAssistantLightGroup::selectLightDetailAtIndex(int index) {
   if (lights.size() < index) {
     ESP_LOGE("light", "selecting out of bounds light");
-    return;
+    return false;
   }
-  _activeLight = lights[index];
+  auto new_active_light = lights[index];
+  auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
+      new_active_light->get_output());
+  if (output->supportsBrightness()) {
+    _activeLight = new_active_light;
+    return true;
+  }
+  return false;
 }
 
 void HomeAssistantLightGroup::register_light(
@@ -48,8 +55,9 @@ void HomeAssistantLightGroup::toggleLight(int index) {
     return;
   }
   auto light = lights[index];
-  auto output = static_cast<homeassistant_light::HomeAssistantLight*>(light->get_output());
-  if(output == NULL) {
+  auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
+      light->get_output());
+  if (output == NULL) {
     return;
   }
   output->next_api_publish_ = true;

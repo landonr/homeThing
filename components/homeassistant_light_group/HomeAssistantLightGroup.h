@@ -15,10 +15,11 @@ class HomeAssistantLightGroup : public api::CustomAPIDevice, public Component {
  public:
   std::vector<homeassistant_light::HomeAssistantLightState*> lights;
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches();
-  void selectLightAtIndex(int index);
+  bool selectLightDetailAtIndex(int index);
   void clearActiveLight() { _activeLight = NULL; }
   homeassistant_light::HomeAssistantLight* getActiveLight() {
-    return static_cast<homeassistant_light::HomeAssistantLight*>(_activeLight->get_output());
+    return static_cast<homeassistant_light::HomeAssistantLight*>(
+        _activeLight->get_output());
   }
   bool lightDetailSelected = false;
   void register_light(homeassistant_light::HomeAssistantLightState* newLight);
