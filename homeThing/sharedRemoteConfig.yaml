@@ -365,10 +365,10 @@ homeassistant_sensor_group:
 homeassistant_light_group:
   id: light_group_component
   lights:
-    # - id: light_bathroom_lights
-    # - id: light_bedroom_lights
-    # - id: light_kitchen_lights
-    # - id: light_living_room_lights
+    - id: light_bathroom_lights
+    - id: light_bedroom_lights
+    - id: light_kitchen_lights
+    - id: light_living_room_lights
     - id: light_office_lamp
 
 custom_component:
