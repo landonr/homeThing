@@ -38,9 +38,6 @@ class HomeAssistantLight : public light::LightOutput,
                            public Component,
                            public api::CustomAPIDevice {
  public:
-  int min_mireds = 0;
-  int max_mireds = 0;
-
   void setup() override;
   void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
   light::LightTraits get_traits() override;

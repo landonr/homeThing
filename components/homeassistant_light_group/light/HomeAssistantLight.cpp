@@ -259,6 +259,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantLight::lightTitleItems(
                              0, 100, displayWidth));
   }
   if (supportsColorTemperature()) {
+    auto max_mireds = light_traits_.get_max_mireds();
+    auto min_mireds = light_traits_.get_min_mireds();
     out.push_back(makeSlider(
         min_mireds, max_mireds,
         light_state_->remote_values.get_color_temperature(), "Temperature", "K",
@@ -304,16 +306,18 @@ void HomeAssistantLight::state_changed(std::string state) {
   ESP_LOGI(TAG, "'%s': state changed to %s", get_name().c_str(), state.c_str());
   auto onState = parse_on_off(state.c_str());
   auto call = this->light_state_->make_call();
-  call.set_state(onState == PARSE_ON);
-  // call.perform();
+  call.set_state(onState);
+  call.perform();
 }
 void HomeAssistantLight::min_mireds_changed(std::string state) {
-  min_mireds = atoi(state.c_str());
-  // display->updateDisplay(false);
+  ESP_LOGI(TAG, "'%s': min_mireds changed to %s", get_name().c_str(), state.c_str());
+  auto min_mireds = atoi(state.c_str());
+  light_traits_.set_min_mireds(min_mireds);
 }
 void HomeAssistantLight::max_mireds_changed(std::string state) {
-  max_mireds = atoi(state.c_str());
-  // display->updateDisplay(false);
+  ESP_LOGI(TAG, "'%s': max_mireds changed to %s", get_name().c_str(), state.c_str());
+  auto max_mireds = atoi(state.c_str());
+  light_traits_.set_max_mireds(max_mireds);
 }
 void HomeAssistantLight::brightness_changed(std::string state) {
   auto brightness = parse_number<float>(state).value_or(0.0f);
@@ -336,7 +340,8 @@ void HomeAssistantLight::color_temp_changed(std::string state) {
   update_supported_color_mode(light::ColorMode::COLOR_TEMPERATURE);
 
   auto call = this->light_state_->make_call();
-  call.set_color_temperature(color_temp / this->max_mireds);
+  call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
+  call.set_color_temperature(color_temp);
   call.perform();
   // }
   // display->updateDisplay(false);
@@ -350,6 +355,7 @@ void HomeAssistantLight::color_changed(std::string state) {
   float red, green, blue;
   hsv_to_rgb(localColor, 1, 1, red, green, blue);
   auto call = this->light_state_->make_call();
+  call.set_color_mode(light::ColorMode::RGB);
   call.set_rgb(red, green, blue);
   call.perform();
   // }
