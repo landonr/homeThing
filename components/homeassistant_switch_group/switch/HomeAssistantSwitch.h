@@ -3,9 +3,7 @@
 #include <string>
 
 #include "DisplayUpdateInterface.h"
-#include "FriendlyNameEntity.h"
-
-#include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/switch/switch.h"
 #include "esphome/core/component.h"
 
 namespace esphome {

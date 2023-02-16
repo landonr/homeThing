@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
-
 #include "esphome/core/color.h"
+
 namespace esphome {
 
 enum MenuTitleLeftIcon {

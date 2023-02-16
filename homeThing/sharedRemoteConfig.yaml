@@ -362,6 +362,15 @@ homeassistant_sensor_group:
     - id: sensor_plant_moisture
     - id: sensor_kitchen_air
 
+homeassistant_light_group:
+  id: light_group_component
+  lights:
+    # - id: light_bathroom_lights
+    # - id: light_bedroom_lights
+    # - id: light_kitchen_lights
+    # - id: light_living_room_lights
+    - id: light_office_lamp
+
 custom_component:
 # Home assistant speakers and tv. Set TV up with a sound bar
  - lambda: |-
@@ -395,17 +404,3 @@ custom_component:
      sceneGroup->setup(scenes);
      return {sceneGroup};
    id: scene_group_component
-
- ## Home assistant lights. Set with a friendly name
- - lambda: |-
-     std::vector<FriendlyNameEntity> lights { 
-       FriendlyNameEntity("light.bathroom_lights", "Bathroom"), 
-       FriendlyNameEntity("light.bedroom_lights", "Bedroom"), 
-       FriendlyNameEntity("light.kitchen_lights", "Kitchen"), 
-       FriendlyNameEntity("light.living_room_lights", "Living Room"), 
-       FriendlyNameEntity("light.office_lamp", "Office Lamp")
-     };
-     lightGroup = new LightGroupComponent(&displayUpdate);
-     lightGroup->setup(lights);
-     return {lightGroup};
-   id: light_group_component

@@ -7,8 +7,6 @@ homeassistant_sensor_group_ns = cg.esphome_ns.namespace("homeassistant_sensor_gr
 
 CONF_SENSORS = "sensors"
 
-DEPENDENCIES = ["api"]
-
 HOMEASSISTANT_SENSOR_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.use_id(HomeassistantTextSensor)

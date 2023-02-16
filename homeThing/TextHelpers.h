@@ -3,6 +3,12 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "MenuTitle.h"
+#include "esphome/components/json/json_util.h"
+#include "esphome/core/color.h"
+#include "esphome/core/log.h"
+
+namespace esphome {
 
 class TextHelpers {
  public:
@@ -195,3 +201,5 @@ class TextHelpers {
  private:
   TextHelpers() {}
 };
+
+}  // namespace esphome

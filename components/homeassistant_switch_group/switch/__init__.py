@@ -7,8 +7,6 @@ homeassistant_switch_ns = cg.esphome_ns.namespace("homeassistant_switch")
 
 AUTO_LOAD = ['switch']
 
-DEPENDENCIES = ["api"]
-
 HomeAssistantSwitch = homeassistant_switch_ns.class_("HomeAssistantSwitch", switch.Switch, cg.Component)
 
 CONFIG_SCHEMA = switch.SWITCH_SCHEMA.extend(
@@ -21,7 +19,6 @@ CONFIG_SCHEMA = switch.SWITCH_SCHEMA.extend(
 ).extend(cv.COMPONENT_SCHEMA)
 
 async def to_code(config):
-    cg.add_global(homeassistant_switch_ns.using)
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await switch.register_switch(var, config)

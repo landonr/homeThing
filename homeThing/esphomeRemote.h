@@ -7,7 +7,6 @@
 #include "TextHelpers.h"
 #include "esphome.h"
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
-#include "esphomeRemoteLight.h"
 #include "esphomeRemotePlayer.h"
 #include "esphomeRemoteService.h"
 
@@ -45,7 +44,6 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 auto displayUpdate = DisplayUpdateImpl();
 SceneGroupComponent* sceneGroup;
 SonosSpeakerGroupComponent* speakerGroup;
-LightGroupComponent* lightGroup;
 std::shared_ptr<MenuTitleBase> activeMenuTitle =
     std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
 
@@ -246,9 +244,9 @@ void drawHeaderTitle(int yPosOffset) {
       drawHeaderTitleWithString("Lights", xPos);
       break;
     case lightsDetailMenu: {
-      if (lightGroup->getActiveLight() != NULL) {
-        auto activeLight = lightGroup->getActiveLight();
-        auto headerMenuTitle = activeLight->friendlyName;
+      if (id(light_group_component).getActiveLight() != NULL) {
+        auto activeLight = id(light_group_component).getActiveLight();
+        auto headerMenuTitle = activeLight->get_name();
         int newXPos = drawHeaderIcon(activeLight->icon(), xPos,
                                      activeLight->rgbLightColor());
         drawHeaderTitleWithString(headerMenuTitle, newXPos + 1);
@@ -765,7 +763,8 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
         break;
       }
       case SliderMenuTitleType: {
-        bool lightDetailSelected = lightGroup->lightDetailSelected;
+        bool lightDetailSelected =
+            id(light_group_component).lightDetailSelected;
         auto item = std::static_pointer_cast<MenuTitleSlider>(menuTitles[i]);
         SliderSelectionState sliderState =
             menuState == i && lightDetailSelected ? SliderSelectionStateActive
@@ -812,9 +811,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   int x = menuIndex;
   switch (activeMenuState) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles(speakerGroup != NULL,
-                                              sceneGroup != NULL, true,
-                                              lightGroup != NULL, true));
+      return menuTypesToTitles(rootMenuTitles(
+          speakerGroup != NULL, sceneGroup != NULL, true, true, true));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -859,7 +857,7 @@ void idleMenu(bool force) {
     return;
   }
   if (!charging || force) {
-    lightGroup->clearActiveLight();
+    id(light_group_component).clearActiveLight();
     menuIndex = 0;
     resetAnimation();
     optionMenu = noOptionMenu;
@@ -1530,6 +1528,7 @@ void drawBootSequence() {
   if (!setupFinished) {
     id(switch_group_component).set_display(&displayUpdate);
     id(sensor_group_component).set_display(&displayUpdate);
+    id(light_group_component).set_display(&displayUpdate);
     setupFinished = true;
   }
   speakerGroup->findActivePlayer();
@@ -1577,12 +1576,13 @@ void drawMenu() {
       drawNowPlaying();
       break;
     case lightsMenu:
-      drawMenu(lightGroup->lightTitleSwitches());
+      drawMenu(id(light_group_component).lightTitleSwitches());
       break;
     case lightsDetailMenu:
-      if (lightGroup->getActiveLight() != NULL) {
-        drawMenu(lightGroup->getActiveLight()->lightTitleItems(
-            id(my_display).get_width()));
+      if (id(light_group_component).getActiveLight() != NULL) {
+        drawMenu(id(light_group_component)
+                     .getActiveLight()
+                     ->lightTitleItems(id(my_display).get_width()));
       }
       break;
     case switchesMenu:
@@ -1624,9 +1624,8 @@ void selectMediaPlayers() {
 }
 
 bool selectRootMenu() {
-  MenuStates currentMenu =
-      rootMenuTitles(speakerGroup != NULL, sceneGroup != NULL, true,
-                     lightGroup != NULL, true)[menuIndex];
+  MenuStates currentMenu = rootMenuTitles(
+      speakerGroup != NULL, sceneGroup != NULL, true, true, true)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
@@ -1671,16 +1670,16 @@ bool selectMenuHold() {
   int menuIndexForSource = menuIndex;
   switch (activeMenuState) {
     case lightsMenu: {
-      auto selectedLight = lightGroup->lights[menuIndexForSource];
+      auto selectedLight = id(light_group_component).lights[menuIndexForSource];
       if (selectedLight == NULL) {
         break;
       }
-      if (selectedLight->supportsBrightness()) {
-        // save light and go to light detail
-        lightGroup->selectLightAtIndex(menuIndexForSource);
-        menuIndex = 0;
-        activeMenuState = lightsDetailMenu;
-      }
+      // if (selectedLight->supportsBrightness()) {
+      //   // save light and go to light detail
+      //   id(light_group_component).selectLightAtIndex(menuIndexForSource);
+      //   menuIndex = 0;
+      //   activeMenuState = lightsDetailMenu;
+      // }
       return true;
     }
     default:
@@ -1713,15 +1712,11 @@ bool selectMenu() {
       break;
     }
     case lightsMenu: {
-      auto selectedLight = lightGroup->lights[menuIndexForSource];
-      if (selectedLight == NULL) {
-        break;
-      }
-      selectedLight->toggleLight();
+      id(light_group_component).toggleLight(menuIndexForSource);
       return true;
     }
     case lightsDetailMenu:
-      lightGroup->lightDetailSelected = true;
+      id(light_group_component).lightDetailSelected = true;
     case mediaPlayersMenu:
       selectMediaPlayers();
       break;

@@ -9,7 +9,6 @@ esphome:
     - homeThing/TextHelpers.h
     - homeThing/esphomeRemotePlayer.h
     - homeThing/esphomeRemoteService.h
-    - homeThing/esphomeRemoteLight.h
     - homeThing/DisplayUpdateInterface.h
     - homeThing/esphomeRemote.h
     - homeThing/esphomeRemoteNowPlayingMenu.h
