@@ -8,8 +8,6 @@ homeassistant_switch_group_ns = cg.esphome_ns.namespace("homeassistant_switch_gr
 CONF_SWITCHES = "switches"
 CONF_SWITCH = "switch"
 
-# AUTO_LOAD = ["homeassistant_switch"]
-
 DEPENDENCIES = ["api"]
 
 HOMEASSISTANT_SWITCH_SCHEMA = cv.Schema(

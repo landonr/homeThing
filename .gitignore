@@ -108,3 +108,4 @@ secrets.yaml
 homeThingTTGO.yaml
 *.pyc
 *:Zone.Identifier
+.vscode/c_cpp_properties.json

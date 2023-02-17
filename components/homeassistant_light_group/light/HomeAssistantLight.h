@@ -42,10 +42,9 @@ class HomeAssistantLight : public light::LightOutput,
   void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
   light::LightTraits get_traits() override;
   void add_on_state_callback(std::function<void()>&& callback);
-  void increaseProperty(int max, bool* inSync, int* localValue, int incStep,
-                        std::string serviceProperty, bool wrapData = false);
-  void decreaseProperty(int min, bool* inSync, int* localValue, int decStep,
-                        std::string serviceProperty, bool wrapData = false);
+  void set_color_properties(std::map<std::string, std::string>* data,
+                            const light::LightState* state,
+                            const light::ColorMode color_mode);
   void decTemperature();
   void incTemperature();
   void decBrightness();
@@ -89,6 +88,7 @@ class HomeAssistantLight : public light::LightOutput,
   uint32_t min_value_ = 0;
   uint32_t max_value_ = 255;
   uint32_t color_temperature_max_value_ = 500;
+  bool ignore_next_update_ = false;
 };
 
 }  // namespace homeassistant_light
