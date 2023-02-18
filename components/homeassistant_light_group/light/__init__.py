@@ -21,6 +21,7 @@ CONFIG_SCHEMA = light.LIGHT_SCHEMA.extend(
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
+    cg.add(var.set_internal(True))
     cg.add(var.set_entity_id(config[CONF_ENTITY_ID]))
     cg.add(var.set_name(config[CONF_NAME]))
     await cg.register_component(var, config)

@@ -85,10 +85,12 @@ class HomeAssistantLight : public light::LightOutput,
   void color_changed(std::string state);
   void color_mode_changed(std::string state);
   void supported_color_modes_changed(std::string state);
+  bool can_update_from_api();
+  void ignore_api_updates_with_seconds(int seconds);
   uint32_t min_value_ = 0;
   uint32_t max_value_ = 255;
   uint32_t color_temperature_max_value_ = 500;
-  bool ignore_next_update_ = false;
+  uint32_t ignore_update_until_ = 0;
 };
 
 }  // namespace homeassistant_light

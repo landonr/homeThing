@@ -1,6 +1,0 @@
-
-esphome run --no-logs m5stickc.yaml bash ./formatFiles.sh
-esphome run --no-logs m5stickc.yaml 
-esphome run --no-logs tdisplayt4.yaml 
-esphome run --no-logs tdisplayremote.yaml 
-esphome run --no-logs fireremote.yaml 

@@ -1,2 +1,4 @@
-bash ./formatFiles.sh
-esphome run tdisplayremote.yaml --device /dev/cu.wchusbserial533C0007321
+echo "formatting"
+bash formatFiles.sh
+echo "building"
+esphome run homething-lilygo.yaml --device /dev/ttyACM0

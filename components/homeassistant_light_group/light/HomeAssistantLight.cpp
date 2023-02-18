@@ -1,4 +1,5 @@
 #include "HomeAssistantLight.h"
+#include <set>
 #include <utility>
 #include "esphome/core/log.h"
 
@@ -62,12 +63,14 @@ void HomeAssistantLight::update_state(light::LightState* state) {
   auto brightness =
       static_cast<int>(state->remote_values.get_brightness() * 255);
   auto color_temp =
-      static_cast<int>(state->remote_values.get_color_temperature() * 500);
+      static_cast<int>(state->remote_values.get_color_temperature());
   ESP_LOGI(TAG, "'%s': Update state %d %d %d", get_name().c_str(), is_on,
            brightness, color_temp);
 }
 
-void HomeAssistantLight::set_color_properties(std::map<std::string, std::string> *data, const light::LightState* state, const light::ColorMode color_mode) {
+void HomeAssistantLight::set_color_properties(
+    std::map<std::string, std::string>* data, const light::LightState* state,
+    const light::ColorMode color_mode) {
   switch (color_mode) {
     case light::ColorMode::UNKNOWN:
     case light::ColorMode::ON_OFF:
@@ -77,7 +80,7 @@ void HomeAssistantLight::set_color_properties(std::map<std::string, std::string>
     case light::ColorMode::COLOR_TEMPERATURE:
     case light::ColorMode::COLD_WARM_WHITE: {
       auto color_temp =
-        static_cast<int>(state->remote_values.get_color_temperature() * 500);
+          static_cast<int>(state->remote_values.get_color_temperature());
       if (color_temp != 0) {
         (*data)["color_temp"] = to_string(color_temp);
       }
@@ -88,11 +91,11 @@ void HomeAssistantLight::set_color_properties(std::map<std::string, std::string>
     case light::ColorMode::RGB_COLOR_TEMPERATURE:
     case light::ColorMode::RGB_COLD_WARM_WHITE: {
       auto red =
-        static_cast<int>(state->remote_values.get_color_temperature() * 255);
+          static_cast<int>(state->remote_values.get_color_temperature() * 255);
       auto green =
-        static_cast<int>(state->remote_values.get_color_temperature() * 255);
+          static_cast<int>(state->remote_values.get_color_temperature() * 255);
       auto blue =
-        static_cast<int>(state->remote_values.get_color_temperature() * 255);
+          static_cast<int>(state->remote_values.get_color_temperature() * 255);
       // if (red != 0 && green != 0 && blue != 0) {
       //   data["color_temp"] = to_string(color_temp);
       // }
@@ -103,11 +106,10 @@ void HomeAssistantLight::set_color_properties(std::map<std::string, std::string>
 
 void HomeAssistantLight::publish_api_state(light::LightState* state) {
   next_api_publish_ = false;
-  ignore_next_update_ = true;
+  ignore_api_updates_with_seconds(2);
   if (state->remote_values.is_on()) {
     std::map<std::string, std::string> data = {
-        {"entity_id", entity_id_.c_str()},
-        {"transition", "0"}};
+        {"entity_id", entity_id_.c_str()}, {"transition", "0"}};
     auto brightness =
         static_cast<int>(state->remote_values.get_brightness() * 255);
     auto color_mode = state->remote_values.get_color_mode();
@@ -126,7 +128,8 @@ void HomeAssistantLight::publish_api_state(light::LightState* state) {
 }
 
 void HomeAssistantLight::write_state(light::LightState* state) {
-  ESP_LOGI(TAG, "'%s': Writing state %d", get_name().c_str());
+  ESP_LOGI(TAG, "'%s': Writing state %d", get_name().c_str(),
+           state->remote_values.is_on());
 
   if (next_api_publish_) {
     publish_api_state(state);
@@ -139,13 +142,39 @@ void HomeAssistantLight::add_on_state_callback(
 }
 
 void HomeAssistantLight::decTemperature() {
-  // decreaseProperty(minMireds, &isColorTempInSync, &localColorTemp,
-  //                  id(dec_color_temperature_step), "color_temp");
+  next_api_publish_ = true;
+  auto call = this->light_state_->make_call();
+  call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
+  if (!light_state_->remote_values.is_on()) {
+    call.set_state(true);
+    call.set_brightness(0.1);
+  }
+  float mired_step = static_cast<float>(light_traits_.get_max_mireds() -
+                                        light_traits_.get_min_mireds()) /
+                     20.0;
+  float color_temperature =
+      light_state_->remote_values.get_color_temperature() - mired_step;
+  call.set_color_temperature(
+      std::max(light_traits_.get_min_mireds(), color_temperature));
+  call.perform();
 }
 
 void HomeAssistantLight::incTemperature() {
-  // increaseProperty(maxMireds, &isColorTempInSync, &localColorTemp,
-  //                  id(inc_color_temperature_step), "color_temp");
+  next_api_publish_ = true;
+  auto call = this->light_state_->make_call();
+  call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
+  if (!light_state_->remote_values.is_on()) {
+    call.set_state(true);
+    call.set_brightness(0.1);
+  }
+  float mired_step = static_cast<float>(light_traits_.get_max_mireds() -
+                                        light_traits_.get_min_mireds()) /
+                     20.0;
+  float color_temperature =
+      light_state_->remote_values.get_color_temperature() + mired_step;
+  call.set_color_temperature(
+      std::min(light_traits_.get_max_mireds(), color_temperature));
+  call.perform();
 }
 
 void HomeAssistantLight::decBrightness() {
@@ -154,7 +183,8 @@ void HomeAssistantLight::decBrightness() {
   auto brightness = light_state_->remote_values.get_brightness() - 0.1;
   if (brightness > 0) {
     call.set_brightness(brightness);
-    ESP_LOGI(TAG, "'%s': brightness decrease to %f", get_name().c_str(), brightness);
+    ESP_LOGI(TAG, "'%s': brightness decrease to %f", get_name().c_str(),
+             brightness);
   } else {
     call.set_state(false);
     ESP_LOGI(TAG, "'%s': brightness decrease to off", get_name().c_str());
@@ -168,7 +198,8 @@ void HomeAssistantLight::incBrightness() {
   if (light_state_->remote_values.is_on()) {
     auto brightness = light_state_->remote_values.get_brightness() + 0.1;
     call.set_brightness(std::min(1.0, brightness));
-    ESP_LOGI(TAG, "'%s': brightness increase to %f", get_name().c_str(), brightness);
+    ESP_LOGI(TAG, "'%s': brightness increase to %f", get_name().c_str(),
+             brightness);
   } else {
     call.set_state(true);
     call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
@@ -238,8 +269,10 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantLight::lightTitleItems(
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   if (supportsBrightness()) {
     auto is_on = light_state_->remote_values.is_on();
-    int brightness = !is_on ? 0 :
-        static_cast<int>(light_state_->remote_values.get_brightness() * 255);
+    int brightness =
+        !is_on ? 0
+               : static_cast<int>(light_state_->remote_values.get_brightness() *
+                                  255);
     out.push_back(makeSlider(0, MAX_BRIGHTNESS, brightness, "Brightness", "%%",
                              0, 100, displayWidth));
   }
@@ -288,64 +321,68 @@ std::string HomeAssistantLight::icon() {
 }
 
 void HomeAssistantLight::state_changed(std::string state) {
-  ESP_LOGI(TAG, "'%s': state changed to %s", get_name().c_str(), state.c_str());
   auto onState = parse_on_off(state.c_str());
+  ESP_LOGI(TAG, "'%s': (write %d) state changed to %d", get_name().c_str(),
+           can_update_from_api(), onState);
   auto call = this->light_state_->make_call();
-  call.set_state(onState);
-  if(!onState) {
+  call.set_state(onState == esphome::ParseOnOffState::PARSE_ON);
+  if (onState != esphome::ParseOnOffState::PARSE_ON) {
     call.set_brightness(0);
   }
   call.perform();
 }
 void HomeAssistantLight::min_mireds_changed(std::string state) {
-  ESP_LOGI(TAG, "'%s': min_mireds changed to %s", get_name().c_str(), state.c_str());
+  ESP_LOGI(TAG, "'%s': (write %d) min_mireds changed to %s", get_name().c_str(),
+           can_update_from_api(), state.c_str());
   auto min_mireds = atoi(state.c_str());
   light_traits_.set_min_mireds(min_mireds);
 }
 void HomeAssistantLight::max_mireds_changed(std::string state) {
-  ESP_LOGI(TAG, "'%s': max_mireds changed to %s", get_name().c_str(), state.c_str());
+  ESP_LOGI(TAG, "'%s': (write %d) max_mireds changed to %s", get_name().c_str(),
+           can_update_from_api(), state.c_str());
   auto max_mireds = atoi(state.c_str());
   light_traits_.set_max_mireds(max_mireds);
 }
 void HomeAssistantLight::brightness_changed(std::string state) {
-  auto brightness = parse_number<float>(state).value_or(0.0f);
-  ESP_LOGI(TAG, "'%s': brightness changed to %f", get_name().c_str(),
-           brightness);
-  if(!ignore_next_update_) {
-    update_supported_color_mode(light::ColorMode::BRIGHTNESS);
+  ESP_LOGI(TAG, "'%s': (write %d) brightness changed to %s", get_name().c_str(),
+           can_update_from_api(), state.c_str());
+  auto brightness = parse_number<float>(state);
+  update_supported_color_mode(light::ColorMode::BRIGHTNESS);
+
+  if (can_update_from_api() && brightness.has_value()) {
     auto call = this->light_state_->make_call();
-    call.set_brightness(brightness / this->max_value_);
+    call.set_brightness(brightness.value() / this->max_value_);
     call.perform();
   }
-  ignore_next_update_ = false;
-  // if (id(keep_states_in_sync) || localBrightness == -1) {
-  // localBrightness = atoi(newOnState.c_str());
-  // isBrightnessInSync = true;
-  // }
 }
 void HomeAssistantLight::color_temp_changed(std::string state) {
-  auto color_temp = parse_number<float>(state).value_or(0.0f);
-  ESP_LOGI(TAG, "'%s': color_temp changed to %f", get_name().c_str(),
-           color_temp);
+  ESP_LOGI(TAG, "'%s': (write %d) color_temp changed to %s", get_name().c_str(),
+           can_update_from_api(), state.c_str());
   update_supported_color_mode(light::ColorMode::COLOR_TEMPERATURE);
 
-  auto call = this->light_state_->make_call();
-  call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
-  call.set_color_temperature(color_temp);
-  call.perform();
+  auto color_temp = parse_number<int>(state);
+  if (can_update_from_api() && color_temp.has_value()) {
+    auto call = this->light_state_->make_call();
+    call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
+    call.set_color_temperature(color_temp.value());
+    call.perform();
+  }
 }
+
 void HomeAssistantLight::color_changed(std::string state) {
-  ESP_LOGI(TAG, "'%s': color changed to %s", get_name().c_str(), state.c_str());
-  // if (id(keep_states_in_sync) || localColor == -1) {
+  ESP_LOGI(TAG, "'%s': (write %d) color changed to %s", get_name().c_str(),
+           can_update_from_api(), state.c_str());
 
   update_supported_color_mode(light::ColorMode::RGB);
-  auto localColor = TextHelpers::extractFirstNumber(state);
-  float red, green, blue;
-  hsv_to_rgb(localColor, 1, 1, red, green, blue);
-  auto call = this->light_state_->make_call();
-  call.set_color_mode(light::ColorMode::RGB);
-  call.set_rgb(red, green, blue);
-  call.perform();
+  if (can_update_from_api()) {
+    auto localColor = TextHelpers::extractFirstNumber(state);
+    float red, green, blue;
+    hsv_to_rgb(localColor, 1, 1, red, green, blue);
+    auto call = this->light_state_->make_call();
+    call.set_color_mode(light::ColorMode::RGB);
+    call.set_rgb(red, green, blue);
+    call.perform();
+  }
 }
 
 optional<light::ColorMode> HomeAssistantLight::parse_color_mode(
@@ -381,8 +418,8 @@ void HomeAssistantLight::update_supported_color_mode(light::ColorMode mode) {
 }
 
 void HomeAssistantLight::color_mode_changed(std::string state) {
-  ESP_LOGI(TAG, "'%s': color_mode changed changed to %s", get_name().c_str(),
-           state.c_str());
+  ESP_LOGI(TAG, "'%s': (write %d) color_mode changed changed to %s",
+           get_name().c_str(), can_update_from_api(), state.c_str());
   auto parsed_color_mode = parse_color_mode(state);
   if (parsed_color_mode.has_value()) {
     update_supported_color_mode(parsed_color_mode.value());
@@ -393,8 +430,8 @@ void HomeAssistantLight::color_mode_changed(std::string state) {
 }
 
 void HomeAssistantLight::supported_color_modes_changed(std::string state) {
-  ESP_LOGI(TAG, "'%s': supported_color_modes_changed changed to %s",
-           get_name().c_str(), state.c_str());
+  ESP_LOGI(TAG, "'%s': (write %d) supported_color_modes_changed changed to %s",
+           get_name().c_str(), can_update_from_api(), state.c_str());
   auto modes = StringUtils::split(state, ",");
   std::set<light::ColorMode> supportedModes;
   for (auto cmode : modes) {
@@ -408,6 +445,15 @@ void HomeAssistantLight::supported_color_modes_changed(std::string state) {
 
 bool HomeAssistantLight::get_state() {
   return light_state_->remote_values.is_on();
+}
+
+bool HomeAssistantLight::can_update_from_api() {
+  return micros() > ignore_update_until_;
+}
+
+void HomeAssistantLight::ignore_api_updates_with_seconds(int seconds) {
+  uint32_t delayTime = seconds * 1000000;
+  ignore_update_until_ = micros() + delayTime;
 }
 
 }  // namespace homeassistant_light
