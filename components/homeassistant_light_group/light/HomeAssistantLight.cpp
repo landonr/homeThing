@@ -90,15 +90,8 @@ void HomeAssistantLight::set_color_properties(
     case light::ColorMode::RGB_WHITE:
     case light::ColorMode::RGB_COLOR_TEMPERATURE:
     case light::ColorMode::RGB_COLD_WARM_WHITE: {
-      auto red =
-          static_cast<int>(state->remote_values.get_color_temperature() * 255);
-      auto green =
-          static_cast<int>(state->remote_values.get_color_temperature() * 255);
-      auto blue =
-          static_cast<int>(state->remote_values.get_color_temperature() * 255);
-      // if (red != 0 && green != 0 && blue != 0) {
-      //   data["color_temp"] = to_string(color_temp);
-      // }
+      (*data)["hue"] = to_string(get_hsv_color());
+      (*data)["saturation"] = "100";
       break;
     }
   }
@@ -118,7 +111,11 @@ void HomeAssistantLight::publish_api_state(light::LightState* state) {
       data["brightness"] = to_string(brightness);
     }
     set_color_properties(&data, state, color_mode);
-    call_homeassistant_service("light.turn_on", data);
+    if (color_mode == light::ColorMode::RGB_WHITE) {
+      call_homeassistant_service("script.hs_light_set", data);
+    } else {
+      call_homeassistant_service("light.turn_on", data);
+    }
   } else {
     const std::map<std::string, std::string> data = {
         {"entity_id", entity_id_.c_str()},
@@ -183,11 +180,11 @@ void HomeAssistantLight::decBrightness() {
   auto brightness = light_state_->remote_values.get_brightness() - 0.1;
   if (brightness > 0) {
     call.set_brightness(brightness);
-    ESP_LOGI(TAG, "'%s': brightness decrease to %f", get_name().c_str(),
+    ESP_LOGI(TAG, "'%s': brightness decreased to %f", get_name().c_str(),
              brightness);
   } else {
     call.set_state(false);
-    ESP_LOGI(TAG, "'%s': brightness decrease to off", get_name().c_str());
+    ESP_LOGI(TAG, "'%s': brightness decreased to off", get_name().c_str());
   }
   call.perform();
 }
@@ -198,31 +195,47 @@ void HomeAssistantLight::incBrightness() {
   if (light_state_->remote_values.is_on()) {
     auto brightness = light_state_->remote_values.get_brightness() + 0.1;
     call.set_brightness(std::min(1.0, brightness));
-    ESP_LOGI(TAG, "'%s': brightness increase to %f", get_name().c_str(),
+    ESP_LOGI(TAG, "'%s': brightness increased to %f", get_name().c_str(),
              brightness);
   } else {
     call.set_state(true);
-    call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
     call.set_brightness(0.1);
-    ESP_LOGI(TAG, "'%s': brightness increase to %f", get_name().c_str(), 0.1);
+    ESP_LOGI(TAG, "'%s': brightness set to %f", get_name().c_str(), 0.1);
   }
   call.perform();
 }
 
+void HomeAssistantLight::update_color_with_hsv(const float hsv_color) {
+  next_api_publish_ = true;
+  auto call = this->light_state_->make_call();
+  if (light_traits_.supports_color_mode(light::ColorMode::RGB)) {
+    call.set_color_mode(light::ColorMode::RGB);
+  } else if (light_traits_.supports_color_mode(light::ColorMode::RGB_WHITE)) {
+    call.set_color_mode(light::ColorMode::RGB_WHITE);
+  } else {
+    ESP_LOGI(TAG, "'%s': doesnt support color!", get_name().c_str());
+    return;
+  }
+  if (!light_state_->remote_values.is_on()) {
+    call.set_state(true);
+    call.set_brightness(0.1);
+  }
+  float red, green, blue;
+  hsv_to_rgb(hsv_color, 1, 1, red, green, blue);
+  call.set_rgb(red, green, blue);
+  call.perform();
+}
+
 void HomeAssistantLight::decColor() {
-  // if (localColorTemp != -1) {
-  //   localColorTemp = -1;
-  // }
-  // bool temp = true;
-  // decreaseProperty(0, &temp, &localColor, 10, "hs_color", true);
+  float color_step = 360.0f / 20.0f;
+  float hsv_color = std::max(0.1f, get_hsv_color() - color_step);
+  update_color_with_hsv(hsv_color);
 }
 
 void HomeAssistantLight::incColor() {
-  // if (localColorTemp != -1) {
-  //   localColorTemp = -1;
-  // }
-  // bool temp = true;
-  // increaseProperty(360, &temp, &localColor, 10, "hs_color", true);
+  float color_step = 360.0f / 20.0f;
+  float hsv_color = std::min(359.9f, get_hsv_color() + color_step);
+  update_color_with_hsv(hsv_color);
 }
 
 void HomeAssistantLight::setAttribute(
@@ -286,18 +299,17 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantLight::lightTitleItems(
   }
   if (supportsColor()) {
     out.push_back(
-        makeSlider(0, 360, hsv_color(), "Color", "", 0, 360, displayWidth));
+        makeSlider(0, 360, get_hsv_color(), "Color", "", 0, 360, displayWidth));
   }
   return out;
 }
 
-int HomeAssistantLight::hsv_color() {
+int HomeAssistantLight::get_hsv_color() {
   auto red = light_state_->remote_values.get_red();
   auto green = light_state_->remote_values.get_green();
   auto blue = light_state_->remote_values.get_blue();
   int hue = 0;
-  float saturation = 0;
-  float value = 0;
+  float saturation, value = 0;
   rgb_to_hsv(red, green, blue, hue, saturation, value);
   return hue;
 }
@@ -373,13 +385,13 @@ void HomeAssistantLight::color_changed(std::string state) {
   ESP_LOGI(TAG, "'%s': (write %d) color changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
 
-  update_supported_color_mode(light::ColorMode::RGB);
+  update_supported_color_mode(light::ColorMode::RGB_WHITE);
   if (can_update_from_api()) {
     auto localColor = TextHelpers::extractFirstNumber(state);
     float red, green, blue;
     hsv_to_rgb(localColor, 1, 1, red, green, blue);
     auto call = this->light_state_->make_call();
-    call.set_color_mode(light::ColorMode::RGB);
+    call.set_color_mode(light::ColorMode::RGB_WHITE);
     call.set_rgb(red, green, blue);
     call.perform();
   }

@@ -59,7 +59,7 @@ class HomeAssistantLight : public light::LightOutput,
       int min, int max, int value, std::string title, std::string unit,
       int displayUnitMin, int displayUnitMax, int displayWidth);
   std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(int displayWidth);
-  int hsv_color();
+  int get_hsv_color();
   Color rgbLightColor();
   std::string icon();
   void setup_state(light::LightState* state) override;
@@ -85,6 +85,7 @@ class HomeAssistantLight : public light::LightOutput,
   void color_changed(std::string state);
   void color_mode_changed(std::string state);
   void supported_color_modes_changed(std::string state);
+  void update_color_with_hsv(const float hsv_color);
   bool can_update_from_api();
   void ignore_api_updates_with_seconds(int seconds);
   uint32_t min_value_ = 0;
