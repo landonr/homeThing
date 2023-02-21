@@ -1,0 +1,132 @@
+#include "HomeAssistantBaseMediaPlayer.h"
+
+namespace esphome {
+namespace homeassistant_media_player {
+
+static const char* const TAG = "homeassistant.media_player_base";
+
+void HomeAssistantBaseMediaPlayer::setup() {
+  ESP_LOGI(TAG, "Player subbed %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::playerState_changed,
+      this->entity_id_.c_str());
+}
+
+void HomeAssistantBaseMediaPlayer::playSource(MenuTitleSource source) {
+  ESP_LOGI(TAG, "Player play source %s %s %s %d", this->entity_id_.c_str(),
+           source.entity_id_.c_str(), source.sourceTypeString().c_str(),
+           source.sourceType);
+  switch (source.sourceType) {
+    case MusicRemotePlayerSourceType:
+      playMedia(source);
+      break;
+    case FavoriteItemIDRemotePlayerSourceType:
+    case SourceRemotePlayerSourceType:
+      selectSource(source);
+      break;
+  }
+}
+
+void HomeAssistantBaseMediaPlayer::clearSource() {}
+
+void HomeAssistantBaseMediaPlayer::playPause() {
+  ESP_LOGI("speaker", "%s play pause", this->entity_id_.c_str());
+  call_homeassistant_service("media_player.media_play_pause",
+                             {
+                                 {"entity_id", this->entity_id_},
+                             });
+}
+
+void HomeAssistantBaseMediaPlayer::nextTrack() {
+  ESP_LOGI("speaker", "%s next track", this->entity_id_.c_str());
+  call_homeassistant_service("media_player.media_next_track",
+                             {
+                                 {"entity_id", this->entity_id_},
+                             });
+}
+
+std::string HomeAssistantBaseMediaPlayer::mediaTitleString() {
+  switch (playerType) {
+    case TVRemotePlayerType:
+      return playerSourceStateString(mediaSource);
+    case SpeakerRemotePlayerType:
+      return mediaArtist;
+  }
+  return "";
+}
+
+std::string HomeAssistantBaseMediaPlayer::mediaSubtitleString() {
+  switch (playerType) {
+    case TVRemotePlayerType:
+      return "";
+    case SpeakerRemotePlayerType:
+      return mediaTitle;
+  }
+  return "";
+}
+
+void HomeAssistantBaseMediaPlayer::clearMedia() {
+  clearSource();
+  mediaTitle = "";
+  mediaArtist = "";
+}
+
+void HomeAssistantBaseMediaPlayer::selectSource(MenuTitleSource source) {
+  ESP_LOGI(TAG, "%s select source %s", this->entity_id_.c_str(),
+           source.get_name().c_str());
+  call_homeassistant_service("media_player.select_source",
+                             {
+                                 {"entity_id", entity_id_},
+                                 {"source", source.get_name().c_str()},
+                             });
+}
+
+void HomeAssistantBaseMediaPlayer::playMedia(MenuTitleSource source) {
+  ESP_LOGI(TAG, "%s play media %s %s", this->entity_id_.c_str(),
+           source.get_name().c_str(), source.entity_id_.c_str());
+  call_homeassistant_service(
+      "media_player.play_media",
+      {
+          {"entity_id", this->entity_id_},
+          {"media_content_id", source.entity_id_.c_str()},
+          {"media_content_type", source.sourceTypeString().c_str()},
+      });
+}
+
+void HomeAssistantBaseMediaPlayer::playerState_changed(std::string state) {
+  ESP_LOGI(TAG, "%s state changed to %s", this->entity_id_.c_str(),
+           state.c_str());
+  if (state.length() == 0) {
+    playerState = StoppedRemotePlayerState;
+  } else if (strcmp(state.c_str(), "playing") == 0) {
+    if (playerState == PlayingRemotePlayerState) {
+      clearSource();
+    }
+    playerState = PlayingRemotePlayerState;
+  } else if (strcmp(state.c_str(), "paused") == 0) {
+    playerState = PausedRemotePlayerState;
+  } else if (strcmp(state.c_str(), "standby") == 0) {
+    playerState = PowerOffRemotePlayerState;
+    clearMedia();
+  } else if (strcmp(state.c_str(), "off") == 0) {
+    playerState = PowerOffRemotePlayerState;
+    clearMedia();
+  } else if (strcmp(state.c_str(), "home") == 0 ||
+             strcmp(state.c_str(), "Roku") == 0) {
+    playerState = StoppedRemotePlayerState;
+    clearMedia();
+  } else if (strcmp(state.c_str(), "on") == 0) {
+    playerState = StoppedRemotePlayerState;
+  } else if (strcmp(state.c_str(), "idle") == 0) {
+    clearMedia();
+    playerState = StoppedRemotePlayerState;
+  } else if (strcmp(state.c_str(), "unavailable") == 0) {
+    playerState = UnavailableRemotePlayerState;
+  } else {
+    playerState = NoRemotePlayerState;
+  }
+  // stateCallback->stateUpdated(playerState);
+  // display->updateDisplay(false);
+}
+}  // namespace homeassistant_media_player
+}  // namespace esphome

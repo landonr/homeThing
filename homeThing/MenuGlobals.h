@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+namespace esphome {
+
 enum MenuStates {
   bootMenu,
   rootMenu,
@@ -85,3 +87,5 @@ int activeMenuTitleCount = 0;
 bool animating = true;  // boot sequence is animated
 int animationTick = 0;
 OptionMenuType optionMenu = noOptionMenu;
+
+}  // namespace esphome

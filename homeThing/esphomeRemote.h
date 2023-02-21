@@ -7,9 +7,9 @@
 #include "TextHelpers.h"
 #include "esphome.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
+#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
-#include "esphomeRemotePlayer.h"
 #include "esphomeRemoteService.h"
 
 bool menuDrawing = false;
@@ -45,7 +45,7 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 
 auto displayUpdate = DisplayUpdateImpl();
 SceneGroupComponent* sceneGroup;
-SonosSpeakerGroupComponent* speakerGroup;
+homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
 homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
 homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
 homeassistant_sensor_group::HomeAssistantSensorGroup* sensorGroup;
@@ -227,7 +227,7 @@ void drawHeaderTitle(int yPosOffset) {
       if (speakerGroup != NULL) {
         auto headerMenuTitle = speakerGroup->headerMediaPlayerTitle();
         xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-        drawHeaderTitleWithString((headerMenuTitle).friendlyName, xPos);
+        drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
       } else {
         drawHeaderTitleWithString("Remote", xPos);
       }
@@ -624,12 +624,12 @@ void drawLightSliderTitle(int xPos, int yPos, int sliderHeight,
                           bool drawRGB) {
   std::string sliderTitle = "";
   if (drawRGB) {
-    sliderTitle = slider->friendlyName;
+    sliderTitle = slider->get_name();
   } else if (slider->displayValue > 0) {
-    sliderTitle = slider->friendlyName + " - " +
-                  to_string(slider->displayValue) + slider->sliderUnit;
+    sliderTitle = slider->get_name() + " - " + to_string(slider->displayValue) +
+                  slider->sliderUnit;
   } else {
-    sliderTitle = slider->friendlyName;
+    sliderTitle = slider->get_name();
   }
   switch (sliderState) {
     case SliderSelectionStateActive:
@@ -739,7 +739,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
     }
     switch (menuTitles[i]->titleType) {
       case BaseMenuTitleType:
-        drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos, false);
+        drawTitle(menuState, i, menuTitles[i]->get_name(), yPos, false);
         drawRightTitleIcon(menuTitles, i, menuState, yPos);
         yPos += id(medium_font_size) + id(margin_size);
         break;
@@ -747,7 +747,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
         auto lightTitle =
             std::static_pointer_cast<MenuTitleLight>(menuTitles[i]);
         if (lightTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos,
+          drawTitle(menuState, i, menuTitles[i]->get_name(), yPos,
                     lightTitle->indentLine());
           drawLeftTitleIcon(menuTitles, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
@@ -759,7 +759,7 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
         auto toggleTitle =
             std::static_pointer_cast<MenuTitleToggle>(menuTitles[i]);
         if (toggleTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos,
+          drawTitle(menuState, i, menuTitles[i]->get_name(), yPos,
                     toggleTitle->indentLine());
           drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
@@ -785,9 +785,9 @@ void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles) {
         auto playerTitle =
             std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
         if (playerTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->friendlyName, yPos,
+          drawTitle(menuState, i, menuTitles[i]->get_name(), yPos,
                     playerTitle->indentLine());
-          int length = playerTitle->friendlyName.length() +
+          int length = playerTitle->get_name().length() +
                        (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->playerState,
                          menuState == i);
@@ -1063,8 +1063,9 @@ std::string secondsToString(int seconds) {
 
 void drawMediaDuration() {
   if (speakerGroup->activePlayer->playerType != TVRemotePlayerType) {
-    SonosSpeakerComponent* activeSpeaker =
-        static_cast<SonosSpeakerComponent*>(speakerGroup->activePlayer);
+    homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
+        static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+            speakerGroup->activePlayer);
     int mediaDuration = activeSpeaker->mediaDuration;
     int mediaPosition = activeSpeaker->mediaPosition;
     if (mediaDuration <= 0 && mediaPosition <= 0) {
@@ -1270,8 +1271,9 @@ void drawNowPlaying() {
   std::string nowPlayingText = "Now Playing,";
 
   if (speakerGroup->activePlayer->playerType != TVRemotePlayerType) {
-    SonosSpeakerComponent* activeSpeaker =
-        static_cast<SonosSpeakerComponent*>(speakerGroup->activePlayer);
+    homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
+        static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+            speakerGroup->activePlayer);
     if (activeSpeaker->mediaPlaylist != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->mediaPlaylist;
     } else if (activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
@@ -1613,20 +1615,20 @@ void drawMenu() {
 }
 
 void selectMediaPlayers() {
-  for (auto& speaker : speakerGroup->speakers) {
-    if (speaker->entityId == activeMenuTitle->entityId) {
-      speakerGroup->activePlayer = speaker;
-      topMenu();
-      return;
-    }
-  }
-  for (auto& tv : speakerGroup->tvs) {
-    if (tv->entityId == activeMenuTitle->entityId) {
-      speakerGroup->activePlayer = tv;
-      topMenu();
-      return;
-    }
-  }
+  // for (auto& speaker : speakerGroup->speakers) {
+  //   if (speaker->entity_id_ == activeMenuTitle->entity_id_) {
+  //     speakerGroup->activePlayer = speaker;
+  //     topMenu();
+  //     return;
+  //   }
+  // }
+  // for (auto& tv : speakerGroup->tvs) {
+  //   if (tv->entity_id_ == activeMenuTitle->entity_id_) {
+  //     speakerGroup->activePlayer = tv;
+  //     topMenu();
+  //     return;
+  //   }
+  // }
 }
 
 bool selectRootMenu() {
@@ -1712,7 +1714,7 @@ bool selectMenu() {
     case groupMenu: {
       auto playerTitleState =
           std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
-      speakerGroup->selectGroup(*playerTitleState);
+      speakerGroup->selectGroup(*playerTitleState, menuIndex);
       break;
     }
     case lightsMenu: {

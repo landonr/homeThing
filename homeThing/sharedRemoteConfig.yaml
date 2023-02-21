@@ -371,24 +371,35 @@ homeassistant_light_group:
     - id: light_living_room_lights
     - id: light_office_lamp
 
+media_player:
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+
+homeassistant_media_player:
+  id: media_group_component
+  media_players:
+    - id: media_player_beam
+
 custom_component:
 # Home assistant speakers and tv. Set TV up with a sound bar
- - lambda: |-
-     SpeakerSetup soundBar = SpeakerSetup("media_player.beam", "Beam");
-     std::vector<TVSetup> tvSetup = {
-       TVSetup("media_player.55_tcl_roku_tv", "TV", 
-         &soundBar
-       )
-     };
-     std::vector<SpeakerSetup> speakerSetup = {
-       SpeakerSetup("media_player.kitchen", "Kitchen"),
-       SpeakerSetup("media_player.bedroom", "Bedroom"),
-       SpeakerSetup("media_player.office", "Office")
-     };
-     speakerGroup = new SonosSpeakerGroupComponent(&displayUpdate);
-     speakerGroup->setup(tvSetup, speakerSetup);
-     return {speakerGroup};
-   id: speaker_group_component
+#  - lambda: |-
+#      SpeakerSetup soundBar = SpeakerSetup("media_player.beam", "Beam");
+#      std::vector<TVSetup> tvSetup = {
+#        TVSetup("media_player.55_tcl_roku_tv", "TV", 
+#          &soundBar
+#        )
+#      };
+#      std::vector<SpeakerSetup> speakerSetup = {
+#        SpeakerSetup("media_player.kitchen", "Kitchen"),
+#        SpeakerSetup("media_player.bedroom", "Bedroom"),
+#        SpeakerSetup("media_player.office", "Office")
+#      };
+#      speakerGroup = new SonosSpeakerGroupComponent(&displayUpdate);
+#      speakerGroup->setup(tvSetup, speakerSetup);
+#      return {speakerGroup};
+#    id: speaker_group_component
  
  ## Home assistant scripts and scenes. Set with a friendly name
  - lambda: |-
