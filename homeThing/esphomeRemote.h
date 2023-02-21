@@ -291,7 +291,7 @@ int drawShuffle(int oldXPos, int yPosOffset) {
   if (speakerGroup == NULL || speakerGroup->activePlayer == NULL) {
     return oldXPos;
   }
-  if (speakerGroup->activePlayer->playerType == TVRemotePlayerType) {
+  if (speakerGroup->activePlayer->get_player_type() == TVRemotePlayerType) {
     return oldXPos;
   }
   if (speakerGroup->activePlayer->playerState != StoppedRemotePlayerState) {
@@ -1062,7 +1062,7 @@ std::string secondsToString(int seconds) {
 }
 
 void drawMediaDuration() {
-  if (speakerGroup->activePlayer->playerType != TVRemotePlayerType) {
+  if (speakerGroup->activePlayer->get_player_type() != TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
             speakerGroup->activePlayer);
@@ -1208,7 +1208,7 @@ std::string stringForNowPlayingMenuState(NowPlayingMenuState state) {
 }
 
 std::vector<NowPlayingMenuState> getNowPlayingMenuStates() {
-  if (speakerGroup->activePlayer->playerType == TVRemotePlayerType) {
+  if (speakerGroup->activePlayer->get_player_type() == TVRemotePlayerType) {
     return TVNowPlayingMenuStates();
   }
   return speakerNowPlayingMenuStates();
@@ -1270,7 +1270,7 @@ void drawNowPlaying() {
   }
   std::string nowPlayingText = "Now Playing,";
 
-  if (speakerGroup->activePlayer->playerType != TVRemotePlayerType) {
+  if (speakerGroup->activePlayer->get_player_type() != TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
             speakerGroup->activePlayer);
@@ -1535,6 +1535,7 @@ void drawBootSequence() {
     switchGroup->set_display(&displayUpdate);
     sensorGroup->set_display(&displayUpdate);
     lightGroup->set_display(&displayUpdate);
+    speakerGroup->set_display(&displayUpdate);
     setupFinished = true;
   }
   speakerGroup->findActivePlayer();
@@ -1563,6 +1564,7 @@ void drawMenu() {
   lightGroup = &id(light_group_component);
   sensorGroup = &id(sensor_group_component);
   switchGroup = &id(switch_group_component);
+  speakerGroup = &id(media_group_component);
   if (idleTime > 16 && !charging) {
     menuDrawing = false;
     return;

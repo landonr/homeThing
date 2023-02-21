@@ -6,7 +6,8 @@ namespace homeassistant_media_player {
 static const char* const TAG = "homeassistant.media_player_roku";
 
 void HomeAssistantRokuMediaPlayer::setup() {
-  ESP_LOGI(TAG, "TV subbed %s", entity_id_.c_str());
+  setupBase();
+  ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
   subscribe_homeassistant_state(
       &HomeAssistantRokuMediaPlayer::player_source_changed, entity_id_,
       "source");

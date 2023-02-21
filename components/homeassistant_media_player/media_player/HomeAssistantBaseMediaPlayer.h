@@ -12,18 +12,11 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-struct RemotePlayerStateUpdatedInterface {
- public:
-  virtual void stateUpdated(RemotePlayerState state) {}
-  virtual ~RemotePlayerStateUpdatedInterface() {}
-};
-
 class HomeAssistantBaseMediaPlayer : public api::CustomAPIDevice,
                                      public media_player::MediaPlayer,
                                      public Component {
  protected:
   DisplayUpdateInterface* display;
-  RemotePlayerStateUpdatedInterface* stateCallback;
 
  public:
   std::string mediaTitle = "";
@@ -32,8 +25,8 @@ class HomeAssistantBaseMediaPlayer : public api::CustomAPIDevice,
   RemotePlayerState playerState = NoRemotePlayerState;
   std::vector<std::shared_ptr<MenuTitleSource>> sources;
   int index;
-  RemotePlayerType playerType;
-  void setup();
+  virtual RemotePlayerType get_player_type() { return player_type_; }
+  void setupBase();
   void playSource(MenuTitleSource source);
   void playPause();
   void nextTrack();
@@ -48,6 +41,7 @@ class HomeAssistantBaseMediaPlayer : public api::CustomAPIDevice,
   void selectSource(MenuTitleSource source);
   void playMedia(MenuTitleSource source);
   void playerState_changed(std::string state);
+  RemotePlayerType player_type_;
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

@@ -22,7 +22,7 @@ class HomeAssistantSonosMediaPlayer : public HomeAssistantBaseMediaPlayer {
   int mediaPosition = -1;
   HomeAssistantBaseMediaPlayer* tv = NULL;
 
-  void setup();
+  void setup() override;
   void ungroup();
   void joinGroup(std::string newSpeakerName);
   void toggleShuffle();
@@ -33,6 +33,7 @@ class HomeAssistantSonosMediaPlayer : public HomeAssistantBaseMediaPlayer {
   virtual void clearSource();
   media_player::MediaPlayerTraits get_traits();
   void control(const media_player::MediaPlayerCall& call);
+  RemotePlayerType get_player_type() { return SpeakerRemotePlayerType; }
 
  private:
   void player_media_title_changed(std::string state);

@@ -30,7 +30,7 @@ void buttonPressSelect() {
         return;
       }
 
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("select");
           break;
@@ -141,7 +141,7 @@ void buttonPressUp() {
         return;
       }
 
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("up");
           return;
@@ -201,7 +201,7 @@ void buttonPressDown() {
         return;
       }
 
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("down");
           break;
@@ -234,7 +234,7 @@ void buttonPressLeft() {
         return;
       }
 
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("left");
           break;
@@ -264,7 +264,7 @@ void buttonPressRight() {
         displayUpdate.updateDisplay(true);
         return;
       }
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("right");
           break;
@@ -291,7 +291,7 @@ void buttonReleaseScreenLeft() {
   }
   switch (activeMenuState) {
     case nowPlayingMenu:
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           displayUpdate.updateDisplay(true);
           break;
@@ -311,7 +311,7 @@ void buttonPressScreenLeft() {
   }
   switch (activeMenuState) {
     case nowPlayingMenu:
-      switch (speakerGroup->activePlayer->playerType) {
+      switch (speakerGroup->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           if (optionMenu == tvOptionMenu) {
             optionMenu = noOptionMenu;

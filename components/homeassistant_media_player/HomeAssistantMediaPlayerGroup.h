@@ -31,12 +31,9 @@ class TVSetup {
 };
 
 class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
-                                      public Component,
-                                      public RemotePlayerStateUpdatedInterface {
+                                      public Component {
  public:
   HomeAssistantBaseMediaPlayer* activePlayer = NULL;
-  // std::vector<HomeAssistantSonosMediaPlayer*> speakers;
-  // std::vector<HomeAssistantRokuMediaPlayer*> tvs;
   std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
   bool playerSearchFinished = false;
   std::string playingNewSourceText = "";
@@ -103,9 +100,9 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
 
   void syncActivePlayer(RemotePlayerState state);
 
-  virtual void stateUpdated(RemotePlayerState state);
-
   void playSource(MenuTitleSource source);
+  void set_display(DisplayUpdateInterface* newDisplay) { display = newDisplay; }
+  float get_setup_priority() const override { return setup_priority::LATE; }
 
  private:
   DisplayUpdateInterface* display;
@@ -113,7 +110,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   std::vector<std::shared_ptr<MenuTitleSource>> spotifyPlaylists;
 
   void sonos_favorites_changed(std::string state);
-
+  void state_updated(RemotePlayerState state);
   void playlists_changed(std::string state);
   bool sync_active_player = false;
 };

@@ -10,7 +10,7 @@ HomeAssistantLightGroup::lightTitleSwitches() {
   for (auto& light : lights) {
     auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
         light->get_output());
-    ESP_LOGD("Light", "state %d (%s)", output->onState,
+    ESP_LOGD("Light", "state %d (%s)", output->get_state(),
              light->get_name().c_str());
     MenuTitleLeftIcon state =
         output->get_state() ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;

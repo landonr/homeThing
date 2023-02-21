@@ -25,6 +25,7 @@ class HomeAssistantLightGroup : public api::CustomAPIDevice, public Component {
   void register_light(homeassistant_light::HomeAssistantLightState* newLight);
   void set_display(DisplayUpdateInterface* newDisplay) { display = newDisplay; }
   void toggleLight(int index);
+  float get_setup_priority() const override { return setup_priority::LATE; }
 
  private:
   DisplayUpdateInterface* display;

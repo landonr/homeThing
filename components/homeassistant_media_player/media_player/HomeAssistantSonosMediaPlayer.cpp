@@ -3,10 +3,11 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-static const char* const TAG = "homeassistant.media_player_roku";
+static const char* const TAG = "homeassistant.media_player_sonos";
 
 void HomeAssistantSonosMediaPlayer::setup() {
-  ESP_LOGI(TAG, "Sonos Speaker subbed %s", this->entity_id_.c_str());
+  setupBase();
+  ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
   subscribe_homeassistant_state(
       &HomeAssistantSonosMediaPlayer::speaker_volume_changed, this->entity_id_,
       "volume_level");
@@ -134,8 +135,8 @@ void HomeAssistantSonosMediaPlayer::clearSource() {
 
 void HomeAssistantSonosMediaPlayer::player_media_title_changed(
     std::string state) {
-  ESP_LOGI("Player", "%s Player media title changed to %s",
-           this->entity_id_.c_str(), state.c_str());
+  ESP_LOGI(TAG, "%s Player media title changed to %s", this->entity_id_.c_str(),
+           state.c_str());
   if (strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
     mediaPosition = 0;
   }
@@ -152,7 +153,7 @@ void HomeAssistantSonosMediaPlayer::player_media_title_changed(
 
 void HomeAssistantSonosMediaPlayer::player_media_artist_changed(
     std::string state) {
-  ESP_LOGI("Player", "%s Player artist changed to %s", this->entity_id_.c_str(),
+  ESP_LOGI(TAG, "%s Player artist changed to %s", this->entity_id_.c_str(),
            state.c_str());
   mediaArtist = state.c_str();
 }
