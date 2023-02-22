@@ -5,8 +5,6 @@ esphome:
     - homeThing/MenuTitle.h
     - homeThing/FriendlyNameEntity.h
     - homeThing/TextHelpers.h
-    - homeThing/esphomeRemotePlayer.h
-    - homeThing/esphomeRemoteService.h
     - homeThing/DisplayUpdateInterface.h
     - homeThing/esphomeRemote.h
     - homeThing/esphomeRemoteNowPlayingMenu.h
@@ -59,10 +57,10 @@ substitutions:
 
 external_components:
   - <<: !include homeThing/sharedExternalComponents.yaml
-
-text_sensor:
-  !include homeThing/sharedTextSensors.yaml
   
+light:
+  !include homeThing/sharedLights.yaml
+
 sensor:
   - platform: template
     id: display_update_tick

@@ -353,6 +353,9 @@ homeassistant_switch_group:
   switches:
     - id: "oven_fan_switch"
 
+text_sensor:
+  !include sharedTextSensors.yaml
+
 homeassistant_sensor_group:
   id: sensor_group_component
   sensors:
@@ -393,36 +396,12 @@ homeassistant_media_player:
     - id: media_player_tv
       type: roku
 
-custom_component:
-# Home assistant speakers and tv. Set TV up with a sound bar
-#  - lambda: |-
-#      SpeakerSetup soundBar = SpeakerSetup("media_player.beam", "Beam");
-#      std::vector<TVSetup> tvSetup = {
-#        TVSetup("media_player.55_tcl_roku_tv", "TV", 
-#          &soundBar
-#        )
-#      };
-#      std::vector<SpeakerSetup> speakerSetup = {
-#        SpeakerSetup("media_player.kitchen", "Kitchen"),
-#        SpeakerSetup("media_player.bedroom", "Bedroom"),
-#        SpeakerSetup("media_player.office", "Office")
-#      };
-#      speakerGroup = new SonosSpeakerGroupComponent(&displayUpdate);
-#      speakerGroup->setup(tvSetup, speakerSetup);
-#      return {speakerGroup};
-#    id: speaker_group_component
- 
- ## Home assistant scripts and scenes. Set with a friendly name
- - lambda: |-
-     std::vector<BaseService> scenes { 
-       ScriptService("script.colors", "Colors"), 
-       ScriptService("script.warm", "Warm"), 
-       ScriptService("script.dim_scene_script", "Dim"),
-       ScriptService("script.off_script", "Lights Off"),
-       SceneService("scene.hell", "Hell"),
-       ScriptService("script.feed_cat_single", "Feed cat")
-     };
-     sceneGroup = new SceneGroupComponent();
-     sceneGroup->setup(scenes);
-     return {sceneGroup};
-   id: scene_group_component
+homeassistant_service_group:
+  id: service_group_component
+  commands:
+    - text: "test"
+      command:
+        then:
+          lambda: |-
+            ESP_LOGI("YOOO", "WORKIN");
+

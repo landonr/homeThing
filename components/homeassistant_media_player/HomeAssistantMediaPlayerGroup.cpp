@@ -8,35 +8,7 @@ static const char* const TAG = "homeassistant.media_player_group";
 
 void HomeAssistantMediaPlayerGroup::setup() {
   ESP_LOGI(TAG, "Subscribe states");
-  // bool first = true;
-  // playerSearchFinished = false;
 
-  // int tvIndex = 0;
-  // int speakerIndex = 0;
-  // for (auto newTVSetup : newTVSetups) {
-  //   HomeAssistantSonosMediaPlayer* newSoundBar = NULL;
-  //   if (newTVSetup.soundBar != NULL) {
-  //     auto newSpeaker = new HomeAssistantSonosMediaPlayer(
-  //         display, this, newTVSetups.size() + speakerIndex,
-  //         *newTVSetup.soundBar);
-  //     speakers.push_back(newSpeaker);
-  //     speakerIndex++;
-  //     newSoundBar = newSpeaker;
-  //   }
-  //   auto newTV = new HomeAssistantRokuMediaPlayer(display, this, tvIndex,
-  //                                                 newTVSetup, newSoundBar);
-  //   if (newSoundBar != NULL) {
-  //     newSoundBar->tv = newTV;
-  //   }
-  //   tvs.push_back(newTV);
-  //   tvIndex++;
-  // }
-  // for (auto newSpeakerSetup : newSpeakerSetups) {
-  //   auto newSpeaker = new HomeAssistantSonosMediaPlayer(
-  //       display, this, newTVSetups.size() + speakerIndex, newSpeakerSetup);
-  //   speakers.push_back(newSpeaker);
-  //   speakerIndex++;
-  // }
   subscribe_homeassistant_state(
       &HomeAssistantMediaPlayerGroup::playlists_changed,
       "sensor.playlists_sensor", "playlists");
@@ -369,18 +341,6 @@ HomeAssistantMediaPlayerGroup::mediaPlayersTitleString() {
           media_player->mediaSource, media_player->playerState));
     }
   }
-  // for (auto& tv : tvs) {
-  //   out.push_back(new MenuTitlePlayer(tv->get_name(), tv->entity_id_,
-  //                    NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-  //                                     tv->mediaSource, tv->playerState));
-  //   if (tv->speaker != NULL &&
-  //       tv->speaker->mediaSource == TVRemotePlayerMediaSource) {
-  //     out.push_back(new MenuTitlePlayer(
-  //         tv->speaker->get_name(), tv->speaker->entity_id_,
-  //         GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon,
-  //         tv->speaker->mediaSource, tv->speaker->playerState));
-  //   }
-  // }
   return out;
 }
 

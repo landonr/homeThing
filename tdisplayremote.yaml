@@ -7,8 +7,6 @@ esphome:
     - homeThing/MenuTitle.h
     - homeThing/FriendlyNameEntity.h
     - homeThing/TextHelpers.h
-    - homeThing/esphomeRemotePlayer.h
-    - homeThing/esphomeRemoteService.h
     - homeThing/DisplayUpdateInterface.h
     - homeThing/esphomeRemote.h
     - homeThing/esphomeRemoteRotary.h
@@ -56,9 +54,9 @@ substitutions:
 external_components:
   - <<: !include homeThing/sharedExternalComponents.yaml
 
-text_sensor:
-  !include homeThing/sharedTextSensors.yaml
-  
+light:
+  !include homeThing/sharedLights.yaml
+
 sensor:
 ## Rotary
   - platform: rotary_encoder

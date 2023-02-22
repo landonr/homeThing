@@ -1,5 +1,6 @@
-bash ./formatFiles.sh
-echo $files
+echo "formatting"
+bash formatFiles.sh
+echo "building"
 for device in m5stickc m5stickcplus tdisplayt4 tdisplayremote fireremote homeThingTTGO
 do
     echo building $device

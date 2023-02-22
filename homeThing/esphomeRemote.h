@@ -44,7 +44,7 @@ class DisplayUpdateImpl : public DisplayUpdateInterface {
 };
 
 auto displayUpdate = DisplayUpdateImpl();
-SceneGroupComponent* sceneGroup;
+homeassistant_service_group::HomeAssistantServiceGroup* serviceGroup;
 homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
 homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
 homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
@@ -816,7 +816,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
   switch (activeMenuState) {
     case rootMenu:
       return menuTypesToTitles(rootMenuTitles(
-          speakerGroup != NULL, sceneGroup != NULL, true, true, true));
+          speakerGroup != NULL, serviceGroup != NULL, true, true, true));
     case sourcesMenu: {
       auto sourceTitles = speakerGroup->activePlayerSourceMenu();
       return {sourceTitles.begin(), sourceTitles.end()};
@@ -826,7 +826,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> activeMenu() {
       return {mediaPlayersTitles.begin(), mediaPlayersTitles.end()};
     }
     case scenesMenu:
-      return sceneGroup->sceneTitleStrings();
+      return serviceGroup->sceneTitleStrings();
     case sensorsMenu:
       return sensorGroup->sensorTitles();
     default:
@@ -1565,6 +1565,7 @@ void drawMenu() {
   sensorGroup = &id(sensor_group_component);
   switchGroup = &id(switch_group_component);
   speakerGroup = &id(media_group_component);
+  serviceGroup = &id(service_group_component);
   if (idleTime > 16 && !charging) {
     menuDrawing = false;
     return;
@@ -1628,7 +1629,7 @@ void selectMediaPlayers() {
 
 bool selectRootMenu() {
   MenuStates currentMenu = rootMenuTitles(
-      speakerGroup != NULL, sceneGroup != NULL, true, true, true)[menuIndex];
+      speakerGroup != NULL, serviceGroup != NULL, true, true, true)[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
@@ -1722,7 +1723,7 @@ bool selectMenu() {
       selectMediaPlayers();
       break;
     case scenesMenu:
-      if (sceneGroup->selectScene(menuIndexForSource)) {
+      if (serviceGroup->select_service(menuIndexForSource)) {
         topMenu();
       }
       break;

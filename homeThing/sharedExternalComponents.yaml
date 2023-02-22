@@ -5,5 +5,6 @@
     homeassistant_switch_group, 
     homeassistant_sensor_group,
     homeassistant_light_group,
-    homeassistant_media_player
+    homeassistant_media_player,
+    homeassistant_service_group,
   ]
