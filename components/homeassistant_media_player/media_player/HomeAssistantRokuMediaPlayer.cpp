@@ -30,7 +30,6 @@ void HomeAssistantRokuMediaPlayer::player_source_changed(std::string state) {
   } else {
     mediaSource = NoRemotePlayerMediaSource;
   }
-  display->updateDisplay(false);
 }
 
 void HomeAssistantRokuMediaPlayer::player_source_list_changed(

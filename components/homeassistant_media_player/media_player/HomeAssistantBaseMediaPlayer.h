@@ -16,7 +16,7 @@ class HomeAssistantBaseMediaPlayer : public api::CustomAPIDevice,
                                      public media_player::MediaPlayer,
                                      public Component {
  protected:
-  DisplayUpdateInterface* display;
+  bool muted_ = false;
 
  public:
   std::string mediaTitle = "";
@@ -43,7 +43,6 @@ class HomeAssistantBaseMediaPlayer : public api::CustomAPIDevice,
   void playMedia(MenuTitleSource source);
   void playerState_changed(std::string state);
   RemotePlayerType player_type_;
-  bool muted_ = false;
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

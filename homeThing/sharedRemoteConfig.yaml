@@ -382,6 +382,8 @@ media_player:
     entity_id: "media_player.55_tcl_roku_tv"
     id: media_player_tv
     type: roku
+    soundbar:
+      sonos: media_player_beam
 
 homeassistant_media_player:
   id: media_group_component

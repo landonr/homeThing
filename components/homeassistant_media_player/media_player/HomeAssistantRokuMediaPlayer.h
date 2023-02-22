@@ -23,6 +23,9 @@ class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
   media_player::MediaPlayerTraits get_traits();
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
+  void set_soundbar(HomeAssistantBaseMediaPlayer* new_sound_bar) {
+    speaker = new_sound_bar;
+  }
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

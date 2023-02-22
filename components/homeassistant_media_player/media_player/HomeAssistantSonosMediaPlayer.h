@@ -31,10 +31,8 @@ class HomeAssistantSonosMediaPlayer : public HomeAssistantBaseMediaPlayer {
   media_player::MediaPlayerTraits get_traits();
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return SpeakerRemotePlayerType; }
-  bool is_muted() const override { return this->muted_; }
 
  private:
-  bool muted_ = false;
   void player_media_title_changed(std::string state);
   void player_media_artist_changed(std::string state);
   void speaker_volume_changed(std::string state);

@@ -362,6 +362,11 @@ HomeAssistantMediaPlayerGroup::mediaPlayersTitleString() {
           media_player->get_name(), media_player->entity_id_,
           NoMenuTitleLeftIcon, NoMenuTitleRightIcon, media_player->mediaSource,
           media_player->playerState));
+    } else {
+      out.push_back(new MenuTitlePlayer(
+          media_player->get_name(), media_player->entity_id_,
+          GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon,
+          media_player->mediaSource, media_player->playerState));
     }
   }
   // for (auto& tv : tvs) {
