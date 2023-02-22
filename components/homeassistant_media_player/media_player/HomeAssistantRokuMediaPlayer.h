@@ -20,6 +20,8 @@ class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void tvRemoteCommand(std::string command);
   void increaseVolume();
   void decreaseVolume();
+  media_player::MediaPlayerTraits get_traits();
+  void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
 };
 }  // namespace homeassistant_media_player

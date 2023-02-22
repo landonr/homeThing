@@ -1617,20 +1617,13 @@ void drawMenu() {
 }
 
 void selectMediaPlayers() {
-  // for (auto& speaker : speakerGroup->speakers) {
-  //   if (speaker->entity_id_ == activeMenuTitle->entity_id_) {
-  //     speakerGroup->activePlayer = speaker;
-  //     topMenu();
-  //     return;
-  //   }
-  // }
-  // for (auto& tv : speakerGroup->tvs) {
-  //   if (tv->entity_id_ == activeMenuTitle->entity_id_) {
-  //     speakerGroup->activePlayer = tv;
-  //     topMenu();
-  //     return;
-  //   }
-  // }
+  for (auto& media_player : speakerGroup->media_players_) {
+    if (media_player->entity_id_ == activeMenuTitle->entity_id_) {
+      speakerGroup->activePlayer = media_player;
+      topMenu();
+      return;
+    }
+  }
 }
 
 bool selectRootMenu() {

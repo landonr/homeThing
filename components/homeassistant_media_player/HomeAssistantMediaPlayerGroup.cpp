@@ -239,7 +239,7 @@ std::string HomeAssistantMediaPlayerGroup::muteString() {
   HomeAssistantSonosMediaPlayer* activeSpeaker =
       static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
   if (activeSpeaker != NULL) {
-    if (activeSpeaker->muted) {
+    if (activeSpeaker->is_muted()) {
       return "Unmute";
     } else {
       return "Mute";
@@ -256,8 +256,8 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
       if (activeTV->speaker != NULL) {
         HomeAssistantSonosMediaPlayer* tvSpeaker =
             static_cast<HomeAssistantSonosMediaPlayer*>(activeTV->speaker);
-        if (tvSpeaker->speaker_volume != -1) {
-          double volume = tvSpeaker->localVolume * 100;
+        if (tvSpeaker->volume != -1) {
+          double volume = tvSpeaker->volume * 100;
           return volume;
         }
       } else {
@@ -268,8 +268,8 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
     HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
     if (activeSpeaker != NULL) {
-      if (activeSpeaker->speaker_volume != -1) {
-        double volume = activeSpeaker->localVolume * 100;
+      if (activeSpeaker->volume != -1) {
+        double volume = activeSpeaker->volume * 100;
         return volume;
       }
     }
@@ -356,16 +356,17 @@ HomeAssistantMediaPlayerGroup::groupTitleString() {
 std::vector<MenuTitlePlayer*>
 HomeAssistantMediaPlayerGroup::mediaPlayersTitleString() {
   std::vector<MenuTitlePlayer*> out;
-  for (auto& speaker : media_players_) {
-    if (speaker->mediaSource != TVRemotePlayerMediaSource) {
+  for (auto& media_player : media_players_) {
+    if (media_player->mediaSource != TVRemotePlayerMediaSource) {
       out.push_back(new MenuTitlePlayer(
-          speaker->get_name(), speaker->entity_id_, NoMenuTitleLeftIcon,
-          NoMenuTitleRightIcon, speaker->mediaSource, speaker->playerState));
+          media_player->get_name(), media_player->entity_id_,
+          NoMenuTitleLeftIcon, NoMenuTitleRightIcon, media_player->mediaSource,
+          media_player->playerState));
     }
   }
   // for (auto& tv : tvs) {
   //   out.push_back(new MenuTitlePlayer(tv->get_name(), tv->entity_id_,
-  //                                     NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
+  //                    NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
   //                                     tv->mediaSource, tv->playerState));
   //   if (tv->speaker != NULL &&
   //       tv->speaker->mediaSource == TVRemotePlayerMediaSource) {

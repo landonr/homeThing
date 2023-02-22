@@ -1,4 +1,5 @@
 #include "HomeAssistantSonosMediaPlayer.h"
+#include <algorithm>
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -71,36 +72,39 @@ void HomeAssistantSonosMediaPlayer::toggleShuffle() {
 
 void HomeAssistantSonosMediaPlayer::toggleMute() {
   ESP_LOGI(TAG, "%s toggle mute", this->entity_id_.c_str());
-  call_homeassistant_service("media_player.volume_mute",
-                             {
-                                 {"entity_id", this->entity_id_},
-                                 {"is_volume_muted", muted ? "false" : "true"},
-                             });
+  call_homeassistant_service(
+      "media_player.volume_mute",
+      {
+          {"entity_id", this->entity_id_},
+          {"is_volume_muted", is_muted() ? "false" : "true"},
+      });
 }
 
 void HomeAssistantSonosMediaPlayer::increaseVolume() {
-  if (speaker_volume == -1) {
-    localVolume = 0;
-    return;
-  }
-  if (localVolume + volumeStep > 1) {
-    localVolume = 1;
-  } else {
-    localVolume = localVolume + volumeStep;
-  }
+  // if (speaker_volume == -1) {
+  //   localVolume = 0;
+  //   return;
+  // }
+  // if (localVolume + volumeStep > 1) {
+  //   localVolume = 1;
+  // } else {
+  //   localVolume = localVolume + volumeStep;
+  // }
+  volume = min(1.0f, volume + volumeStep);
   updateVolumeLevel();
 }
 
 void HomeAssistantSonosMediaPlayer::decreaseVolume() {
-  if (speaker_volume == -1 || localVolume - volumeStep < 0) {
-    localVolume = 0;
-    return;
-  }
-  if (localVolume - volumeStep > 1) {
-    localVolume = 0;
-  } else {
-    localVolume = localVolume - volumeStep;
-  }
+  // if (speaker_volume == -1 || localVolume - volumeStep < 0) {
+  //   localVolume = 0;
+  //   return;
+  // }
+  // if (localVolume - volumeStep > 1) {
+  //   localVolume = 0;
+  // } else {
+  //   localVolume = localVolume - volumeStep;
+  // }
+  volume = max(0.0f, volume - volumeStep);
   updateVolumeLevel();
 }
 
@@ -111,7 +115,7 @@ void HomeAssistantSonosMediaPlayer::updateVolumeLevel() {
       entityIds = entityIds + ", " + speaker;
     }
   }
-  if (muted) {
+  if (is_muted()) {
     // unmute all speakers
     call_homeassistant_service("media_player.volume_mute",
                                {
@@ -119,11 +123,11 @@ void HomeAssistantSonosMediaPlayer::updateVolumeLevel() {
                                    {"is_volume_muted", "false"},
                                });
   }
-  ESP_LOGI(TAG, "%s volume update %f", entityIds.c_str(), localVolume);
+  ESP_LOGI(TAG, "%s volume update %f", entityIds.c_str(), volume);
   call_homeassistant_service("media_player.volume_set",
                              {
                                  {"entity_id", entityIds},
-                                 {"volume_level", to_string(localVolume)},
+                                 {"volume_level", to_string(volume)},
                              });
 }
 
@@ -149,6 +153,7 @@ void HomeAssistantSonosMediaPlayer::player_media_title_changed(
     mediaPosition = -1;
   }
   mediaDuration = -1;
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::player_media_artist_changed(
@@ -156,39 +161,45 @@ void HomeAssistantSonosMediaPlayer::player_media_artist_changed(
   ESP_LOGI(TAG, "%s Player artist changed to %s", this->entity_id_.c_str(),
            state.c_str());
   mediaArtist = state.c_str();
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::speaker_volume_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker volume changed to %s",
            this->entity_id_.c_str(), state.c_str());
-  speaker_volume = atof(state.c_str());
-  if (localVolume == -1) {
-    localVolume = atof(state.c_str());
-  }
+  // speaker_volume = atof(state.c_str());
+  // if (localVolume == -1) {
+  //   localVolume = atof(state.c_str());
+  // }
+  volume = parse_number<float>(state).value_or(-1.0f);
 }
 
 void HomeAssistantSonosMediaPlayer::speaker_muted_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker muted changed to %s",
            this->entity_id_.c_str(), state.c_str());
-  muted = strcmp(state.c_str(), "on") == 0;
+  muted_ = strcmp(state.c_str(), "on") == 0;
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::shuffle_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker shuffle changed to %s",
            this->entity_id_.c_str(), state.c_str());
   shuffle = strcmp(state.c_str(), "on") == 0;
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::playlist_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker playlist changed to %s",
            this->entity_id_.c_str(), state.c_str());
   mediaPlaylist = state.c_str();
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::media_album_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker album changed to %s",
            this->entity_id_.c_str(), state.c_str());
   mediaAlbumName = state.c_str();
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::group_members_changed(std::string state) {
@@ -201,18 +212,21 @@ void HomeAssistantSonosMediaPlayer::group_members_changed(std::string state) {
     std::string newGroupedSpeaker = TextHelpers::filter(*state);
     groupMembers.push_back(newGroupedSpeaker);
   }
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::media_duration_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker media duration changed to %s",
            this->entity_id_.c_str(), state.c_str());
   mediaDuration = atof(state.c_str());
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::media_position_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker media position changed to %s",
            this->entity_id_.c_str(), state.c_str());
   mediaPosition = atof(state.c_str());
+  this->publish_state();
 }
 
 void HomeAssistantSonosMediaPlayer::media_source_changed(std::string state) {
@@ -225,6 +239,7 @@ void HomeAssistantSonosMediaPlayer::media_source_changed(std::string state) {
   } else {
     mediaSource = NoRemotePlayerMediaSource;
   }
+  this->publish_state();
 }
 
 media_player::MediaPlayerTraits HomeAssistantSonosMediaPlayer::get_traits() {

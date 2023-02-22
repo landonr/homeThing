@@ -10,11 +10,8 @@ namespace homeassistant_media_player {
 
 class HomeAssistantSonosMediaPlayer : public HomeAssistantBaseMediaPlayer {
  public:
-  double localVolume = -1;
-  double speaker_volume = -1;
-  double volumeStep = 0.04;
+  float volumeStep = 0.04;
   bool shuffle = false;
-  bool muted = false;
   std::vector<std::string> groupMembers;
   std::string mediaPlaylist = "";
   std::string mediaAlbumName = "";
@@ -34,8 +31,10 @@ class HomeAssistantSonosMediaPlayer : public HomeAssistantBaseMediaPlayer {
   media_player::MediaPlayerTraits get_traits();
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return SpeakerRemotePlayerType; }
+  bool is_muted() const override { return this->muted_; }
 
  private:
+  bool muted_ = false;
   void player_media_title_changed(std::string state);
   void player_media_artist_changed(std::string state);
   void speaker_volume_changed(std::string state);

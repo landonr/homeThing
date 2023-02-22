@@ -36,12 +36,14 @@ class HomeAssistantBaseMediaPlayer : public api::CustomAPIDevice,
   void clearMedia();
   std::string entity_id_;
   void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
+  bool is_muted() const override { return this->muted_; }
 
  private:
   void selectSource(MenuTitleSource source);
   void playMedia(MenuTitleSource source);
   void playerState_changed(std::string state);
   RemotePlayerType player_type_;
+  bool muted_ = false;
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

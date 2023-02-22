@@ -1,20 +1,33 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components.homeassistant_media_player.media_player import HomeAssistantSonosMediaPlayer
 from esphome.const import CONF_ID, CONF_ENTITY_ID, CONF_NAME
-
-homeassistant_media_player_ns = cg.esphome_ns.namespace("homeassistant_media_player")
+from esphome.components.homeassistant_media_player.media_player import (
+    homeassistant_media_player_ns, 
+    HomeAssistantSonosMediaPlayer, 
+    HomeAssistantRokuMediaPlayer,
+    CONF_SONOS,
+    CONF_ROKU,
+)
 
 CONF_MEDIA_PLAYERS = "media_players"
 
 DEPENDENCIES = ["api"]
 
-HOMEASSISTANT_MEDIA_PLAYER_SCHEMA = cv.Schema(
+HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA = cv.typed_schema(
     {
-        cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantSonosMediaPlayer)
-    }
+        CONF_SONOS: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantSonosMediaPlayer),
+            }
+        ),
+        CONF_ROKU: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantRokuMediaPlayer),
+            }
+        ),
+    },
+    lower=True,
 )
-
 
 HomeAssistantMediaPlayerGroup = homeassistant_media_player_ns.class_(
     'HomeAssistantMediaPlayerGroup', cg.Component
@@ -24,7 +37,7 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeAssistantMediaPlayerGroup),
         cv.Required(CONF_MEDIA_PLAYERS): cv.All(
-            cv.ensure_list(HOMEASSISTANT_MEDIA_PLAYER_SCHEMA), cv.Length(min=1)
+            cv.ensure_list(HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA), cv.Length(min=1)
         ),
     }
 ).extend(cv.COMPONENT_SCHEMA)

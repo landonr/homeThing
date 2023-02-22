@@ -60,5 +60,75 @@ void HomeAssistantRokuMediaPlayer::decreaseVolume() {
   tvRemoteCommand("volume_down");
 }
 
+media_player::MediaPlayerTraits HomeAssistantRokuMediaPlayer::get_traits() {
+  auto traits = media_player::MediaPlayerTraits();
+  traits.set_supports_pause(true);
+  return traits;
+}
+
+void HomeAssistantRokuMediaPlayer::control(
+    const media_player::MediaPlayerCall& call) {
+  if (call.get_media_url().has_value()) {
+    // if (this->audio_->isRunning())
+    //   this->audio_->stopSong();
+    // this->high_freq_.start();
+    // this->audio_->connecttohost(call.get_media_url().value().c_str());
+    // this->state = media_player::MEDIA_PLAYER_STATE_PLAYING;
+  }
+  if (call.get_volume().has_value()) {
+    // this->volume = call.get_volume().value();
+    // this->set_volume_(volume);
+    // this->unmute_();
+  }
+  if (call.get_command().has_value()) {
+    // switch (call.get_command().value()) {
+    //   case media_player::MEDIA_PLAYER_COMMAND_PLAY:
+    //     if (!this->audio_->isRunning())
+    //       this->audio_->pauseResume();
+    //     this->state = media_player::MEDIA_PLAYER_STATE_PLAYING;
+    //     break;
+    //   case media_player::MEDIA_PLAYER_COMMAND_PAUSE:
+    //     if (this->audio_->isRunning())
+    //       this->audio_->pauseResume();
+    //     this->state = media_player::MEDIA_PLAYER_STATE_PAUSED;
+    //     break;
+    //   case media_player::MEDIA_PLAYER_COMMAND_STOP:
+    //     this->stop_();
+    //     break;
+    //   case media_player::MEDIA_PLAYER_COMMAND_MUTE:
+    //     this->mute_();
+    //     break;
+    //   case media_player::MEDIA_PLAYER_COMMAND_UNMUTE:
+    //     this->unmute_();
+    //     break;
+    //   case media_player::MEDIA_PLAYER_COMMAND_TOGGLE:
+    //     this->audio_->pauseResume();
+    //     if (this->audio_->isRunning()) {
+    //       this->state = media_player::MEDIA_PLAYER_STATE_PLAYING;
+    //     } else {
+    //       this->state = media_player::MEDIA_PLAYER_STATE_PAUSED;
+    //     }
+    //     break;
+    //   case media_player::MEDIA_PLAYER_COMMAND_VOLUME_UP: {
+    //     float new_volume = this->volume + 0.1f;
+    //     if (new_volume > 1.0f)
+    //       new_volume = 1.0f;
+    //     this->set_volume_(new_volume);
+    //     this->unmute_();
+    //     break;
+    //   }
+    //   case media_player::MEDIA_PLAYER_COMMAND_VOLUME_DOWN: {
+    //     float new_volume = this->volume - 0.1f;
+    //     if (new_volume < 0.0f)
+    //       new_volume = 0.0f;
+    //     this->set_volume_(new_volume);
+    //     this->unmute_();
+    //     break;
+    //   }
+    // }
+  }
+  this->publish_state();
+}
+
 }  // namespace homeassistant_media_player
 }  // namespace esphome
