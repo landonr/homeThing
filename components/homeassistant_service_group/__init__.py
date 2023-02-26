@@ -4,7 +4,6 @@ from esphome import automation
 from esphome.const import CONF_ID, CONF_TRIGGER_ID
 
 homeassistant_service_group_ns = cg.esphome_ns.namespace("homeassistant_service_group")
-HomeassistantServiceConstPtr = homeassistant_service_group_ns.operator("ptr").operator("const")
 
 HomeAssistantServiceGroup = homeassistant_service_group_ns.class_(
     'HomeAssistantServiceGroup', cg.Component
@@ -19,7 +18,7 @@ CONF_COMMAND = "command"
 CONF_TEXT = "text"
 
 ServiceCalledTrigger = homeassistant_service_group_ns.class_(
-    "ServiceCalledTrigger", automation.Trigger
+    "ServiceCalledTrigger", automation.Trigger.template()
 )
 
 SERVICE_LIST_SCHEMA = cv.Schema(
@@ -53,7 +52,7 @@ async def to_code(config):
         service = cg.new_Pvariable(conf[CONF_ID])
         cg.add(service.set_text(conf[CONF_TEXT]))
         
-        for conf in config.get(CONF_COMMAND, []):
-            trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], service)
-            await automation.build_automation(trigger, [(HomeassistantServiceConstPtr, "it")], conf)
+        for command in conf.get(CONF_COMMAND, []):
+            trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
+            await automation.build_automation(trigger, [], command)
         cg.add(var.register_service_call(service))

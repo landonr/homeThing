@@ -399,9 +399,20 @@ homeassistant_media_player:
 homeassistant_service_group:
   id: service_group_component
   commands:
-    - text: "test"
+    - text: "desk down"
       command:
-        then:
-          lambda: |-
-            ESP_LOGI("YOOO", "WORKIN");
+        - lambda: |-
+            ESP_LOGI("YOOO", "down");
+        - homeassistant.service:
+            service: script.set_desk_height
+            data:
+              height: "65"
+    - text: "desk up"
+      command:
+        - lambda: |-
+            ESP_LOGI("YOOO", "up");
+        - homeassistant.service:
+            service: script.set_desk_height
+            data:
+              height: "100"
 

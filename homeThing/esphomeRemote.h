@@ -10,7 +10,6 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
-#include "esphomeRemoteService.h"
 
 bool menuDrawing = false;
 

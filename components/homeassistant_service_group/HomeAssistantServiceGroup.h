@@ -8,15 +8,24 @@
 #include "MenuTitle.h"
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_service_group {
 
 class HomeAssistantServiceCommand {
  public:
-  void on_command() { this->on_command_callbacks_.call(); }
-  void add_on_command_callback(std::function<void()>&& cb) {
-    this->on_command_callbacks_.add(std::move(cb));
+  void on_command() {
+    // ESP_LOGI("service", "Service addedddd321 %d",
+    //          this->on_command_callbacks_.size());
+    ESP_LOGI("service", "Service addedddd321");
+    this->on_command_callbacks_.call();
+    // for (auto* trigger : this->on_command_callbacks_)
+    //   trigger->trigger();
+  }
+  void add_on_command_callback(std::function<void()>&& callback) {
+    ESP_LOGI("service", "Service addedddd");
+    this->on_command_callbacks_.add(std::move(callback));
   }
   template <typename V>
   std::string get_text() const {
@@ -29,6 +38,7 @@ class HomeAssistantServiceCommand {
 
  private:
   CallbackManager<void()> on_command_callbacks_{};
+  // std::vector<ServiceCalledTrigger*> on_command_callbacks_;
   TemplatableValue<std::string, const HomeAssistantServiceCommand*> text_;
 };
 
@@ -39,6 +49,7 @@ class HomeAssistantServiceGroup : public Component {
 
   std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings();
   bool select_service(int index);
+  float get_setup_priority() const override { return setup_priority::LATE; }
 };
 
 }  // namespace homeassistant_service_group

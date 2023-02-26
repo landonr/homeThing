@@ -1,5 +1,4 @@
 #include "HomeAssistantServiceGroup.h"
-#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_service_group {
@@ -9,7 +8,7 @@ static const char* const TAG = "homeassistant.service";
 void HomeAssistantServiceGroup::register_service_call(
     HomeAssistantServiceCommand* new_service) {
   services.push_back(new_service);
-  ESP_LOGD(TAG, "Service added %s",
+  ESP_LOGI(TAG, "Service added %s",
            new_service->get_text<std::string>().c_str());
 }
 
@@ -17,7 +16,7 @@ std::vector<std::shared_ptr<MenuTitleBase>>
 HomeAssistantServiceGroup::sceneTitleStrings() {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto& service : services) {
-    ESP_LOGD(TAG, "Service %s", service->get_text<std::string>().c_str());
+    ESP_LOGI(TAG, "Service %s", service->get_text<std::string>().c_str());
     std::string service_text = service->get_text<std::string>();
     out.push_back(std::make_shared<MenuTitleBase>(service_text, "2",
                                                   NoMenuTitleRightIcon));
