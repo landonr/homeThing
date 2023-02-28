@@ -1,7 +1,8 @@
-#include <cwchar>
+
 #include "esphome.h"
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
+// #include <esphome/components/graph/graph.h>
 
 #pragma once
 
@@ -74,7 +75,11 @@ class SensorComponent : public CustomAPIDevice, public Component {
 
 class SensorGroupComponent : public CustomAPIDevice, public Component {
  public:
-  SensorGroupComponent(DisplayBuffer *db) : _db(db){};
+  SensorGroupComponent(DisplayBuffer *db) : _db(db),graph(new GraphHT(db)){
+    // GraphHT asdgraph = GraphHT(_db, get_sensor_data());
+    // GraphHT agraph = GraphHT(_db, get_sensor_data());
+    // graph = GraphHT(_db, get_sensor_data());
+  }
   std::vector<SensorComponent *> sensors;
 
   void setup(std::vector<FriendlyNameEntity> newSensors) {
@@ -119,8 +124,9 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
     // std::string msg = "Show graph for: ";
     id(_db).printf(4, 20 + 1, &id(medium_font), id(my_white), msg.c_str());
 
-    Graph graph = Graph(_db, get_sensor_data());
-    graph.draw();
+    // GraphHT graph = GraphHT(_db, get_sensor_data());
+    ESP_LOGW("WARNING", "enter drawGraph");
+    graph->drawGraph();
   }
   bool sensorDetailSelected = false;
 
@@ -128,4 +134,5 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
   SensorComponent *_activeSensor = NULL;
   DisplayBuffer *_db;
   bool _alreadyDrawn = false;
+  GraphHT* graph ;
 };

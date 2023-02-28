@@ -17,6 +17,12 @@ esphome:
     - esphomeRemote/esphomeRemoteRotary.h
     - esphomeRemote/esphomeRemoteCommon.h
     - esphomeRemote/esphomeRemoteGrapher.h
+    # - esphomeRemote/esphomeRemoteGrapher.h
+    - esphomeRemote/esphomeRemoteKodi.h
+#     - custom_components/graphHistory/newgraph.h
+#
+# external_components:
+#   - source: custom_components
 
 substitutions:
   boot_name: '"TDisplay Remote <3"'
