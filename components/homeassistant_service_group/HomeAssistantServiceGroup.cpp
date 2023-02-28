@@ -16,7 +16,7 @@ std::vector<std::shared_ptr<MenuTitleBase>>
 HomeAssistantServiceGroup::sceneTitleStrings() {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto& service : services) {
-    ESP_LOGI(TAG, "Service %s", service->get_text<std::string>().c_str());
+    ESP_LOGD(TAG, "MENU Service %s", service->get_text<std::string>().c_str());
     std::string service_text = service->get_text<std::string>();
     out.push_back(std::make_shared<MenuTitleBase>(service_text, "2",
                                                   NoMenuTitleRightIcon));

@@ -402,7 +402,7 @@ homeassistant_service_group:
     - text: "desk down"
       command:
         - lambda: |-
-            ESP_LOGI("YOOO", "down");
+            ESP_LOGI("homeassistant_service_group", "down");
         - homeassistant.service:
             service: script.set_desk_height
             data:
@@ -410,9 +410,9 @@ homeassistant_service_group:
     - text: "desk up"
       command:
         - lambda: |-
-            ESP_LOGI("YOOO", "up");
+            ESP_LOGI("homeassistant_service_group", "up");
         - homeassistant.service:
             service: script.set_desk_height
             data:
-              height: "100"
+              height: "106"
 

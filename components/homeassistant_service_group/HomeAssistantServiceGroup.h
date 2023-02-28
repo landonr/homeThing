@@ -15,16 +15,8 @@ namespace homeassistant_service_group {
 
 class HomeAssistantServiceCommand {
  public:
-  void on_command() {
-    // ESP_LOGI("service", "Service addedddd321 %d",
-    //          this->on_command_callbacks_.size());
-    ESP_LOGI("service", "Service addedddd321");
-    this->on_command_callbacks_.call();
-    // for (auto* trigger : this->on_command_callbacks_)
-    //   trigger->trigger();
-  }
+  void on_command() { this->on_command_callbacks_.call(); }
   void add_on_command_callback(std::function<void()>&& callback) {
-    ESP_LOGI("service", "Service addedddd");
     this->on_command_callbacks_.add(std::move(callback));
   }
   template <typename V>
