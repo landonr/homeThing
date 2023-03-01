@@ -795,6 +795,12 @@ void marqueeTick() {
   updateMarqueePosition();
 }
 
+// REMOVE LATER test graph data 
+void addNewValue(){
+  ESP_LOGD("ESPHOME", "ADD NEW VALUE 30s!!!");
+  sensorGroup->addValue();
+}
+
 void idleTick() {
   if (activeMenuState == bootMenu) {
     if (idleTime == id(display_timeout) && !charging) {

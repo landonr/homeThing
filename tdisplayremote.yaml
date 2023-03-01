@@ -17,6 +17,8 @@ esphome:
     - esphomeRemote/esphomeRemoteRotary.h
     - esphomeRemote/esphomeRemoteCommon.h
     - esphomeRemote/esphomeRemoteGrapher.h
+    - esphomeRemote/graph.h
+    - esphomeRemote/graph.cpp
     # - esphomeRemote/esphomeRemoteGrapher.h
     - esphomeRemote/esphomeRemoteKodi.h
 #     - custom_components/graphHistory/newgraph.h

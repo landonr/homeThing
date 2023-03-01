@@ -2,7 +2,7 @@
 #include "esphome.h"
 #include "MenuTitle.h"
 #include "FriendlyNameEntity.h"
-// #include <esphome/components/graph/graph.h>
+#include <random>
 
 #pragma once
 
@@ -75,10 +75,14 @@ class SensorComponent : public CustomAPIDevice, public Component {
 
 class SensorGroupComponent : public CustomAPIDevice, public Component {
  public:
-  SensorGroupComponent(DisplayBuffer *db) : _db(db),graph(new GraphHT(db)){
+  SensorGroupComponent(DisplayBuffer *db) : _db(db),_graph(new GraphHT(db)){
     // GraphHT asdgraph = GraphHT(_db, get_sensor_data());
     // GraphHT agraph = GraphHT(_db, get_sensor_data());
     // graph = GraphHT(_db, get_sensor_data());
+    
+    // REMOVE LATER test graph data 
+      std::random_device rd;
+      _gen = std::mt19937(rd());
   }
   std::vector<SensorComponent *> sensors;
 
@@ -114,25 +118,52 @@ class SensorGroupComponent : public CustomAPIDevice, public Component {
 
   SensorComponent *getActiveSensor() { return _activeSensor; }
 
-  void draw() {
-    if (_alreadyDrawn) {
-      // return;
+  std::vector<float> generateInitialData(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dist(18.8, 20.1);
+
+    std::vector<float> vec(100);
+    for (int i = 0; i < 100; ++i) {
+      vec[i] = dist(gen);
     }
-    _alreadyDrawn = true;
-    ESP_LOGW("WARNING", "SensorGroupComponent draws");
+    return vec;
+  }
+
+
+  // REMOVE LATER test graph data 
+  void addValue(){
+    if (!_graphInitialized) {
+      _graph->setInitialData(generateInitialData());
+      _graphInitialized = true;
+    }else{
+      std::uniform_real_distribution<float> dist(18.8, 20.1);
+      float val = dist(_gen);
+      ESP_LOGD("SENSOR", "ADD NEW VALUE %f", val);
+      _graph->addValue(val);
+    }
+  }
+
+  // TODO: give every sensor its own graph
+  // this is for testing only
+  void draw() {
+    if (!_graphInitialized) {
+      ESP_LOGW("WARNING", "Set initial data");
+      _graph->setInitialData(generateInitialData());
+      _graphInitialized = true;
+    }
     std::string msg = "Show graph for: " + _activeSensor->friendlyName;
-    // std::string msg = "Show graph for: ";
     id(_db).printf(4, 20 + 1, &id(medium_font), id(my_white), msg.c_str());
 
-    // GraphHT graph = GraphHT(_db, get_sensor_data());
-    ESP_LOGW("WARNING", "enter drawGraph");
-    graph->drawGraph();
+    _graph->drawGraph();
   }
   bool sensorDetailSelected = false;
 
  private:
   SensorComponent *_activeSensor = NULL;
   DisplayBuffer *_db;
-  bool _alreadyDrawn = false;
-  GraphHT* graph ;
+  bool _graphInitialized = false;
+  GraphHT* _graph ;
+  // REMOVE LATER test graph data 
+  std::mt19937 _gen;
 };

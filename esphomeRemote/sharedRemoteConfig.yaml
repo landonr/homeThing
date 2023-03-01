@@ -323,6 +323,11 @@ interval:
     then:
     - lambda: |-
         idleTick();
+  # REMOVE LATER test graph data 
+  - interval: 30s
+    then:
+    - lambda: |-
+        addNewValue();
   - interval: 40ms
     then:
     - lambda: |-
