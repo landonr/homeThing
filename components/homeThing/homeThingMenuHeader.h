@@ -13,12 +13,18 @@ namespace homething_menu_base {
 
 class HomeThingMenuHeader {
  public:
-  HomeThingMenuHeader(display::DisplayBuffer* new_display_buffer,
-                      HomeThingMenuDisplayState* new_display_state,
-                      HomeThingMenuTextHelpers* new_text_helpers)
+  HomeThingMenuHeader(
+      display::DisplayBuffer* new_display_buffer,
+      HomeThingMenuDisplayState* new_display_state,
+      HomeThingMenuTextHelpers* new_text_helpers,
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          new_speaker_group,
+      homeassistant_light_group::HomeAssistantLightGroup* new_light_group)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        text_helpers_(new_text_helpers) {}
+        text_helpers_(new_text_helpers),
+        speakerGroup(new_speaker_group),
+        lightGroup(new_light_group) {}
   int getHeaderTextYPos(int yPosOffset);
   int drawBattery(int oldXPos, int yPosOffset);
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);

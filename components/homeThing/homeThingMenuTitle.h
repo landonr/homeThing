@@ -10,7 +10,23 @@
 namespace esphome {
 namespace homething_menu_base {
 
-enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
+static const char* const TAG = "homething.menutitle";
+
+enum MenuStates {
+  bootMenu,
+  rootMenu,
+  sourcesMenu,
+  groupMenu,
+  mediaPlayersMenu,
+  scenesMenu,
+  lightsMenu,
+  lightsDetailMenu,
+  switchesMenu,
+  nowPlayingMenu,
+  sensorsMenu,
+  backlightMenu,
+  sleepMenu
+};
 
 enum MenuTitleLeftIcon {
   NoMenuTitleLeftIcon,
@@ -20,6 +36,70 @@ enum MenuTitleLeftIcon {
 };
 
 enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
+
+static std::string menu_state_title(MenuStates menu_state) {
+  switch (menu_state) {
+    case nowPlayingMenu:
+      return "Now Playing";
+    case sourcesMenu:
+      return "Sources";
+    case backlightMenu:
+      return "Backlight";
+    case sleepMenu:
+      return "Sleep";
+    case mediaPlayersMenu:
+      return "Media Players";
+    case lightsMenu:
+      return "Lights";
+    case lightsDetailMenu:
+      return "Light Detail";
+    case switchesMenu:
+      return "Switches";
+    case scenesMenu:
+      return "Scenes and Actions";
+    case rootMenu:
+      return "Home";
+    case groupMenu:
+      return "Speaker Group";
+    case sensorsMenu:
+      return "Sensors";
+    case bootMenu:
+      return "Boot";
+  }
+  return "";
+}
+
+static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
+  switch (menu_state) {
+    case nowPlayingMenu:
+      return ArrowMenuTitleRightIcon;
+    case sourcesMenu:
+      return ArrowMenuTitleRightIcon;
+    case backlightMenu:
+      return NoMenuTitleRightIcon;
+    case sleepMenu:
+      return NoMenuTitleRightIcon;
+    case mediaPlayersMenu:
+      return ArrowMenuTitleRightIcon;
+    case lightsMenu:
+      return ArrowMenuTitleRightIcon;
+    case lightsDetailMenu:
+      return ArrowMenuTitleRightIcon;
+    case switchesMenu:
+      return ArrowMenuTitleRightIcon;
+    case scenesMenu:
+      return ArrowMenuTitleRightIcon;
+    case rootMenu:
+      return NoMenuTitleRightIcon;
+    case groupMenu:
+      return ArrowMenuTitleRightIcon;
+    case sensorsMenu:
+      return ArrowMenuTitleRightIcon;
+    case bootMenu:
+      return NoMenuTitleRightIcon;
+  }
+  return NoMenuTitleRightIcon;
+}
 
 enum MenuTitleType {
   BaseMenuTitleType,

@@ -71,12 +71,13 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
     int colorValue =
         (static_cast<float>(animationTick - delayTime) / animationLength) * 255;
     auto color = Color(colorValue, colorValue, colorValue);
-    display_buffer_->printf(xPos, imageYPos, home_thing_logo_, color,
+    display_buffer_->printf(xPos, imageYPos,
+                            display_state_->get_menu_font_logo(), color,
                             display::TextAlign::TOP_CENTER, "");
   } else if (animationTick >= totalDuration) {
-    display_buffer_->printf(xPos, imageYPos, home_thing_logo_,
-                            display_state_->color_white_,
-                            display::TextAlign::TOP_CENTER, "");
+    display_buffer_->printf(
+        xPos, imageYPos, display_state_->get_menu_font_logo(),
+        display_state_->color_white_, display::TextAlign::TOP_CENTER, "");
   }
   return totalDuration;
 }
@@ -210,13 +211,6 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos) {
 }
 
 void HomeThingMenuBoot::drawBootSequence() {
-  if (!setupFinished) {
-    // switchGroup->set_display(&displayUpdate);
-    // sensorGroup->set_display(&displayUpdate);
-    // lightGroup->set_display(&displayUpdate);
-    // speakerGroup->set_display(&displayUpdate);
-    setupFinished = true;
-  }
   speakerGroup->findActivePlayer();
 
   int imageYPos =

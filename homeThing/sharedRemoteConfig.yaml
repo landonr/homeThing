@@ -1,5 +1,5 @@
 logger:
-  level: INFO
+  level: DEBUG
 
 api:
   id: homeassistant_api_id
@@ -405,6 +405,7 @@ homeassistant_service_group:
 homeThing:
   id: homethingMenu
   media_players: media_group_component
+  lights: light_group_component
   display: my_display
   boot:
     wifi: wifi_connected
@@ -416,3 +417,4 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
+    font_logo: home_thing_logo

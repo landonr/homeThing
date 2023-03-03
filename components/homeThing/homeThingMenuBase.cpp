@@ -126,7 +126,8 @@ bool HomeThingMenuBase::selectRootMenu() {
     case groupMenu:
     case rootMenu:
     case bootMenu:
-      ESP_LOGD("WARNING", "menu is bad  %d", menuIndex);
+      ESP_LOGD("WARNING", "menu is bad %d %s", menuIndex,
+               menuTitleForType(activeMenuState)->get_name().c_str());
       return false;
   }
   menuIndex = 0;
@@ -135,45 +136,8 @@ bool HomeThingMenuBase::selectRootMenu() {
 
 std::shared_ptr<MenuTitleBase> HomeThingMenuBase::menuTitleForType(
     MenuStates stringType) {
-  switch (stringType) {
-    case nowPlayingMenu:
-      return std::make_shared<MenuTitleBase>("Now Playing", "",
-                                             ArrowMenuTitleRightIcon);
-    case sourcesMenu:
-      return std::make_shared<MenuTitleBase>("Sources", "",
-                                             ArrowMenuTitleRightIcon);
-    case backlightMenu:
-      return std::make_shared<MenuTitleBase>("Backlight", "",
-                                             NoMenuTitleRightIcon);
-    case sleepMenu:
-      return std::make_shared<MenuTitleBase>("Sleep", "", NoMenuTitleRightIcon);
-    case mediaPlayersMenu:
-      return std::make_shared<MenuTitleBase>("Media Players", "",
-                                             ArrowMenuTitleRightIcon);
-    case lightsMenu:
-      return std::make_shared<MenuTitleBase>("Lights", "",
-                                             ArrowMenuTitleRightIcon);
-    case lightsDetailMenu:
-      return std::make_shared<MenuTitleBase>("Light Detail", "",
-                                             ArrowMenuTitleRightIcon);
-    case switchesMenu:
-      return std::make_shared<MenuTitleBase>("Switches", "",
-                                             ArrowMenuTitleRightIcon);
-    case scenesMenu:
-      return std::make_shared<MenuTitleBase>("Scenes and Actions", "",
-                                             ArrowMenuTitleRightIcon);
-    case rootMenu:
-      return std::make_shared<MenuTitleBase>("Home", "", NoMenuTitleRightIcon);
-    case groupMenu:
-      return std::make_shared<MenuTitleBase>("Speaker Group", "",
-                                             ArrowMenuTitleRightIcon);
-    case sensorsMenu:
-      return std::make_shared<MenuTitleBase>("Sensors", "",
-                                             ArrowMenuTitleRightIcon);
-    case bootMenu:
-      return std::make_shared<MenuTitleBase>("Boot", "", NoMenuTitleRightIcon);
-  }
-  return std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
+  return std::make_shared<MenuTitleBase>(menu_state_title(stringType), "",
+                                         menu_state_right_icon(stringType));
 }
 
 std::vector<std::shared_ptr<MenuTitleBase>>
@@ -206,7 +170,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case sensorsMenu:
       return sensorTitles(sensorGroup->sensors);
     default:
-      ESP_LOGW("WARNING", "menu is bad  %d", x);
+      ESP_LOGW("WARNING", "menu is bad  %d, %s", x,
+               menuTitleForType(activeMenuState)->get_name().c_str());
       std::vector<std::shared_ptr<MenuTitleBase>> out;
       return out;
   }
@@ -235,10 +200,11 @@ void HomeThingMenuBase::buttonPressSelect() {
       }
 
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("select");
           break;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           break;
       }
       return;
@@ -361,10 +327,11 @@ void HomeThingMenuBase::buttonPressUp() {
       }
 
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("up");
           return;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           break;
       }
       break;
@@ -421,10 +388,11 @@ void HomeThingMenuBase::buttonPressDown() {
       }
 
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("down");
           break;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
             activeMenuState = groupMenu;
             menu_display_->updateDisplay(true);
@@ -454,10 +422,11 @@ void HomeThingMenuBase::buttonPressLeft() {
       }
 
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("left");
           break;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           optionMenu = noOptionMenu;
           break;
       }
@@ -484,10 +453,11 @@ void HomeThingMenuBase::buttonPressRight() {
         return;
       }
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           speakerGroup->sendActivePlayerRemoteCommand("right");
           break;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
             speakerGroup->toggleMute();
             menu_display_->updateDisplay(true);
@@ -511,10 +481,11 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
   switch (activeMenuState) {
     case nowPlayingMenu:
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           menu_display_->updateDisplay(true);
           break;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           break;
       }
       break;
@@ -531,7 +502,7 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
   switch (activeMenuState) {
     case nowPlayingMenu:
       switch (speakerGroup->activePlayer->get_player_type()) {
-        case TVRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           if (optionMenu == tvOptionMenu) {
             optionMenu = noOptionMenu;
           } else {
@@ -539,7 +510,8 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
           }
           menu_display_->updateDisplay(true);
           break;
-        case SpeakerRemotePlayerType:
+        case homeassistant_media_player::RemotePlayerType::
+            SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
             optionMenu = noOptionMenu;
           } else {

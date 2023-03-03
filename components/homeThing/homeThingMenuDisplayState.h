@@ -35,6 +35,11 @@ class HomeThingMenuDisplayState {
     material_font_small_ = material_font_small;
   }
 
+  display::Font* get_menu_font_logo() { return menu_font_logo_; }
+  void set_menu_font_logo(display::Font* menu_font_logo) {
+    menu_font_logo_ = menu_font_logo;
+  }
+
   Color color_gray_dark_ = Color(102, 102, 102);
   Color color_gray_dark_2_ = Color(20, 20, 20);
   Color color_gray_ = Color(25, 25, 25);
@@ -80,6 +85,7 @@ class HomeThingMenuDisplayState {
   display::Font* large_heavy_font_{nullptr};
   display::Font* material_font_large_{nullptr};
   display::Font* material_font_small_{nullptr};
+  display::Font* menu_font_logo_{nullptr};
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

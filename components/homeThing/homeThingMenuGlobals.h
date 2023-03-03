@@ -1,28 +1,14 @@
 #pragma once
+#include <string>
 #include <vector>
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/time/real_time_clock.h"
 
 namespace esphome {
 namespace homething_menu_base {
-
-enum MenuStates {
-  bootMenu,
-  rootMenu,
-  sourcesMenu,
-  groupMenu,
-  mediaPlayersMenu,
-  scenesMenu,
-  lightsMenu,
-  lightsDetailMenu,
-  switchesMenu,
-  nowPlayingMenu,
-  sensorsMenu,
-  backlightMenu,
-  sleepMenu
-};
 
 static std::vector<MenuStates> rootMenuTitles(bool includeSpeaker,
                                               bool includeScene,
@@ -88,7 +74,7 @@ static MenuStates activeMenuState = bootMenu;
 static int display_timeout_ = 16;
 static int sleep_after_ = 3600;
 static int idleTime = -2;
-static bool charging = false;
+static bool charging = true;
 static int scrollTop = 0;
 static int menuIndex = 0;
 static int rotaryPosition = 0;

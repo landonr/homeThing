@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import display, font, color, wifi, api, binary_sensor
 from esphome.const import  CONF_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
+from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.Component)
@@ -27,12 +28,14 @@ CONF_FONT_LARGE = "font_large"
 CONF_FONT_LARGE_HEAVY = "font_large_heavy"
 CONF_FONT_MATERIAL_LARGE = "font_material_large"
 CONF_FONT_MATERIAL_SMALL = "font_material_small"
-CONF_MEDIA_PLAYERS = "media_players"
+CONF_FONT_LOGO = "font_logo"
 CONF_WIFI = "wifi"
 CONF_API = "api"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
 CONF_MENU_Display = "menu_display"
+CONF_MEDIA_PLAYERS = "media_players"
+CONF_LIGHTS = "lights"
 
 DEPENDENCIES = ["wifi"]
 
@@ -64,6 +67,7 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
         cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
+        cv.Required(CONF_FONT_LOGO): cv.use_id(font.Font),
     }
 )
 
@@ -81,6 +85,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
         cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,
         cv.Required(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
+        cv.Required(CONF_LIGHTS): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
         cv.GenerateID(CONF_BOOT): BOOT_SCHEMA,
         # cv.GenerateID(CONF_MENU_DISPLAY): MENU_DISPLAY_SCHEMA
     }
@@ -106,6 +111,9 @@ async def display_state_to_code(config):
 
     menu_font_material_small = await cg.get_variable(config[CONF_FONT_MATERIAL_SMALL])
     cg.add(display_state.set_material_font_small(menu_font_material_small))
+
+    menu_font_logo = await cg.get_variable(config[CONF_FONT_LOGO])
+    cg.add(display_state.set_menu_font_logo(menu_font_logo))
     return display_state
 
 async def text_helpers_to_code(config, display_buffer, display_state):
@@ -133,25 +141,26 @@ async def menu_boot_to_code(config, display_buffer, display_state, media_players
     #   HomeThingMenuBoot* boot,
     #   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
     #       new_speaker_group)
-async def menu_display_to_code(config, display_buffer, media_players):
+async def menu_display_to_code(config, display_buffer, media_players, lights):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
     display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
     text_helpers = await text_helpers_to_code(menu_display_conf[CONF_TEXT_HELPERS], display_buffer, display_state)
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
     now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
-    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
+    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers, media_players, lights)
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, media_players, menu_header)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players, lights)
     return menu_display
 
 async def to_code(config):
     media_players = await cg.get_variable(config[CONF_MEDIA_PLAYERS])
+    lights = await cg.get_variable(config[CONF_LIGHTS])
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
-    menu_display = await menu_display_to_code(config, display_buffer, media_players)
+    menu_display = await menu_display_to_code(config, display_buffer, media_players, lights)
 
-    menu = cg.new_Pvariable(config[CONF_ID], media_players, menu_display)
+    menu = cg.new_Pvariable(config[CONF_ID], menu_display, media_players, lights)
     await cg.register_component(menu, config)
 
 

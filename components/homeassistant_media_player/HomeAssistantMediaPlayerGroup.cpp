@@ -23,7 +23,7 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
   media_players_.push_back(new_media_player);
   new_media_player->add_on_state_callback([this, new_media_player]() {
     if (this->display != NULL) {
-      this->display->updateDisplay(false);
+      // this->display->updateDisplay(false);
     }
     this->state_updated(new_media_player->playerState);
   });
@@ -37,7 +37,7 @@ void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
     if (speaker->playerState != NoRemotePlayerState) {
       playerSearchFinished = true;
       setActivePlayer(speaker);
-      display->updateDisplay(true);
+      // display->updateDisplay(true);
       return;
     }
   }
@@ -92,7 +92,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
     setActivePlayer(newActivePlayer);
     playerSearchFinished = true;
     if (!background) {
-      display->updateDisplay(true);
+      // display->updateDisplay(true);
     }
   }
 }

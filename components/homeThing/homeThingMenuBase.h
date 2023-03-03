@@ -24,10 +24,14 @@ namespace homething_menu_base {
 
 class HomeThingMenuBase : public Component {
  public:
-  HomeThingMenuBase(homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-                        new_speaker_group,
-                    HomeThingMenuDisplay* menu_display)
-      : speakerGroup(new_speaker_group), menu_display_(menu_display) {
+  HomeThingMenuBase(
+      HomeThingMenuDisplay* menu_display,
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          new_speaker_group,
+      homeassistant_light_group::HomeAssistantLightGroup* new_light_group)
+      : menu_display_(menu_display),
+        speakerGroup(new_speaker_group),
+        lightGroup(new_light_group) {
     animation_ = new HomeThingMenuAnimation();
     menu_display_->set_animation(animation_);
     // menu_display_ = new HomeThingMenuDisplay(animation_);

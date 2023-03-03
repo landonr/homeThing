@@ -53,15 +53,12 @@ void HomeThingMenuDisplay::drawTitle(int menuState, int i, std::string title,
 void HomeThingMenuDisplay::drawMenu(
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
     const int menuIndex) {
-  // lightGroup = &id(light_group_component);
-  // sensorGroup = &id(sensor_group_component);
-  // switchGroup = &id(switch_group_component);
-  // speakerGroup = &id(media_group_component);
-  // serviceGroup = &id(service_group_component);
   if (idleTime > 16 && !charging) {
     menuDrawing = false;
+    ESP_LOGW("WARNING", "not drawing");
     return;
   }
+
   if (!display_state_->dark_mode_ && activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->color_white_);
   }
@@ -69,7 +66,10 @@ void HomeThingMenuDisplay::drawMenu(
     boot_->drawBootSequence();
     return;
   } else if (activeMenuState == bootMenu) {
+    ESP_LOGW("WARNING", "finished boot");
     activeMenuState = rootMenu;
+  } else {
+    ESP_LOGW("WARNING", "wtf %s", menu_state_title(activeMenuState).c_str());
   }
   if (autoClearState != 0) {
     display_buffer_->set_auto_clear(true);

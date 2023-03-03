@@ -45,13 +45,11 @@ class HomeThingMenuBoot {
   }
 
  private:
-  bool setupFinished = false;
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
-  display::Font* home_thing_logo_{nullptr};
   binary_sensor::BinarySensor* wifi_connected_{nullptr};
   binary_sensor::BinarySensor* api_connected_{nullptr};
 };

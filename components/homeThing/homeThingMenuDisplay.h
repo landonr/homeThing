@@ -66,7 +66,8 @@ class HomeThingMenuDisplay {
       HomeThingMenuNowPlaying* now_playing, HomeThingMenuHeader* header,
       HomeThingMenuBoot* boot,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          new_speaker_group)
+          new_speaker_group,
+      homeassistant_light_group::HomeAssistantLightGroup* new_light_group)
       : display_buffer_(display_buffer),
         display_state_(display_state),
         text_helpers_(text_helpers),
@@ -74,7 +75,8 @@ class HomeThingMenuDisplay {
         now_playing_(now_playing),
         header_(header),
         boot_(boot),
-        speakerGroup(new_speaker_group) {}
+        speakerGroup(new_speaker_group),
+        lightGroup(new_light_group) {}
   void setup();
   void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
                 const int menuIndex);
