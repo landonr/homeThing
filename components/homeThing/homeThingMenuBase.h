@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
@@ -17,6 +18,7 @@
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
+#include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 
 namespace esphome {
@@ -49,8 +51,8 @@ class HomeThingMenuBase : public Component {
   void idleMenu(bool force);
 
   // controls
-  void rotaryScrollClockwise();
-  void rotaryScrollCounterClockwise();
+  void rotaryScrollClockwise(int rotary);
+  void rotaryScrollCounterClockwise(int rotary);
   void buttonPressUp();
   void buttonPressDown();
   void buttonPressLeft();
@@ -65,6 +67,10 @@ class HomeThingMenuBase : public Component {
   void selectMediaPlayers();
   // create service for this with input select options
   void goToScreenFromString(std::string screenName);
+  void displayUpdateDebounced();
+  void add_on_redraw_callback(std::function<void()>&& cb) {
+    this->on_redraw_callbacks_.add(std::move(cb));
+  }
 
  private:
   MenuStates activeMenuState = bootMenu;
@@ -81,13 +87,23 @@ class HomeThingMenuBase : public Component {
   homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
   homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
   homeassistant_sensor_group::HomeAssistantSensorGroup* sensorGroup;
-
-  void displayUpdateDebounced();
+  void update() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
 
-  bool draw_now_playing_menu = true;
-  int display_update_tick = 0;
-  int rotary = 0;
+  int display_update_tick_ = 0;
+  int rotary_ = 0;
+  int menuIndex = 0;
+  int rotaryPosition = 0;
+  int activeMenuTitleCount = 0;
+  CallbackManager<void()> on_redraw_callbacks_{};
+};
+
+class HomeThingDisplayMenuOnRedrawTrigger
+    : public Trigger<const HomeThingMenuBase*> {
+ public:
+  explicit HomeThingDisplayMenuOnRedrawTrigger(HomeThingMenuBase* parent) {
+    parent->add_on_redraw_callback([this, parent]() { this->trigger(parent); });
+  }
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

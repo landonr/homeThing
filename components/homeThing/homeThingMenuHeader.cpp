@@ -72,9 +72,10 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case sleepMenu:
     case nowPlayingMenu: {
       if (speakerGroup != NULL) {
-        // auto headerMenuTitle = speakerGroup->headerMediaPlayerTitle();
-        // xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-        // drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
+        auto headerMenuTitle =
+            headerMediaPlayerTitle(speakerGroup->activePlayer);
+        xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
+        drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
       } else {
         drawHeaderTitleWithString("Remote", xPos);
       }
@@ -206,7 +207,7 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
-  if (speakerGroup == NULL) {
+  if (speakerGroup == nullptr || speakerGroup->activePlayer == nullptr) {
     return oldXPos;
   }
   if (!display_state_->draw_volume_level_) {

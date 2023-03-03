@@ -14,9 +14,9 @@ HomeThingMenuNowPlaying::getNowPlayingMenuStates() {
   return speakerNowPlayingMenuStates();
 }
 
-void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu() {
+void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(int menuIndex) {
   auto menuTitles = getNowPlayingMenuStates();
-  activeMenuTitleCount = menuTitles.size();
+  int activeMenuTitleCount = menuTitles.size();
   int yPos = display_buffer_->get_height() - display_state_->margin_size_ -
              display_state_->get_large_font()->get_height();
   if (activeMenuTitleCount < 1) {
@@ -61,12 +61,12 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu() {
   }
 }
 
-void HomeThingMenuNowPlaying::drawNowPlaying() {
+void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
   if (drawOptionMenuAndStop()) {
     return;
   }
   if (display_state_->draw_now_playing_menu_) {
-    drawNowPlayingSelectMenu();
+    drawNowPlayingSelectMenu(menuIndex);
   }
   int yPos = display_state_->header_height_ + display_state_->margin_size_ / 4;
   if (speakerGroup->activePlayer->playerState ==

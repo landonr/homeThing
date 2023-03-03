@@ -78,12 +78,12 @@ sensor:
     id: rotary
     on_clockwise:
       - lambda: |-
-          // buttonPressWakeUpDisplay();
-          // rotaryScrollClockwise();
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
     on_anticlockwise:
       - lambda: |-
-          // buttonPressWakeUpDisplay();
-          // rotaryScrollCounterClockwise();
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
 
 ## Needed to debounce screen updates for rotary. 17ms is close to 60fps for st7789v
   - platform: template
@@ -93,7 +93,7 @@ sensor:
     on_value :
       then:
         - lambda: |-
-            // displayUpdateDebounced();
+            id(homeThingMenu)->displayUpdateDebounced();
           
 ## Battery
   - platform: adc
@@ -168,11 +168,11 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          // buttonPressScreenLeft();
+          id(homeThingMenu)->buttonPressScreenLeft();
     on_release:
       then:
       - lambda: |-
-          // buttonReleaseScreenLeft();
+          id(homeThingMenu)->buttonReleaseScreenLeft();
     
   - platform: gpio
     pin:
@@ -184,7 +184,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          // buttonPressScreenRight();
+          id(homeThingMenu)->buttonPressScreenRight();
           
 ## Rotary buttons
   - platform: gpio
@@ -199,7 +199,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          // buttonPressLeft();
+          id(homeThingMenu)->buttonPressLeft();
   - platform: gpio
     internal: true
     pin:
@@ -212,7 +212,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          // buttonPressUp();
+          id(homeThingMenu)->buttonPressUp();
   - platform: gpio
     internal: true
     pin:
@@ -225,7 +225,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          // buttonPressRight();
+          id(homeThingMenu)->buttonPressRight();
   - platform: gpio
     internal: true
     pin:
@@ -238,7 +238,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          // buttonPressDown();
+          id(homeThingMenu)->buttonPressDown();
   - platform: gpio
     internal: true
     pin:
@@ -253,13 +253,13 @@ binary_sensor:
       max_length: 350ms
       then:
       - lambda: |-
-          // buttonPressSelect();
+          id(homeThingMenu)->buttonPressSelect();
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
       - lambda: |-
-          // buttonPressSelectHold();
+          id(homeThingMenu)->buttonPressSelectHold();
 
 switch:
   - <<: !include homeThing/sharedSwitches.yaml
@@ -303,7 +303,7 @@ display:
     dc_pin: GPIO16
     reset_pin: GPIO23
     rotation: 90
-    update_interval: 1s
+    update_interval: 10s
     lambda: |-
       // if (idleTime < 0) {
       //   ESP_LOGD("drawing menu", "turning on");
@@ -312,6 +312,6 @@ display:
       // }
 
       // drawMenu();
-      id(homethingMenu)->drawMenu();
+      id(homeThingMenu)->drawMenu();
       return;
       

@@ -53,9 +53,9 @@ class HomeThingMenuDisplayState {
   Color color_yellow_ = Color(255, 191, 25);
   int header_height_ = 16;
   int margin_size_ = 4;
-  int bottom_bar_margin_ = 6;
+  int bottom_bar_margin_ = 1;
   int slider_margin_size_ = 1;
-  int icon_size_ = 16;
+  int icon_size_ = 18;
   int scroll_bar_width_ = 6;
   int boot_logo_size_ = 48;
   int now_playing_max_lines_ = 5;
@@ -65,7 +65,7 @@ class HomeThingMenuDisplayState {
   bool draw_header_time_ = true;
   bool draw_battery_level_ = true;
   bool dark_mode_ = true;
-  bool draw_now_playing_menu_ = true;
+  bool draw_now_playing_menu_ = false;
   bool draw_volume_level_ = true;
   std::string boot_device_name_ = "";
 

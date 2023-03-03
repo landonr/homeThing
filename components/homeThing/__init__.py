@@ -1,7 +1,8 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
+from esphome import automation
 from esphome.components import display, font, color, wifi, api, binary_sensor
-from esphome.const import  CONF_ID
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
@@ -15,6 +16,8 @@ HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
 HomeThingMenuNowPlaying = homething_menu_base_ns.class_("HomeThingMenuNowPlaying")
+HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
+HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
 CONF_DISPLAY = "display"
 CONF_MENU_DISPLAY = "menu_display"
@@ -36,8 +39,10 @@ CONF_HEADER = "header"
 CONF_MENU_Display = "menu_display"
 CONF_MEDIA_PLAYERS = "media_players"
 CONF_LIGHTS = "lights"
+CONF_ON_REDRAW = "on_redraw"
 
-DEPENDENCIES = ["wifi"]
+DEPENDENCIES = ["wifi", "api"]
+
 
 BOOT_SCHEMA = cv.Schema(
     {
@@ -87,6 +92,13 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Required(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
         cv.Required(CONF_LIGHTS): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
         cv.GenerateID(CONF_BOOT): BOOT_SCHEMA,
+        cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
+            {
+                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                    HomeThingDisplayMenuOnRedrawTrigger
+                )
+            }
+        )
         # cv.GenerateID(CONF_MENU_DISPLAY): MENU_DISPLAY_SCHEMA
     }
 ).extend(cv.COMPONENT_SCHEMA)
@@ -147,7 +159,7 @@ async def menu_display_to_code(config, display_buffer, media_players, lights):
     display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
     text_helpers = await text_helpers_to_code(menu_display_conf[CONF_TEXT_HELPERS], display_buffer, display_state)
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
-    now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
+    now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers, media_players)
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers, media_players, lights)
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, media_players, menu_header)
 
@@ -162,6 +174,9 @@ async def to_code(config):
 
     menu = cg.new_Pvariable(config[CONF_ID], menu_display, media_players, lights)
     await cg.register_component(menu, config)
+    for conf in config.get(CONF_ON_REDRAW, []):
+        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], menu)
+        await automation.build_automation(trigger, [(HomeThingMenuBaseConstPtr, "it")], conf)
 
 
     # animation = await menu_animation_to_code(menu)

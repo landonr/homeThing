@@ -1,5 +1,5 @@
 logger:
-  level: DEBUG
+  level: INFO
 
 api:
   id: homeassistant_api_id
@@ -403,10 +403,13 @@ homeassistant_service_group:
               height: "106"
 
 homeThing:
-  id: homethingMenu
+  id: homeThingMenu
   media_players: media_group_component
   lights: light_group_component
   display: my_display
+  on_redraw:
+    then:
+      component.update: my_display
   boot:
     wifi: wifi_connected
     api: api_connected

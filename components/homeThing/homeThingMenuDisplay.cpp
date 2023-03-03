@@ -69,8 +69,6 @@ void HomeThingMenuDisplay::drawMenu(
   } else if (*activeMenuState == bootMenu) {
     ESP_LOGW("WARNING", "finished boot");
     *activeMenuState = rootMenu;
-  } else {
-    ESP_LOGW("WARNING", "wtf %s", menu_state_title(*activeMenuState).c_str());
   }
   if (autoClearState != 0) {
     display_buffer_->set_auto_clear(true);
@@ -78,7 +76,7 @@ void HomeThingMenuDisplay::drawMenu(
   }
   switch (*activeMenuState) {
     case nowPlayingMenu:
-      now_playing_->drawNowPlaying();
+      now_playing_->drawNowPlaying(menuIndex);
       break;
     case lightsMenu:
       draw_menu(lightTitleSwitches(lightGroup->lights), menuIndex);
@@ -114,11 +112,11 @@ void HomeThingMenuDisplay::drawMenu(
 
 void HomeThingMenuDisplay::draw_menu(
     std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int menuIndex) {
-  activeMenuTitleCount = menuTitles.size();
+  int activeMenuTitleCount = menuTitles.size();
   if (menuTitles.size() == 0) {
     return;
   }
-  scrollMenuPosition();
+  scrollMenuPosition(menuIndex);
   int menuState = menuIndex;
   auto activeMenuTitle = menuTitles[menuIndex];
   int yPos = display_state_->header_height_;
@@ -195,11 +193,11 @@ void HomeThingMenuDisplay::draw_menu(
       }
     }
   }
-  drawScrollBar(menuTitles.size(), display_state_->header_height_);
+  drawScrollBar(menuTitles.size(), display_state_->header_height_, menuIndex);
 }
 
-void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount,
-                                         int headerHeight) {
+void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
+                                         int menuIndex) {
   int scrollBarMargin = 1;
   int scrollBarWidth = display_state_->scroll_bar_width_;
   if (menuTitlesCount > maxItems() + 1) {
@@ -218,7 +216,7 @@ void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount,
   }
 }
 
-void HomeThingMenuDisplay::scrollMenuPosition() {
+void HomeThingMenuDisplay::scrollMenuPosition(int menuIndex) {
   int menuState = menuIndex;
 
   if (menuState - maxItems() > scrollTop) {
@@ -335,7 +333,7 @@ void HomeThingMenuDisplay::drawTitleImage(
 }
 
 void HomeThingMenuDisplay::updateDisplay(bool force) {
-  displayUpdate->updateDisplay(force);
+  // displayUpdate->updateDisplay(force);
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

@@ -83,8 +83,8 @@ class HomeThingMenuDisplay {
                 const int menuIndex);
   void drawTitle(int menuState, int i, std::string title, int yPos,
                  bool buttonSpace);
-  void drawScrollBar(int menuTitlesCount, int headerHeight);
-  void scrollMenuPosition();
+  void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
+  void scrollMenuPosition(int menuIndex);
   int maxItems();
   void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
                          std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
@@ -119,6 +119,7 @@ class HomeThingMenuDisplay {
   }
 
  private:
+  int scrollTop = 0;
   int autoClearState = 0;
   void drawTitleImage(int characterCount, int yPos,
                       homeassistant_media_player::RemotePlayerState& titleState,

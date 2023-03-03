@@ -224,6 +224,9 @@ std::string HomeAssistantMediaPlayerGroup::muteString() {
 }
 
 double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
+  if (activePlayer == nullptr) {
+    return 0;
+  }
   if (activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     HomeAssistantRokuMediaPlayer* activeTV =
