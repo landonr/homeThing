@@ -2,15 +2,17 @@ esphome:
   name: "homething-lilygo"
   platform: ESP32
   board: featheresp32
-  includes:
-    - homeThing/MenuGlobals.h
-    - homeThing/MenuTitle.h
-    - homeThing/FriendlyNameEntity.h
-    - homeThing/TextHelpers.h
-    - homeThing/DisplayUpdateInterface.h
-    - homeThing/esphomeRemote.h
-    - homeThing/esphomeRemoteRotary.h
-    - homeThing/esphomeRemoteCommon.h
+  on_boot:
+    priority: 800
+    then:
+      - wait_until:
+          wifi.connected:
+      - binary_sensor.template.publish:
+          id: wifi_connected
+          state: ON
+    # includes:
+    #   - homeThing/TextHelpers.h
+    #   - homeThing/DisplayUpdateInterface.h
 
 substitutions:
   boot_name: '"homeThing <3"'
@@ -76,12 +78,12 @@ sensor:
     id: rotary
     on_clockwise:
       - lambda: |-
-          buttonPressWakeUpDisplay();
-          rotaryScrollClockwise();
+          // buttonPressWakeUpDisplay();
+          // rotaryScrollClockwise();
     on_anticlockwise:
       - lambda: |-
-          buttonPressWakeUpDisplay();
-          rotaryScrollCounterClockwise();
+          // buttonPressWakeUpDisplay();
+          // rotaryScrollCounterClockwise();
 
 ## Needed to debounce screen updates for rotary. 17ms is close to 60fps for st7789v
   - platform: template
@@ -91,7 +93,7 @@ sensor:
     on_value :
       then:
         - lambda: |-
-            displayUpdateDebounced();
+            // displayUpdateDebounced();
           
 ## Battery
   - platform: adc
@@ -104,16 +106,16 @@ sensor:
     on_value:
       then:
         lambda: |-
-          if (id(vcc_adc).state > 2.23) {
-            if (charging == false) {
-              charging = true;
-            }
-          } else {
-            if (charging == true) {
-              charging = false;
-            }
-          }
-          id(vcc_adc_avg).publish_state(id(vcc_adc).state);
+          // if (id(vcc_adc).state > 2.23) {
+          //   if (charging == false) {
+          //     charging = true;
+          //   }
+          // } else {
+          //   if (charging == true) {
+          //     charging = false;
+          //   }
+          // }
+          // id(vcc_adc_avg).publish_state(id(vcc_adc).state);
   - platform: template
     id: vcc_adc_avg
     filters:
@@ -144,9 +146,15 @@ sensor:
       then:
         lambda: |-
           ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryPercent).state);
-          id(sleep_toggle).turn_on();
+          // id(sleep_toggle).turn_on();
 
 binary_sensor:
+  - platform: status
+    id: api_connected
+    internal: true
+  - platform: template
+    id: wifi_connected
+    internal: true
   - platform: gpio
     pin:
       number: GPIO0
@@ -160,11 +168,11 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          buttonPressScreenLeft();
+          // buttonPressScreenLeft();
     on_release:
       then:
       - lambda: |-
-          buttonReleaseScreenLeft();
+          // buttonReleaseScreenLeft();
     
   - platform: gpio
     pin:
@@ -176,7 +184,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          buttonPressScreenRight();
+          // buttonPressScreenRight();
           
 ## Rotary buttons
   - platform: gpio
@@ -191,7 +199,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          buttonPressLeft();
+          // buttonPressLeft();
   - platform: gpio
     internal: true
     pin:
@@ -204,7 +212,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          buttonPressUp();
+          // buttonPressUp();
   - platform: gpio
     internal: true
     pin:
@@ -217,7 +225,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          buttonPressRight();
+          // buttonPressRight();
   - platform: gpio
     internal: true
     pin:
@@ -230,7 +238,7 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          buttonPressDown();
+          // buttonPressDown();
   - platform: gpio
     internal: true
     pin:
@@ -245,13 +253,13 @@ binary_sensor:
       max_length: 350ms
       then:
       - lambda: |-
-          buttonPressSelect();
+          // buttonPressSelect();
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
       - lambda: |-
-          buttonPressSelectHold();
+          // buttonPressSelectHold();
 
 switch:
   - <<: !include homeThing/sharedSwitches.yaml
@@ -297,12 +305,13 @@ display:
     rotation: 90
     update_interval: 3600s
     lambda: |-
-      if (idleTime < 0) {
-        ESP_LOGD("drawing menu", "turning on");
-        id(backlight).turn_on();
-        idleTime = 0;
-      }
+      // if (idleTime < 0) {
+      //   ESP_LOGD("drawing menu", "turning on");
+      //   id(backlight).turn_on();
+      //   idleTime = 0;
+      // }
 
-      drawMenu();
+      // drawMenu();
+      id(homethingMenu)->drawMenu();
       return;
       

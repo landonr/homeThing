@@ -4,7 +4,7 @@
 
 namespace esphome {
 
-enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
+// enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
 
 enum MenuTitleLeftIcon {
   NoMenuTitleLeftIcon,
@@ -77,24 +77,24 @@ class MenuTitleToggle : public MenuTitleBase {
   }
 };
 
-enum RemotePlayerMediaSource {
-  NoRemotePlayerMediaSource,
-  HomeRemotePlayerMediaSource,
-  YouTubeRemotePlayerMediaSource,
-  SpotifyRemotePlayerMediaSource,
-  NetflixRemotePlayerMediaSource,
-  PlexRemotePlayerMediaSource,
-  TVRemotePlayerMediaSource
-};
+// enum RemotePlayerMediaSource {
+//   NoRemotePlayerMediaSource,
+//   HomeRemotePlayerMediaSource,
+//   YouTubeRemotePlayerMediaSource,
+//   SpotifyRemotePlayerMediaSource,
+//   NetflixRemotePlayerMediaSource,
+//   PlexRemotePlayerMediaSource,
+//   TVRemotePlayerMediaSource
+// };
 
-enum RemotePlayerState {
-  NoRemotePlayerState,
-  UnavailableRemotePlayerState,
-  PowerOffRemotePlayerState,
-  StoppedRemotePlayerState,
-  PausedRemotePlayerState,
-  PlayingRemotePlayerState
-};
+// enum RemotePlayerState {
+//   NoRemotePlayerState,
+//   UnavailableRemotePlayerState,
+//   PowerOffRemotePlayerState,
+//   StoppedRemotePlayerState,
+//   PausedRemotePlayerState,
+//   PlayingRemotePlayerState
+// };
 
 static std::string playerSourceStateString(
     RemotePlayerMediaSource playingState) {

@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "DisplayUpdateInterface.h"
-#include "MenuTitle.h"
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/homeassistant_light_group/light/HomeAssistantLight.h"
 #include "esphome/core/component.h"
@@ -14,7 +13,6 @@ namespace homeassistant_light_group {
 class HomeAssistantLightGroup : public api::CustomAPIDevice, public Component {
  public:
   std::vector<homeassistant_light::HomeAssistantLightState*> lights;
-  std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches();
   bool selectLightDetailAtIndex(int index);
   void clearActiveLight() { _activeLight = NULL; }
   homeassistant_light::HomeAssistantLight* getActiveLight() {

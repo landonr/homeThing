@@ -16,7 +16,7 @@ class HomeAssistantSwitch : public switch_::Switch, public Component {
   void setup() override;
   void write_state(bool state) override;
   void toggleSwitch();
-  std::string get_entity_id();
+  std::string get_entity_id() { return entity_id_; }
   float get_setup_priority() const override { return setup_priority::LATE; }
 
  private:

@@ -7,4 +7,5 @@
     homeassistant_light_group,
     homeassistant_media_player,
     homeassistant_service_group,
+    homeThing,
   ]

@@ -1,5 +1,7 @@
 #include "HomeAssistantSonosMediaPlayer.h"
 #include <algorithm>
+#include "JSONTextHelpers.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -202,14 +204,48 @@ void HomeAssistantSonosMediaPlayer::media_album_changed(std::string state) {
   this->publish_state();
 }
 
+void HomeAssistantSonosMediaPlayer::tokenize(std::string const& str,
+                                             std::string delim,
+                                             std::vector<std::string>* out) {
+  size_t start;
+  size_t end = 0;
+
+  while ((start = str.find_first_not_of(delim, end)) != std::string::npos) {
+    end = str.find(delim, start);
+    out->push_back(str.substr(start, end - start));
+  }
+}
+
+std::string HomeAssistantSonosMediaPlayer::filter(std::string str) {
+  std::string output;
+  output.reserve(
+      str.size());  // optional, avoids buffer reallocations in the loop
+  for (size_t i = 0; i < str.size(); ++i) {
+    if (i == 0 && str[i] == ' ')
+      continue;
+    if (i < str.size() - 3 && str[i] == '\\' && str[i + 1] == 'x' &&
+        str[i + 2] == 'a') {
+      // replace \xa with space
+      output += ' ';
+      i += 3;
+      continue;
+    }
+    if (i == str.size() - 1 && str[i] == '}')
+      return output;
+    if (str[i] != '[' && str[i] != ']' && str[i] != '\'' && str[i] != '"')
+      output += str[i];
+  }
+  return output;
+}
+
 void HomeAssistantSonosMediaPlayer::group_members_changed(std::string state) {
   ESP_LOGI(TAG, "%s Sonos Speaker group members changed to %s",
            this->entity_id_.c_str(), state.c_str());
   groupMembers.clear();
   std::vector<std::string>* out = new std::vector<std::string>();
-  TextHelpers::tokenize(state, ",", out);
+  tokenize(state, ",", out);
   for (auto state = out->begin(); state != out->end(); ++state) {
-    std::string newGroupedSpeaker = TextHelpers::filter(*state);
+    std::string newGroupedSpeaker = filter(*state);
     groupMembers.push_back(newGroupedSpeaker);
   }
   this->publish_state();

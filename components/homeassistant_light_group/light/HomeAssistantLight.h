@@ -9,7 +9,6 @@
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
 #include "esphome/core/component.h"
-#include "esphomeRemoteCommon.h"
 
 #define MAX_BRIGHTNESS 255.0f
 
@@ -40,6 +39,8 @@ class HomeAssistantLight : public light::LightOutput,
  public:
   void setup() override;
   void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
+  std::string get_entity_id() { return entity_id_; }
+  light::LightState* get_light_state_() { return light_state_; }
   light::LightTraits get_traits() override;
   void add_on_state_callback(std::function<void()>&& callback);
   void set_color_properties(std::map<std::string, std::string>* data,
@@ -55,10 +56,6 @@ class HomeAssistantLight : public light::LightOutput,
   bool supportsBrightness();
   bool supportsColorTemperature();
   bool supportsColor();
-  std::shared_ptr<MenuTitleSlider> makeSlider(
-      int min, int max, int value, std::string title, std::string unit,
-      int displayUnitMin, int displayUnitMax, int displayWidth);
-  std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(int displayWidth);
   int get_hsv_color();
   Color rgbLightColor();
   std::string icon();
@@ -88,6 +85,8 @@ class HomeAssistantLight : public light::LightOutput,
   void update_color_with_hsv(const float hsv_color);
   bool can_update_from_api();
   void ignore_api_updates_with_seconds(int seconds);
+  std::vector<std::string> split(const std::string& s,
+                                 const std::string& delim);
   uint32_t min_value_ = 0;
   uint32_t max_value_ = 255;
   uint32_t color_temperature_max_value_ = 500;

@@ -5,10 +5,8 @@
 #include <vector>
 
 #include "DisplayUpdateInterface.h"
-#include "MenuTitle.h"
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
-#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_service_group {
@@ -39,7 +37,6 @@ class HomeAssistantServiceGroup : public Component {
   std::vector<HomeAssistantServiceCommand*> services;
   void register_service_call(HomeAssistantServiceCommand* new_service);
 
-  std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings();
   bool select_service(int index);
   float get_setup_priority() const override { return setup_priority::LATE; }
 };

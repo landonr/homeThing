@@ -85,7 +85,8 @@ void rotaryScrollClockwise() {
   }
   if (menuIndex < activeMenuTitleCount - 1) {
     menuIndex++;
-  } else if (id(menu_rollover_on) && menuIndex == activeMenuTitleCount - 1) {
+  } else if (id(display_state_->menu_rollover_on_) &&
+             menuIndex == activeMenuTitleCount - 1) {
     menuIndex = 0;
   }
   debounceUpdateDisplay();
@@ -121,7 +122,7 @@ void rotaryScrollCounterClockwise() {
   }
   if (menuIndex > 0) {
     menuIndex--;
-  } else if (id(menu_rollover_on) && menuIndex == 0) {
+  } else if (id(display_state_->menu_rollover_on_) && menuIndex == 0) {
     menuIndex = activeMenuTitleCount - 1;
   }
   debounceUpdateDisplay();

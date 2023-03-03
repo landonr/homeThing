@@ -3,13 +3,13 @@ logger:
 
 api:
   id: homeassistant_api_id
-  services:
-    - service: goto_screen
-      variables:
-        screen_name: string
-      then:
-      - lambda: |-
-          goToScreenFromString(screen_name);
+  # services:
+  #   - service: goto_screen
+  #     variables:
+  #       screen_name: string
+  #     then:
+  #     - lambda: |-
+  #         goToScreenFromString(screen_name);
 
 ota:
 
@@ -317,20 +317,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: ${keep_states_in_sync}
-      
-interval:
-  - interval: 1s
-    then:
-    - lambda: |-
-        idleTick();
-  - interval: 40ms
-    then:
-    - lambda: |-
-        activeTick();
-  - interval: 100ms
-    then:
-    - lambda: |-
-        marqueeTick();
 
 deep_sleep:
   id: deep_sleep_1
@@ -346,7 +332,7 @@ time:
     on_time_sync:
       then:
         - lambda: |-
-            displayUpdate.updateDisplay(false);
+            // displayUpdate.updateDisplay(false);
 
 homeassistant_switch_group:
   id: switch_group_component
@@ -416,3 +402,17 @@ homeassistant_service_group:
             data:
               height: "106"
 
+homeThing:
+  id: homethingMenu
+  media_players: media_group_component
+  display: my_display
+  boot:
+    wifi: wifi_connected
+    api: api_connected
+  display_state:
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_heavy_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small

@@ -44,6 +44,9 @@ class HomeAssistantSonosMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void media_duration_changed(std::string state);
   void media_position_changed(std::string state);
   void media_source_changed(std::string state);
+  void tokenize(std::string const& str, std::string delim,
+                std::vector<std::string>* out);
+  std::string filter(std::string str);
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

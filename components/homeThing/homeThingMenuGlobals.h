@@ -1,7 +1,12 @@
 #pragma once
 #include <vector>
+#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/switch/switch.h"
+#include "esphome/components/time/real_time_clock.h"
 
 namespace esphome {
+namespace homething_menu_base {
 
 enum MenuStates {
   bootMenu,
@@ -19,9 +24,11 @@ enum MenuStates {
   sleepMenu
 };
 
-std::vector<MenuStates> rootMenuTitles(bool includeSpeaker, bool includeScene,
-                                       bool includeSensor, bool includeLight,
-                                       bool includeSwitch) {
+static std::vector<MenuStates> rootMenuTitles(bool includeSpeaker,
+                                              bool includeScene,
+                                              bool includeSensor,
+                                              bool includeLight,
+                                              bool includeSwitch) {
   std::vector<MenuStates> out;
   if (includeSpeaker) {
     out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
@@ -55,14 +62,14 @@ enum NowPlayingMenuState {
   groupNowPlayingMenuState
 };
 
-std::vector<NowPlayingMenuState> speakerNowPlayingMenuStates() {
+static std::vector<NowPlayingMenuState> speakerNowPlayingMenuStates() {
   return {pauseNowPlayingMenuState,      volumeUpNowPlayingMenuState,
           volumeDownNowPlayingMenuState, nextNowPlayingMenuState,
           shuffleNowPlayingMenuState,    groupNowPlayingMenuState,
           menuNowPlayingMenuState};
 }
 
-std::vector<NowPlayingMenuState> TVNowPlayingMenuStates() {
+static std::vector<NowPlayingMenuState> TVNowPlayingMenuStates() {
   return {pauseNowPlayingMenuState,      volumeUpNowPlayingMenuState,
           volumeDownNowPlayingMenuState, backNowPlayingMenuState,
           TVPowerNowPlayingMenuState,    homeNowPlayingMenuState,
@@ -77,15 +84,18 @@ enum OptionMenuType {
   playingNewSourceMenu
 };
 
-MenuStates activeMenuState = bootMenu;
-int idleTime = -2;
-bool charging = false;
-int scrollTop = 0;
-int menuIndex = 0;
-int rotaryPosition = 0;
-int activeMenuTitleCount = 0;
-bool animating = true;  // boot sequence is animated
-int animationTick = 0;
-OptionMenuType optionMenu = noOptionMenu;
+static MenuStates activeMenuState = bootMenu;
+static int display_timeout_ = 16;
+static int sleep_after_ = 3600;
+static int idleTime = -2;
+static bool charging = false;
+static int scrollTop = 0;
+static int menuIndex = 0;
+static int rotaryPosition = 0;
+static int activeMenuTitleCount = 0;
+static bool menuDrawing = false;
+static bool menu_rollover_on_ = true;
+static OptionMenuType optionMenu = noOptionMenu;
 
+}  // namespace homething_menu_base
 }  // namespace esphome

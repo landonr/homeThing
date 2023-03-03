@@ -3,12 +3,6 @@ esphome:
   platform: ESP32
   board: featheresp32
   includes:
-    - homeThing/MenuGlobals.h
-    - homeThing/MenuTitle.h
-    - homeThing/FriendlyNameEntity.h
-    - homeThing/TextHelpers.h
-    - homeThing/DisplayUpdateInterface.h
-    - homeThing/esphomeRemote.h
     - homeThing/esphomeRemoteRotary.h
     - homeThing/esphomeRemoteCommon.h
 

@@ -255,55 +255,6 @@ bool HomeAssistantLight::supportsColor() {
   return light_traits_.supports_color_capability(light::ColorCapability::RGB);
 }
 
-std::shared_ptr<MenuTitleSlider> HomeAssistantLight::makeSlider(
-    int min, int max, int value, std::string title, std::string unit,
-    int displayUnitMin, int displayUnitMax, int displayWidth) {
-  int displayValue = value;
-  float oldRange = max - min;
-  float valueMinusMin = value - min;
-  if (value > 0) {
-    float displayNewRange = displayUnitMax - displayUnitMin;
-    displayValue =
-        static_cast<float>(((valueMinusMin * displayNewRange) / oldRange)) +
-        displayUnitMin;
-  }
-
-  // float newMin = id(slider_margin_size);
-  float newMin = 8;
-  float newRange = displayWidth - 4 * newMin;
-  int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
-  return std::make_shared<MenuTitleSlider>(title.c_str(), entity_id_,
-                                           NoMenuTitleRightIcon, sliderValue,
-                                           displayValue, unit);
-}
-
-std::vector<std::shared_ptr<MenuTitleBase>> HomeAssistantLight::lightTitleItems(
-    int displayWidth) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  if (supportsBrightness()) {
-    auto is_on = light_state_->remote_values.is_on();
-    int brightness =
-        !is_on ? 0
-               : static_cast<int>(light_state_->remote_values.get_brightness() *
-                                  255);
-    out.push_back(makeSlider(0, MAX_BRIGHTNESS, brightness, "Brightness", "%%",
-                             0, 100, displayWidth));
-  }
-  if (supportsColorTemperature()) {
-    auto max_mireds = light_traits_.get_max_mireds();
-    auto min_mireds = light_traits_.get_min_mireds();
-    out.push_back(makeSlider(
-        min_mireds, max_mireds,
-        light_state_->remote_values.get_color_temperature(), "Temperature", "K",
-        1000000 / min_mireds, 1000000 / max_mireds, displayWidth));
-  }
-  if (supportsColor()) {
-    out.push_back(
-        makeSlider(0, 360, get_hsv_color(), "Color", "", 0, 360, displayWidth));
-  }
-  return out;
-}
-
 int HomeAssistantLight::get_hsv_color() {
   auto red = light_state_->remote_values.get_red();
   auto green = light_state_->remote_values.get_green();
@@ -441,10 +392,25 @@ void HomeAssistantLight::color_mode_changed(std::string state) {
   }
 }
 
+std::vector<std::string> HomeAssistantLight::split(const std::string& s,
+                                                   const std::string& delim) {
+  size_t pos = 0;
+  std::vector<std::string> elems;
+  std::string token;
+  std::string sCopy = s;
+  while ((pos = sCopy.find(delim)) != std::string::npos) {
+    elems.push_back(s.substr(0, pos));
+    sCopy.erase(0, pos + delim.length());
+  }
+  // add rest of string to not miss the last part
+  elems.push_back(sCopy);
+  return elems;
+}
+
 void HomeAssistantLight::supported_color_modes_changed(std::string state) {
   ESP_LOGI(TAG, "'%s': (write %d) supported_color_modes_changed changed to %s",
            get_name().c_str(), can_update_from_api(), state.c_str());
-  auto modes = StringUtils::split(state, ",");
+  auto modes = split(state, ",");
   std::set<light::ColorMode> supportedModes;
   for (auto cmode : modes) {
     auto parsed_color_mode = parse_color_mode(cmode);

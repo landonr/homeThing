@@ -4,25 +4,6 @@
 namespace esphome {
 namespace homeassistant_light_group {
 
-std::vector<std::shared_ptr<MenuTitleBase>>
-HomeAssistantLightGroup::lightTitleSwitches() {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& light : lights) {
-    auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
-        light->get_output());
-    ESP_LOGD("Light", "state %d (%s)", output->get_state(),
-             light->get_name().c_str());
-    MenuTitleLeftIcon state =
-        output->get_state() ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-    MenuTitleRightIcon rightIcon = output->supportsBrightness()
-                                       ? ArrowMenuTitleRightIcon
-                                       : NoMenuTitleRightIcon;
-    out.push_back(std::make_shared<MenuTitleLight>(
-        light->get_name(), "", state, rightIcon, output->rgbLightColor()));
-  }
-  return out;
-}
-
 bool HomeAssistantLightGroup::selectLightDetailAtIndex(int index) {
   if (lights.size() < index) {
     ESP_LOGE("light", "selecting out of bounds light");

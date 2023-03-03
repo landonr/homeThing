@@ -1,4 +1,6 @@
 #include "HomeAssistantRokuMediaPlayer.h"
+#include "JSONTextHelpers.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -36,8 +38,7 @@ void HomeAssistantRokuMediaPlayer::player_source_list_changed(
     std::string state) {
   ESP_LOGI(TAG, "%s Player source list changed to %s", get_name().c_str(),
            state.c_str());
-  auto newSources = TextHelpers::parseJsonArray(
-      TextHelpers::replaceAll(state, "\\xa0", " "), "source");
+  auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
   sources.assign(newSources.begin(), newSources.end());
 }
 
