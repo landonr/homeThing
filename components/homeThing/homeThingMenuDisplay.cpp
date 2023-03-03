@@ -51,6 +51,7 @@ void HomeThingMenuDisplay::drawTitle(int menuState, int i, std::string title,
 }
 
 void HomeThingMenuDisplay::drawMenu(
+    MenuStates* activeMenuState,
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
     const int menuIndex) {
   if (idleTime > 16 && !charging) {
@@ -59,23 +60,23 @@ void HomeThingMenuDisplay::drawMenu(
     return;
   }
 
-  if (!display_state_->dark_mode_ && activeMenuState != bootMenu) {
+  if (!display_state_->dark_mode_ && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->color_white_);
   }
   if (speakerGroup != NULL && speakerGroup->playerSearchFinished == false) {
-    boot_->drawBootSequence();
+    boot_->drawBootSequence(*activeMenuState);
     return;
-  } else if (activeMenuState == bootMenu) {
+  } else if (*activeMenuState == bootMenu) {
     ESP_LOGW("WARNING", "finished boot");
-    activeMenuState = rootMenu;
+    *activeMenuState = rootMenu;
   } else {
-    ESP_LOGW("WARNING", "wtf %s", menu_state_title(activeMenuState).c_str());
+    ESP_LOGW("WARNING", "wtf %s", menu_state_title(*activeMenuState).c_str());
   }
   if (autoClearState != 0) {
     display_buffer_->set_auto_clear(true);
     autoClearState = 0;
   }
-  switch (activeMenuState) {
+  switch (*activeMenuState) {
     case nowPlayingMenu:
       now_playing_->drawNowPlaying();
       break;
@@ -107,7 +108,7 @@ void HomeThingMenuDisplay::drawMenu(
       draw_menu(active_menu, menuIndex);
       break;
   }
-  header_->drawHeader(0);
+  header_->drawHeader(0, *activeMenuState);
   menuDrawing = false;
 }
 
@@ -292,8 +293,8 @@ void HomeThingMenuDisplay::drawRightTitleIcon(
   }
 }
 
-void HomeThingMenuDisplay::skipBootSequence() {
-  boot_->skipBootSequence();
+void HomeThingMenuDisplay::skipBootSequence(const MenuStates activeMenuState) {
+  boot_->skipBootSequence(activeMenuState);
 }
 
 // private

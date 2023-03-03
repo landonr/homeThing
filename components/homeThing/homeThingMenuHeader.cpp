@@ -63,7 +63,8 @@ int HomeThingMenuHeader::drawPlayPauseIcon(int oldXPos,
   return xPos + display_state_->icon_size_ + display_state_->margin_size_ / 2;
 }
 
-void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset) {
+void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
+                                          const MenuStates activeMenuState) {
   int xPos = 2;
   switch (activeMenuState) {
     case rootMenu:
@@ -152,16 +153,16 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
   if (!display_state_->draw_header_time_ || !esp_time_->now().is_valid()) {
     return oldXPos;
   }
-  switch (activeMenuState) {
-    case rootMenu:
-    case nowPlayingMenu:
-      break;
-    default:
-      if (display_buffer_->get_width() < 200) {
-        return oldXPos;
-      }
-      break;
-  }
+  // switch (activeMenuState) {
+  //   case rootMenu:
+  //   case nowPlayingMenu:
+  //     break;
+  //   default:
+  //     if (display_buffer_->get_width() < 200) {
+  //       return oldXPos;
+  //     }
+  //     break;
+  // }
   int yPos = getHeaderTextYPos(yPosOffset);
   std::string timeString = esp_time_->now().strftime("%I:%M%P");
   if (timeString.length() > 0 && timeString[0] == '0') {
@@ -220,11 +221,12 @@ int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
   return xPos;
 }
 
-void HomeThingMenuHeader::drawHeader(int yPosOffset) {
+void HomeThingMenuHeader::drawHeader(int yPosOffset,
+                                     const MenuStates activeMenuState) {
   display_buffer_->rectangle(0, display_state_->header_height_ - yPosOffset,
                              display_buffer_->get_width(), 1,
                              display_state_->color_accent_primary_);
-  drawHeaderTitle(yPosOffset);
+  drawHeaderTitle(yPosOffset, activeMenuState);
   int xPos = display_buffer_->get_width() - display_state_->margin_size_ / 2;
   drawHeaderVolumeLevel(
       drawHeaderTime(drawShuffle(drawBattery(xPos, yPosOffset), yPosOffset),

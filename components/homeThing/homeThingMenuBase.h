@@ -67,6 +67,7 @@ class HomeThingMenuBase : public Component {
   void goToScreenFromString(std::string screenName);
 
  private:
+  MenuStates activeMenuState = bootMenu;
   switch_::Switch* backlight_{nullptr};
   switch_::Switch* sleep_toggle_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};

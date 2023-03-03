@@ -7,7 +7,7 @@ namespace esphome {
 namespace homething_menu_base {
 
 void HomeThingMenuAnimation::resetAnimation(bool force) {
-  if (activeMenuState == bootMenu && !force) {
+  if (!force) {
     return;
   }
   animating = false;
@@ -18,23 +18,23 @@ void HomeThingMenuAnimation::activeTick() {
   if (!animating) {
     return;
   }
-  switch (activeMenuState) {
-    case bootMenu:
-      // displayUpdate.updateDisplay(true);
-      return;
-    default:
-      return;
-  }
+  // switch (activeMenuState) {
+  //   case bootMenu:
+  //     // displayUpdate.updateDisplay(true);
+  //     return;
+  //   default:
+  //     return;
+  // }
 }
 
 void HomeThingMenuAnimation::marqueeTick() {
   // sensors is the only menu with marqueed text currently
-  switch (activeMenuState) {
-    case sensorsMenu:
-      break;
-    default:
-      return;
-  }
+  // switch (activeMenuState) {
+  //   case sensorsMenu:
+  //     break;
+  //   default:
+  //     return;
+  // }
   updateMarqueePosition();
 }
 

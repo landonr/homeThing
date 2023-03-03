@@ -78,7 +78,8 @@ class HomeThingMenuDisplay {
         speakerGroup(new_speaker_group),
         lightGroup(new_light_group) {}
   void setup();
-  void drawMenu(std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
+  void drawMenu(MenuStates* activeMenuState,
+                std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
                 const int menuIndex);
   void drawTitle(int menuState, int i, std::string title, int yPos,
                  bool buttonSpace);
@@ -92,7 +93,7 @@ class HomeThingMenuDisplay {
       std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i,
       int menuState, int yPos);
   void updateDisplay(bool force);
-  void skipBootSequence();
+  void skipBootSequence(const MenuStates activeMenuState);
   // void set_display_state(HomeThingMenuDisplayState* new_display_state) {
   //   display_state_ = new_display_state;
   // }

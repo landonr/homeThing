@@ -22,18 +22,8 @@ class HomeThingMenuBoot {
         display_state_(new_display_state),
         header_(new_header),
         speakerGroup(new_speaker_group) {}
-  bool bootSequenceCanSkip();
-  bool bootSequenceCanSleep();
-  float bootSequenceLoadingProgress();
-  int drawBootSequenceHeader();
-  int drawBootSequenceLoadingBarAnimation();
-  int drawBootSequenceLogo(int xPos, int imageYPos);
-  int drawBootSequenceTitle(int xPos, int imageYPos);
-  int drawBootSequenceTitleRainbow(int xPos, int yPos);
-  void drawBootSequence();
-  void drawBootSequenceLoadingBar(int yPosOffset, float progress);
-  void drawBootSequenceSkipTitle(int xPos, int imageYPos);
-  void skipBootSequence();
+  void drawBootSequence(const MenuStates activeMenuState);
+  void skipBootSequence(const MenuStates activeMenuState);
   void set_wifi_connected(binary_sensor::BinarySensor* wifi_connected) {
     wifi_connected_ = wifi_connected;
   }
@@ -45,6 +35,19 @@ class HomeThingMenuBoot {
   }
 
  private:
+  bool bootSequenceCanSkip(const MenuStates activeMenuState);
+  bool bootSequenceCanSleep(const MenuStates activeMenuState);
+  void drawBootSequenceLoadingBar(int yPosOffset, float progress);
+  void drawBootSequenceSkipTitle(int xPos, int imageYPos,
+                                 const MenuStates activeMenuState);
+  int drawBootSequenceTitleRainbow(int xPos, int yPos,
+                                   const MenuStates activeMenuState);
+  float bootSequenceLoadingProgress();
+  int drawBootSequenceHeader(const MenuStates activeMenuState);
+  int drawBootSequenceLoadingBarAnimation();
+  int drawBootSequenceLogo(int xPos, int imageYPos);
+  int drawBootSequenceTitle(int xPos, int imageYPos,
+                            const MenuStates activeMenuState);
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};

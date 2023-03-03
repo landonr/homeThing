@@ -7,7 +7,7 @@ namespace homething_menu_base {
 void HomeThingMenuBase::setup() {}
 
 void HomeThingMenuBase::drawMenu() {
-  menu_display_->drawMenu(activeMenu(), menuIndex);
+  menu_display_->drawMenu(&activeMenuState, activeMenu(), menuIndex);
 }
 void HomeThingMenuBase::topMenu() {
   if (activeMenuState == bootMenu) {
@@ -18,7 +18,7 @@ void HomeThingMenuBase::topMenu() {
   if (speakerGroup != NULL)
     speakerGroup->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
-  activeMenuState = MenuStates::rootMenu;
+  activeMenuState = rootMenu;
 }
 
 bool HomeThingMenuBase::selectMenu() {
@@ -27,7 +27,7 @@ bool HomeThingMenuBase::selectMenu() {
     case rootMenu:
       return selectRootMenu();
     case nowPlayingMenu:
-      activeMenuState = MenuStates::nowPlayingMenu;
+      activeMenuState = nowPlayingMenu;
       break;
     case sourcesMenu: {
       auto sourceTitleState =
@@ -126,7 +126,7 @@ bool HomeThingMenuBase::selectRootMenu() {
     case groupMenu:
     case rootMenu:
     case bootMenu:
-      ESP_LOGD("WARNING", "menu is bad %d %s", menuIndex,
+      ESP_LOGD("WARNING", "selecting menu is bad %d %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
       return false;
   }
@@ -443,7 +443,7 @@ void HomeThingMenuBase::buttonPressRight() {
   }
   switch (activeMenuState) {
     case bootMenu:
-      menu_display_->skipBootSequence();
+      menu_display_->skipBootSequence(activeMenuState);
       break;
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
@@ -583,7 +583,7 @@ void HomeThingMenuBase::idleTick() {
         idleTime++;
         return;
       }
-      activeMenuState = MenuStates::rootMenu;
+      activeMenuState = rootMenu;
       animation_->resetAnimation();
       idleMenu(false);
       menu_display_->updateDisplay(false);
@@ -651,7 +651,7 @@ void HomeThingMenuBase::idleMenu(bool force) {
     menuIndex = 0;
     animation_->resetAnimation();
     optionMenu = noOptionMenu;
-    activeMenuState = MenuStates::nowPlayingMenu;
+    activeMenuState = nowPlayingMenu;
     if (speakerGroup != NULL) {
       speakerGroup->newSpeakerGroupParent = NULL;
     }

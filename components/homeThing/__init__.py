@@ -98,10 +98,10 @@ async def display_state_to_code(config):
     cg.add(display_state.set_small_font(menu_font_small))
 
     menu_font_medium = await cg.get_variable(config[CONF_FONT_MEDIUM])
-    cg.add(display_state.set_small_font(menu_font_medium))
+    cg.add(display_state.set_medium_font(menu_font_medium))
 
     menu_font_large = await cg.get_variable(config[CONF_FONT_LARGE])
-    cg.add(display_state.set_small_font(menu_font_large))
+    cg.add(display_state.set_large_font(menu_font_large))
 
     menu_font_large_heavy = await cg.get_variable(config[CONF_FONT_LARGE_HEAVY])
     cg.add(display_state.set_large_heavy_font(menu_font_large_heavy))

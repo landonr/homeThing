@@ -5,12 +5,13 @@
 
 namespace esphome {
 namespace homething_menu_base {
-bool HomeThingMenuBoot::bootSequenceCanSleep() {
+bool HomeThingMenuBoot::bootSequenceCanSleep(const MenuStates activeMenuState) {
   return activeMenuState == bootMenu &&
          (!wifi_connected_->state || !api_connected_->state);
 }
 
-int HomeThingMenuBoot::drawBootSequenceTitleRainbow(int xPos, int yPos) {
+int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
+    int xPos, int yPos, const MenuStates activeMenuState) {
   std::string bootTitle = "homeThing";
   int loopLimit = bootTitle.length();
   int delayTime = 6;
@@ -49,7 +50,8 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(int xPos, int yPos) {
                             display_state_->color_accent_primary_,
                             display::TextAlign::TOP_CENTER,
                             "wifi connecting...");
-    if (animationTick >= showSleepLength && bootSequenceCanSleep()) {
+    if (animationTick >= showSleepLength &&
+        bootSequenceCanSleep(activeMenuState)) {
       yPos = display_state_->getBottomBarYPosition(
                  false, display_buffer_->get_height()) -
              display_state_->margin_size_ / 2 -
@@ -82,7 +84,8 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
   return totalDuration;
 }
 
-int HomeThingMenuBoot::drawBootSequenceHeader() {
+int HomeThingMenuBoot::drawBootSequenceHeader(
+    const MenuStates activeMenuState) {
   float animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
@@ -92,9 +95,9 @@ int HomeThingMenuBoot::drawBootSequenceHeader() {
     int yPosOffset = maxValue - static_cast<float>((animationTick - delayTime) /
                                                    animationLength) *
                                     maxValue;
-    header_->drawHeader(yPosOffset);
+    header_->drawHeader(yPosOffset, activeMenuState);
   } else if (animationTick >= totalDuration) {
-    header_->drawHeader(0);
+    header_->drawHeader(0, activeMenuState);
   }
   return totalDuration;
 }
@@ -153,13 +156,14 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
   return totalDuration;
 }
 
-bool HomeThingMenuBoot::bootSequenceCanSkip() {
+bool HomeThingMenuBoot::bootSequenceCanSkip(const MenuStates activeMenuState) {
   return activeMenuState == bootMenu && speakerGroup != NULL &&
          speakerGroup->loadedPlayers > 0;
 }
 
-void HomeThingMenuBoot::drawBootSequenceSkipTitle(int xPos, int imageYPos) {
-  if (bootSequenceCanSkip()) {
+void HomeThingMenuBoot::drawBootSequenceSkipTitle(
+    int xPos, int imageYPos, const MenuStates activeMenuState) {
+  if (bootSequenceCanSkip(activeMenuState)) {
     int yPos = display_state_->getBottomBarYPosition(
                    false, display_buffer_->get_height()) -
                display_state_->margin_size_ / 2 -
@@ -170,9 +174,9 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(int xPos, int imageYPos) {
   }
 }
 
-void HomeThingMenuBoot::skipBootSequence() {
-  if (!bootSequenceCanSkip()) {
-    if (bootSequenceCanSleep()) {
+void HomeThingMenuBoot::skipBootSequence(const MenuStates activeMenuState) {
+  if (!bootSequenceCanSkip(activeMenuState)) {
+    if (bootSequenceCanSleep(activeMenuState)) {
       // sleep_toggle_->turn_on();
     }
     return;
@@ -180,7 +184,8 @@ void HomeThingMenuBoot::skipBootSequence() {
   speakerGroup->selectFirstActivePlayer();
 }
 
-int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos) {
+int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
+                                             const MenuStates activeMenuState) {
   int yPos = imageYPos + display_state_->boot_logo_size_ +
              display_state_->margin_size_;
   int maxAnimationDuration = 0;
@@ -204,26 +209,29 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos) {
                             display::TextAlign::TOP_CENTER,
                             "api connecting...");
   } else {
-    maxAnimationDuration = drawBootSequenceTitleRainbow(xPos, yPos);
+    maxAnimationDuration =
+        drawBootSequenceTitleRainbow(xPos, yPos, activeMenuState);
   }
-  drawBootSequenceSkipTitle(xPos, imageYPos);
+  drawBootSequenceSkipTitle(xPos, imageYPos, activeMenuState);
   return maxAnimationDuration;
 }
 
-void HomeThingMenuBoot::drawBootSequence() {
+void HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
   speakerGroup->findActivePlayer();
 
   int imageYPos =
       display_state_->header_height_ + display_state_->margin_size_ * 2;
   int xPos = display_buffer_->get_width() / 2;
   int maxAnimationDuration = 0;
-  maxAnimationDuration = max(maxAnimationDuration, drawBootSequenceHeader());
+  maxAnimationDuration =
+      max(maxAnimationDuration, drawBootSequenceHeader(activeMenuState));
   maxAnimationDuration =
       max(maxAnimationDuration, drawBootSequenceLogo(xPos, imageYPos));
   maxAnimationDuration =
       max(maxAnimationDuration, drawBootSequenceLoadingBarAnimation());
   maxAnimationDuration =
-      max(maxAnimationDuration, drawBootSequenceTitle(xPos, imageYPos));
+      max(maxAnimationDuration,
+          drawBootSequenceTitle(xPos, imageYPos, activeMenuState));
   const int animationTick = animation_->animationTick;
   if (animationTick < maxAnimationDuration) {
     animation_->tickAnimation();

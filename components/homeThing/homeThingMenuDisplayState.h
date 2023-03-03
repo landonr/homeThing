@@ -51,14 +51,14 @@ class HomeThingMenuDisplayState {
   Color color_pink_ = Color(255, 40, 255);
   Color color_red_ = Color(255, 0, 0);
   Color color_yellow_ = Color(255, 191, 25);
-  int header_height_ = 24;
-  int margin_size_ = 8;
-  int bottom_bar_margin_ = 8;
-  int slider_margin_size_ = 8;
-  int icon_size_ = 24;
-  int scroll_bar_width_ = 4;
+  int header_height_ = 16;
+  int margin_size_ = 4;
+  int bottom_bar_margin_ = 6;
+  int slider_margin_size_ = 1;
+  int icon_size_ = 16;
+  int scroll_bar_width_ = 6;
   int boot_logo_size_ = 48;
-  int now_playing_max_lines_ = 6;
+  int now_playing_max_lines_ = 5;
   float font_size_width_ratio_ = 0.6;
 
   bool draw_shuffle_disabled_ = false;

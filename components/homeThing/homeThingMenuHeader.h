@@ -25,19 +25,19 @@ class HomeThingMenuHeader {
         text_helpers_(new_text_helpers),
         speakerGroup(new_speaker_group),
         lightGroup(new_light_group) {}
+  void drawHeader(int yPosOffset, const MenuStates activeMenuState);
+
+ private:
+  void drawHeaderTitleWithString(std::string title, int xPos,
+                                 int yPosOffset = 0);
+  void drawHeaderTitle(int yPosOffset, const MenuStates activeMenuState);
+  int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
   int getHeaderTextYPos(int yPosOffset);
   int drawBattery(int oldXPos, int yPosOffset);
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);
   int drawHeaderTime(int oldXPos, int yPosOffset);
   int drawShuffle(int oldXPos, int yPosOffset);
   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
-  void drawHeader(int yPosOffset);
-
- private:
-  void drawHeaderTitleWithString(std::string title, int xPos,
-                                 int yPosOffset = 0);
-  void drawHeaderTitle(int yPosOffset);
-  int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
   homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
   homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
   display::DisplayBuffer* display_buffer_{nullptr};

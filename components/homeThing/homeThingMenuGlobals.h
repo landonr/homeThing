@@ -70,7 +70,6 @@ enum OptionMenuType {
   playingNewSourceMenu
 };
 
-static MenuStates activeMenuState = bootMenu;
 static int display_timeout_ = 16;
 static int sleep_after_ = 3600;
 static int idleTime = -2;
