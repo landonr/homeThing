@@ -148,6 +148,7 @@ class HomeThingMenuDisplay {
   homeassistant_light_group::HomeAssistantLightGroup* light_group_;
   homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_;
   homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_;
+  const char* const TAG = "homething.menu.display";
 };
 
 }  // namespace homething_menu_base

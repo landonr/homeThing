@@ -31,6 +31,7 @@ class HomeThingMenuTextHelpers {
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
+  const char* const TAG = "homething.menu.text_helpers";
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

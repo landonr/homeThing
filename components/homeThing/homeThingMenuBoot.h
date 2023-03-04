@@ -55,6 +55,7 @@ class HomeThingMenuBoot {
   homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
   binary_sensor::BinarySensor* wifi_connected_{nullptr};
   binary_sensor::BinarySensor* api_connected_{nullptr};
+  const char* const TAG = "homething.boot";
 };
 
 }  // namespace homething_menu_base

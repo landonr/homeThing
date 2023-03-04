@@ -10,7 +10,7 @@
 namespace esphome {
 namespace homething_menu_base {
 
-static const char* const TAG = "homething.menutitle";
+static const char* const MENU_TITLE_TAG = "homething.menutitle";
 
 enum MenuStates {
   bootMenu,
@@ -394,8 +394,8 @@ static std::vector<MenuTitlePlayer*> groupTitleString(
             media_player);
     if (speaker->groupMembers.size() > 1) {
       if (speaker->groupMembers[0] != speaker->entity_id_) {
-        ESP_LOGD(TAG, "%s not parent %s", speaker->groupMembers[0].c_str(),
-                 speaker->entity_id_.c_str());
+        ESP_LOGD(MENU_TITLE_TAG, "%s not parent %s",
+                 speaker->groupMembers[0].c_str(), speaker->entity_id_.c_str());
         // speaker isn't the group parent
         continue;
       }
@@ -447,7 +447,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
     const std::vector<homeassistant_switch::HomeAssistantSwitch*>& switches) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (const auto switchObject : switches) {
-    ESP_LOGD("Switch", "state %d", switchObject->state);
+    ESP_LOGD(MENU_TITLE_TAG, "switch state %d", switchObject->state);
     MenuTitleLeftIcon state =
         switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
     out.push_back(std::make_shared<MenuTitleToggle>(
@@ -464,7 +464,8 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
         homeassistant_service_group::HomeAssistantServiceCommand*>& services) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto& service : services) {
-    ESP_LOGD(TAG, "MENU Service %s", service->get_text<std::string>().c_str());
+    ESP_LOGD(MENU_TITLE_TAG, "MENU Service %s",
+             service->get_text<std::string>().c_str());
     std::string service_text = service->get_text<std::string>();
     out.push_back(std::make_shared<MenuTitleBase>(service_text, "2",
                                                   NoMenuTitleRightIcon));
@@ -480,7 +481,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches(
   for (auto& light : lights) {
     auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
         light->get_output());
-    ESP_LOGD("Light", "state %d (%s)", output->get_state(),
+    ESP_LOGD(MENU_TITLE_TAG, "state %d (%s)", output->get_state(),
              light->get_name().c_str());
     MenuTitleLeftIcon state =
         output->get_state() ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;

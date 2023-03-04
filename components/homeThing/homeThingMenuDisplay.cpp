@@ -12,7 +12,7 @@ void HomeThingMenuDisplay::drawTitle(int menuState, int i, std::string title,
                                display_state_->margin_size_ * 2
                          : display_state_->margin_size_;
   int textYPos = yPos + (display_state_->margin_size_ / 4);
-  const int animationTick = animation_->animationTick;
+  const int animationTick = animation_->animationTick->state;
   if (menuState == i) {
     int characterLimit = text_helpers_->getCharacterLimit(
         xPos, display_state_->get_medium_font()->get_height(),
@@ -56,7 +56,7 @@ void HomeThingMenuDisplay::drawMenu(
     const int menuIndex) {
   if (idleTime > 16 && !charging) {
     menuDrawing = false;
-    ESP_LOGW("WARNING", "not drawing");
+    ESP_LOGW(TAG, "not drawing");
     return;
   }
 
@@ -67,7 +67,7 @@ void HomeThingMenuDisplay::drawMenu(
     boot_->drawBootSequence(*activeMenuState);
     return;
   } else if (*activeMenuState == bootMenu) {
-    ESP_LOGW("WARNING", "finished boot");
+    ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
   }
   if (autoClearState != 0) {
@@ -302,7 +302,7 @@ void HomeThingMenuDisplay::drawTitleImage(
     const homeassistant_media_player::RemotePlayerState& titleState,
     bool selected) {
 
-  ESP_LOGW("WARNING", "draw title image %d", titleState);
+  ESP_LOGW(TAG, "draw title image %d", titleState);
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) *
               (display_state_->get_medium_font()->get_height() *

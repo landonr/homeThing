@@ -47,6 +47,7 @@ class HomeThingMenuRefactor {
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
+  const char* const TAG = "homething.menu.refactor";
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

@@ -4,7 +4,18 @@
 namespace esphome {
 namespace homething_menu_base {
 
-void HomeThingMenuBase::setup() {}
+void HomeThingMenuBase::setup() {
+  animation_ = new HomeThingMenuAnimation();
+  menu_display_->set_animation(animation_);
+  this->animation_->animationTick->add_on_state_callback(
+      [this](float state) { this->displayUpdateDebounced(); });
+
+  display_update_tick_ = new sensor::Sensor();
+  auto filter = new sensor::DebounceFilter(17);
+  display_update_tick_->add_filter(filter);
+  this->display_update_tick_->add_on_state_callback(
+      [this](float state) { this->displayUpdateDebounced(); });
+}
 
 void HomeThingMenuBase::drawMenu() {
   auto active_menu = activeMenu();
@@ -66,7 +77,7 @@ bool HomeThingMenuBase::selectMenu() {
       }
       break;
     default:
-      ESP_LOGW("WARNING", "menu state is bad but its an enum");
+      ESP_LOGW(TAG, "menu state is bad but its an enum");
       return false;
   }
   return true;
@@ -129,7 +140,7 @@ bool HomeThingMenuBase::selectRootMenu() {
     case groupMenu:
     case rootMenu:
     case bootMenu:
-      ESP_LOGD("WARNING", "selecting menu is bad %d %s", menuIndex,
+      ESP_LOGD(TAG, "selecting menu is bad %d %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
       return false;
   }
@@ -153,7 +164,12 @@ HomeThingMenuBase::menuTypesToTitles(std::vector<MenuStates> menu) {
 }
 
 std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
-  int x = menuIndex;
+  if (speaker_group_ != NULL && speaker_group_->playerSearchFinished &&
+      activeMenuState == bootMenu) {
+    ESP_LOGI(TAG, "finished boot");
+    activeMenuState = rootMenu;
+  }
+  menuIndex = 0;
   switch (activeMenuState) {
     case rootMenu:
       return menuTypesToTitles(rootMenuTitles(
@@ -175,7 +191,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case nowPlayingMenu:
       return {};
     default:
-      ESP_LOGW("WARNING", "menu is bad  %d, %s", x,
+      ESP_LOGW(TAG, "menu is bad  %d, %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
       return {};
   }

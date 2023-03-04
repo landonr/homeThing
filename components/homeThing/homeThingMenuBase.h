@@ -39,17 +39,7 @@ class HomeThingMenuBase : public Component {
         light_group_(new_light_group),
         service_group_(new_service_group),
         sensor_group_(new_sensor_group),
-        switch_group_(new_switch_group) {
-    animation_ = new HomeThingMenuAnimation();
-    menu_display_->set_animation(animation_);
-
-    display_update_tick_ = new sensor::Sensor();
-    auto filter = new sensor::DebounceFilter(17);
-    display_update_tick_->add_filter(filter);
-    this->display_update_tick_->add_on_state_callback(
-        [this](float state) { this->displayUpdateDebounced(); });
-    // menu_display_ = new HomeThingMenuDisplay(animation_);
-  }
+        switch_group_(new_switch_group) {}
   void setup();
   void drawMenu();
   void topMenu();
@@ -108,6 +98,7 @@ class HomeThingMenuBase : public Component {
   int rotaryPosition = 0;
   int activeMenuTitleCount = 0;
   CallbackManager<void()> on_redraw_callbacks_{};
+  const char* const TAG = "homething.menu.base";
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger

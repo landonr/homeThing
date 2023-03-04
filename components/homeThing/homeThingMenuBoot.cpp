@@ -18,7 +18,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
   int animationStartTime = delayTime;
   int animationLength = animationStartTime + loopLimit + delayTime * 2;
   int showSleepLength = animationLength + delayTime * 2;
-  const int animationTick = animation_->animationTick;
+  const int animationTick = animation_->animationTick->state;
   if (animationTick > animationStartTime && animationTick < animationLength) {
     int currentAnimationTick = animationTick - animationStartTime;
     int activeCharacter = currentAnimationTick;
@@ -68,7 +68,7 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
   float animationLength = 6;
   int delayTime = 2;
   int totalDuration = delayTime + animationLength;
-  const int animationTick = animation_->animationTick;
+  const int animationTick = animation_->animationTick->state;
   if (animationTick > delayTime && animationTick < totalDuration) {
     int colorValue =
         (static_cast<float>(animationTick - delayTime) / animationLength) * 255;
@@ -90,7 +90,7 @@ int HomeThingMenuBoot::drawBootSequenceHeader(
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
   int maxValue = display_state_->header_height_;
-  const int animationTick = animation_->animationTick;
+  const int animationTick = animation_->animationTick->state;
   if (animationTick > delayTime && animationTick < totalDuration) {
     int yPosOffset = maxValue - static_cast<float>((animationTick - delayTime) /
                                                    animationLength) *
@@ -144,7 +144,7 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
   int maxValue = display_state_->get_small_font()->get_height() +
                  display_state_->bottom_bar_margin_;
 
-  const int animationTick = animation_->animationTick;
+  const int animationTick = animation_->animationTick->state;
   if (animationTick > delayTime && animationTick < totalDuration) {
     int yPosOffset = maxValue - (static_cast<float>(animationTick - delayTime) /
                                  animationLength) *
@@ -232,7 +232,9 @@ void HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
   maxAnimationDuration =
       max(maxAnimationDuration,
           drawBootSequenceTitle(xPos, imageYPos, activeMenuState));
-  const int animationTick = animation_->animationTick;
+  const int animationTick = animation_->animationTick->state;
+  ESP_LOGI(TAG, "tick animation %f %d", animation_->animationTick->state,
+           animationTick);
   if (animationTick < maxAnimationDuration) {
     animation_->tickAnimation();
   } else {
