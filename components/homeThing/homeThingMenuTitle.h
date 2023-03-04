@@ -106,7 +106,8 @@ enum MenuTitleType {
   PlayerMenuTitleType,
   SliderMenuTitleType,
   ToggleMenuTitleType,
-  LightMenuTitleType
+  LightMenuTitleType,
+  SourceMenuTitleType
 };
 
 enum SliderSelectionState {
@@ -269,7 +270,7 @@ class MenuTitleSource : public MenuTitleBase {
       MenuTitleRightIcon newRightIconState,
       homeassistant_media_player::MediaPlayerSource* new_media_source)
       : MenuTitleBase{new_name, newEntityId, newRightIconState,
-                      PlayerMenuTitleType},
+                      SourceMenuTitleType},
         media_source_(new_media_source) {}
 
   std::string sourceTypeString() { return media_source_->sourceTypeString(); }

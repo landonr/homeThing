@@ -15,9 +15,9 @@ void buttonPressSelect() {
   }
   switch (activeMenuState) {
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected) {
+      if (light_group_->lightDetailSelected) {
         // deselect ligh if selected and stay in lightsDetailMenu
-        lightGroup->lightDetailSelected = false;
+        light_group_->lightDetailSelected = false;
         displayUpdate.updateDisplay(true);
         return;
       }
@@ -25,14 +25,14 @@ void buttonPressSelect() {
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
-        speakerGroup->sendActivePlayerRemoteCommand("power");
+        speaker_group_->sendActivePlayerRemoteCommand("power");
         displayUpdate.updateDisplay(true);
         return;
       }
 
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
-          speakerGroup->sendActivePlayerRemoteCommand("select");
+          speaker_group_->sendActivePlayerRemoteCommand("select");
           break;
         case SpeakerRemotePlayerType:
           break;
@@ -59,24 +59,24 @@ void rotaryScrollClockwise() {
   resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
-      speakerGroup->increaseSpeakerVolume();
+      speaker_group_->increaseSpeakerVolume();
       optionMenu = volumeOptionMenu;
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 0 &&
-          lightGroup->getActiveLight() != NULL) {
-        lightGroup->getActiveLight()->incBrightness();
+      if (light_group_->lightDetailSelected && menuIndex == 0 &&
+          light_group_->getActiveLight() != NULL) {
+        light_group_->getActiveLight()->incBrightness();
         debounceUpdateDisplay();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 1 &&
-                 lightGroup->getActiveLight() != NULL) {
-        lightGroup->getActiveLight()->incTemperature();
+      } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+                 light_group_->getActiveLight() != NULL) {
+        light_group_->getActiveLight()->incTemperature();
         debounceUpdateDisplay();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2 &&
-                 lightGroup->getActiveLight() != NULL) {
-        lightGroup->getActiveLight()->incColor();
+      } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+                 light_group_->getActiveLight() != NULL) {
+        light_group_->getActiveLight()->incColor();
         debounceUpdateDisplay();
         return;
       }
@@ -96,24 +96,24 @@ void rotaryScrollCounterClockwise() {
   resetAnimation();
   switch (activeMenuState) {
     case nowPlayingMenu:
-      speakerGroup->decreaseSpeakerVolume();
+      speaker_group_->decreaseSpeakerVolume();
       optionMenu = volumeOptionMenu;
       debounceUpdateDisplay();
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected && menuIndex == 0 &&
-          lightGroup->getActiveLight() != NULL) {
-        lightGroup->getActiveLight()->decBrightness();
+      if (light_group_->lightDetailSelected && menuIndex == 0 &&
+          light_group_->getActiveLight() != NULL) {
+        light_group_->getActiveLight()->decBrightness();
         debounceUpdateDisplay();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 1 &&
-                 lightGroup->getActiveLight() != NULL) {
-        lightGroup->getActiveLight()->decTemperature();
+      } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+                 light_group_->getActiveLight() != NULL) {
+        light_group_->getActiveLight()->decTemperature();
         debounceUpdateDisplay();
         return;
-      } else if (lightGroup->lightDetailSelected && menuIndex == 2 &&
-                 lightGroup->getActiveLight() != NULL) {
-        lightGroup->getActiveLight()->decColor();
+      } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+                 light_group_->getActiveLight() != NULL) {
+        light_group_->getActiveLight()->decColor();
         debounceUpdateDisplay();
         return;
       }
@@ -142,9 +142,9 @@ void buttonPressUp() {
         return;
       }
 
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
-          speakerGroup->sendActivePlayerRemoteCommand("up");
+          speaker_group_->sendActivePlayerRemoteCommand("up");
           return;
         case SpeakerRemotePlayerType:
           break;
@@ -152,8 +152,8 @@ void buttonPressUp() {
       break;
     case groupMenu:
       menuIndex = 0;
-      if (speakerGroup->newSpeakerGroupParent != NULL) {
-        speakerGroup->newSpeakerGroupParent = NULL;
+      if (speaker_group_->newSpeakerGroupParent != NULL) {
+        speaker_group_->newSpeakerGroupParent = NULL;
       } else {
         activeMenuState = nowPlayingMenu;
         optionMenu = noOptionMenu;
@@ -161,9 +161,9 @@ void buttonPressUp() {
       displayUpdate.updateDisplay(true);
       return;
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected) {
+      if (light_group_->lightDetailSelected) {
         // deselect ligh if selected and stay in lightsDetailMenu
-        lightGroup->lightDetailSelected = false;
+        light_group_->lightDetailSelected = false;
         displayUpdate.updateDisplay(true);
         return;
       } else {
@@ -177,13 +177,13 @@ void buttonPressUp() {
       break;
   }
   if (optionMenu == speakerOptionMenu) {
-    speakerGroup->toggleShuffle();
+    speaker_group_->toggleShuffle();
     optionMenu = noOptionMenu;
     displayUpdate.updateDisplay(true);
     return;
   }
   optionMenu = noOptionMenu;
-  lightGroup->clearActiveLight();
+  light_group_->clearActiveLight();
   topMenu();
   displayUpdate.updateDisplay(true);
 }
@@ -197,21 +197,21 @@ void buttonPressDown() {
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
-        speakerGroup->sendActivePlayerRemoteCommand("play");
+        speaker_group_->sendActivePlayerRemoteCommand("play");
         displayUpdate.updateDisplay(true);
         return;
       }
 
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
-          speakerGroup->sendActivePlayerRemoteCommand("down");
+          speaker_group_->sendActivePlayerRemoteCommand("down");
           break;
         case SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
             activeMenuState = groupMenu;
             displayUpdate.updateDisplay(true);
           } else {
-            speakerGroup->activePlayer->playPause();
+            speaker_group_->activePlayer->playPause();
             optionMenu = noOptionMenu;
           }
           break;
@@ -230,14 +230,14 @@ void buttonPressLeft() {
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
-        speakerGroup->sendActivePlayerRemoteCommand("back");
+        speaker_group_->sendActivePlayerRemoteCommand("back");
         displayUpdate.updateDisplay(true);
         return;
       }
 
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
-          speakerGroup->sendActivePlayerRemoteCommand("left");
+          speaker_group_->sendActivePlayerRemoteCommand("left");
           break;
         case SpeakerRemotePlayerType:
           optionMenu = noOptionMenu;
@@ -261,20 +261,20 @@ void buttonPressRight() {
     case nowPlayingMenu:
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
-        speakerGroup->sendActivePlayerRemoteCommand("menu");
+        speaker_group_->sendActivePlayerRemoteCommand("menu");
         displayUpdate.updateDisplay(true);
         return;
       }
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
-          speakerGroup->sendActivePlayerRemoteCommand("right");
+          speaker_group_->sendActivePlayerRemoteCommand("right");
           break;
         case SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
-            speakerGroup->toggleMute();
+            speaker_group_->toggleMute();
             displayUpdate.updateDisplay(true);
           } else {
-            speakerGroup->activePlayer->nextTrack();
+            speaker_group_->activePlayer->nextTrack();
           }
           optionMenu = noOptionMenu;
           break;
@@ -292,7 +292,7 @@ void buttonReleaseScreenLeft() {
   }
   switch (activeMenuState) {
     case nowPlayingMenu:
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           displayUpdate.updateDisplay(true);
           break;
@@ -312,7 +312,7 @@ void buttonPressScreenLeft() {
   }
   switch (activeMenuState) {
     case nowPlayingMenu:
-      switch (speakerGroup->activePlayer->get_player_type()) {
+      switch (speaker_group_->activePlayer->get_player_type()) {
         case TVRemotePlayerType:
           if (optionMenu == tvOptionMenu) {
             optionMenu = noOptionMenu;
@@ -347,7 +347,7 @@ void buttonPressScreenRight() {
     case backlightMenu:
     case sleepMenu:
     case nowPlayingMenu:
-      speakerGroup->selectNextMediaPlayer();
+      speaker_group_->selectNextMediaPlayer();
       displayUpdate.updateDisplay(true);
       break;
     case sourcesMenu:

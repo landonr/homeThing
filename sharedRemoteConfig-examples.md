@@ -16,9 +16,9 @@ to configure the remote without a TV but with smart speakers:
         SpeakerSetup("media_player.kitchen", "Kitchen"),
         SpeakerSetup("media_player.sofa", "Living room")
       };
-      speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
-      speakerGroup->setup(tvSetup, speakerSetup);
-      return {speakerGroup};
+      speaker_group_ = new SonosSpeakerGroupComponent(displayUpdate);
+      speaker_group_->setup(tvSetup, speakerSetup);
+      return {speaker_group_};
     id: speaker_group_component
 ```
 
@@ -35,8 +35,8 @@ to configure the remote with a TV and with smart speakers but without a soundbar
         SpeakerSetup("media_player.kitchen", "Kitchen"),
         SpeakerSetup("media_player.sofa", "Living room")
       };
-      speakerGroup = new SonosSpeakerGroupComponent(displayUpdate);
-      speakerGroup->setup(tvSetup, speakerSetup);
-      return {speakerGroup};
+      speaker_group_ = new SonosSpeakerGroupComponent(displayUpdate);
+      speaker_group_->setup(tvSetup, speakerSetup);
+      return {speaker_group_};
     id: speaker_group_component
 ```

@@ -30,12 +30,24 @@ class HomeThingMenuBase : public Component {
       HomeThingMenuDisplay* menu_display,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_speaker_group,
-      homeassistant_light_group::HomeAssistantLightGroup* new_light_group)
+      homeassistant_light_group::HomeAssistantLightGroup* new_light_group,
+      homeassistant_service_group::HomeAssistantServiceGroup* new_service_group,
+      homeassistant_sensor_group::HomeAssistantSensorGroup* new_sensor_group,
+      homeassistant_switch_group::HomeAssistantSwitchGroup* new_switch_group)
       : menu_display_(menu_display),
-        speakerGroup(new_speaker_group),
-        lightGroup(new_light_group) {
+        speaker_group_(new_speaker_group),
+        light_group_(new_light_group),
+        service_group_(new_service_group),
+        sensor_group_(new_sensor_group),
+        switch_group_(new_switch_group) {
     animation_ = new HomeThingMenuAnimation();
     menu_display_->set_animation(animation_);
+
+    display_update_tick_ = new sensor::Sensor();
+    auto filter = new sensor::DebounceFilter(17);
+    display_update_tick_->add_filter(filter);
+    this->display_update_tick_->add_on_state_callback(
+        [this](float state) { this->displayUpdateDebounced(); });
     // menu_display_ = new HomeThingMenuDisplay(animation_);
   }
   void setup();
@@ -82,21 +94,21 @@ class HomeThingMenuBase : public Component {
   HomeThingMenuAnimation* animation_{nullptr};
   std::shared_ptr<MenuTitleBase> activeMenuTitle =
       std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
-  homeassistant_service_group::HomeAssistantServiceGroup* serviceGroup;
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
-  homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
-  homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
-  homeassistant_sensor_group::HomeAssistantSensorGroup* sensorGroup;
+  homeassistant_service_group::HomeAssistantServiceGroup* service_group_;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
+  homeassistant_light_group::HomeAssistantLightGroup* light_group_;
+  homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_;
+  homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_;
   void update() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
 
-  int display_update_tick_ = 0;
+  sensor::Sensor* display_update_tick_;
   int rotary_ = 0;
   int menuIndex = 0;
   int rotaryPosition = 0;
   int activeMenuTitleCount = 0;
   CallbackManager<void()> on_redraw_callbacks_{};
-};
+};  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger
     : public Trigger<const HomeThingMenuBase*> {

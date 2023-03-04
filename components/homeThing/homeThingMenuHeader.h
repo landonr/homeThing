@@ -23,8 +23,8 @@ class HomeThingMenuHeader {
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
         text_helpers_(new_text_helpers),
-        speakerGroup(new_speaker_group),
-        lightGroup(new_light_group) {}
+        speaker_group_(new_speaker_group),
+        light_group_(new_light_group) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
 
  private:
@@ -38,8 +38,8 @@ class HomeThingMenuHeader {
   int drawHeaderTime(int oldXPos, int yPosOffset);
   int drawShuffle(int oldXPos, int yPosOffset);
   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
-  homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
+  homeassistant_light_group::HomeAssistantLightGroup* light_group_;
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};

@@ -24,7 +24,7 @@ class HomeThingMenuNowPlaying {
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
         text_helpers_(new_text_helpers),
-        speakerGroup(new_speaker_group) {}
+        speaker_group_(new_speaker_group) {}
   void drawNowPlaying(int menuIndex);
   void drawSpeakerOptionMenu();
   void drawTVOptionMenu();
@@ -35,7 +35,7 @@ class HomeThingMenuNowPlaying {
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
 
   std::string secondsToString(int seconds);
   void drawMediaDuration();

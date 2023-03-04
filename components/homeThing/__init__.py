@@ -5,6 +5,9 @@ from esphome.components import display, font, color, wifi, api, binary_sensor
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
+from esphome.components.homeassistant_service_group import homeassistant_service_group_ns
+from esphome.components.homeassistant_sensor_group import homeassistant_sensor_group_ns
+from esphome.components.homeassistant_switch_group import homeassistant_switch_group_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.Component)
@@ -16,6 +19,7 @@ HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
 HomeThingMenuNowPlaying = homething_menu_base_ns.class_("HomeThingMenuNowPlaying")
+
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
@@ -39,6 +43,9 @@ CONF_HEADER = "header"
 CONF_MENU_Display = "menu_display"
 CONF_MEDIA_PLAYERS = "media_players"
 CONF_LIGHTS = "lights"
+CONF_SERVICES = "services"
+CONF_SENSORS = "sensors"
+CONF_SWITCHES = "switches"
 CONF_ON_REDRAW = "on_redraw"
 
 DEPENDENCIES = ["wifi", "api"]
@@ -91,6 +98,9 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,
         cv.Required(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
         cv.Required(CONF_LIGHTS): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
+        cv.Required(CONF_SERVICES): cv.use_id(homeassistant_light_group_ns.HomeAssistantServiceGroup),
+        cv.Required(CONF_SWITCHES): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
+        cv.Required(CONF_SENSORS): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
         cv.GenerateID(CONF_BOOT): BOOT_SCHEMA,
         cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
             {
@@ -153,7 +163,7 @@ async def menu_boot_to_code(config, display_buffer, display_state, media_players
     #   HomeThingMenuBoot* boot,
     #   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
     #       new_speaker_group)
-async def menu_display_to_code(config, display_buffer, media_players, lights):
+async def menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
     display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
@@ -163,16 +173,19 @@ async def menu_display_to_code(config, display_buffer, media_players, lights):
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers, media_players, lights)
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, media_players, menu_header)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players, lights)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players, lights, services, sensors, switches)
     return menu_display
 
 async def to_code(config):
     media_players = await cg.get_variable(config[CONF_MEDIA_PLAYERS])
     lights = await cg.get_variable(config[CONF_LIGHTS])
+    services = await cg.get_variable(config[CONF_SERVICES])
+    sensors = await cg.get_variable(config[CONF_SENSORS])
+    switches = await cg.get_variable(config[CONF_SWITCHES])
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
-    menu_display = await menu_display_to_code(config, display_buffer, media_players, lights)
+    menu_display = await menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches)
 
-    menu = cg.new_Pvariable(config[CONF_ID], menu_display, media_players, lights)
+    menu = cg.new_Pvariable(config[CONF_ID], menu_display, media_players, lights, services, sensors, switches)
     await cg.register_component(menu, config)
     for conf in config.get(CONF_ON_REDRAW, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], menu)

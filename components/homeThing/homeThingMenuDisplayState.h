@@ -66,7 +66,7 @@ class HomeThingMenuDisplayState {
   bool draw_battery_level_ = true;
   bool dark_mode_ = true;
   bool draw_now_playing_menu_ = false;
-  bool draw_volume_level_ = true;
+  bool draw_volume_level_ = false;
   std::string boot_device_name_ = "";
 
   int getBottomBarYPosition(bool spaceForMenu, int display_height) {

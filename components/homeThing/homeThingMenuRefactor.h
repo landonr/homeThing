@@ -44,12 +44,6 @@ class HomeThingMenuRefactor {
   void drawArrow(int yPos, int menuTitlesCount, int maxItems);
 
  private:
-  // subscribe on state and update only on correct screen
-  homeassistant_service_group::HomeAssistantServiceGroup* serviceGroup;
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
-  homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
-  homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
-  homeassistant_sensor_group::HomeAssistantSensorGroup* sensorGroup;
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};

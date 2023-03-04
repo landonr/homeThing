@@ -104,9 +104,9 @@ int HomeThingMenuBoot::drawBootSequenceHeader(
 
 float HomeThingMenuBoot::bootSequenceLoadingProgress() {
   if (api_connected_->state) {
-    if (speakerGroup != NULL) {
-      float totalPlayers = static_cast<float>(speakerGroup->totalPlayers());
-      float loadedPlayers = static_cast<float>(speakerGroup->loadedPlayers);
+    if (speaker_group_ != NULL) {
+      float totalPlayers = static_cast<float>(speaker_group_->totalPlayers());
+      float loadedPlayers = static_cast<float>(speaker_group_->loadedPlayers);
       float progress = 0.8 * (loadedPlayers / totalPlayers);
       return 0.25 + progress;
     }
@@ -157,8 +157,8 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
 }
 
 bool HomeThingMenuBoot::bootSequenceCanSkip(const MenuStates activeMenuState) {
-  return activeMenuState == bootMenu && speakerGroup != NULL &&
-         speakerGroup->loadedPlayers > 0;
+  return activeMenuState == bootMenu && speaker_group_ != NULL &&
+         speaker_group_->loadedPlayers > 0;
 }
 
 void HomeThingMenuBoot::drawBootSequenceSkipTitle(
@@ -181,7 +181,7 @@ void HomeThingMenuBoot::skipBootSequence(const MenuStates activeMenuState) {
     }
     return;
   }
-  speakerGroup->selectFirstActivePlayer();
+  speaker_group_->selectFirstActivePlayer();
 }
 
 int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
@@ -190,9 +190,9 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
              display_state_->margin_size_;
   int maxAnimationDuration = 0;
   if (api_connected_->state) {
-    if (speakerGroup != NULL) {
-      int totalPlayers = speakerGroup->totalPlayers();
-      int loadedPlayers = speakerGroup->loadedPlayers;
+    if (speaker_group_ != NULL) {
+      int totalPlayers = speaker_group_->totalPlayers();
+      int loadedPlayers = speaker_group_->loadedPlayers;
       display_buffer_->printf(
           xPos, yPos, display_state_->get_large_heavy_font(),
           display_state_->color_accent_primary_, display::TextAlign::TOP_CENTER,
@@ -217,7 +217,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
 }
 
 void HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
-  speakerGroup->findActivePlayer();
+  speaker_group_->findActivePlayer();
 
   int imageYPos =
       display_state_->header_height_ + display_state_->margin_size_ * 2;

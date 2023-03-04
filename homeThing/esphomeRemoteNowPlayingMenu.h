@@ -9,21 +9,21 @@ void selectNowPlayingMenu() {
   auto menuTitle = getNowPlayingMenuStates()[menuIndex];
   switch (menuTitle) {
     case pauseNowPlayingMenuState:
-      speakerGroup->activePlayer->playPause();
+      speaker_group_->activePlayer->playPause();
       break;
     case volumeUpNowPlayingMenuState:
-      speakerGroup->increaseSpeakerVolume();
+      speaker_group_->increaseSpeakerVolume();
       optionMenu = volumeOptionMenu;
       break;
     case volumeDownNowPlayingMenuState:
-      speakerGroup->decreaseSpeakerVolume();
+      speaker_group_->decreaseSpeakerVolume();
       optionMenu = volumeOptionMenu;
       break;
     case nextNowPlayingMenuState:
-      speakerGroup->activePlayer->nextTrack();
+      speaker_group_->activePlayer->nextTrack();
       break;
     case shuffleNowPlayingMenuState:
-      speakerGroup->toggleShuffle();
+      speaker_group_->toggleShuffle();
       break;
     case menuNowPlayingMenuState:
       topMenu();
@@ -33,13 +33,13 @@ void selectNowPlayingMenu() {
       activeMenuState = groupMenu;
       break;
     case TVPowerNowPlayingMenuState:
-      speakerGroup->sendActivePlayerRemoteCommand("power");
+      speaker_group_->sendActivePlayerRemoteCommand("power");
       break;
     case backNowPlayingMenuState:
-      speakerGroup->sendActivePlayerRemoteCommand("back");
+      speaker_group_->sendActivePlayerRemoteCommand("back");
       break;
     case homeNowPlayingMenuState:
-      speakerGroup->sendActivePlayerRemoteCommand("menu");
+      speaker_group_->sendActivePlayerRemoteCommand("menu");
       break;
   }
   displayUpdate.updateDisplay(true);

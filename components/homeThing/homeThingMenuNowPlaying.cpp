@@ -7,7 +7,7 @@ namespace homething_menu_base {
 
 std::vector<NowPlayingMenuState>
 HomeThingMenuNowPlaying::getNowPlayingMenuStates() {
-  if (speakerGroup->activePlayer->get_player_type() ==
+  if (speaker_group_->activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     return TVNowPlayingMenuStates();
   }
@@ -69,7 +69,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
     drawNowPlayingSelectMenu(menuIndex);
   }
   int yPos = display_state_->header_height_ + display_state_->margin_size_ / 4;
-  if (speakerGroup->activePlayer->playerState ==
+  if (speaker_group_->activePlayer->playerState ==
       homeassistant_media_player::RemotePlayerState::
           PowerOffRemotePlayerState) {
     display_buffer_->printf(
@@ -81,11 +81,11 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
   }
   std::string nowPlayingText = "Now Playing,";
 
-  if (speakerGroup->activePlayer->get_player_type() !=
+  if (speaker_group_->activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
-            speakerGroup->activePlayer);
+            speaker_group_->activePlayer);
     if (activeSpeaker->mediaPlaylist != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->mediaPlaylist;
     } else if (activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
@@ -99,10 +99,10 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
                        display::TextAlign::TOP_LEFT, nowPlayingText);
   auto mediaArtistWrappedText = getWrappedTitles(
       xPos, display_state_->get_large_font()->get_height(),
-      display::TextAlign::TOP_CENTER, speakerGroup->mediaTitleString());
+      display::TextAlign::TOP_CENTER, speaker_group_->mediaTitleString());
   auto mediaTitleWrappedText = getWrappedTitles(
       xPos, display_state_->get_medium_font()->get_height(),
-      display::TextAlign::TOP_CENTER, speakerGroup->mediaSubtitleString());
+      display::TextAlign::TOP_CENTER, speaker_group_->mediaSubtitleString());
   int lineCount = nowPlayingWrappedText->size() +
                   mediaArtistWrappedText->size() +
                   mediaTitleWrappedText->size();
@@ -164,11 +164,11 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
-  if (speakerGroup->activePlayer->get_player_type() !=
+  if (speaker_group_->activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
-            speakerGroup->activePlayer);
+            speaker_group_->activePlayer);
     int mediaDuration = activeSpeaker->mediaDuration;
     int mediaPosition = activeSpeaker->mediaPosition;
     if (mediaDuration <= 0 && mediaPosition <= 0) {
@@ -218,7 +218,7 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
     NowPlayingMenuState state) {
   switch (state) {
     case pauseNowPlayingMenuState:
-      return speakerGroup->playTitleString();
+      return speaker_group_->playTitleString();
     case volumeUpNowPlayingMenuState:
       return "Vol Up";
     case volumeDownNowPlayingMenuState:
@@ -236,7 +236,7 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
     case groupNowPlayingMenuState:
       return "Group";
     case shuffleNowPlayingMenuState:
-      if (speakerGroup->mediaShuffling()) {
+      if (speaker_group_->mediaShuffling()) {
         return "Shfl on";
       } else {
         return "Shfl off";
@@ -254,7 +254,7 @@ void HomeThingMenuNowPlaying::drawSpeakerOptionMenu() {
       (display_buffer_->get_height() - 16) * 0.15 + 16,
       display_state_->get_small_font(),
       text_helpers_->primaryTextColor(display_state_->dark_mode_),
-      display::TextAlign::TOP_CENTER, speakerGroup->shuffleString().c_str());
+      display::TextAlign::TOP_CENTER, speaker_group_->shuffleString().c_str());
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.75 + 16,
@@ -266,7 +266,7 @@ void HomeThingMenuNowPlaying::drawSpeakerOptionMenu() {
       (display_buffer_->get_height() - 16) * 0.45 + 16,
       display_state_->get_small_font(),
       text_helpers_->primaryTextColor(display_state_->dark_mode_),
-      display::TextAlign::TOP_CENTER, speakerGroup->muteString().c_str());
+      display::TextAlign::TOP_CENTER, speaker_group_->muteString().c_str());
 }
 
 void HomeThingMenuNowPlaying::drawTVOptionMenu() {
@@ -311,7 +311,7 @@ void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int iconMargin = display_state_->get_small_font()->get_height() *
                    display_state_->font_size_width_ratio_ * 3;
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
-  int barWidth = (totalBarWidth - 4) * (speakerGroup->getVolumeLevel() / 100);
+  int barWidth = (totalBarWidth - 4) * (speaker_group_->getVolumeLevel() / 100);
   int yPos = display_state_->getBottomBarYPosition(
       true, display_buffer_->get_height());
   display_buffer_->printf(iconMargin / 2 - display_state_->icon_size_ / 2,
@@ -352,7 +352,7 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop() {
       auto playingNewSourceWrappedText = getWrappedTitles(
           display_buffer_->get_width() / 2,
           display_state_->get_large_font()->get_height(),
-          display::TextAlign::TOP_CENTER, speakerGroup->playingNewSourceText);
+          display::TextAlign::TOP_CENTER, speaker_group_->playingNewSourceText);
       drawTextWrapped(
           display_buffer_->get_width() / 2,
           display_state_->header_height_ + display_state_->margin_size_ * 2 +

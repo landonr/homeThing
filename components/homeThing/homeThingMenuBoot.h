@@ -21,7 +21,7 @@ class HomeThingMenuBoot {
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
         header_(new_header),
-        speakerGroup(new_speaker_group) {}
+        speaker_group_(new_speaker_group) {}
   void drawBootSequence(const MenuStates activeMenuState);
   void skipBootSequence(const MenuStates activeMenuState);
   void set_wifi_connected(binary_sensor::BinarySensor* wifi_connected) {
@@ -52,7 +52,7 @@ class HomeThingMenuBoot {
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
   binary_sensor::BinarySensor* wifi_connected_{nullptr};
   binary_sensor::BinarySensor* api_connected_{nullptr};
 };

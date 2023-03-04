@@ -67,7 +67,10 @@ class HomeThingMenuDisplay {
       HomeThingMenuBoot* boot,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_speaker_group,
-      homeassistant_light_group::HomeAssistantLightGroup* new_light_group)
+      homeassistant_light_group::HomeAssistantLightGroup* new_light_group,
+      homeassistant_service_group::HomeAssistantServiceGroup* new_service_group,
+      homeassistant_sensor_group::HomeAssistantSensorGroup* new_sensor_group,
+      homeassistant_switch_group::HomeAssistantSwitchGroup* new_switch_group)
       : display_buffer_(display_buffer),
         display_state_(display_state),
         text_helpers_(text_helpers),
@@ -75,8 +78,11 @@ class HomeThingMenuDisplay {
         now_playing_(now_playing),
         header_(header),
         boot_(boot),
-        speakerGroup(new_speaker_group),
-        lightGroup(new_light_group) {}
+        speaker_group_(new_speaker_group),
+        light_group_(new_light_group),
+        service_group_(new_service_group),
+        sensor_group_(new_sensor_group),
+        switch_group_(new_switch_group) {}
   void setup();
   void drawMenu(MenuStates* activeMenuState,
                 std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
@@ -121,9 +127,10 @@ class HomeThingMenuDisplay {
  private:
   int scrollTop = 0;
   int autoClearState = 0;
-  void drawTitleImage(int characterCount, int yPos,
-                      homeassistant_media_player::RemotePlayerState& titleState,
-                      bool selected);
+  void drawTitleImage(
+      int characterCount, int yPos,
+      const homeassistant_media_player::RemotePlayerState& titleState,
+      bool selected);
   void draw_menu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
                  const int menuIndex);
 
@@ -136,11 +143,11 @@ class HomeThingMenuDisplay {
   HomeThingMenuBoot* boot_{nullptr};
   HomeThingMenuNowPlaying* now_playing_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
-  homeassistant_service_group::HomeAssistantServiceGroup* serviceGroup;
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speakerGroup;
-  homeassistant_light_group::HomeAssistantLightGroup* lightGroup;
-  homeassistant_switch_group::HomeAssistantSwitchGroup* switchGroup;
-  homeassistant_sensor_group::HomeAssistantSensorGroup* sensorGroup;
+  homeassistant_service_group::HomeAssistantServiceGroup* service_group_;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
+  homeassistant_light_group::HomeAssistantLightGroup* light_group_;
+  homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_;
+  homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_;
 };
 
 }  // namespace homething_menu_base

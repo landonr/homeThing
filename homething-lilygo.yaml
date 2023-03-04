@@ -84,16 +84,6 @@ sensor:
       - lambda: |-
           id(homeThingMenu)->buttonPressWakeUpDisplay();
           id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
-
-## Needed to debounce screen updates for rotary. 17ms is close to 60fps for st7789v
-  - platform: template
-    id: display_update_tick
-    filters:
-      - debounce: 17ms
-    on_value :
-      then:
-        - lambda: |-
-            id(homeThingMenu)->displayUpdateDebounced();
           
 ## Battery
   - platform: adc

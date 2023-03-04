@@ -63,7 +63,7 @@ void HomeThingMenuDisplay::drawMenu(
   if (!display_state_->dark_mode_ && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->color_white_);
   }
-  if (speakerGroup != NULL && speakerGroup->playerSearchFinished == false) {
+  if (speaker_group_ != NULL && speaker_group_->playerSearchFinished == false) {
     boot_->drawBootSequence(*activeMenuState);
     return;
   } else if (*activeMenuState == bootMenu) {
@@ -79,26 +79,27 @@ void HomeThingMenuDisplay::drawMenu(
       now_playing_->drawNowPlaying(menuIndex);
       break;
     case lightsMenu:
-      draw_menu(lightTitleSwitches(lightGroup->lights), menuIndex);
+      draw_menu(lightTitleSwitches(light_group_->lights), menuIndex);
       break;
     case lightsDetailMenu:
-      if (lightGroup->getActiveLight() != NULL) {
-        draw_menu(lightTitleItems(lightGroup->getActiveLight(),
+      if (light_group_->getActiveLight() != NULL) {
+        draw_menu(lightTitleItems(light_group_->getActiveLight(),
                                   display_buffer_->get_width()),
                   menuIndex);
       }
       break;
     case switchesMenu:
-      draw_menu(switchTitleSwitches(switchGroup->switches), menuIndex);
+      draw_menu(switchTitleSwitches(switch_group_->switches), menuIndex);
       break;
     case groupMenu: {
-      if (speakerGroup->newSpeakerGroupParent != NULL) {
-        auto playerSwitches = groupTitleSwitches(
-            speakerGroup->media_players_, speakerGroup->newSpeakerGroupParent);
+      if (speaker_group_->newSpeakerGroupParent != NULL) {
+        auto playerSwitches =
+            groupTitleSwitches(speaker_group_->media_players_,
+                               speaker_group_->newSpeakerGroupParent);
         draw_menu({playerSwitches.begin(), playerSwitches.end()}, menuIndex);
         break;
       }
-      auto playerStrings = groupTitleString(speakerGroup->media_players_);
+      auto playerStrings = groupTitleString(speaker_group_->media_players_);
       draw_menu({playerStrings.begin(), playerStrings.end()}, menuIndex);
       break;
     }
@@ -113,7 +114,7 @@ void HomeThingMenuDisplay::drawMenu(
 void HomeThingMenuDisplay::draw_menu(
     std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int menuIndex) {
   int activeMenuTitleCount = menuTitles.size();
-  if (menuTitles.size() == 0) {
+  if (menuTitles.size() == 0 || menuTitles.size() < menuIndex) {
     return;
   }
   scrollMenuPosition(menuIndex);
@@ -159,7 +160,7 @@ void HomeThingMenuDisplay::draw_menu(
         break;
       }
       case SliderMenuTitleType: {
-        bool lightDetailSelected = lightGroup->lightDetailSelected;
+        bool lightDetailSelected = light_group_->lightDetailSelected;
         auto item = std::static_pointer_cast<MenuTitleSlider>(menuTitles[i]);
         SliderSelectionState sliderState =
             menuState == i && lightDetailSelected ? SliderSelectionStateActive
@@ -298,7 +299,10 @@ void HomeThingMenuDisplay::skipBootSequence(const MenuStates activeMenuState) {
 // private
 void HomeThingMenuDisplay::drawTitleImage(
     int characterCount, int yPos,
-    homeassistant_media_player::RemotePlayerState& titleState, bool selected) {
+    const homeassistant_media_player::RemotePlayerState& titleState,
+    bool selected) {
+
+  ESP_LOGW("WARNING", "draw title image %d", titleState);
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) *
               (display_state_->get_medium_font()->get_height() *

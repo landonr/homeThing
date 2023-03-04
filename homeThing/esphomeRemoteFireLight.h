@@ -29,12 +29,12 @@ void manageLight() {
       lightState = OffRemoteLightState;
     }
   } else if (lightState == OffRemoteLightState &&
-             !speakerGroup->playerSearchFinished) {
+             !speaker_group_->playerSearchFinished) {
     auto call = id(side_light).turn_on();
     call.set_effect("Rainbow Effect");
     call.perform();
     lightState = EffectRemoteLightState;
-  } else if (speakerGroup->playerSearchFinished) {
+  } else if (speaker_group_->playerSearchFinished) {
     if (!charging && lightState != OnRemoteLightState) {
       updateLight(0.2, 0.75, 0.5, 1.0);
       lightState = OnRemoteLightState;

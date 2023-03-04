@@ -71,9 +71,9 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case backlightMenu:
     case sleepMenu:
     case nowPlayingMenu: {
-      if (speakerGroup != NULL) {
+      if (speaker_group_ != NULL) {
         auto headerMenuTitle =
-            headerMediaPlayerTitle(speakerGroup->activePlayer);
+            headerMediaPlayerTitle(speaker_group_->activePlayer);
         xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
         drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
       } else {
@@ -97,8 +97,8 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       drawHeaderTitleWithString("Lights", xPos);
       break;
     case lightsDetailMenu: {
-      if (lightGroup->getActiveLight() != NULL) {
-        auto activeLight = lightGroup->getActiveLight();
+      if (light_group_->getActiveLight() != NULL) {
+        auto activeLight = light_group_->getActiveLight();
         auto headerMenuTitle = activeLight->get_name();
         int newXPos = drawHeaderIcon(activeLight->icon(), xPos,
                                      activeLight->rgbLightColor());
@@ -122,19 +122,19 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 }
 
 int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
-  if (speakerGroup == NULL || speakerGroup->activePlayer == NULL) {
+  if (speaker_group_ == NULL || speaker_group_->activePlayer == NULL) {
     return oldXPos;
   }
-  if (speakerGroup->activePlayer->get_player_type() ==
+  if (speaker_group_->activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     return oldXPos;
   }
-  if (speakerGroup->activePlayer->playerState !=
+  if (speaker_group_->activePlayer->playerState !=
       homeassistant_media_player::RemotePlayerState::StoppedRemotePlayerState) {
     int xPos =
         oldXPos - display_state_->icon_size_ + display_state_->margin_size_ / 2;
     int yPos = getHeaderTextYPos(yPosOffset);
-    if (speakerGroup->mediaShuffling()) {
+    if (speaker_group_->mediaShuffling()) {
       display_buffer_->printf(xPos, yPos,
                               display_state_->get_material_font_small(),
                               display_state_->color_accent_primary_, "󰒝");
@@ -207,7 +207,7 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
-  if (speakerGroup == nullptr || speakerGroup->activePlayer == nullptr) {
+  if (speaker_group_ == nullptr || speaker_group_->activePlayer == nullptr) {
     return oldXPos;
   }
   if (!display_state_->draw_volume_level_) {
@@ -218,7 +218,8 @@ int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
   display_buffer_->printf(
       xPos, yPos, display_state_->get_small_font(),
       text_helpers_->primaryTextColor(display_state_->dark_mode_),
-      display::TextAlign::TOP_RIGHT, "%.0f%%", speakerGroup->getVolumeLevel());
+      display::TextAlign::TOP_RIGHT, "%.0f%%",
+      speaker_group_->getVolumeLevel());
   return xPos;
 }
 

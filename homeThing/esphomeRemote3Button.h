@@ -10,9 +10,9 @@ void buttonPressSelect() {
   }
   switch (activeMenuState) {
     case lightsDetailMenu:
-      if (lightGroup->lightDetailSelected) {
+      if (light_group_->lightDetailSelected) {
         // deselect ligh if selected and stay in lightsDetailMenu
-        lightGroup->lightDetailSelected = false;
+        light_group_->lightDetailSelected = false;
         displayUpdate.updateDisplay(true);
         return;
       }
@@ -41,11 +41,11 @@ void buttonPressLeft() {
     return;
   }
   if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
-      lightGroup->lightDetailSelected) {
+      light_group_->lightDetailSelected) {
     if (menuIndex == 1) {
-      lightGroup->getActiveLight()->incBrightness();
+      light_group_->getActiveLight()->incBrightness();
     } else if (menuIndex == 2) {
-      lightGroup->getActiveLight()->incTemperature();
+      light_group_->getActiveLight()->incTemperature();
     }
     if (selectMenu()) {
       displayUpdate.updateDisplay(true);
@@ -70,11 +70,11 @@ void buttonPressRight() {
     return;
   }
   if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
-      lightGroup->lightDetailSelected) {
+      light_group_->lightDetailSelected) {
     if (menuIndex == 1) {
-      lightGroup->getActiveLight()->decBrightness();
+      light_group_->getActiveLight()->decBrightness();
     } else if (menuIndex == 2) {
-      lightGroup->getActiveLight()->decTemperature();
+      light_group_->getActiveLight()->decTemperature();
     }
     if (selectMenu()) {
       displayUpdate.updateDisplay(true);
