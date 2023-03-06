@@ -22,7 +22,7 @@ class HomeThingMenuBoot {
         display_state_(new_display_state),
         header_(new_header),
         speaker_group_(new_speaker_group) {}
-  void drawBootSequence(const MenuStates activeMenuState);
+  bool drawBootSequence(const MenuStates activeMenuState);
   void skipBootSequence(const MenuStates activeMenuState);
   void set_wifi_connected(binary_sensor::BinarySensor* wifi_connected) {
     wifi_connected_ = wifi_connected;

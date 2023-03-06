@@ -48,6 +48,7 @@ class HomeThingMenuNowPlaying {
   int drawTextWrapped(int xPos, int yPos, int fontSize, display::Font* font,
                       Color color, display::TextAlign alignment,
                       std::vector<std::string> wrappedTitles, int maxLines);
+  const char* const TAG = "homething.menu.now_playing";
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

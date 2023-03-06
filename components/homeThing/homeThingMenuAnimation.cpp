@@ -11,7 +11,7 @@ void HomeThingMenuAnimation::resetAnimation(bool force) {
     return;
   }
   animating = false;
-  animationTick = 0;
+  animationTick->publish_state(0);
 }
 
 void HomeThingMenuAnimation::activeTick() {
@@ -27,34 +27,33 @@ void HomeThingMenuAnimation::activeTick() {
   // }
 }
 
-void HomeThingMenuAnimation::marqueeTick() {
-  // sensors is the only menu with marqueed text currently
-  // switch (activeMenuState) {
-  //   case sensorsMenu:
-  //     break;
-  //   default:
-  //     return;
-  // }
-  updateMarqueePosition();
-}
+// void HomeThingMenuAnimation::marqueeTick(int titleLength) {
+//   // sensors is the only menu with marqueed text currently
+//   // switch (activeMenuState) {
+//   //   case sensorsMenu:
+//   //     break;
+//   //   default:
+//   //     return;
+//   // }
+//   ESP_LOGI(TAG, "marquee tick %f", animationTick->state);
+//   updateMarqueePosition(titleLength);
+// }
 
-void HomeThingMenuAnimation::updateMarqueePosition() {
-  if ((charging || idleTime < 15) && idleTime > 1 && (animating || charging)) {
-    if (animating) {
-      tickAnimation();
-    } else if (animationTick->state != 0) {
-      animationTick->publish_state(0);
-    }
-    if (animationTick->state >= 0) {
-      // displayUpdate.updateDisplay(true);
-    }
-  } else if (animationTick != 0) {
-    animationTick->publish_state(0);
-    if (animating) {
-      // displayUpdate.updateDisplay(true);
-    }
-  }
-}
+// void HomeThingMenuAnimation::updateMarqueePosition(int titleLength) {
+//   ESP_LOGD(TAG, "charging %d idle %d animating %d", charging, idleTime,
+//            animating);
+//   if ((charging || idleTime < 15) && idleTime > 1 && (animating || charging)) {
+//     ESP_LOGD(TAG, "1tick animation %f", animationTick->state);
+//     if (animating && animationTick->state < titleLength - 4) {
+//       ESP_LOGD(TAG, "2tick animation %f", animationTick->state);
+//       tickAnimation();
+//     } else {
+//       animationTick->publish_state(0);
+//     }
+//   } else if (animationTick->state != 0) {
+//     animationTick->publish_state(0);
+//   }
+// }
 
 void HomeThingMenuAnimation::tickAnimation() {
   // if ((charging || idleTime < 15) && idleTime > 1 && (animating || charging)) {
@@ -63,7 +62,7 @@ void HomeThingMenuAnimation::tickAnimation() {
   } else {
     animationTick->publish_state(0);
   }
-  ESP_LOGI(TAG, "tick animation %f", animationTick->state);
+  ESP_LOGD(TAG, "tick animation %f", animationTick->state);
   // }
 }
 }  // namespace homething_menu_base

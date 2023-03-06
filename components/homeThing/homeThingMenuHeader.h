@@ -45,6 +45,7 @@ class HomeThingMenuHeader {
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
   time::RealTimeClock* esp_time_{nullptr};
+  const char* const TAG = "homething.menu.header";
 };
 
 }  // namespace homething_menu_base

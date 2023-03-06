@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import display, font, color, wifi, api, binary_sensor
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_INTERVAL
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
 from esphome.components.homeassistant_service_group import homeassistant_service_group_ns
@@ -10,7 +10,7 @@ from esphome.components.homeassistant_sensor_group import homeassistant_sensor_g
 from esphome.components.homeassistant_switch_group import homeassistant_switch_group_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
-HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.Component)
+HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
 HomeThingMenuBoot = homething_menu_base_ns.class_("HomeThingMenuBoot")
 HomeThingMenuAnimation = homething_menu_base_ns.class_("HomeThingMenuAnimation")
 HomeThingMenuDisplay = homething_menu_base_ns.class_("HomeThingMenuDisplay")
@@ -47,9 +47,9 @@ CONF_SERVICES = "services"
 CONF_SENSORS = "sensors"
 CONF_SWITCHES = "switches"
 CONF_ON_REDRAW = "on_redraw"
+CONF_IDLE_TICK = "idle_tick"
 
 DEPENDENCIES = ["wifi", "api"]
-
 
 BOOT_SCHEMA = cv.Schema(
     {
@@ -92,6 +92,7 @@ HEADER_SCHEMA = cv.Schema(
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
+        # cv.GenerateID(CONF_IDLE_TICK): IDLE_TICK_SCHEMA,
         cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
         cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
         cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
@@ -111,7 +112,7 @@ CONFIG_SCHEMA = cv.Schema(
         )
         # cv.GenerateID(CONF_MENU_DISPLAY): MENU_DISPLAY_SCHEMA
     }
-).extend(cv.COMPONENT_SCHEMA)
+).extend(cv.polling_component_schema("1s"))
 
 async def display_state_to_code(config):
     display_state = cg.new_Pvariable(config[CONF_ID])
@@ -185,6 +186,7 @@ async def to_code(config):
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
     menu_display = await menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches)
 
+    # idle_tick = cg.new_Pvariable(config[CONF_IDLE_TICK])
     menu = cg.new_Pvariable(config[CONF_ID], menu_display, media_players, lights, services, sensors, switches)
     await cg.register_component(menu, config)
     for conf in config.get(CONF_ON_REDRAW, []):

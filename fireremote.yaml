@@ -218,6 +218,6 @@ display:
         id(backlight).turn_on();
         idleTime = 0;
       }
-      drawMenu();
+      draw_menu_screen();
       return;
       

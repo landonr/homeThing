@@ -6,9 +6,9 @@ namespace homething_menu_base {
 void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
   int xPos = display_state_->margin_size_ * 2;
   int width = 8;
-  int lineHeight = extend ? display_state_->get_medium_font()->get_height() +
+  int lineHeight = extend ? display_state_->get_medium_font()->get_baseline() +
                                 display_state_->margin_size_
-                          : (display_state_->get_medium_font()->get_height() +
+                          : (display_state_->get_medium_font()->get_baseline() +
                              display_state_->margin_size_) /
                                 2;
   display_buffer_->line(
@@ -16,11 +16,11 @@ void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
       text_helpers_->primaryTextColor(display_state_->dark_mode_));
   display_buffer_->line(
       xPos,
-      yPos + (display_state_->get_medium_font()->get_height() +
+      yPos + (display_state_->get_medium_font()->get_baseline() +
               display_state_->margin_size_) /
                  2,
       xPos + width,
-      yPos + (display_state_->get_medium_font()->get_height() +
+      yPos + (display_state_->get_medium_font()->get_baseline() +
               display_state_->margin_size_) /
                  2,
       text_helpers_->primaryTextColor(display_state_->dark_mode_));
@@ -144,15 +144,15 @@ void HomeThingMenuRefactor::drawLightSlider(
     display_buffer_->filled_rectangle(
         0, yPos, display_buffer_->get_width(),
         (display_state_->margin_size_ +
-         display_state_->get_medium_font()->get_height()) *
+         display_state_->get_medium_font()->get_baseline()) *
             2,
         display_state_->color_accent_primary_);
   }
   int sliderOffset =
-      static_cast<int>((display_state_->get_medium_font()->get_height() +
+      static_cast<int>((display_state_->get_medium_font()->get_baseline() +
                         display_state_->margin_size_) /
                        2);
-  int oneRow = display_state_->get_medium_font()->get_height() +
+  int oneRow = display_state_->get_medium_font()->get_baseline() +
                display_state_->margin_size_;
   drawLightSliderBar(xPos, yPos + sliderOffset + oneRow, sliderHeight,
                      sliderState, slider, drawRGB);
@@ -162,9 +162,9 @@ void HomeThingMenuRefactor::drawLightSlider(
 }
 
 void HomeThingMenuRefactor::drawSwitch(bool switchState, int yPos) {
-  int circleSize = display_state_->get_small_font()->get_height() / 2;
+  int circleSize = display_state_->get_small_font()->get_baseline() / 2;
   int xPos = display_state_->margin_size_ + circleSize;
-  int centerYPos = yPos + (display_state_->get_medium_font()->get_height() +
+  int centerYPos = yPos + (display_state_->get_medium_font()->get_baseline() +
                            display_state_->margin_size_) /
                               2;
   display_buffer_->circle(
@@ -184,7 +184,7 @@ void HomeThingMenuRefactor::drawLightSwitch(bool switchState, int yPos,
   if (rowSelected) {
     display_buffer_->filled_rectangle(
         xPos - 1, yPos, display_state_->icon_size_ + 1,
-        display_state_->get_medium_font()->get_height() +
+        display_state_->get_medium_font()->get_baseline() +
             display_state_->margin_size_,
         display_state_->color_black_);
   }
@@ -208,18 +208,18 @@ void HomeThingMenuRefactor::drawArrow(int yPos, int menuTitlesCount,
   }
   display_buffer_->line(
       xPos, yPos + 4, xPos + 3,
-      yPos + (display_state_->get_medium_font()->get_height() +
+      yPos + (display_state_->get_medium_font()->get_baseline() +
               display_state_->margin_size_) /
                  2,
       text_helpers_->primaryTextColor(display_state_->dark_mode_));
   display_buffer_->line(
       xPos,
       yPos +
-          (display_state_->get_medium_font()->get_height() +
+          (display_state_->get_medium_font()->get_baseline() +
            display_state_->margin_size_) -
           4,
       xPos + 3,
-      yPos + (display_state_->get_medium_font()->get_height() +
+      yPos + (display_state_->get_medium_font()->get_baseline() +
               display_state_->margin_size_) /
                  2,
       text_helpers_->primaryTextColor(display_state_->dark_mode_));

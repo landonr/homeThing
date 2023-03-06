@@ -5,7 +5,6 @@ namespace esphome {
 namespace homething_menu_base {
 
 void HomeThingMenuBase::setup() {
-  animation_ = new HomeThingMenuAnimation();
   menu_display_->set_animation(animation_);
   this->animation_->animationTick->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
@@ -17,21 +16,42 @@ void HomeThingMenuBase::setup() {
       [this](float state) { this->displayUpdateDebounced(); });
 }
 
-void HomeThingMenuBase::drawMenu() {
-  auto active_menu = activeMenu();
-  activeMenuTitleCount = active_menu.size();
-  menu_display_->drawMenu(&activeMenuState, active_menu, menuIndex);
+void HomeThingMenuBase::draw_menu_screen() {
+  if (idleTime > 16 && !charging) {
+    ESP_LOGW(TAG, "not drawing");
+    return;
+  }
+  if (!menu_drawing_) {
+    menu_drawing_ = true;
+    auto active_menu = activeMenu();
+    activeMenuTitleCount = active_menu.size();
+    ESP_LOGD(TAG, "drawMenu:%d %s #%d", menuIndex,
+             menuTitleForType(activeMenuState)->get_name().c_str(),
+             activeMenuTitleCount);
+    if (menu_display_->draw_menu_screen(&activeMenuState, active_menu,
+                                        menuIndex)) {
+      this->animation_->tickAnimation();
+      this->animation_->animating = true;
+    } else {
+      this->animation_->animating = false;
+    }
+    menu_drawing_ = false;
+  }
 }
 void HomeThingMenuBase::topMenu() {
   if (activeMenuState == bootMenu) {
     return;
   }
-  animation_->resetAnimation();
-  menuIndex = 0;
+  animation_->resetAnimation(true);
   if (speaker_group_ != NULL)
     speaker_group_->newSpeakerGroupParent = NULL;
   optionMenu = noOptionMenu;
   activeMenuState = rootMenu;
+  menuIndex = 0;
+}
+
+void HomeThingMenuBase::update() {
+  idleTick();
 }
 
 bool HomeThingMenuBase::selectMenu() {
@@ -48,7 +68,7 @@ bool HomeThingMenuBase::selectMenu() {
       idleMenu(true);
       speaker_group_->playSource(*sourceTitleState->media_source_);
       optionMenu = playingNewSourceMenu;
-      update();
+      update_display();
       break;
     }
     case groupMenu: {
@@ -107,6 +127,7 @@ bool HomeThingMenuBase::selectRootMenu() {
   MenuStates currentMenu =
       rootMenuTitles(speaker_group_ != NULL, service_group_ != NULL, true, true,
                      true)[menuIndex];
+  menuIndex = 0;
   switch (currentMenu) {
     case sourcesMenu:
       activeMenuState = sourcesMenu;
@@ -144,7 +165,6 @@ bool HomeThingMenuBase::selectRootMenu() {
                menuTitleForType(activeMenuState)->get_name().c_str());
       return false;
   }
-  menuIndex = 0;
   return true;
 }
 
@@ -168,8 +188,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       activeMenuState == bootMenu) {
     ESP_LOGI(TAG, "finished boot");
     activeMenuState = rootMenu;
+    topMenu();
   }
-  menuIndex = 0;
   switch (activeMenuState) {
     case rootMenu:
       return menuTypesToTitles(rootMenuTitles(
@@ -189,6 +209,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case sensorsMenu:
       return sensorTitles(sensor_group_->sensors);
     case nowPlayingMenu:
+    case bootMenu:
       return {};
     default:
       ESP_LOGW(TAG, "menu is bad  %d, %s", menuIndex,
@@ -207,7 +228,7 @@ void HomeThingMenuBase::buttonPressSelect() {
       if (light_group_->lightDetailSelected) {
         // deselect light if selected and stay in lightsDetailMenu
         light_group_->lightDetailSelected = false;
-        update();
+        update_display();
         return;
       }
       break;
@@ -215,7 +236,7 @@ void HomeThingMenuBase::buttonPressSelect() {
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
         speaker_group_->sendActivePlayerRemoteCommand("power");
-        update();
+        update_display();
         return;
       }
 
@@ -232,7 +253,7 @@ void HomeThingMenuBase::buttonPressSelect() {
       break;
   }
   if (selectMenu()) {
-    update();
+    update_display();
   }
 }
 
@@ -256,7 +277,7 @@ void HomeThingMenuBase::buttonPressSelectHold() {
     return;
   }
   if (selectMenuHold()) {
-    update();
+    update_display();
   }
 }
 
@@ -344,7 +365,7 @@ void HomeThingMenuBase::buttonPressUp() {
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
         topMenu();
-        update();
+        update_display();
         return;
       }
 
@@ -365,18 +386,18 @@ void HomeThingMenuBase::buttonPressUp() {
         activeMenuState = nowPlayingMenu;
         optionMenu = noOptionMenu;
       }
-      update();
+      update_display();
       return;
     case lightsDetailMenu:
       if (light_group_->lightDetailSelected) {
         // deselect light if selected and stay in lightsDetailMenu
         light_group_->lightDetailSelected = false;
-        update();
+        update_display();
         return;
       } else {
         // if no light is selected go back to lightsMenu
         activeMenuState = lightsMenu;
-        update();
+        update_display();
         return;
       }
       break;
@@ -386,13 +407,13 @@ void HomeThingMenuBase::buttonPressUp() {
   if (optionMenu == speakerOptionMenu) {
     speaker_group_->toggleShuffle();
     optionMenu = noOptionMenu;
-    update();
+    update_display();
     return;
   }
   optionMenu = noOptionMenu;
   light_group_->clearActiveLight();
   topMenu();
-  update();
+  update_display();
 }
 
 void HomeThingMenuBase::buttonPressDown() {
@@ -405,7 +426,7 @@ void HomeThingMenuBase::buttonPressDown() {
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
         speaker_group_->sendActivePlayerRemoteCommand("play");
-        update();
+        update_display();
         return;
       }
 
@@ -417,7 +438,7 @@ void HomeThingMenuBase::buttonPressDown() {
             SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
             activeMenuState = groupMenu;
-            update();
+            update_display();
           } else {
             speaker_group_->activePlayer->playPause();
             optionMenu = noOptionMenu;
@@ -439,7 +460,7 @@ void HomeThingMenuBase::buttonPressLeft() {
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
         speaker_group_->sendActivePlayerRemoteCommand("back");
-        update();
+        update_display();
         return;
       }
 
@@ -471,7 +492,7 @@ void HomeThingMenuBase::buttonPressRight() {
       if (optionMenu == tvOptionMenu) {
         optionMenu = noOptionMenu;
         speaker_group_->sendActivePlayerRemoteCommand("menu");
-        update();
+        update_display();
         return;
       }
       switch (speaker_group_->activePlayer->get_player_type()) {
@@ -482,7 +503,7 @@ void HomeThingMenuBase::buttonPressRight() {
             SpeakerRemotePlayerType:
           if (optionMenu == speakerOptionMenu) {
             speaker_group_->toggleMute();
-            update();
+            update_display();
           } else {
             speaker_group_->activePlayer->nextTrack();
           }
@@ -504,7 +525,7 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
     case nowPlayingMenu:
       switch (speaker_group_->activePlayer->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          update();
+          update_display();
           break;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
@@ -530,7 +551,7 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
           } else {
             optionMenu = tvOptionMenu;
           }
-          update();
+          update_display();
           break;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
@@ -539,7 +560,7 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
           } else {
             optionMenu = speakerOptionMenu;
           }
-          update();
+          update_display();
           break;
       }
       break;
@@ -560,7 +581,7 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     case sleepMenu:
     case nowPlayingMenu:
       speaker_group_->selectNextMediaPlayer();
-      update();
+      update_display();
       break;
     case sourcesMenu:
     case groupMenu:
@@ -576,8 +597,8 @@ void HomeThingMenuBase::buttonPressScreenRight() {
 }
 
 void HomeThingMenuBase::displayUpdateDebounced() {
-  if (idleTime < 2) {
-    update();
+  if (idleTime < 2 || animation_->animating) {
+    update_display();
   }
 }
 
@@ -588,9 +609,10 @@ void HomeThingMenuBase::debounceUpdateDisplay() {
 }
 
 void HomeThingMenuBase::idleTick() {
+  ESP_LOGD(TAG, "idle %d", idleTime);
   if (activeMenuState == bootMenu) {
     if (idleTime == display_timeout_ && !charging) {
-      ESP_LOGD("idle", "turning off display");
+      ESP_LOGD(TAG, "turning off display");
       // backlight_->turn_off();
     }
     idleTime++;
@@ -598,7 +620,7 @@ void HomeThingMenuBase::idleTick() {
   }
   if (idleTime == 3) {
     optionMenu = noOptionMenu;
-    update();
+    update_display();
   } else if (idleTime == display_timeout_) {
     if (speaker_group_ != NULL && speaker_group_->playerSearchFinished) {
       if (charging && activeMenuState != bootMenu) {
@@ -611,7 +633,7 @@ void HomeThingMenuBase::idleTick() {
       menu_display_->updateDisplay(false);
     }
     if (!charging) {
-      ESP_LOGD("idle", "turning off display");
+      ESP_LOGD(TAG, "turning off display");
       backlight_->turn_off();
     }
     idleTime++;
@@ -622,7 +644,7 @@ void HomeThingMenuBase::idleTick() {
     return;
   } else if (idleTime > sleep_after_) {
     if (!charging) {
-      ESP_LOGI("idle", "night night");
+      ESP_LOGI(TAG, "night night");
       // sleep_toggle_->turn_on();
       return;
     }
@@ -633,7 +655,7 @@ void HomeThingMenuBase::idleTick() {
       switch (activeMenuState) {
         case nowPlayingMenu:
           if (idleTime < 16 || charging) {
-            update();
+            update_display();
           }
           break;
         default:
@@ -678,7 +700,7 @@ void HomeThingMenuBase::idleMenu(bool force) {
       speaker_group_->newSpeakerGroupParent = NULL;
     }
     if (force) {
-      update();
+      update_display();
     }
   }
 }

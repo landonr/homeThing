@@ -166,5 +166,5 @@ display:
         return;
       }
       charging = true;
-      drawMenu();
+      draw_menu_screen();
       return;

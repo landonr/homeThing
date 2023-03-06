@@ -301,7 +301,7 @@ display:
       //   idleTime = 0;
       // }
 
-      // drawMenu();
-      id(homeThingMenu)->drawMenu();
+      // draw_menu_screen();
+      id(homeThingMenu)->draw_menu_screen();
       return;
       

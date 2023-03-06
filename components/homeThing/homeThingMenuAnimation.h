@@ -13,8 +13,8 @@ class HomeThingMenuAnimation {
     animationTick->publish_state(0);
   }
   void resetAnimation(bool force = false);
-  void updateMarqueePosition();
-  void marqueeTick();
+  void updateMarqueePosition(int titleLength);
+  // void marqueeTick(int titleLength);
   void activeTick();
   sensor::Sensor* animationTick;
   bool animating = true;  // boot sequence is animated

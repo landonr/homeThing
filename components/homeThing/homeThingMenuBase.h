@@ -24,7 +24,7 @@
 namespace esphome {
 namespace homething_menu_base {
 
-class HomeThingMenuBase : public Component {
+class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(
       HomeThingMenuDisplay* menu_display,
@@ -41,7 +41,7 @@ class HomeThingMenuBase : public Component {
         sensor_group_(new_sensor_group),
         switch_group_(new_switch_group) {}
   void setup();
-  void drawMenu();
+  void draw_menu_screen();
   void topMenu();
   bool selectMenu();
   bool selectMenuHold();
@@ -75,13 +75,14 @@ class HomeThingMenuBase : public Component {
   }
 
  private:
+  int idleTime = -2;
   MenuStates activeMenuState = bootMenu;
   switch_::Switch* backlight_{nullptr};
   switch_::Switch* sleep_toggle_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
-  HomeThingMenuAnimation* animation_{nullptr};
+  HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
   std::shared_ptr<MenuTitleBase> activeMenuTitle =
       std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_;
@@ -89,8 +90,9 @@ class HomeThingMenuBase : public Component {
   homeassistant_light_group::HomeAssistantLightGroup* light_group_;
   homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_;
   homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_;
-  void update() { this->on_redraw_callbacks_.call(); }
+  void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
+  void update();
 
   sensor::Sensor* display_update_tick_;
   int rotary_ = 0;
@@ -99,6 +101,7 @@ class HomeThingMenuBase : public Component {
   int activeMenuTitleCount = 0;
   CallbackManager<void()> on_redraw_callbacks_{};
   const char* const TAG = "homething.menu.base";
+  bool menu_drawing_ = false;
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger

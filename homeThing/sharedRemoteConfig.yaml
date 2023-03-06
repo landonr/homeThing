@@ -401,6 +401,14 @@ homeassistant_service_group:
             service: script.set_desk_height
             data:
               height: "106"
+    - text: "desk nudge up"
+      command:
+        - lambda: |-
+            ESP_LOGI("homeassistant_service_group", "nudge up");
+        - homeassistant.service:
+            service: button.press
+            data:
+              entity_id: "button.desk_position_nudge_up"
 
 homeThing:
   id: homeThingMenu

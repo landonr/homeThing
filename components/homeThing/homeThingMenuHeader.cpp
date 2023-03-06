@@ -5,7 +5,7 @@ namespace esphome {
 namespace homething_menu_base {
 int HomeThingMenuHeader::getHeaderTextYPos(int yPosOffset) {
   return ((display_state_->header_height_ -
-           display_state_->get_small_font()->get_height() * 1.2) /
+           display_state_->get_small_font()->get_baseline() * 1.2) /
           2) -
          yPosOffset;
 }
@@ -170,7 +170,7 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
     timeString.erase(0, 1);
   }
   int xPos = oldXPos - text_helpers_->getTextWidth(
-                           display_state_->get_small_font()->get_height(),
+                           display_state_->get_small_font()->get_baseline(),
                            timeString.length());
   display_buffer_->printf(
       xPos, yPos, display_state_->get_small_font(),

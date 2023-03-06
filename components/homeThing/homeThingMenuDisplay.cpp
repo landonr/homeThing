@@ -6,36 +6,36 @@ namespace homething_menu_base {
 
 void HomeThingMenuDisplay::setup() {}
 
-void HomeThingMenuDisplay::drawTitle(int menuState, int i, std::string title,
-                                     int yPos, bool buttonSpace) {
-  int xPos = buttonSpace ? display_state_->get_small_font()->get_height() +
+bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
+                                           std::string title, int yPos,
+                                           bool buttonSpace) {
+  bool animating = false;
+  int xPos = buttonSpace ? display_state_->get_small_font()->get_baseline() +
                                display_state_->margin_size_ * 2
                          : display_state_->margin_size_;
   int textYPos = yPos + (display_state_->margin_size_ / 4);
-  const int animationTick = animation_->animationTick->state;
   if (menuState == i) {
+    int characterHeight = display_state_->get_medium_font()->get_baseline();
     int characterLimit = text_helpers_->getCharacterLimit(
-        xPos, display_state_->get_medium_font()->get_height(),
-        display::TextAlign::TOP_LEFT);
-    if (animationTick > title.length() - characterLimit + 4) {
-      // animationTick = -6;
-      animation_->tickAnimation();
-    }
+        xPos, characterHeight, display::TextAlign::TOP_LEFT);
+    ESP_LOGD(TAG, "characterLimit %d, title %d height %d", characterLimit,
+             title.length(), characterHeight);
+
     int marqueePositionMaxed = 0;
     if (title.length() > characterLimit) {
-      animation_->animating = true;
-      marqueePositionMaxed =
-          animationTick < title.length() ? animationTick : title.length();
+      animating = true;
+      const int animationTick =
+          static_cast<int>(animation_->animationTick->state) % title.length();
+      marqueePositionMaxed = animationTick;
       if (marqueePositionMaxed < 0) {
         marqueePositionMaxed = 0;
       }
-    } else {
-      animation_->animating = false;
+      // animation_->marqueeTick(title.length());
     }
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
     display_buffer_->filled_rectangle(
         0, yPos, display_buffer_->get_width(),
-        display_state_->get_medium_font()->get_height() +
+        display_state_->get_medium_font()->get_baseline() +
             display_state_->margin_size_,
         display_state_->color_accent_primary_);
     display_buffer_->printf(
@@ -48,100 +48,43 @@ void HomeThingMenuDisplay::drawTitle(int menuState, int i, std::string title,
         text_helpers_->primaryTextColor(display_state_->dark_mode_),
         display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
+  return animating;
 }
 
-void HomeThingMenuDisplay::drawMenu(
-    MenuStates* activeMenuState,
-    std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-    const int menuIndex) {
-  if (idleTime > 16 && !charging) {
-    menuDrawing = false;
-    ESP_LOGW(TAG, "not drawing");
-    return;
-  }
-
-  if (!display_state_->dark_mode_ && *activeMenuState != bootMenu) {
-    display_buffer_->fill(display_state_->color_white_);
-  }
-  if (speaker_group_ != NULL && speaker_group_->playerSearchFinished == false) {
-    boot_->drawBootSequence(*activeMenuState);
-    return;
-  } else if (*activeMenuState == bootMenu) {
-    ESP_LOGW(TAG, "finished boot");
-    *activeMenuState = rootMenu;
-  }
-  if (autoClearState != 0) {
-    display_buffer_->set_auto_clear(true);
-    autoClearState = 0;
-  }
-  switch (*activeMenuState) {
-    case nowPlayingMenu:
-      now_playing_->drawNowPlaying(menuIndex);
-      break;
-    case lightsMenu:
-      draw_menu(lightTitleSwitches(light_group_->lights), menuIndex);
-      break;
-    case lightsDetailMenu:
-      if (light_group_->getActiveLight() != NULL) {
-        draw_menu(lightTitleItems(light_group_->getActiveLight(),
-                                  display_buffer_->get_width()),
-                  menuIndex);
-      }
-      break;
-    case switchesMenu:
-      draw_menu(switchTitleSwitches(switch_group_->switches), menuIndex);
-      break;
-    case groupMenu: {
-      if (speaker_group_->newSpeakerGroupParent != NULL) {
-        auto playerSwitches =
-            groupTitleSwitches(speaker_group_->media_players_,
-                               speaker_group_->newSpeakerGroupParent);
-        draw_menu({playerSwitches.begin(), playerSwitches.end()}, menuIndex);
-        break;
-      }
-      auto playerStrings = groupTitleString(speaker_group_->media_players_);
-      draw_menu({playerStrings.begin(), playerStrings.end()}, menuIndex);
-      break;
-    }
-    default:
-      draw_menu(active_menu, menuIndex);
-      break;
-  }
-  header_->drawHeader(0, *activeMenuState);
-  menuDrawing = false;
-}
-
-void HomeThingMenuDisplay::draw_menu(
+bool HomeThingMenuDisplay::draw_menu_titles(
     std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int menuIndex) {
   int activeMenuTitleCount = menuTitles.size();
   if (menuTitles.size() == 0 || menuTitles.size() < menuIndex) {
-    return;
+    return false;
   }
   scrollMenuPosition(menuIndex);
   int menuState = menuIndex;
   auto activeMenuTitle = menuTitles[menuIndex];
   int yPos = display_state_->header_height_;
   int sliderExtra = 0;  // fake menu items as the slider uses two rows
+  bool animating = false;
   for (int i = scrollTop; i < menuTitles.size(); i++) {
     if (i + sliderExtra > scrollTop + maxItems()) {
       break;
     }
     switch (menuTitles[i]->titleType) {
       case BaseMenuTitleType:
-        drawTitle(menuState, i, menuTitles[i]->get_name(), yPos, false);
+        animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
+                                    yPos, false) ||
+                    animating;
         drawRightTitleIcon(menuTitles, i, menuState, yPos);
-        yPos += display_state_->get_medium_font()->get_height() +
+        yPos += display_state_->get_medium_font()->get_baseline() +
                 display_state_->margin_size_;
         break;
       case LightMenuTitleType: {
         auto lightTitle =
             std::static_pointer_cast<MenuTitleLight>(menuTitles[i]);
         if (lightTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->get_name(), yPos,
-                    lightTitle->indentLine());
+          animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
+                                      yPos, lightTitle->indentLine());
           drawLeftTitleIcon(menuTitles, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
-          yPos += display_state_->get_medium_font()->get_height() +
+          yPos += display_state_->get_medium_font()->get_baseline() +
                   display_state_->margin_size_;
         }
         break;
@@ -150,11 +93,11 @@ void HomeThingMenuDisplay::draw_menu(
         auto toggleTitle =
             std::static_pointer_cast<MenuTitleToggle>(menuTitles[i]);
         if (toggleTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->get_name(), yPos,
-                    toggleTitle->indentLine());
+          animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
+                                      yPos, toggleTitle->indentLine());
           drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
-          yPos += display_state_->get_medium_font()->get_height() +
+          yPos += display_state_->get_medium_font()->get_baseline() +
                   display_state_->margin_size_;
         }
         break;
@@ -170,7 +113,7 @@ void HomeThingMenuDisplay::draw_menu(
                                    sliderState, item, i == 2);
         sliderExtra += 0;
 
-        yPos += (display_state_->get_medium_font()->get_height() +
+        yPos += (display_state_->get_medium_font()->get_baseline() +
                  display_state_->margin_size_) *
                 2;
         break;
@@ -179,15 +122,15 @@ void HomeThingMenuDisplay::draw_menu(
         auto playerTitle =
             std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
         if (playerTitle != NULL) {
-          drawTitle(menuState, i, menuTitles[i]->get_name(), yPos,
-                    playerTitle->indentLine());
+          draw_menu_title(menuState, i, menuTitles[i]->get_name(), yPos,
+                          playerTitle->indentLine());
           int length = playerTitle->get_name().length() +
                        (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->media_player_->playerState,
                          menuState == i);
           drawLeftTitleIcon(menuTitles, playerTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
-          yPos += display_state_->get_medium_font()->get_height() +
+          yPos += display_state_->get_medium_font()->get_baseline() +
                   display_state_->margin_size_;
         }
         break;
@@ -195,6 +138,67 @@ void HomeThingMenuDisplay::draw_menu(
     }
   }
   drawScrollBar(menuTitles.size(), display_state_->header_height_, menuIndex);
+  return animating;
+}
+
+bool HomeThingMenuDisplay::draw_menu_screen(
+    MenuStates* activeMenuState,
+    std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
+    const int menuIndex) {
+  if (!display_state_->dark_mode_ && *activeMenuState != bootMenu) {
+    display_buffer_->fill(display_state_->color_white_);
+  }
+  if (speaker_group_ != NULL && speaker_group_->playerSearchFinished == false) {
+    return boot_->drawBootSequence(*activeMenuState);
+  } else if (*activeMenuState == bootMenu) {
+    ESP_LOGW(TAG, "finished boot");
+    *activeMenuState = rootMenu;
+  }
+  if (autoClearState != 0) {
+    display_buffer_->set_auto_clear(true);
+    autoClearState = 0;
+  }
+  bool animating = false;
+  switch (*activeMenuState) {
+    case nowPlayingMenu:
+      now_playing_->drawNowPlaying(menuIndex);
+      break;
+    case lightsMenu:
+      animating =
+          draw_menu_titles(lightTitleSwitches(light_group_->lights), menuIndex);
+      break;
+    case lightsDetailMenu:
+      if (light_group_->getActiveLight() != NULL) {
+        animating =
+            draw_menu_titles(lightTitleItems(light_group_->getActiveLight(),
+                                             display_buffer_->get_width()),
+                             menuIndex);
+      }
+      break;
+    case switchesMenu:
+      animating = draw_menu_titles(switchTitleSwitches(switch_group_->switches),
+                                   menuIndex);
+      break;
+    case groupMenu: {
+      if (speaker_group_->newSpeakerGroupParent != NULL) {
+        auto playerSwitches =
+            groupTitleSwitches(speaker_group_->media_players_,
+                               speaker_group_->newSpeakerGroupParent);
+        animating = draw_menu_titles(
+            {playerSwitches.begin(), playerSwitches.end()}, menuIndex);
+        break;
+      }
+      auto playerStrings = groupTitleString(speaker_group_->media_players_);
+      animating = draw_menu_titles({playerStrings.begin(), playerStrings.end()},
+                                   menuIndex);
+      break;
+    }
+    default:
+      animating = draw_menu_titles(active_menu, menuIndex);
+      break;
+  }
+  header_->drawHeader(0, *activeMenuState);
+  return animating;
 }
 
 void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
@@ -232,7 +236,7 @@ void HomeThingMenuDisplay::scrollMenuPosition(int menuIndex) {
 int HomeThingMenuDisplay::maxItems() {
   int maxItems =
       ((display_buffer_->get_height() - display_state_->header_height_) /
-       (display_state_->get_medium_font()->get_height() +
+       (display_state_->get_medium_font()->get_baseline() +
         display_state_->margin_size_)) -
       1;
   return maxItems;
@@ -305,7 +309,7 @@ void HomeThingMenuDisplay::drawTitleImage(
   ESP_LOGW(TAG, "draw title image %d", titleState);
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) *
-              (display_state_->get_medium_font()->get_height() *
+              (display_state_->get_medium_font()->get_baseline() *
                display_state_->font_size_width_ratio_)) +
              4;
   auto color = selected

@@ -84,20 +84,9 @@ class HomeThingMenuDisplay {
         sensor_group_(new_sensor_group),
         switch_group_(new_switch_group) {}
   void setup();
-  void drawMenu(MenuStates* activeMenuState,
-                std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-                const int menuIndex);
-  void drawTitle(int menuState, int i, std::string title, int yPos,
-                 bool buttonSpace);
-  void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
-  void scrollMenuPosition(int menuIndex);
-  int maxItems();
-  void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
-                         std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
-                         int menuState, int yPos);
-  void drawRightTitleIcon(
-      std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i,
-      int menuState, int yPos);
+  bool draw_menu_screen(MenuStates* activeMenuState,
+                        std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
+                        const int menuIndex);
   void updateDisplay(bool force);
   void skipBootSequence(const MenuStates activeMenuState);
   // void set_display_state(HomeThingMenuDisplayState* new_display_state) {
@@ -131,8 +120,19 @@ class HomeThingMenuDisplay {
       int characterCount, int yPos,
       const homeassistant_media_player::RemotePlayerState& titleState,
       bool selected);
-  void draw_menu(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
-                 const int menuIndex);
+  bool draw_menu_titles(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
+                        const int menuIndex);
+  bool draw_menu_title(int menuState, int i, std::string title, int yPos,
+                       bool buttonSpace);
+  void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
+  void scrollMenuPosition(int menuIndex);
+  int maxItems();
+  void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
+                         std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
+                         int menuState, int yPos);
+  void drawRightTitleIcon(
+      std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i,
+      int menuState, int yPos);
 
   DisplayUpdateImpl* displayUpdate = new DisplayUpdateImpl();
   display::DisplayBuffer* display_buffer_{nullptr};

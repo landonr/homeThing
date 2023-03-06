@@ -72,9 +72,7 @@ enum OptionMenuType {
 
 static int display_timeout_ = 16;
 static int sleep_after_ = 3600;
-static int idleTime = -2;
 static bool charging = true;
-static bool menuDrawing = false;
 static bool menu_rollover_on_ = true;
 static OptionMenuType optionMenu = noOptionMenu;
 

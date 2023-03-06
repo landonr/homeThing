@@ -28,7 +28,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
         display_state_->color_red_,   display_state_->color_pink_,
         display_state_->color_green_, display_state_->color_blue_};
     int textWidth = maxCharacters *
-                    display_state_->get_large_font()->get_height() *
+                    display_state_->get_large_font()->get_baseline() *
                     display_state_->font_size_width_ratio_;
     for (int i = 0; i < maxCharacters; i++) {
       int colorIndex = i <= currentAnimationTick ? currentAnimationTick - i : 0;
@@ -38,7 +38,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
                          : display_state_->color_accent_primary_;
         int characterXPos =
             xPos - textWidth / 2 +
-            (i * display_state_->get_large_font()->get_height() *
+            (i * display_state_->get_large_font()->get_baseline() *
              display_state_->font_size_width_ratio_);
         display_buffer_->printf(
             characterXPos, yPos, display_state_->get_large_heavy_font(), color,
@@ -55,7 +55,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
       yPos = display_state_->getBottomBarYPosition(
                  false, display_buffer_->get_height()) -
              display_state_->margin_size_ / 2 -
-             display_state_->get_small_font()->get_height();
+             display_state_->get_small_font()->get_baseline();
       display_buffer_->printf(xPos, yPos, display_state_->get_small_font(),
                               display_state_->color_accent_primary_,
                               display::TextAlign::TOP_CENTER, "sleep >");
@@ -121,8 +121,8 @@ float HomeThingMenuBoot::bootSequenceLoadingProgress() {
 void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
                                                    float progress) {
   int barMargin = 1;
-  int barHeight = display_state_->get_small_font()->get_height();
-  int iconMargin = display_state_->get_small_font()->get_height() *
+  int barHeight = display_state_->get_small_font()->get_baseline();
+  int iconMargin = display_state_->get_small_font()->get_baseline() *
                    display_state_->font_size_width_ratio_ * 3;
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * progress;
@@ -141,7 +141,7 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
   float animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
-  int maxValue = display_state_->get_small_font()->get_height() +
+  int maxValue = display_state_->get_small_font()->get_baseline() +
                  display_state_->bottom_bar_margin_;
 
   const int animationTick = animation_->animationTick->state;
@@ -167,7 +167,7 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
     int yPos = display_state_->getBottomBarYPosition(
                    false, display_buffer_->get_height()) -
                display_state_->margin_size_ / 2 -
-               display_state_->get_small_font()->get_height();
+               display_state_->get_small_font()->get_baseline();
     display_buffer_->printf(xPos, yPos, display_state_->get_small_font(),
                             display_state_->color_accent_primary_,
                             display::TextAlign::TOP_CENTER, "skip >");
@@ -216,7 +216,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
   return maxAnimationDuration;
 }
 
-void HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
+bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
   speaker_group_->findActivePlayer();
 
   int imageYPos =
@@ -233,16 +233,14 @@ void HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
       max(maxAnimationDuration,
           drawBootSequenceTitle(xPos, imageYPos, activeMenuState));
   const int animationTick = animation_->animationTick->state;
-  ESP_LOGI(TAG, "tick animation %f %d", animation_->animationTick->state,
-           animationTick);
   if (animationTick < maxAnimationDuration) {
-    animation_->tickAnimation();
+    return true;
   } else {
     if (wifi_connected_->state && api_connected_->state) {
-      animation_->animating = false;
+      return false;
     }
   }
-  menuDrawing = false;
+  return true;
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

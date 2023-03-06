@@ -18,7 +18,7 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(int menuIndex) {
   auto menuTitles = getNowPlayingMenuStates();
   int activeMenuTitleCount = menuTitles.size();
   int yPos = display_buffer_->get_height() - display_state_->margin_size_ -
-             display_state_->get_large_font()->get_height();
+             display_state_->get_large_font()->get_baseline();
   if (activeMenuTitleCount < 1) {
     return;
   }
@@ -95,13 +95,13 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
   int xPos = display_buffer_->get_width() / 2;
   auto nowPlayingWrappedText =
       getWrappedTitles(display_state_->margin_size_,
-                       display_state_->get_medium_font()->get_height(),
+                       display_state_->get_medium_font()->get_baseline(),
                        display::TextAlign::TOP_LEFT, nowPlayingText);
   auto mediaArtistWrappedText = getWrappedTitles(
-      xPos, display_state_->get_large_font()->get_height(),
+      xPos, display_state_->get_large_font()->get_baseline(),
       display::TextAlign::TOP_CENTER, speaker_group_->mediaTitleString());
   auto mediaTitleWrappedText = getWrappedTitles(
-      xPos, display_state_->get_medium_font()->get_height(),
+      xPos, display_state_->get_medium_font()->get_baseline(),
       display::TextAlign::TOP_CENTER, speaker_group_->mediaSubtitleString());
   int lineCount = nowPlayingWrappedText->size() +
                   mediaArtistWrappedText->size() +
@@ -116,7 +116,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
   }
   yPos = drawTextWrapped(
       display_state_->margin_size_, yPos,
-      display_state_->get_medium_font()->get_height(),
+      display_state_->get_medium_font()->get_baseline(),
       display_state_->get_medium_font(),
       text_helpers_->primaryTextColor(display_state_->dark_mode_),
       display::TextAlign::TOP_LEFT, *nowPlayingWrappedText, maxLines);
@@ -140,7 +140,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
   yPos = yPos + display_state_->margin_size_ / 2;
   if (mediaArtistWrappedText->size() > 0) {
     yPos = drawTextWrapped(
-        xPos, yPos, display_state_->get_large_font()->get_height(),
+        xPos, yPos, display_state_->get_large_font()->get_baseline(),
         display_state_->get_large_font(),
         text_helpers_->primaryTextColor(display_state_->dark_mode_),
         display::TextAlign::TOP_CENTER, *mediaArtistWrappedText, maxLines);
@@ -149,7 +149,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
   if (mediaTitleWrappedText->size() > 0) {
     yPos = yPos + display_state_->margin_size_;
     drawTextWrapped(display_buffer_->get_width() / 2, yPos,
-                    display_state_->get_medium_font()->get_height(),
+                    display_state_->get_medium_font()->get_baseline(),
                     display_state_->get_medium_font(),
                     text_helpers_->primaryTextColor(display_state_->dark_mode_),
                     display::TextAlign::TOP_CENTER, *mediaTitleWrappedText,
@@ -175,8 +175,8 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
       return;
     }
     int barMargin = 1;
-    int barHeight = display_state_->get_small_font()->get_height();
-    int textWidth = (display_state_->get_small_font()->get_height() *
+    int barHeight = display_state_->get_small_font()->get_baseline();
+    int textWidth = (display_state_->get_small_font()->get_baseline() *
                      display_state_->font_size_width_ratio_ * 5) +
                     display_state_->margin_size_ / 2;
     int totalBarWidth = display_buffer_->get_width() - textWidth * 2;
@@ -196,7 +196,8 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
         barHeight - 2 - barMargin * 2,
         text_helpers_->primaryTextColor(display_state_->dark_mode_));
 
-    int textYPos = yPos - display_state_->get_small_font()->get_height() * 0.1;
+    int textYPos =
+        yPos - display_state_->get_small_font()->get_baseline() * 0.1;
     std::string mediaDurationSeconds = secondsToString(mediaDuration);
     std::string mediaPositionSeconds = secondsToString(mediaPosition);
     display_buffer_->printf(
@@ -307,8 +308,8 @@ void HomeThingMenuNowPlaying::drawTVOptionMenu() {
 
 void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int barMargin = 1;
-  int barHeight = display_state_->get_small_font()->get_height();
-  int iconMargin = display_state_->get_small_font()->get_height() *
+  int barHeight = display_state_->get_small_font()->get_baseline();
+  int iconMargin = display_state_->get_small_font()->get_baseline() *
                    display_state_->font_size_width_ratio_ * 3;
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * (speaker_group_->getVolumeLevel() / 100);
@@ -351,12 +352,12 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop() {
           display::TextAlign::TOP_CENTER, "Playing...");
       auto playingNewSourceWrappedText = getWrappedTitles(
           display_buffer_->get_width() / 2,
-          display_state_->get_large_font()->get_height(),
+          display_state_->get_large_font()->get_baseline(),
           display::TextAlign::TOP_CENTER, speaker_group_->playingNewSourceText);
       drawTextWrapped(
           display_buffer_->get_width() / 2,
           display_state_->header_height_ + display_state_->margin_size_ * 2 +
-              display_state_->get_medium_font()->get_height(),
+              display_state_->get_medium_font()->get_baseline(),
           24, display_state_->get_large_font(),
           text_helpers_->primaryTextColor(display_state_->dark_mode_),
           display::TextAlign::TOP_CENTER, *playingNewSourceWrappedText, 0);
