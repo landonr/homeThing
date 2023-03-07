@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import display, font, color, wifi, api, binary_sensor
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_INTERVAL
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
 from esphome.components.homeassistant_service_group import homeassistant_service_group_ns
@@ -92,7 +92,6 @@ HEADER_SCHEMA = cv.Schema(
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
-        # cv.GenerateID(CONF_IDLE_TICK): IDLE_TICK_SCHEMA,
         cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
         cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
         cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
@@ -189,6 +188,7 @@ async def to_code(config):
     # idle_tick = cg.new_Pvariable(config[CONF_IDLE_TICK])
     menu = cg.new_Pvariable(config[CONF_ID], menu_display, media_players, lights, services, sensors, switches)
     await cg.register_component(menu, config)
+
     for conf in config.get(CONF_ON_REDRAW, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], menu)
         await automation.build_automation(trigger, [(HomeThingMenuBaseConstPtr, "it")], conf)

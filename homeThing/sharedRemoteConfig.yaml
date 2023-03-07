@@ -331,8 +331,7 @@ time:
     id: esptime
     on_time_sync:
       then:
-        - lambda: |-
-            // displayUpdate.updateDisplay(false);
+        component.update: my_display
 
 homeassistant_switch_group:
   id: switch_group_component
