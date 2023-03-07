@@ -102,6 +102,7 @@ class HomeThingMenuBase : public PollingComponent {
   CallbackManager<void()> on_redraw_callbacks_{};
   const char* const TAG = "homething.menu.base";
   bool menu_drawing_ = false;
+  option_menuType option_menu_ = noOptionMenu;
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger

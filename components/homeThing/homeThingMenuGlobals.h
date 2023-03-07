@@ -62,7 +62,7 @@ static std::vector<NowPlayingMenuState> TVNowPlayingMenuStates() {
           menuNowPlayingMenuState};
 }
 
-enum OptionMenuType {
+enum option_menuType {
   noOptionMenu,
   volumeOptionMenu,
   tvOptionMenu,
@@ -74,7 +74,6 @@ static int display_timeout_ = 16;
 static int sleep_after_ = 3600;
 static bool charging = true;
 static bool menu_rollover_on_ = true;
-static OptionMenuType optionMenu = noOptionMenu;
 
 }  // namespace homething_menu_base
 }  // namespace esphome

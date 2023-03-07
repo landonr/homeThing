@@ -86,7 +86,7 @@ class HomeThingMenuDisplay {
   void setup();
   bool draw_menu_screen(MenuStates* activeMenuState,
                         std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-                        const int menuIndex);
+                        const int menuIndex, const option_menuType option_menu);
   void updateDisplay(bool force);
   void skipBootSequence(const MenuStates activeMenuState);
   // void set_display_state(HomeThingMenuDisplayState* new_display_state) {

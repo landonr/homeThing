@@ -61,8 +61,9 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(int menuIndex) {
   }
 }
 
-void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
-  if (drawOptionMenuAndStop()) {
+void HomeThingMenuNowPlaying::drawNowPlaying(
+    int menuIndex, const option_menuType option_menu) {
+  if (drawOptionMenuAndStop(option_menu)) {
     return;
   }
   if (display_state_->draw_now_playing_menu_) {
@@ -156,7 +157,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(int menuIndex) {
                     maxLines);
   }
   delete mediaTitleWrappedText;
-  if (optionMenu == volumeOptionMenu) {
+  if (option_menu == volumeOptionMenu) {
     drawVolumeOptionMenu();
   } else {
     drawMediaDuration();
@@ -330,8 +331,9 @@ void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
       barHeight - 2 - barMargin * 2, display_state_->color_accent_primary_);
 }
 
-bool HomeThingMenuNowPlaying::drawOptionMenuAndStop() {
-  switch (optionMenu) {
+bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
+    const option_menuType option_menu) {
+  switch (option_menu) {
     case tvOptionMenu:
       drawTVOptionMenu();
       return true;

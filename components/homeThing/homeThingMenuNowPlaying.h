@@ -25,11 +25,10 @@ class HomeThingMenuNowPlaying {
         display_state_(new_display_state),
         text_helpers_(new_text_helpers),
         speaker_group_(new_speaker_group) {}
-  void drawNowPlaying(int menuIndex);
+  void drawNowPlaying(int menuIndex, const option_menuType option_menu);
   void drawSpeakerOptionMenu();
   void drawTVOptionMenu();
   void drawVolumeOptionMenu();
-  bool drawOptionMenuAndStop();
 
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
@@ -39,6 +38,7 @@ class HomeThingMenuNowPlaying {
 
   std::string secondsToString(int seconds);
   void drawMediaDuration();
+  bool drawOptionMenuAndStop(const option_menuType option_menu);
   std::string stringForNowPlayingMenuState(NowPlayingMenuState state);
   std::vector<NowPlayingMenuState> getNowPlayingMenuStates();
   void drawNowPlayingSelectMenu(int menuIndex);

@@ -145,7 +145,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState,
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-    const int menuIndex) {
+    const int menuIndex, const option_menuType option_menu) {
   if (!display_state_->dark_mode_ && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->color_white_);
   }
@@ -162,7 +162,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   bool animating = false;
   switch (*activeMenuState) {
     case nowPlayingMenu:
-      now_playing_->drawNowPlaying(menuIndex);
+      now_playing_->drawNowPlaying(menuIndex, option_menu);
       break;
     case lightsDetailMenu:
       if (light_group_->getActiveLight() != NULL) {
