@@ -409,6 +409,14 @@ homeassistant_service_group:
             service: button.press
             data:
               entity_id: "button.desk_position_nudge_up"
+    - text: "desk nudge down"
+      command:
+        - lambda: |-
+            ESP_LOGI("homeassistant_service_group", "nudge down");
+        - homeassistant.service:
+            service: button.press
+            data:
+              entity_id: "button.desk_position_nudge_down"
 
 homeThing:
   id: homeThingMenu
