@@ -161,7 +161,7 @@ bool HomeThingMenuBase::selectRootMenu() {
     case groupMenu:
     case rootMenu:
     case bootMenu:
-      ESP_LOGD(TAG, "selecting menu is bad %d %s", menuIndex,
+      ESP_LOGD(TAG, "select_root_menu: selecting menu is bad %d %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
       return false;
   }
@@ -208,11 +208,15 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return sceneTitleStrings(service_group_->services);
     case sensorsMenu:
       return sensorTitles(sensor_group_->sensors);
+    case lightsMenu:
+      return lightTitleSwitches(light_group_->lights);
+    case switchesMenu:
+      return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:
     case bootMenu:
       return {};
     default:
-      ESP_LOGW(TAG, "menu is bad  %d, %s", menuIndex,
+      ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
       return {};
   }

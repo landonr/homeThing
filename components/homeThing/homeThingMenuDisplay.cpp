@@ -69,6 +69,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
     }
     switch (menuTitles[i]->titleType) {
       case BaseMenuTitleType:
+      case SourceMenuTitleType:
         animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
                                     yPos, false) ||
                     animating;
@@ -163,10 +164,6 @@ bool HomeThingMenuDisplay::draw_menu_screen(
     case nowPlayingMenu:
       now_playing_->drawNowPlaying(menuIndex);
       break;
-    case lightsMenu:
-      animating =
-          draw_menu_titles(lightTitleSwitches(light_group_->lights), menuIndex);
-      break;
     case lightsDetailMenu:
       if (light_group_->getActiveLight() != NULL) {
         animating =
@@ -174,10 +171,6 @@ bool HomeThingMenuDisplay::draw_menu_screen(
                                              display_buffer_->get_width()),
                              menuIndex);
       }
-      break;
-    case switchesMenu:
-      animating = draw_menu_titles(switchTitleSwitches(switch_group_->switches),
-                                   menuIndex);
       break;
     case groupMenu: {
       if (speaker_group_->newSpeakerGroupParent != NULL) {

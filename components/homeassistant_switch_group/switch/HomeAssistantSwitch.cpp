@@ -32,7 +32,7 @@ void HomeAssistantSwitch::toggleSwitch() {
     kv.value = it.second;
     resp.data.push_back(kv);
   }
-  // api::global_api_server->send_homeassistant_service_call(resp);
+  api::global_api_server->send_homeassistant_service_call(resp);
 }
 
 void HomeAssistantSwitch::state_changed(std::string state) {
