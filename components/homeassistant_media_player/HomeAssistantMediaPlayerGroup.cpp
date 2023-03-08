@@ -19,6 +19,7 @@ void HomeAssistantMediaPlayerGroup::setup() {
 
 void HomeAssistantMediaPlayerGroup::register_media_player(
     HomeAssistantBaseMediaPlayer* new_media_player) {
+  new_media_player->index = media_players_.size();
   media_players_.push_back(new_media_player);
   new_media_player->add_on_state_callback([this, new_media_player]() {
     if (this->display != NULL) {
@@ -337,13 +338,17 @@ bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
 
 void HomeAssistantMediaPlayerGroup::selectNextMediaPlayer() {
   if (activePlayer != NULL) {
-    // if (activePlayer->index < tvs.size() - 1) {
-    //   setActivePlayer(tvs[activePlayer->index + 1]);
-    // } else if (activePlayer->index - tvs.size() + 1 < speakers.size()) {
-    //   setActivePlayer(speakers[activePlayer->index - tvs.size() + 1]);
-    // } else if (tvs.size() > 0) {
-    //   setActivePlayer(tvs[0]);
-    // }
+    ESP_LOGI(TAG, "Syncing active player %d, %d", activePlayer->index,
+             media_players_.size());
+    if (activePlayer->index < media_players_.size() - 1) {
+      ESP_LOGI(TAG, "32Syncing active player %d", activePlayer->index);
+      setActivePlayer(media_players_[activePlayer->index + 1]);
+    } else if (media_players_.size() > 0) {
+      ESP_LOGI(TAG, "323 Syncing active player %d", activePlayer->index);
+      setActivePlayer(media_players_[0]);
+    } else {
+      ESP_LOGI(TAG, "132Syncing active player %d", activePlayer->index);
+    }
   }
 }
 
