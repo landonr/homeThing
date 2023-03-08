@@ -15,11 +15,10 @@ HomeThingMenuNowPlaying::getNowPlayingMenuStates() {
 }
 
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(int menuIndex) {
-  auto menuTitles = getNowPlayingMenuStates();
-  int activeMenuTitleCount = menuTitles.size();
+  auto menu_titles = getNowPlayingMenuStates();
   int yPos = display_buffer_->get_height() - display_state_->margin_size_ -
              display_state_->get_large_font()->get_baseline();
-  if (activeMenuTitleCount < 1) {
+  if (menu_titles.size() < 1) {
     return;
   }
   display_buffer_->printf(
@@ -27,21 +26,21 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(int menuIndex) {
       display_state_->get_large_font(),
       text_helpers_->primaryTextColor(display_state_->dark_mode_),
       display::TextAlign::TOP_CENTER,
-      stringForNowPlayingMenuState(menuTitles[menuIndex]).c_str());
-  if (menuIndex + 1 < activeMenuTitleCount) {
+      stringForNowPlayingMenuState(menu_titles[menuIndex]).c_str());
+  if (menuIndex + 1 < menu_titles.size()) {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.85, yPos,
         display_state_->get_small_font(),
         text_helpers_->primaryTextColor(display_state_->dark_mode_),
         display::TextAlign::TOP_CENTER,
-        stringForNowPlayingMenuState(menuTitles[menuIndex + 1]).c_str());
+        stringForNowPlayingMenuState(menu_titles[menuIndex + 1]).c_str());
   } else {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.85, yPos,
         display_state_->get_small_font(),
         text_helpers_->primaryTextColor(display_state_->dark_mode_),
         display::TextAlign::TOP_CENTER,
-        stringForNowPlayingMenuState(menuTitles[0]).c_str());
+        stringForNowPlayingMenuState(menu_titles[0]).c_str());
   }
   if (menuIndex - 1 >= 0) {
     display_buffer_->printf(
@@ -49,14 +48,14 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(int menuIndex) {
         display_state_->get_small_font(),
         text_helpers_->primaryTextColor(display_state_->dark_mode_),
         display::TextAlign::TOP_CENTER,
-        stringForNowPlayingMenuState(menuTitles[menuIndex - 1]).c_str());
+        stringForNowPlayingMenuState(menu_titles[menuIndex - 1]).c_str());
   } else {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.15, yPos,
         display_state_->get_small_font(),
         text_helpers_->primaryTextColor(display_state_->dark_mode_),
         display::TextAlign::TOP_CENTER,
-        stringForNowPlayingMenuState(menuTitles[activeMenuTitleCount - 1])
+        stringForNowPlayingMenuState(menu_titles[menu_titles.size() - 1])
             .c_str());
   }
 }

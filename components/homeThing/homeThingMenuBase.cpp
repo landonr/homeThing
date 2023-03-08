@@ -23,12 +23,11 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   if (!menu_drawing_) {
     menu_drawing_ = true;
-    auto active_menu = activeMenu();
-    activeMenuTitleCount = active_menu.size();
+    menu_titles = activeMenu();
     ESP_LOGD(TAG, "drawMenu:%d %s #%d", menuIndex,
              menuTitleForType(activeMenuState)->get_name().c_str(),
-             activeMenuTitleCount);
-    if (menu_display_->draw_menu_screen(&activeMenuState, active_menu,
+             menu_titles.size());
+    if (menu_display_->draw_menu_screen(&activeMenuState, menu_titles,
                                         menuIndex, option_menu_)) {
       this->animation_->tickAnimation();
       this->animation_->animating = true;
@@ -55,7 +54,7 @@ void HomeThingMenuBase::update() {
 }
 
 bool HomeThingMenuBase::selectMenu() {
-  int menuIndexForSource = menuIndex;
+  auto activeMenuTitle = menu_titles[menuIndex];
   switch (activeMenuState) {
     case rootMenu:
       return selectRootMenu();
@@ -78,21 +77,27 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     }
     case lightsMenu: {
-      light_group_->toggleLight(menuIndexForSource);
+      light_group_->toggleLight(menuIndex);
       return true;
     }
     case lightsDetailMenu:
       light_group_->lightDetailSelected = true;
-    case mediaPlayersMenu:
-      selectMediaPlayers();
+    case mediaPlayersMenu: {
+      auto media_player_title =
+          std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
+      if (speaker_group_->selectMediaPlayers(
+              media_player_title->media_player_)) {
+        topMenu();
+      }
       break;
+    }
     case scenesMenu:
-      if (service_group_->select_service(menuIndexForSource)) {
+      if (service_group_->select_service(menuIndex)) {
         topMenu();
       }
       break;
     case switchesMenu:
-      if (switch_group_->selectSwitch(menuIndexForSource)) {
+      if (switch_group_->selectSwitch(menuIndex)) {
         topMenu();
       }
       break;
@@ -314,9 +319,9 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
     default:
       break;
   }
-  if (menuIndex < activeMenuTitleCount - 1) {
+  if (menuIndex < menu_titles.size() - 1) {
     menuIndex++;
-  } else if (menu_rollover_on_ && menuIndex == activeMenuTitleCount - 1) {
+  } else if (menu_rollover_on_ && menuIndex == menu_titles.size() - 1) {
     menuIndex = 0;
   }
   debounceUpdateDisplay();
@@ -354,7 +359,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   if (menuIndex > 0) {
     menuIndex--;
   } else if (menu_rollover_on_ && menuIndex == 0) {
-    menuIndex = activeMenuTitleCount - 1;
+    menuIndex = menu_titles.size() - 1;
   }
   debounceUpdateDisplay();
 }
@@ -668,16 +673,6 @@ void HomeThingMenuBase::idleTick() {
     }
   }
   idleTime++;
-}
-
-void HomeThingMenuBase::selectMediaPlayers() {
-  for (auto& media_player : speaker_group_->media_players_) {
-    if (media_player->entity_id_ == activeMenuTitle->entity_id_) {
-      speaker_group_->activePlayer = media_player;
-      topMenu();
-      return;
-    }
-  }
 }
 
 void HomeThingMenuBase::goToScreenFromString(std::string screenName) {

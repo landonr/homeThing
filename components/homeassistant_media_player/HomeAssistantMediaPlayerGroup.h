@@ -45,12 +45,11 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void selectFirstActivePlayer();
   void setup();
   void findActivePlayer(bool background = false);
+  bool selectMediaPlayers(HomeAssistantBaseMediaPlayer* selected_media_player);
   void setActivePlayer(HomeAssistantBaseMediaPlayer* newActivePlayer);
   // void setup(std::vector<TVSetup> newTVSetups,
   //            std::vector<SpeakerSetup> newSpeakerSetups);
-  void register_media_player(
-      homeassistant_media_player::HomeAssistantBaseMediaPlayer*
-          new_media_player);
+  void register_media_player(HomeAssistantBaseMediaPlayer* new_media_player);
   std::vector<std::string> groupNames();
   std::string friendlyNameForEntityId(std::string speakerentityId);
   void stripUnicode(std::string* str);

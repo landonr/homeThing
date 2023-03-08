@@ -53,7 +53,6 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
 
 bool HomeThingMenuDisplay::draw_menu_titles(
     std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int menuIndex) {
-  int activeMenuTitleCount = menuTitles.size();
   if (menuTitles.size() == 0 || menuTitles.size() < menuIndex) {
     return false;
   }

@@ -47,7 +47,6 @@ class HomeThingMenuBase : public PollingComponent {
   bool selectMenuHold();
   bool selectRootMenu();
   std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType);
-  std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
   void idleTick();
   bool buttonPressWakeUpDisplay();
   void idleMenu(bool force);
@@ -65,8 +64,6 @@ class HomeThingMenuBase : public PollingComponent {
   void buttonPressScreenLeft();
   void buttonPressScreenRight();
 
-  // move to media players
-  void selectMediaPlayers();
   // create service for this with input select options
   void goToScreenFromString(std::string screenName);
   void displayUpdateDebounced();
@@ -83,8 +80,6 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
-  std::shared_ptr<MenuTitleBase> activeMenuTitle =
-      std::make_shared<MenuTitleBase>("", "", NoMenuTitleRightIcon);
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_;
   homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
   homeassistant_light_group::HomeAssistantLightGroup* light_group_;
@@ -93,12 +88,13 @@ class HomeThingMenuBase : public PollingComponent {
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();
+  std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
 
   sensor::Sensor* display_update_tick_;
   int rotary_ = 0;
   int menuIndex = 0;
   int rotaryPosition = 0;
-  int activeMenuTitleCount = 0;
+  std::vector<std::shared_ptr<MenuTitleBase>> menu_titles;
   CallbackManager<void()> on_redraw_callbacks_{};
   const char* const TAG = "homething.menu.base";
   bool menu_drawing_ = false;

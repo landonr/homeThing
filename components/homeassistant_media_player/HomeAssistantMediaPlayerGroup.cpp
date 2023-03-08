@@ -18,8 +18,7 @@ void HomeAssistantMediaPlayerGroup::setup() {
 }
 
 void HomeAssistantMediaPlayerGroup::register_media_player(
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer*
-        new_media_player) {
+    HomeAssistantBaseMediaPlayer* new_media_player) {
   media_players_.push_back(new_media_player);
   new_media_player->add_on_state_callback([this, new_media_player]() {
     if (this->display != NULL) {
@@ -27,6 +26,22 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
     }
     this->state_updated(new_media_player->playerState);
   });
+}
+
+bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
+    HomeAssistantBaseMediaPlayer* selected_media_player) {
+  ESP_LOGI(TAG, "selecting media player %s",
+           selected_media_player->entity_id_.c_str());
+  for (auto& media_player : media_players_) {
+    ESP_LOGI(TAG, "selecting mediar player? %s",
+             media_player->entity_id_.c_str());
+
+    if (media_player->entity_id_ == selected_media_player->entity_id_) {
+      setActivePlayer(media_player);
+      return true;
+    }
+  }
+  return false;
 }
 
 void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
