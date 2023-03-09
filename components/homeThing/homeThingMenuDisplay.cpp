@@ -11,9 +11,9 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
                                            bool buttonSpace) {
   bool animating = false;
   int xPos = buttonSpace ? display_state_->get_small_font()->get_baseline() +
-                               display_state_->margin_size_ * 2
-                         : display_state_->margin_size_;
-  int textYPos = yPos + (display_state_->margin_size_ / 4);
+                               display_state_->get_margin_size() * 2
+                         : display_state_->get_margin_size();
+  int textYPos = yPos + (display_state_->get_margin_size() / 4);
   if (menuState == i) {
     int characterHeight = display_state_->get_medium_font()->get_baseline();
     int characterLimit = text_helpers_->getCharacterLimit(
@@ -36,16 +36,16 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
     display_buffer_->filled_rectangle(
         0, yPos, display_buffer_->get_width(),
         display_state_->get_medium_font()->get_baseline() +
-            display_state_->margin_size_,
+            display_state_->get_margin_size(),
         display_state_->color_accent_primary_);
     display_buffer_->printf(
         xPos, textYPos, display_state_->get_medium_font(),
-        text_helpers_->secondaryTextColor(display_state_->dark_mode_),
+        text_helpers_->secondaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
   } else {
     display_buffer_->printf(
         xPos, textYPos, display_state_->get_medium_font(),
-        text_helpers_->primaryTextColor(display_state_->dark_mode_),
+        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
   return animating;
@@ -59,7 +59,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
   scrollMenuPosition(menuIndex);
   int menuState = menuIndex;
   auto activeMenuTitle = menuTitles[menuIndex];
-  int yPos = display_state_->header_height_;
+  int yPos = display_state_->get_header_height();
   int sliderExtra = 0;  // fake menu items as the slider uses two rows
   bool animating = false;
   for (int i = scrollTop; i < menuTitles.size(); i++) {
@@ -74,7 +74,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
                     animating;
         drawRightTitleIcon(menuTitles, i, menuState, yPos);
         yPos += display_state_->get_medium_font()->get_baseline() +
-                display_state_->margin_size_;
+                display_state_->get_margin_size();
         break;
       case LightMenuTitleType: {
         auto lightTitle =
@@ -85,7 +85,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           drawLeftTitleIcon(menuTitles, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
           yPos += display_state_->get_medium_font()->get_baseline() +
-                  display_state_->margin_size_;
+                  display_state_->get_margin_size();
         }
         break;
       }
@@ -98,7 +98,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
           yPos += display_state_->get_medium_font()->get_baseline() +
-                  display_state_->margin_size_;
+                  display_state_->get_margin_size();
         }
         break;
       }
@@ -109,12 +109,12 @@ bool HomeThingMenuDisplay::draw_menu_titles(
             menuState == i && lightDetailSelected ? SliderSelectionStateActive
             : menuState == i                      ? SliderSelectionStateHover
                                                   : SliderSelectionStateNone;
-        refactor_->drawLightSlider(display_state_->slider_margin_size_, yPos,
-                                   sliderState, item, i == 2);
+        refactor_->drawLightSlider(display_state_->get_slider_margin_size(),
+                                   yPos, sliderState, item, i == 2);
         sliderExtra += 0;
 
         yPos += (display_state_->get_medium_font()->get_baseline() +
-                 display_state_->margin_size_) *
+                 display_state_->get_margin_size()) *
                 2;
         break;
       }
@@ -131,13 +131,14 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           drawLeftTitleIcon(menuTitles, playerTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
           yPos += display_state_->get_medium_font()->get_baseline() +
-                  display_state_->margin_size_;
+                  display_state_->get_margin_size();
         }
         break;
       }
     }
   }
-  drawScrollBar(menuTitles.size(), display_state_->header_height_, menuIndex);
+  drawScrollBar(menuTitles.size(), display_state_->get_header_height(),
+                menuIndex);
   return animating;
 }
 
@@ -145,7 +146,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState,
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
     const int menuIndex, const option_menuType option_menu) {
-  if (!display_state_->dark_mode_ && *activeMenuState != bootMenu) {
+  if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->color_white_);
   }
   if (speaker_group_ != NULL && speaker_group_->playerSearchFinished == false) {
@@ -161,7 +162,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   bool animating = false;
   switch (*activeMenuState) {
     case nowPlayingMenu:
-      now_playing_->drawNowPlaying(menuIndex, option_menu);
+      now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
       break;
     case lightsDetailMenu:
       if (light_group_->getActiveLight() != NULL) {
@@ -196,7 +197,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
 void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
                                          int menuIndex) {
   int scrollBarMargin = 1;
-  int scrollBarWidth = display_state_->scroll_bar_width_;
+  int scrollBarWidth = display_state_->get_scroll_bar_width();
   if (menuTitlesCount > maxItems() + 1) {
     double screenHeight = display_buffer_->get_height() - headerHeight;
     double height = maxItems() * (screenHeight / menuTitlesCount);
@@ -227,9 +228,9 @@ void HomeThingMenuDisplay::scrollMenuPosition(int menuIndex) {
 
 int HomeThingMenuDisplay::maxItems() {
   int maxItems =
-      ((display_buffer_->get_height() - display_state_->header_height_) /
+      ((display_buffer_->get_height() - display_state_->get_header_height()) /
        (display_state_->get_medium_font()->get_baseline() +
-        display_state_->margin_size_)) -
+        display_state_->get_margin_size())) -
       1;
   return maxItems;
 }
@@ -302,11 +303,12 @@ void HomeThingMenuDisplay::drawTitleImage(
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) *
               (display_state_->get_medium_font()->get_baseline() *
-               display_state_->font_size_width_ratio_)) +
+               display_state_->get_font_size_width_ratio())) +
              4;
-  auto color = selected
-                   ? text_helpers_->primaryTextColor(display_state_->dark_mode_)
-                   : display_state_->color_accent_primary_;
+  auto color =
+      selected
+          ? text_helpers_->primaryTextColor(display_state_->get_dark_mode())
+          : display_state_->color_accent_primary_;
   switch (titleState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:

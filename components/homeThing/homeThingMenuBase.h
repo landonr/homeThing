@@ -27,14 +27,15 @@ namespace homething_menu_base {
 class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(
-      HomeThingMenuDisplay* menu_display,
+      HomeThingMenuSettings* menu_settings, HomeThingMenuDisplay* menu_display,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_speaker_group,
       homeassistant_light_group::HomeAssistantLightGroup* new_light_group,
       homeassistant_service_group::HomeAssistantServiceGroup* new_service_group,
       homeassistant_sensor_group::HomeAssistantSensorGroup* new_sensor_group,
       homeassistant_switch_group::HomeAssistantSwitchGroup* new_switch_group)
-      : menu_display_(menu_display),
+      : menu_settings_(menu_settings),
+        menu_display_(menu_display),
         speaker_group_(new_speaker_group),
         light_group_(new_light_group),
         service_group_(new_service_group),
@@ -77,6 +78,7 @@ class HomeThingMenuBase : public PollingComponent {
   switch_::Switch* backlight_{nullptr};
   switch_::Switch* sleep_toggle_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
+  HomeThingMenuSettings* menu_settings_{nullptr};
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
@@ -89,6 +91,7 @@ class HomeThingMenuBase : public PollingComponent {
   void debounceUpdateDisplay();
   void update();
   std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
+  void selectNowPlayingMenu();
 
   sensor::Sensor* display_update_tick_;
   int rotary_ = 0;

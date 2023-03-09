@@ -19,9 +19,9 @@ void HomeAssistantBaseMediaPlayer::playSource(MediaPlayerSource source) {
            source.media_content_type_);
   switch (source.media_content_type_) {
     case MusicRemotePlayerSourceType:
+    case FavoriteItemIDRemotePlayerSourceType:
       playMedia(source);
       break;
-    case FavoriteItemIDRemotePlayerSourceType:
     case SourceRemotePlayerSourceType:
       selectSource(source);
       break;

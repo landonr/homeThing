@@ -17,7 +17,7 @@ void HomeThingMenuBase::setup() {
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
-  if (idleTime > 16 && !charging) {
+  if (idleTime > 16 && !menu_settings_->get_charging()) {
     ESP_LOGW(TAG, "not drawing");
     return;
   }
@@ -218,6 +218,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case switchesMenu:
       return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:
+      return getNowPlayingMenuStates(
+          speaker_group_->activePlayer->get_player_type());
     case bootMenu:
       return {};
     default:
@@ -227,58 +229,115 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
   }
 }
 
-void HomeThingMenuBase::buttonPressSelect() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+void HomeThingMenuBase::selectNowPlayingMenu() {
+  if (menu_titles.size() <= 0 && menuIndex < menu_titles.size()) {
     return;
   }
-  switch (activeMenuState) {
-    case lightsDetailMenu:
-      if (light_group_->lightDetailSelected) {
-        // deselect light if selected and stay in lightsDetailMenu
-        light_group_->lightDetailSelected = false;
-        update_display();
-        return;
-      }
-      break;
-    case nowPlayingMenu:
-      if (option_menu_ == tvOptionMenu) {
-        option_menu_ = noOptionMenu;
-        speaker_group_->sendActivePlayerRemoteCommand("power");
-        update_display();
-        return;
-      }
-
-      switch (speaker_group_->activePlayer->get_player_type()) {
-        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          speaker_group_->sendActivePlayerRemoteCommand("select");
-          break;
-        case homeassistant_media_player::RemotePlayerType::
-            SpeakerRemotePlayerType:
-          break;
-      }
-      return;
-    default:
-      break;
+  auto menu_name = getNowPlayingMenuStates(
+          speaker_group_->activePlayer->get_player_type())[menuIndex]->get_name();
+  if (menu_name == "Pause") {
+    speaker_group_->activePlayer->playPause();
+  } else if (menu_name == "Vl Up") {
+    speaker_group_->increaseSpeakerVolume();
+    option_menu_ = volumeOptionMenu;
+  } else if (menu_name == "Vl Down") {
+    speaker_group_->decreaseSpeakerVolume();
+    option_menu_ = volumeOptionMenu;
+  } else if (menu_name == "Next") {
+    speaker_group_->activePlayer->nextTrack();
+  } else if (menu_name == "Shuffle") {
+    speaker_group_->toggleShuffle();
+  } else if (menu_name == "Menu") {
+    topMenu();
+  } else if (menu_name == "Group") {
+    menuIndex = 0;
+    activeMenuState = groupMenu;
+  } else if (menu_name == "Power") {
+    speaker_group_->sendActivePlayerRemoteCommand("power");
+  } else if (menu_name == "Back") {
+    speaker_group_->sendActivePlayerRemoteCommand("back");
+  } else if (menu_name == "Home") {
+    speaker_group_->sendActivePlayerRemoteCommand("menu");
   }
-  if (selectMenu()) {
-    update_display();
-  }
+  update_display();
 }
 
 bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
   if (idleTime != -1) {
     idleTime = 0;
   }
-  if (speaker_group_ != NULL && !speaker_group_->playerSearchFinished) {
-    speaker_group_->findActivePlayer();
-  }
+  // if (speaker_group_ != NULL && !speaker_group_->playerSearchFinished) {
+  //   speaker_group_->findActivePlayer();
+  // }
   if (backlight_ != NULL && !backlight_->state) {
     backlight_->turn_on();
-    menu_display_->updateDisplay(false);
+    update_display();
     return true;
   }
   return false;
+}
+
+void HomeThingMenuBase::buttonPressSelect() {
+  animation_->resetAnimation();
+  if (buttonPressWakeUpDisplay()) {
+    return;
+  }
+  if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
+    switch (activeMenuState) {
+      case lightsDetailMenu:
+        if (light_group_->lightDetailSelected) {
+          // deselect light if selected and stay in lightsDetailMenu
+          light_group_->lightDetailSelected = false;
+          update_display();
+          return;
+        }
+        break;
+      case nowPlayingMenu:
+        if (option_menu_ == tvOptionMenu) {
+          option_menu_ = noOptionMenu;
+          speaker_group_->sendActivePlayerRemoteCommand("power");
+          update_display();
+          return;
+        }
+
+        switch (speaker_group_->activePlayer->get_player_type()) {
+          case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+            speaker_group_->sendActivePlayerRemoteCommand("select");
+            break;
+          case homeassistant_media_player::RemotePlayerType::
+              SpeakerRemotePlayerType:
+            break;
+        }
+        return;
+      default:
+        break;
+    }
+  } else {
+    switch (activeMenuState) {
+      case lightsDetailMenu:
+        if (light_group_->lightDetailSelected) {
+          // deselect ligh if selected and stay in lightsDetailMenu
+          light_group_->lightDetailSelected = false;
+          update_display();
+          return;
+        }
+        break;
+      case nowPlayingMenu:
+        if (option_menu_ == tvOptionMenu) {
+          option_menu_ = noOptionMenu;
+          update_display();
+          return;
+        }
+
+        selectNowPlayingMenu();
+        return;
+      default:
+        break;
+    }
+  }
+  if (selectMenu()) {
+    update_display();
+  }
 }
 
 void HomeThingMenuBase::buttonPressSelectHold() {
@@ -290,76 +349,125 @@ void HomeThingMenuBase::buttonPressSelectHold() {
   }
 }
 
-void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
+void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   rotary_ = rotary;
-  animation_->resetAnimation();
-  switch (activeMenuState) {
-    case nowPlayingMenu:
-      speaker_group_->increaseSpeakerVolume();
-      option_menu_ = volumeOptionMenu;
-      debounceUpdateDisplay();
-      return;
-    case lightsDetailMenu:
-      if (light_group_->lightDetailSelected && menuIndex == 0 &&
-          light_group_->getActiveLight() != NULL) {
-        light_group_->getActiveLight()->incBrightness();
-        debounceUpdateDisplay();
-        return;
-      } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
-                 light_group_->getActiveLight() != NULL) {
-        light_group_->getActiveLight()->incTemperature();
-        debounceUpdateDisplay();
-        return;
-      } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
-                 light_group_->getActiveLight() != NULL) {
-        light_group_->getActiveLight()->incColor();
-        debounceUpdateDisplay();
-        return;
-      }
-    default:
-      break;
+  if (buttonPressWakeUpDisplay()) {
+    return;
   }
-  if (menuIndex < menu_titles.size() - 1) {
-    menuIndex++;
-  } else if (menu_rollover_on_ && menuIndex == menu_titles.size() - 1) {
-    menuIndex = 0;
+  animation_->resetAnimation();
+  if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
+    switch (activeMenuState) {
+      case nowPlayingMenu:
+        speaker_group_->decreaseSpeakerVolume();
+        option_menu_ = volumeOptionMenu;
+        debounceUpdateDisplay();
+        return;
+      case lightsDetailMenu:
+        if (light_group_->lightDetailSelected && menuIndex == 0 &&
+            light_group_->getActiveLight() != NULL) {
+          light_group_->getActiveLight()->decBrightness();
+          debounceUpdateDisplay();
+          return;
+        } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+                   light_group_->getActiveLight() != NULL) {
+          light_group_->getActiveLight()->decTemperature();
+          debounceUpdateDisplay();
+          return;
+        } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+                   light_group_->getActiveLight() != NULL) {
+          light_group_->getActiveLight()->decColor();
+          debounceUpdateDisplay();
+          return;
+        }
+      default:
+        break;
+    }
+    if (menuIndex > 0) {
+      menuIndex--;
+    } else if (menu_settings_->get_menu_rollover() && menuIndex == 0) {
+      menuIndex = menu_titles.size() - 1;
+    }
+  } else {
+    // 3 button
+    if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
+        light_group_->lightDetailSelected) {
+      if (menuIndex == 1) {
+        light_group_->getActiveLight()->incBrightness();
+      } else if (menuIndex == 2) {
+        light_group_->getActiveLight()->incTemperature();
+      } else {
+        selectMenu();
+      }
+    } else if (menuIndex > 0) {
+      menuIndex--;
+    } else if (activeMenuState == nowPlayingMenu) {
+      menuIndex = menu_titles.size() - 1;
+    } else if (activeMenuState == lightsDetailMenu && menuIndex == 0) {
+      activeMenuState = lightsMenu;
+    } else {
+      topMenu();
+    }
   }
   debounceUpdateDisplay();
 }
 
-void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
+void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
   rotary_ = rotary;
-  animation_->resetAnimation();
-  switch (activeMenuState) {
-    case nowPlayingMenu:
-      speaker_group_->decreaseSpeakerVolume();
-      option_menu_ = volumeOptionMenu;
-      debounceUpdateDisplay();
-      return;
-    case lightsDetailMenu:
-      if (light_group_->lightDetailSelected && menuIndex == 0 &&
-          light_group_->getActiveLight() != NULL) {
-        light_group_->getActiveLight()->decBrightness();
-        debounceUpdateDisplay();
-        return;
-      } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
-                 light_group_->getActiveLight() != NULL) {
-        light_group_->getActiveLight()->decTemperature();
-        debounceUpdateDisplay();
-        return;
-      } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
-                 light_group_->getActiveLight() != NULL) {
-        light_group_->getActiveLight()->decColor();
-        debounceUpdateDisplay();
-        return;
-      }
-    default:
-      break;
+  if (buttonPressWakeUpDisplay()) {
+    return;
   }
-  if (menuIndex > 0) {
-    menuIndex--;
-  } else if (menu_rollover_on_ && menuIndex == 0) {
-    menuIndex = menu_titles.size() - 1;
+  animation_->resetAnimation();
+  if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
+    switch (activeMenuState) {
+      case nowPlayingMenu:
+        speaker_group_->increaseSpeakerVolume();
+        option_menu_ = volumeOptionMenu;
+        debounceUpdateDisplay();
+        return;
+      case lightsDetailMenu:
+        if (light_group_->lightDetailSelected && menuIndex == 0 &&
+            light_group_->getActiveLight() != NULL) {
+          light_group_->getActiveLight()->incBrightness();
+          debounceUpdateDisplay();
+          return;
+        } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+                   light_group_->getActiveLight() != NULL) {
+          light_group_->getActiveLight()->incTemperature();
+          debounceUpdateDisplay();
+          return;
+        } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+                   light_group_->getActiveLight() != NULL) {
+          light_group_->getActiveLight()->incColor();
+          debounceUpdateDisplay();
+          return;
+        }
+      default:
+        break;
+    }
+    if (menuIndex < menu_titles.size() - 1) {
+      menuIndex++;
+    } else if (menu_settings_->get_menu_rollover() &&
+               menuIndex == menu_titles.size() - 1) {
+      menuIndex = 0;
+    }
+  } else {
+    // 3 button
+    if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
+        light_group_->lightDetailSelected) {
+      if (menuIndex == 1) {
+        light_group_->getActiveLight()->decBrightness();
+      } else if (menuIndex == 2) {
+        light_group_->getActiveLight()->decTemperature();
+      } else {
+        selectMenu();
+      }
+    } else if (menuIndex < menu_titles.size() - 1) {
+      menuIndex++;
+    } else if (menuIndex == menu_titles.size() - 1) {
+      menuIndex = 0;
+    } else {
+      menuIndex = 0;
+    }
   }
   debounceUpdateDisplay();
 }
@@ -612,15 +720,20 @@ void HomeThingMenuBase::displayUpdateDebounced() {
 }
 
 void HomeThingMenuBase::debounceUpdateDisplay() {
-  if (display_update_tick_->state != rotary_) {
-    display_update_tick_->publish_state(rotary_);
+  if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
+    if (display_update_tick_->state != rotary_) {
+      display_update_tick_->publish_state(rotary_);
+    }
+  } else {
+    update_display();
   }
 }
 
 void HomeThingMenuBase::idleTick() {
   ESP_LOGD(TAG, "idle %d", idleTime);
   if (activeMenuState == bootMenu) {
-    if (idleTime == display_timeout_ && !charging) {
+    if (idleTime == menu_settings_->get_display_timeout() &&
+        !menu_settings_->get_charging()) {
       ESP_LOGD(TAG, "turning off display");
       // backlight_->turn_off();
     }
@@ -630,9 +743,9 @@ void HomeThingMenuBase::idleTick() {
   if (idleTime == 3) {
     option_menu_ = noOptionMenu;
     update_display();
-  } else if (idleTime == display_timeout_) {
+  } else if (idleTime == menu_settings_->get_display_timeout()) {
     if (speaker_group_ != NULL && speaker_group_->playerSearchFinished) {
-      if (charging && activeMenuState != bootMenu) {
+      if (menu_settings_->get_charging() && activeMenuState != bootMenu) {
         idleTime++;
         return;
       }
@@ -641,18 +754,18 @@ void HomeThingMenuBase::idleTick() {
       idleMenu(false);
       menu_display_->updateDisplay(false);
     }
-    if (!charging) {
+    if (!menu_settings_->get_charging()) {
       ESP_LOGD(TAG, "turning off display");
-      backlight_->turn_off();
+      // backlight_->turn_off();
     }
     idleTime++;
     return;
-  } else if (idleTime == 180 && charging) {
+  } else if (idleTime == 180 && menu_settings_->get_charging()) {
     idleMenu(true);
     idleTime++;
     return;
-  } else if (idleTime > sleep_after_) {
-    if (!charging) {
+  } else if (idleTime > menu_settings_->get_sleep_after()) {
+    if (!menu_settings_->get_charging()) {
       ESP_LOGI(TAG, "night night");
       // sleep_toggle_->turn_on();
       return;
@@ -663,7 +776,7 @@ void HomeThingMenuBase::idleTick() {
     if (updatedMediaPositions) {
       switch (activeMenuState) {
         case nowPlayingMenu:
-          if (idleTime < 16 || charging) {
+          if (idleTime < 16 || menu_settings_->get_charging()) {
             update_display();
           }
           break;
@@ -686,10 +799,11 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
 }
 
 void HomeThingMenuBase::idleMenu(bool force) {
+  ESP_LOGI(TAG, "idleMenu %d", force);
   if (activeMenuState == bootMenu) {
     return;
   }
-  if (!charging || force) {
+  if (!menu_settings_->get_charging() || force) {
     light_group_->clearActiveLight();
     menuIndex = 0;
     animation_->resetAnimation();

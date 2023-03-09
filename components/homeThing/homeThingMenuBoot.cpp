@@ -29,7 +29,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
         display_state_->color_green_, display_state_->color_blue_};
     int textWidth = maxCharacters *
                     display_state_->get_large_font()->get_baseline() *
-                    display_state_->font_size_width_ratio_;
+                    display_state_->get_font_size_width_ratio();
     for (int i = 0; i < maxCharacters; i++) {
       int colorIndex = i <= currentAnimationTick ? currentAnimationTick - i : 0;
       if (colorIndex > 0) {
@@ -39,7 +39,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
         int characterXPos =
             xPos - textWidth / 2 +
             (i * display_state_->get_large_font()->get_baseline() *
-             display_state_->font_size_width_ratio_);
+             display_state_->get_font_size_width_ratio());
         display_buffer_->printf(
             characterXPos, yPos, display_state_->get_large_heavy_font(), color,
             display::TextAlign::TOP_LEFT, "%c", bootTitle[i]);
@@ -54,7 +54,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
         bootSequenceCanSleep(activeMenuState)) {
       yPos = display_state_->getBottomBarYPosition(
                  false, display_buffer_->get_height()) -
-             display_state_->margin_size_ / 2 -
+             display_state_->get_margin_size() / 2 -
              display_state_->get_small_font()->get_baseline();
       display_buffer_->printf(xPos, yPos, display_state_->get_small_font(),
                               display_state_->color_accent_primary_,
@@ -89,7 +89,7 @@ int HomeThingMenuBoot::drawBootSequenceHeader(
   float animationLength = 8;
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
-  int maxValue = display_state_->header_height_;
+  int maxValue = display_state_->get_header_height();
   const int animationTick = animation_->animationTick->state;
   if (animationTick > delayTime && animationTick < totalDuration) {
     int yPosOffset = maxValue - static_cast<float>((animationTick - delayTime) /
@@ -123,7 +123,7 @@ void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
   int barMargin = 1;
   int barHeight = display_state_->get_small_font()->get_baseline();
   int iconMargin = display_state_->get_small_font()->get_baseline() *
-                   display_state_->font_size_width_ratio_ * 3;
+                   display_state_->get_font_size_width_ratio() * 3;
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * progress;
   int yPos = display_state_->getBottomBarYPosition(
@@ -142,7 +142,7 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
   int delayTime = 20;
   int totalDuration = delayTime + animationLength;
   int maxValue = display_state_->get_small_font()->get_baseline() +
-                 display_state_->bottom_bar_margin_;
+                 display_state_->get_bottom_bar_margin();
 
   const int animationTick = animation_->animationTick->state;
   if (animationTick > delayTime && animationTick < totalDuration) {
@@ -166,7 +166,7 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
   if (bootSequenceCanSkip(activeMenuState)) {
     int yPos = display_state_->getBottomBarYPosition(
                    false, display_buffer_->get_height()) -
-               display_state_->margin_size_ / 2 -
+               display_state_->get_margin_size() / 2 -
                display_state_->get_small_font()->get_baseline();
     display_buffer_->printf(xPos, yPos, display_state_->get_small_font(),
                             display_state_->color_accent_primary_,
@@ -186,8 +186,8 @@ void HomeThingMenuBoot::skipBootSequence(const MenuStates activeMenuState) {
 
 int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
                                              const MenuStates activeMenuState) {
-  int yPos = imageYPos + display_state_->boot_logo_size_ +
-             display_state_->margin_size_;
+  int yPos = imageYPos + display_state_->get_boot_logo_size() +
+             display_state_->get_margin_size();
   int maxAnimationDuration = 0;
   if (api_connected_->state) {
     if (speaker_group_ != NULL) {
@@ -219,8 +219,8 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
 bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
   speaker_group_->findActivePlayer();
 
-  int imageYPos =
-      display_state_->header_height_ + display_state_->margin_size_ * 2;
+  int imageYPos = display_state_->get_header_height() +
+                  display_state_->get_margin_size() * 2;
   int xPos = display_buffer_->get_width() / 2;
   int maxAnimationDuration = 0;
   maxAnimationDuration =

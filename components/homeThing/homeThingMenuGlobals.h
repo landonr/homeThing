@@ -35,33 +35,6 @@ static std::vector<MenuStates> rootMenuTitles(bool includeSpeaker,
   return out;
 }
 
-enum NowPlayingMenuState {
-  pauseNowPlayingMenuState,
-  volumeUpNowPlayingMenuState,
-  volumeDownNowPlayingMenuState,
-  nextNowPlayingMenuState,
-  menuNowPlayingMenuState,
-  shuffleNowPlayingMenuState,
-  backNowPlayingMenuState,
-  TVPowerNowPlayingMenuState,
-  homeNowPlayingMenuState,
-  groupNowPlayingMenuState
-};
-
-static std::vector<NowPlayingMenuState> speakerNowPlayingMenuStates() {
-  return {pauseNowPlayingMenuState,      volumeUpNowPlayingMenuState,
-          volumeDownNowPlayingMenuState, nextNowPlayingMenuState,
-          shuffleNowPlayingMenuState,    groupNowPlayingMenuState,
-          menuNowPlayingMenuState};
-}
-
-static std::vector<NowPlayingMenuState> TVNowPlayingMenuStates() {
-  return {pauseNowPlayingMenuState,      volumeUpNowPlayingMenuState,
-          volumeDownNowPlayingMenuState, backNowPlayingMenuState,
-          TVPowerNowPlayingMenuState,    homeNowPlayingMenuState,
-          menuNowPlayingMenuState};
-}
-
 enum option_menuType {
   noOptionMenu,
   volumeOptionMenu,
@@ -69,11 +42,5 @@ enum option_menuType {
   speakerOptionMenu,
   playingNewSourceMenu
 };
-
-static int display_timeout_ = 16;
-static int sleep_after_ = 3600;
-static bool charging = true;
-static bool menu_rollover_on_ = true;
-
 }  // namespace homething_menu_base
 }  // namespace esphome

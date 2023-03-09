@@ -483,7 +483,9 @@ void HomeAssistantMediaPlayerGroup::sonos_favorites_changed(std::string state) {
   ESP_LOGI(TAG, "Sonos Favorites changes to %s", state.c_str());
   auto sources = parseJsonKeyValue(state);
   for (auto& player : media_players_) {
+    if (player->get_player_type() == SpeakerRemotePlayerType) {
     player->sources.assign(sources.begin(), sources.end());
+    }
   }
   sonosFavorites = sources;
 }

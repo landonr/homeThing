@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
@@ -25,7 +26,8 @@ class HomeThingMenuNowPlaying {
         display_state_(new_display_state),
         text_helpers_(new_text_helpers),
         speaker_group_(new_speaker_group) {}
-  void drawNowPlaying(int menuIndex, const option_menuType option_menu);
+  void drawNowPlaying(int menuIndex, const option_menuType option_menu,
+                      std::vector<std::shared_ptr<MenuTitleBase>> active_menu);
   void drawSpeakerOptionMenu();
   void drawTVOptionMenu();
   void drawVolumeOptionMenu();
@@ -41,7 +43,8 @@ class HomeThingMenuNowPlaying {
   bool drawOptionMenuAndStop(const option_menuType option_menu);
   std::string stringForNowPlayingMenuState(NowPlayingMenuState state);
   std::vector<NowPlayingMenuState> getNowPlayingMenuStates();
-  void drawNowPlayingSelectMenu(int menuIndex);
+  void drawNowPlayingSelectMenu(
+      std::vector<std::shared_ptr<MenuTitleBase>> menu_titles, int menu_index);
   std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
                                              display::TextAlign alignment,
                                              std::string text);

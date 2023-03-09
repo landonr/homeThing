@@ -508,7 +508,7 @@ static std::shared_ptr<MenuTitleSlider> makeSlider(
         displayUnitMin;
   }
 
-  // float newMin = display_state_->slider_margin_size_;
+  // float newMin = display_state_->get_slider_margin_size();
   float newMin = 8;
   float newRange = displayWidth - 4 * newMin;
   int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
@@ -563,5 +563,51 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sensorTitles(
   }
   return out;
 }
+
+// now playing bottom menu
+
+enum NowPlayingMenuState {
+  pauseNowPlayingMenuState,
+  volumeUpNowPlayingMenuState,
+  volumeDownNowPlayingMenuState,
+  nextNowPlayingMenuState,
+  menuNowPlayingMenuState,
+  shuffleNowPlayingMenuState,
+  backNowPlayingMenuState,
+  TVPowerNowPlayingMenuState,
+  homeNowPlayingMenuState,
+  groupNowPlayingMenuState
+};
+
+static std::vector<std::shared_ptr<MenuTitleBase>>
+speakerNowPlayingMenuStates() {
+  return {
+      std::make_shared<MenuTitleBase>("Pause", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Vl Up", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Vl Down", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Next", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Shuffle", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Group", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Menu", "", NoMenuTitleRightIcon),
+  };
+}
+
+static std::vector<std::shared_ptr<MenuTitleBase>> TVNowPlayingMenuStates() {
+  // return {pauseNowPlayingMenuState,      volumeUpNowPlayingMenuState,
+  //         volumeDownNowPlayingMenuState, backNowPlayingMenuState,
+  //         TVPowerNowPlayingMenuState,    homeNowPlayingMenuState,
+  //         menuNowPlayingMenuState};
+  return {};
+}
+
+static std::vector<std::shared_ptr<MenuTitleBase>> getNowPlayingMenuStates(
+    homeassistant_media_player::RemotePlayerType player_type) {
+  if (player_type ==
+      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+    return TVNowPlayingMenuStates();
+  }
+  return speakerNowPlayingMenuStates();
+}
+
 }  // namespace homething_menu_base
 }  // namespace esphome

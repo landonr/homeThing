@@ -21,20 +21,23 @@ Color HomeThingMenuTextHelpers::secondaryTextColor(bool dark_mode) {
 
 int HomeThingMenuTextHelpers::getCharacterLimit(int xPos, int fontSize,
                                                 display::TextAlign alignment) {
-  int characterLimit = (display_buffer_->get_width() - xPos) /
-                           (fontSize * display_state_->font_size_width_ratio_) -
-                       1;
+  int characterLimit =
+      (display_buffer_->get_width() - xPos) /
+          (fontSize * display_state_->get_font_size_width_ratio()) -
+      1;
   if (xPos == display_buffer_->get_width() / 2 &&
       alignment == display::TextAlign::TOP_CENTER) {
-    characterLimit = display_buffer_->get_width() /
-                         (fontSize * display_state_->font_size_width_ratio_) -
-                     1;
+    characterLimit =
+        display_buffer_->get_width() /
+            (fontSize * display_state_->get_font_size_width_ratio()) -
+        1;
   }
   return characterLimit;
 }
 
 int HomeThingMenuTextHelpers::getTextWidth(int fontSize, int characterCount) {
-  return (fontSize * display_state_->font_size_width_ratio_ * characterCount);
+  return (fontSize * display_state_->get_font_size_width_ratio() *
+          characterCount);
 }
 
 std::string HomeThingMenuTextHelpers::textWrap(std::string text,

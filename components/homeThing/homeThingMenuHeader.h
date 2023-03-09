@@ -44,6 +44,7 @@ class HomeThingMenuHeader {
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
+  binary_sensor::BinarySensor* charging_{nullptr};
   time::RealTimeClock* esp_time_{nullptr};
   const char* const TAG = "homething.menu.header";
 };
