@@ -20,7 +20,7 @@ class HomeThingMenuSettings {
   int get_sleep_after() { return sleep_after_; }
   void set_sleep_after(int sleep_after) { sleep_after_ = sleep_after; }
   bool get_charging() { return charging_; }
-  void set_charging(bool charging) { charging = charging; }
+  void set_charging(bool charging) { charging_ = charging; }
   bool get_menu_rollover() { return menu_rollover_; }
   void set_menu_rollover(bool menu_rollover) { menu_rollover_ = menu_rollover; }
 

@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "DisplayUpdateInterface.h"
 #include "MediaPlayerSource.h"
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/media_player/media_player.h"

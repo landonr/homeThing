@@ -10,9 +10,6 @@ esphome:
       - binary_sensor.template.publish:
           id: wifi_connected
           state: ON
-    # includes:
-    #   - homeThing/TextHelpers.h
-    #   - homeThing/DisplayUpdateInterface.h
 
 substitutions:
   boot_name: '"homeThing <3"'

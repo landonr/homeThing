@@ -2,6 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components.homeassistant.text_sensor import HomeassistantTextSensor
 from esphome.const import CONF_ID, CONF_ENTITY_ID, CONF_NAME
+from esphome.components import sensor
 
 homeassistant_sensor_group_ns = cg.esphome_ns.namespace("homeassistant_sensor_group")
 
@@ -15,7 +16,7 @@ HOMEASSISTANT_SENSOR_SCHEMA = cv.Schema(
 
 
 HomeAssistantSensorGroup = homeassistant_sensor_group_ns.class_(
-    'HomeAssistantSensorGroup', cg.Component
+    'HomeAssistantSensorGroup', cg.Component, sensor.Sensor
 )
 
 CONFIG_SCHEMA = cv.Schema(

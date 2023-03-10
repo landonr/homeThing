@@ -8,6 +8,7 @@ from esphome.components.homeassistant_media_player.media_player import (
     CONF_SONOS,
     CONF_ROKU,
 )
+from esphome.components import sensor
 
 CONF_MEDIA_PLAYERS = "media_players"
 
@@ -30,7 +31,7 @@ HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA = cv.typed_schema(
 )
 
 HomeAssistantMediaPlayerGroup = homeassistant_media_player_ns.class_(
-    'HomeAssistantMediaPlayerGroup', cg.Component
+    'HomeAssistantMediaPlayerGroup', cg.Component, sensor.Sensor
 )
 
 CONFIG_SCHEMA = cv.Schema(

@@ -23,40 +23,6 @@
 namespace esphome {
 namespace homething_menu_base {
 
-class DisplayUpdateInterface {
- public:
-  virtual void updateDisplay(bool force) = 0;
-};
-
-class DisplayUpdateImpl : public DisplayUpdateInterface {
- public:
-  virtual void updateDisplay(bool force) {
-    // if (menuDrawing && backlight_->state) {
-    //   ESP_LOGW("WARNING", "menu already drawing");
-    //   return;
-    // }
-    // if (force) {
-    //   menuDrawing = true;
-    //   display_buffer_->update();
-    //   if (!backlight_->state) {
-    //     backlight_->turn_on();
-    //   }
-    //   return;
-    // }
-
-    // if (backlight_->state) {
-    //   switch (activeMenuState) {
-    //     case sourcesMenu:
-    //       return;
-    //     default:
-    //       menuDrawing = true;
-    //       display_buffer_->update();
-    //       break;
-    //   }
-    // }
-  }
-};
-
 class HomeThingMenuDisplay {
  public:
   HomeThingMenuDisplay(
@@ -89,25 +55,7 @@ class HomeThingMenuDisplay {
                         const int menuIndex, const option_menuType option_menu);
   void updateDisplay(bool force);
   void skipBootSequence(const MenuStates activeMenuState);
-  // void set_display_state(HomeThingMenuDisplayState* new_display_state) {
-  //   display_state_ = new_display_state;
-  // }
-  // void set_display_buffer(display::DisplayBuffer* new_display_buffer) {
-  //   display_buffer_ = new_display_buffer;
-  // }
-  // void set_text_helpers(HomeThingMenuTextHelpers* new_text_helpers) {
-  //   text_helpers_ = new_text_helpers;
-  // }
-  // void set_refactor(HomeThingMenuRefactor* new_refactor) {
-  //   refactor_ = new_refactor;
-  // }
-  // void set_now_playing(HomeThingMenuNowPlaying* new_now_playing) {
-  //   now_playing_ = new_now_playing;
-  // }
-  // void set_menu_header(HomeThingMenuHeader* new_menu_header) {
-  //   header_ = new_menu_header;
-  // }
-  // void set_menu_boot(HomeThingMenuBoot* boot) { boot_ = boot; }
+
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;
     boot_->set_animation(animation);
@@ -134,7 +82,6 @@ class HomeThingMenuDisplay {
       std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i,
       int menuState, int yPos);
 
-  DisplayUpdateImpl* displayUpdate = new DisplayUpdateImpl();
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};

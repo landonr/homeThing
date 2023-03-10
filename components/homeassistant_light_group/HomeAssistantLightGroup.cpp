@@ -4,9 +4,11 @@
 namespace esphome {
 namespace homeassistant_light_group {
 
+static const char* const TAG = "homeassistant.light.group";
+
 bool HomeAssistantLightGroup::selectLightDetailAtIndex(int index) {
   if (lights.size() < index) {
-    ESP_LOGE("light", "selecting out of bounds light");
+    ESP_LOGE(TAG, "selecting out of bounds light");
     return false;
   }
   auto new_active_light = lights[index];
@@ -25,9 +27,11 @@ void HomeAssistantLightGroup::register_light(
   auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
       newLight->get_output());
   output->add_on_state_callback([this, output]() {
-    if (this->display != NULL) {
-      this->display->updateDisplay(false);
-    }
+    ESP_LOGI(TAG, "'%s': new output state", output->get_name().c_str());
+    this->publish_state(0);
+    // if (this->display != NULL) {
+    //   this->display->updateDisplay(false);
+    // }
   });
 }
 

@@ -131,6 +131,7 @@ void HomeAssistantLight::write_state(light::LightState* state) {
   if (next_api_publish_) {
     publish_api_state(state);
   }
+  this->state_callback_.call();
 }
 
 void HomeAssistantLight::add_on_state_callback(

@@ -1,15 +1,5 @@
 esphome:
   name: tdisplayt4
-  includes:
-    - homeThing/MenuGlobals.h
-    - homeThing/MenuTitle.h
-    - homeThing/FriendlyNameEntity.h
-    - homeThing/TextHelpers.h
-    - homeThing/DisplayUpdateInterface.h
-    - homeThing/esphomeRemote.h
-    - homeThing/esphomeRemoteNowPlayingMenu.h
-    - homeThing/esphomeRemote3Button.h
-    - homeThing/esphomeRemoteCommon.h
 
 esp32:
   board: esp32dev

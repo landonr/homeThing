@@ -16,11 +16,8 @@ bool HomeAssistantSwitchGroup::selectSwitch(int index) {
 void HomeAssistantSwitchGroup::register_switch(
     homeassistant_switch::HomeAssistantSwitch* newSwitch) {
   switches.push_back(newSwitch);
-  newSwitch->add_on_state_callback([this, newSwitch](bool state) {
-    // if (this->display != NULL) {
-    //   this->display->updateDisplay(false);
-    // }
-  });
+  newSwitch->add_on_state_callback(
+      [this, newSwitch](bool state) { this->publish_state(0); });
 }
 }  // namespace homeassistant_switch_group
 }  // namespace esphome

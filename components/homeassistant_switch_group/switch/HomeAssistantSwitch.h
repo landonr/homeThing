@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "DisplayUpdateInterface.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/core/component.h"
 
@@ -22,7 +21,6 @@ class HomeAssistantSwitch : public switch_::Switch, public Component {
  private:
   std::string entity_id_;
   optional<std::string> attribute_;
-  DisplayUpdateInterface* display;
   void state_changed(std::string newOnState);
 };
 

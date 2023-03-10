@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/sensor/sensor.h"
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
 #include "media_player/HomeAssistantRokuMediaPlayer.h"
 #include "media_player/HomeAssistantSonosMediaPlayer.h"
@@ -32,7 +33,8 @@ class TVSetup {
 };
 
 class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
-                                      public Component {
+                                      public Component,
+                                      public sensor::Sensor {
  public:
   HomeAssistantBaseMediaPlayer* activePlayer = NULL;
   std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
@@ -73,11 +75,9 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void syncActivePlayer(RemotePlayerState state);
 
   void playSource(MediaPlayerSource source);
-  void set_display(DisplayUpdateInterface* newDisplay) { display = newDisplay; }
   float get_setup_priority() const override { return setup_priority::LATE; }
 
  private:
-  DisplayUpdateInterface* display;
   std::vector<std::shared_ptr<MediaPlayerSource>> sonosFavorites;
   std::vector<std::shared_ptr<MediaPlayerSource>> spotifyPlaylists;
 

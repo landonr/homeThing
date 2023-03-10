@@ -22,9 +22,9 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
   new_media_player->index = media_players_.size();
   media_players_.push_back(new_media_player);
   new_media_player->add_on_state_callback([this, new_media_player]() {
-    if (this->display != NULL) {
-      // this->display->updateDisplay(false);
-    }
+    // if (this->display != NULL) {
+    //   this->display->updateDisplay(false);
+    // }
     this->state_updated(new_media_player->playerState);
   });
 }
@@ -429,9 +429,12 @@ void HomeAssistantMediaPlayerGroup::syncActivePlayer(RemotePlayerState state) {
 }
 
 void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
-  ESP_LOGI(TAG, "state update callback %d %d", activePlayer == NULL,
+  ESP_LOGD(TAG, "state update callback %d %d", activePlayer == NULL,
            sync_active_player);
-  if (activePlayer != NULL || !sync_active_player) {
+  if (activePlayer != NULL) {
+    return;
+  } else if (!sync_active_player) {
+    publish_state(0);
     return;
   }
 
@@ -446,7 +449,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
         UnavailableRemotePlayerState:
       ESP_LOGD(TAG, "Trying to sync active player - 1");
       syncActivePlayer(state);
-      return;
+      break;
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
       if (activePlayer == NULL) {
@@ -457,7 +460,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
                  activePlayer->playerState);
         syncActivePlayer(state);
       }
-      return;
+      break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
     case homeassistant_media_player::RemotePlayerState::
@@ -465,6 +468,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
       ESP_LOGD(TAG, "Trying to sync active player - 4");
       syncActivePlayer(state);
   }
+  publish_state(0);
 }
 
 void HomeAssistantMediaPlayerGroup::playSource(MediaPlayerSource source) {
@@ -484,7 +488,7 @@ void HomeAssistantMediaPlayerGroup::sonos_favorites_changed(std::string state) {
   auto sources = parseJsonKeyValue(state);
   for (auto& player : media_players_) {
     if (player->get_player_type() == SpeakerRemotePlayerType) {
-    player->sources.assign(sources.begin(), sources.end());
+      player->sources.assign(sources.begin(), sources.end());
     }
   }
   sonosFavorites = sources;

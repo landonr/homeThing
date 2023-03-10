@@ -14,6 +14,46 @@ void HomeThingMenuBase::setup() {
   display_update_tick_->add_filter(filter);
   this->display_update_tick_->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
+
+  this->light_group_->add_on_state_callback([this](float state) {
+    switch (activeMenuState) {
+      case lightsMenu:
+      case lightsDetailMenu:
+        this->update_display();
+      default:
+        break;
+    }
+  });
+
+  this->speaker_group_->add_on_state_callback([this](float state) {
+    switch (activeMenuState) {
+      case rootMenu:
+      case nowPlayingMenu:
+      case sourcesMenu:
+      case groupMenu:
+        this->update_display();
+      default:
+        break;
+    }
+  });
+
+  this->switch_group_->add_on_state_callback([this](float state) {
+    switch (activeMenuState) {
+      case switchesMenu:
+        this->update_display();
+      default:
+        break;
+    }
+  });
+
+  this->sensor_group_->add_on_state_callback([this](float state) {
+    switch (activeMenuState) {
+      case sensorsMenu:
+        this->update_display();
+      default:
+        break;
+    }
+  });
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
@@ -233,8 +273,10 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
   if (menu_titles.size() <= 0 && menuIndex < menu_titles.size()) {
     return;
   }
-  auto menu_name = getNowPlayingMenuStates(
-          speaker_group_->activePlayer->get_player_type())[menuIndex]->get_name();
+  auto menu_name =
+      getNowPlayingMenuStates(
+          speaker_group_->activePlayer->get_player_type())[menuIndex]
+          ->get_name();
   if (menu_name == "Pause") {
     speaker_group_->activePlayer->playPause();
   } else if (menu_name == "Vl Up") {
@@ -714,7 +756,7 @@ void HomeThingMenuBase::buttonPressScreenRight() {
 }
 
 void HomeThingMenuBase::displayUpdateDebounced() {
-  if (idleTime < 2 || animation_->animating) {
+  if (idleTime < 2 || animation_->animating || menu_settings_->get_charging()) {
     update_display();
   }
 }

@@ -2,15 +2,17 @@
 #include <memory>
 #include <vector>
 
-#include "DisplayUpdateInterface.h"
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/homeassistant_light_group/light/HomeAssistantLight.h"
+#include "esphome/components/sensor/sensor.h"
 #include "esphome/core/component.h"
 
 namespace esphome {
 namespace homeassistant_light_group {
 
-class HomeAssistantLightGroup : public api::CustomAPIDevice, public Component {
+class HomeAssistantLightGroup : public api::CustomAPIDevice,
+                                public Component,
+                                public sensor::Sensor {
  public:
   std::vector<homeassistant_light::HomeAssistantLightState*> lights;
   bool selectLightDetailAtIndex(int index);
@@ -21,12 +23,10 @@ class HomeAssistantLightGroup : public api::CustomAPIDevice, public Component {
   }
   bool lightDetailSelected = false;
   void register_light(homeassistant_light::HomeAssistantLightState* newLight);
-  void set_display(DisplayUpdateInterface* newDisplay) { display = newDisplay; }
   void toggleLight(int index);
   float get_setup_priority() const override { return setup_priority::LATE; }
 
  private:
-  DisplayUpdateInterface* display;
   homeassistant_light::HomeAssistantLightState* _activeLight = NULL;
 };
 
