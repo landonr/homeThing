@@ -35,10 +35,12 @@ void HomeThingMenuRefactor::drawLightSliderRGBBar(int xPos, int yPos,
                                     display_state_->color_gray_dark_2_);
   for (double i = 0; i < rgbBarWidth; i++) {
     double hue = (360.0f / rgbBarWidth) * i;
-    Color dotColor = TextHelpers::hsvToRGB(hue, 1, 1);
+    float red, green, blue = 0;
+    hsv_to_rgb(hue, 1, 1, red, green, blue);
+    auto rgbColor = Color(red, green, blue);
     display_buffer_->line(i + display_state_->get_slider_margin_size(), yPos,
                           i + display_state_->get_slider_margin_size(),
-                          yPos + sliderHeight, dotColor);
+                          yPos + sliderHeight, rgbColor);
   }
 }
 
@@ -80,7 +82,9 @@ void HomeThingMenuRefactor::drawLightSliderCircle(
   switch (sliderState) {
     case SliderSelectionStateActive:
       if (drawRGB) {
-        auto rgbColor = TextHelpers::hsvToRGB(slider->displayValue, 1, 1);
+        float red, green, blue = 0;
+        hsv_to_rgb(slider->displayValue, 1, 1, red, green, blue);
+        auto rgbColor = Color(red, green, blue);
         display_buffer_->filled_circle(dotPositionX, dotPositionY, circleSize,
                                        rgbColor);
         display_buffer_->circle(dotPositionX, dotPositionY, circleSize + 1,
@@ -119,7 +123,9 @@ void HomeThingMenuRefactor::drawLightSliderTitle(
   switch (sliderState) {
     case SliderSelectionStateActive:
       if (drawRGB) {
-        auto rgbColor = TextHelpers::hsvToRGB(slider->displayValue, 1, 1);
+        float red, green, blue = 0;
+        hsv_to_rgb(slider->displayValue, 1, 1, red, green, blue);
+        auto rgbColor = Color(red, green, blue);
         display_buffer_->printf(xPos, yPos + 1,
                                 display_state_->get_medium_font(), rgbColor,
                                 sliderTitle.c_str());

@@ -7,31 +7,6 @@
 namespace esphome {
 namespace homething_menu_base {
 
-enum MenuMode { MENU_MODE_ROTARY, MENU_MODE_3_BUTTON, MENU_MODE_2_BUTTON };
-
-class HomeThingMenuSettings {
- public:
-  MenuMode get_mode() { return mode_; }
-  void set_mode(MenuMode mode) { mode_ = mode; }
-  int get_display_timeout() { return display_timeout_; }
-  void set_display_timeout(int display_timeout) {
-    display_timeout_ = display_timeout;
-  }
-  int get_sleep_after() { return sleep_after_; }
-  void set_sleep_after(int sleep_after) { sleep_after_ = sleep_after; }
-  bool get_charging() { return charging_; }
-  void set_charging(bool charging) { charging_ = charging; }
-  bool get_menu_rollover() { return menu_rollover_; }
-  void set_menu_rollover(bool menu_rollover) { menu_rollover_ = menu_rollover; }
-
- private:
-  MenuMode mode_;
-  int display_timeout_;
-  int sleep_after_;
-  bool charging_;
-  bool menu_rollover_;
-};
-
 class HomeThingMenuDisplayState {
  public:
   display::Font* get_small_font() { return small_font_; }

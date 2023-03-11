@@ -78,7 +78,11 @@ font:
 
 deep_sleep:
   id: deep_sleep_
-         
+      
+binary_sensor:
+  - platform: template
+    id: charging
+
 sensor:
 ## Battery
   - platform: adc
@@ -91,16 +95,18 @@ sensor:
     on_value:
       then:
         lambda: |-
-          // if (id(vcc_adc).state > 2.23) {
-          //   if (charging == false) {
-          //     charging = true;
-          //   }
-          // } else {
-          //   if (charging == true) {
-          //     charging = false;
-          //   }
-          // }
-          // id(vcc_adc_avg).publish_state(id(vcc_adc).state);
+          if (!id(charging)->has_state()) {
+              id(charging)->publish_state(false);
+          } else if (id(vcc_adc).state > 2.23) {
+            if (!id(charging).state) {
+              id(charging)->publish_state(true);
+            }
+          } else {
+            if (id(charging).state) {
+              id(charging)->publish_state(false);
+            }
+          }
+          id(vcc_adc_avg).publish_state(id(vcc_adc).state);
   - platform: template
     id: vcc_adc_avg
     filters:
@@ -120,18 +126,18 @@ sensor:
     on_value :
       then:
         - sensor.template.publish:
-            id: batteryPercent
+            id: battery_percent
             state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
   - platform: template
     name: Battery Percent
-    id: batteryPercent
+    id: battery_percent
     unit_of_measurement: '%'
     on_value_range:
       below: 5
       then:
         lambda: |-
-          ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryPercent).state);
-          // id(sleep_toggle).turn_on();
+          ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(battery_percent).state);
+          id(sleep_toggle).turn_on();
 
 switch:
   - platform: template
@@ -155,6 +161,11 @@ spi:
 
 homeThing:
   id: homeThingMenu
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  battery:
+    battery_percent: battery_percent
+    charging: charging
   media_players: media_group_component
   lights: light_group_component
   services: service_group_component

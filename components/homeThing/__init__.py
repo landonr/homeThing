@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, wifi, api, binary_sensor
+from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
@@ -43,15 +43,21 @@ CONF_SENSORS = "sensors"
 CONF_SWITCHES = "switches"
 CONF_ON_REDRAW = "on_redraw"
 
+# battery settings
+CONF_CHARGING = "charging"
+CONF_BATTERY_PERCENT = "battery_percent"
+CONF_BATTERY = "battery"
+
 # device settings
 CONF_SETTINGS = "settings"
 CONF_ROTARY = "rotary"
 CONF_3_BUTTON = "3_button"
 CONF_2_BUTTON = "2_button"
 CONF_DISPLAY_TIMEOUT = "display_timeout"
+CONF_MENU_ROLLOVER_ON = "menu_rollover"
+CONF_SLEEP_SWITCH = "sleep_switch"
 CONF_SLEEP_AFTER = "sleep_after"
-CONF_CHARGING = "charging"
-CONF_MENU_ROLLOVER_ON = "menu_rollover_on"
+CONF_BACKLIGHT = "backlight"
 
 # display state
 CONF_FONT_SMALL = "font_small"
@@ -91,8 +97,14 @@ MENU_DISPLAY_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_TEXT_HELPERS): cv.declare_id(HomeThingMenuTextHelpers),
         cv.GenerateID(CONF_REFACTOR): cv.declare_id(HomeThingMenuRefactor),
         cv.GenerateID(CONF_NOW_PLAYING): cv.declare_id(HomeThingMenuNowPlaying),
-        # cv.GenerateID(CONF_BOOT): cv.use_id(HomeThingMenuBoot),
         cv.GenerateID(CONF_HEADER): cv.declare_id(HomeThingMenuHeader),
+    }
+)
+
+BATTERY_SCHEMA = cv.Schema(
+    {
+        cv.Required(CONF_CHARGING): cv.use_id(binary_sensor.BinarySensor),
+        cv.Required(CONF_BATTERY_PERCENT): cv.use_id(sensor.Sensor),
     }
 )
 
@@ -108,9 +120,8 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(HomeThingMenuSettings),
         cv.Optional(CONF_MODE, default=CONF_ROTARY): cv.enum(MENU_MODES),
         cv.Optional(CONF_DISPLAY_TIMEOUT, default=16): cv.int_,
-        cv.Optional(CONF_SLEEP_AFTER, default=3600): cv.int_,
-        cv.Optional(CONF_CHARGING, default=True): cv.boolean,
         cv.Optional(CONF_MENU_ROLLOVER_ON, default=True): cv.boolean,
+        cv.Optional(CONF_SLEEP_AFTER, default=3600): cv.int_,
     }
 )
 
@@ -154,6 +165,9 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
         cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
         cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
+        cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
+        cv.Optional(CONF_BATTERY): BATTERY_SCHEMA,
+        cv.Optional(CONF_BACKLIGHT): cv.use_id(switch.Switch),
         cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
         cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
         cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,
@@ -170,17 +184,23 @@ CONFIG_SCHEMA = cv.Schema(
                 )
             }
         )
-        # cv.GenerateID(CONF_MENU_DISPLAY): MENU_DISPLAY_SCHEMA
     }
 ).extend(cv.polling_component_schema("1s"))
 
+
+MENU_SETTING_TYPES = [
+    CONF_MODE,
+    CONF_DISPLAY_TIMEOUT,
+    CONF_SLEEP_AFTER,
+    CONF_MENU_ROLLOVER_ON,
+]
+
 async def menu_settings_to_code(config):
     menu_settings = cg.new_Pvariable(config[CONF_ID])
-    cg.add(menu_settings.set_mode(config[CONF_MODE]))
-    cg.add(menu_settings.set_display_timeout(config[CONF_DISPLAY_TIMEOUT]))
-    cg.add(menu_settings.set_sleep_after(config[CONF_SLEEP_AFTER]))
-    cg.add(menu_settings.set_charging(config[CONF_CHARGING]))
-    cg.add(menu_settings.set_menu_rollover(config[CONF_MENU_ROLLOVER_ON]))
+    for key in MENU_SETTING_TYPES:
+        if key in config:
+            conf = config[key]
+            cg.add(getattr(menu_settings, f"set_{key}")(conf))
     return menu_settings
 
 async def display_state_to_code(config):
@@ -229,7 +249,6 @@ async def text_helpers_to_code(config, display_buffer, display_state):
     text_helpers = cg.new_Pvariable(config)
     cg.add(text_helpers.set_display_buffer(display_buffer))
     cg.add(text_helpers.set_display_state(display_state))
-    # HomeThingMenuTextHelpers(display_buffer_, display_state_);
     return text_helpers
 
 async def menu_boot_to_code(config, display_buffer, display_state, media_players, menu_header):
@@ -240,13 +259,6 @@ async def menu_boot_to_code(config, display_buffer, display_state, media_players
 
     return menu_boot
 
-    #   display::DisplayBuffer* display_buffer,
-    #   HomeThingMenuDisplayState* display_state,
-    #   HomeThingMenuTextHelpers* text_helpers, HomeThingMenuRefactor* refactor,
-    #   HomeThingMenuNowPlaying* now_playing, HomeThingMenuHeader* header,
-    #   HomeThingMenuBoot* boot,
-    #   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-    #       new_speaker_group)
 async def menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
@@ -260,6 +272,17 @@ async def menu_display_to_code(config, display_buffer, media_players, lights, se
     menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players, lights, services, sensors, switches)
     return menu_display
 
+
+BATTERY_TYPES = [
+    CONF_BATTERY_PERCENT,
+    CONF_CHARGING,
+]
+
+MENU_TYPES = [
+    CONF_BACKLIGHT,
+    CONF_SLEEP_SWITCH,
+]
+
 async def to_code(config):
     media_players = await cg.get_variable(config[CONF_MEDIA_PLAYERS])
     lights = await cg.get_variable(config[CONF_LIGHTS])
@@ -270,8 +293,19 @@ async def to_code(config):
     menu_display = await menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches)
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
+
     menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display, media_players, lights, services, sensors, switches)
     await cg.register_component(menu, config)
+
+    if CONF_BATTERY in config:
+        for key in BATTERY_TYPES:
+            conf = await cg.get_variable(config[CONF_BATTERY][key])
+            cg.add(getattr(menu, f"set_{key}")(conf))
+
+    for key in MENU_TYPES:
+        if key in config:
+            conf = await cg.get_variable(config[key])
+            cg.add(getattr(menu, f"set_{key}")(conf))
 
     for conf in config.get(CONF_ON_REDRAW, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], menu)

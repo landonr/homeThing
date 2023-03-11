@@ -12,6 +12,7 @@
 #include "esphome/components/homeThing/homeThingMenuGlobals.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
+#include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
@@ -42,6 +43,22 @@ class HomeThingMenuBase : public PollingComponent {
         sensor_group_(new_sensor_group),
         switch_group_(new_switch_group) {}
   void setup();
+
+  bool get_charging() { return charging_->has_state() && charging_->state; }
+  void set_charging(binary_sensor::BinarySensor* charging) {
+    charging_ = charging;
+  }
+
+  float get_battery_percent() {
+    return battery_percent_->has_state() && battery_percent_->state;
+  }
+  void set_battery_percent(sensor::Sensor* battery_percent) {
+    battery_percent_ = battery_percent;
+  }
+  void set_sleep_switch(switch_::Switch* sleep_switch) {
+    sleep_switch_ = sleep_switch;
+  }
+  void set_backlight(switch_::Switch* backlight) { backlight_ = backlight; }
 
   void draw_menu_screen();
   void topMenu();
@@ -77,7 +94,7 @@ class HomeThingMenuBase : public PollingComponent {
   int idleTime = -2;
   MenuStates activeMenuState = bootMenu;
   switch_::Switch* backlight_{nullptr};
-  switch_::Switch* sleep_toggle_{nullptr};
+  switch_::Switch* sleep_switch_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
@@ -103,6 +120,8 @@ class HomeThingMenuBase : public PollingComponent {
   const char* const TAG = "homething.menu.base";
   bool menu_drawing_ = false;
   option_menuType option_menu_ = noOptionMenu;
+  sensor::Sensor* battery_percent_{nullptr};
+  binary_sensor::BinarySensor* charging_{nullptr};
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger

@@ -380,7 +380,7 @@ std::vector<std::string>* HomeThingMenuNowPlaying::getWrappedTitles(
   }
   std::string wrappedTitles = text_helpers_->textWrap(
       text, text_helpers_->getCharacterLimit(xPos, fontSize, alignment));
-  TextHelpers::tokenize(wrappedTitles, "\n", output);
+  tokenize(wrappedTitles, "\n", output);
   return output;
 }
 

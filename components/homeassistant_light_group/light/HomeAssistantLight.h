@@ -7,6 +7,7 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
+#include "esphome/core/color.h"
 #include "esphome/core/component.h"
 
 #define MAX_BRIGHTNESS 255.0f
@@ -78,6 +79,7 @@ class HomeAssistantLight : public light::LightOutput,
   void color_temp_changed(std::string state);
   optional<light::ColorMode> parse_color_mode(std::string color_mode);
   void update_supported_color_mode(light::ColorMode mode);
+  int extractFirstNumber(std::string input);
   void color_changed(std::string state);
   void color_mode_changed(std::string state);
   void supported_color_modes_changed(std::string state);

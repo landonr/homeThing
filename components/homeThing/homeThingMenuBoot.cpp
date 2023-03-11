@@ -180,7 +180,7 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
 void HomeThingMenuBoot::skipBootSequence(const MenuStates activeMenuState) {
   if (!bootSequenceCanSkip(activeMenuState)) {
     if (bootSequenceCanSleep(activeMenuState)) {
-      // sleep_toggle_->turn_on();
+      // sleep_switch_->turn_on();
     }
     return;
   }

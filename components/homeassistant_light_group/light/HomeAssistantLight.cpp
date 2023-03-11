@@ -1,5 +1,6 @@
 #include "HomeAssistantLight.h"
 #include <set>
+#include <sstream>
 #include <utility>
 #include "esphome/core/log.h"
 
@@ -333,13 +334,25 @@ void HomeAssistantLight::color_temp_changed(std::string state) {
   }
 }
 
+int HomeAssistantLight::extractFirstNumber(std::string input) {
+  // Remove the opening and closing parentheses
+  input = input.substr(1, input.size() - 2);
+  // Split the string on the comma
+  std::istringstream iss(input);
+  std::string first, second;
+  std::getline(iss, first, ',');
+  // Convert the first part to a int
+  int num = std::stod(first);
+  return num;
+}
+
 void HomeAssistantLight::color_changed(std::string state) {
   ESP_LOGI(TAG, "'%s': (write %d) color changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
 
   update_supported_color_mode(light::ColorMode::RGB_WHITE);
   if (can_update_from_api()) {
-    auto localColor = TextHelpers::extractFirstNumber(state);
+    auto localColor = extractFirstNumber(state);
     float red, green, blue;
     hsv_to_rgb(localColor, 1, 1, red, green, blue);
     auto call = this->light_state_->make_call();
