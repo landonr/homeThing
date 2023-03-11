@@ -4,7 +4,6 @@
 #include <utility>
 #include <vector>
 
-#include "DisplayUpdateInterface.h"
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 
@@ -28,7 +27,6 @@ class HomeAssistantServiceCommand {
 
  private:
   CallbackManager<void()> on_command_callbacks_{};
-  // std::vector<ServiceCalledTrigger*> on_command_callbacks_;
   TemplatableValue<std::string, const HomeAssistantServiceCommand*> text_;
 };
 
