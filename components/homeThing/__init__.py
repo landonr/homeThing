@@ -279,7 +279,7 @@ async def menu_display_to_code(config, display_buffer, media_players, lights, se
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
     now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers, media_players)
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers, media_players, lights)
-    battery_to_code(config, menu_header)
+    await battery_to_code(config, menu_header)
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, media_players, menu_header)
 
     menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players, lights, services, sensors, switches)
@@ -304,7 +304,7 @@ async def to_code(config):
     menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display, media_players, lights, services, sensors, switches)
     await cg.register_component(menu, config)
 
-    battery_to_code(config, menu)
+    await battery_to_code(config, menu)
 
     for key in MENU_TYPES:
         if key in config:

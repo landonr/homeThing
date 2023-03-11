@@ -1,5 +1,4 @@
 #include "homeThingMenuHeader.h"
-#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -185,12 +184,12 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
   if (!display_state_->get_draw_battery_level()) {
     return oldXPos;
   }
-  int batteryWidth = 24;
+  float batteryWidth = 24;
   int batteryHeight = display_state_->get_header_height() - 5;
   int yPos = 2 - yPosOffset;
   int capHeight = 6;
   int capWidth = 3;
-  int xPos = oldXPos - batteryWidth;
+  float xPos = oldXPos - batteryWidth;
   display_buffer_->rectangle(xPos, yPos, batteryWidth, batteryHeight,
                              display_state_->color_gray_dark_);
   display_buffer_->rectangle(
@@ -200,7 +199,7 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
     display_buffer_->filled_rectangle(
         xPos + 1, yPos + 1, (batteryWidth * get_battery_percent() * 0.01) - 2,
         batteryHeight - 2, display_state_->color_green_);
-  } else {
+  } else if (get_charging()) {
     display_buffer_->filled_rectangle(xPos + 1, yPos + 1, batteryWidth - 2,
                                       batteryHeight - 2,
                                       display_state_->color_yellow_);
