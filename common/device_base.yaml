@@ -83,7 +83,7 @@ homeassistant_service_group:
         - homeassistant.service:
             service: script.set_desk_height
             data:
-              height: "65"
+              height: "low"
     - text: "desk up"
       command:
         - lambda: |-
@@ -91,7 +91,7 @@ homeassistant_service_group:
         - homeassistant.service:
             service: script.set_desk_height
             data:
-              height: "106"
+              height: "high"
     - text: "desk nudge up"
       command:
         - lambda: |-
