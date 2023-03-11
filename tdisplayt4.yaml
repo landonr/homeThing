@@ -151,7 +151,6 @@ homeThing:
     then:
       component.update: my_display
   boot:
-    wifi: wifi_connected
     api: api_connected
   display_state:
     font_small: small_font
