@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "TextHelpers.h"
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
