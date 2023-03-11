@@ -6,44 +6,8 @@ esp32:
   framework:
     type: arduino
 
-substitutions:
-  boot_name: '"M5Stick Remote <3"'
-  boot_logo_size: "48"
-  friendly_name: M5stickcRemote
-  wifi_ssid: !secret wifi_ssid
-  wifi_password: !secret wifi_password
-  wifi_fallback_password: !secret wifi_fallback_password
-  large_font_size: "20"
-  medium_font_size: "14"
-  small_font_size: "12"
-  icon_size: "18"
-  icon_size_large: "19"
-  header_height: "16"
-  margin_size: "4"
-  slider_margin_size: "6"
-  scroll_bar_width: "6"
-  bottom_bar_margin: "32"
-  now_playing_max_lines: "8"
-  draw_now_playing_menu: "true"
-  draw_battery_level: "true"
-  draw_volume_level: "false"
-  draw_shuffle_disabled: "false"
-  draw_header_time: "false"
-  color_accent_primary_red: 63%
-  color_accent_primary_green: 13%
-  color_accent_primary_blue: 94%
-  display_timeout: "16"
-  sleep_after: "7200"
-  menu_rollover_on: "false"
-  sync_active_player: "true"
-  dec_brightness_step: "10"
-  inc_brightness_step: "10"
-  dec_color_temperature_step: "10"
-  inc_color_temperature_step: "10"
-  dark_mode: "true"
-  keep_states_in_sync: "false"
-
-<<: !include homeThing/sharedRemoteConfig.yaml
+packages:
+  device_base: !include common/device_base.yaml
 
 i2c:
    - id: bus_a
@@ -51,13 +15,79 @@ i2c:
      scl: GPIO22
      scan: true
 
+font:
+## Font needs to be monospace!
+  - file: "fonts/iosevka-heavy.ttf"
+    id: large_heavy_font
+    size: 24
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+  - file: "fonts/iosevka.ttf"
+    id: large_font
+    size: 24
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+  - file: "fonts/iosevka.ttf"
+    id: medium_font
+    size: 15
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+  - file: "fonts/iosevka.ttf"
+    id: small_font
+    size: 14
+    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+  - file: 'fonts/homeThingFontLogo.ttf' 
+    id: home_thing_logo
+    size: 48
+    glyphs: [
+      '',
+    ]  
+  - file: 'fonts/materialdesignicons-webfont.ttf' 
+    id: material_font_large
+    size: 19
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+      '󰋜', # mdi-home
+      '󰌵', # mdi-lightbulb
+      '󰌶', # mdi-lightbulb-outline
+    ]  
+  - file: 'fonts/materialdesignicons-webfont.ttf' 
+    id: material_font_small
+    size: 18
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+      '󰋜', # mdi-home
+      '󰌵', # mdi-lightbulb
+      '󰌶', # mdi-lightbulb-outline
+    ]
+
 external_components:
   - source:
       type: git
       url: https://gitlab.com/geiseri/esphome_extras.git
     refresh: 0s
     components: [axp192]
-  - <<: !include homeThing/sharedExternalComponents.yaml
 
 axp192:
   id: axp
@@ -66,9 +96,6 @@ axp192:
   charge_voltage: 4150mV
   dcdc1_voltage: 3300mv
   dcdc3_voltage: 1.5V
-
-text_sensor:
-  !include homeThing/sharedTextSensors.yaml
 
 sensor:
     # AXP192 power management - must be present to initialize TFT power on
@@ -79,26 +106,6 @@ sensor:
 
 # internal LED
 light:
-  - platform: homeassistant_light_group
-    id: light_bathroom_lights
-    entity_id: light.bathroom_lights
-    name: Bathroom 
-  - platform: homeassistant_light_group
-    id: light_bedroom_lights
-    entity_id: light.bedroom_lights
-    name: Bedroom 
-  - platform: homeassistant_light_group
-    id: light_kitchen_lights
-    entity_id: light.kitchen_lights
-    name: Kitchen 
-  - platform: homeassistant_light_group
-    id: light_living_room_lights
-    entity_id: light.living_room_lights
-    name: Living Room 
-  - platform: homeassistant_light_group
-    id: light_office_lamp
-    entity_id: light.office_lamp
-    name: Office Lamp
   - platform: monochromatic
     output:  builtin_led
     name: Led
@@ -122,12 +129,6 @@ output:
     id: axp_ldo3  
 
 binary_sensor:
-  - platform: status
-    id: api_connected
-    internal: true
-  - platform: template
-    id: wifi_connected
-    internal: true
   - platform: axp192
     axp192_id: axp
     type: charge_indicate
@@ -171,15 +172,11 @@ binary_sensor:
         - light.turn_off: led1
 
 deep_sleep:
-  id: deep_sleep_m5
+  id: deep_sleep_
   wakeup_pin: 37
   wakeup_pin_mode: INVERT_WAKEUP
 
 switch:
-  - platform: homeassistant_switch_group
-    entity_id: "switch.oven_fan"
-    name: "Oven Fan"
-    id: oven_fan_switch
   - platform: axp192
     axp192_id: axp
     output: ldo3
@@ -196,7 +193,7 @@ switch:
             transition_length: 0s
         - delay: 0.5s
         - deep_sleep.enter:
-            id: deep_sleep_m5
+            id: deep_sleep_
   - platform: template
     id: backlight
     optimistic: true
@@ -227,7 +224,6 @@ homeThing:
     then:
       component.update: my_display
   boot:
-    wifi: wifi_connected
     api: api_connected
   display_state:
     font_small: small_font

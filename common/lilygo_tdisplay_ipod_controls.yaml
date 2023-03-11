@@ -1,0 +1,147 @@
+sensor:
+  ## Rotary
+    - platform: rotary_encoder
+      filters:
+      - throttle: 0.01s
+      name: "Rotary Encoder"
+      internal: true
+      pin_a:
+        number: 21
+        mode:
+          input: true
+          pullup: true
+      pin_b:
+        number: 22
+        mode:
+          input: true
+          pullup: true
+      id: rotary
+      on_clockwise:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressWakeUpDisplay();
+            id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+      on_anticlockwise:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressWakeUpDisplay();
+            id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "T-Display Button Input 0"
+    id: tdisplay_button_input_0
+    internal: true
+    on_press:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressScreenLeft();
+    on_release:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonReleaseScreenLeft();
+    
+  - platform: gpio
+    pin:
+      number: GPIO35
+      inverted: true
+    name: "T-Display Button Input 1"
+    id: tdisplay_button_input_1
+    internal: true
+    on_press:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressScreenRight();
+          
+   Rotary buttons
+  - platform: gpio
+    internal: true
+    pin:
+      number: 15
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw5
+    on_press:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressLeft();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 2
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw4
+    on_press:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressUp();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 12
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw3
+    on_press:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressRight();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 13
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw2
+    on_press:
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressDown();
+  - platform: gpio
+    internal: true
+    pin:
+      number: 17
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw1
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelect();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelectHold();
+
+switch:
+  - platform: gpio
+    pin:
+      number: 27
+      inverted: false
+    id: comb
+    internal: true
+  - platform: gpio
+    pin:
+      number: 26
+      inverted: false
+    id: coma
+    internal: true

@@ -1,0 +1,13 @@
+media_player:
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: sonos
+  - platform: homeassistant_media_player
+    name: TV
+    entity_id: "media_player.55_tcl_roku_tv"
+    id: media_player_tv
+    type: roku
+    soundbar:
+      sonos: media_player_beam

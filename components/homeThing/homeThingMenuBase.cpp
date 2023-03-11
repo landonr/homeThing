@@ -27,6 +27,7 @@ void HomeThingMenuBase::setup() {
 
   this->speaker_group_->add_on_state_callback([this](float state) {
     switch (activeMenuState) {
+      case bootMenu:
       case rootMenu:
       case nowPlayingMenu:
       case sourcesMenu:

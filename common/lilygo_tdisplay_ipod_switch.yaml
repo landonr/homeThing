@@ -1,0 +1,13 @@
+switch:
+  - platform: gpio
+    pin:
+      number: 27
+      inverted: false
+    id: comb
+    internal: true
+  - platform: gpio
+    pin:
+      number: 26
+      inverted: false
+    id: coma
+    internal: true

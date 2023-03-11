@@ -32,7 +32,6 @@ CONF_DISPLAY_STATE = "display_state"
 CONF_TEXT_HELPERS = "text_helpers"
 CONF_REFACTOR = "refactor_me"
 CONF_NOW_PLAYING = "now_playing"
-CONF_WIFI = "wifi"
 CONF_API = "api"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
@@ -82,7 +81,6 @@ CONF_BOOT_DEVICE_NAME = "boot_device_name"
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
-        cv.Required(CONF_WIFI): cv.use_id(binary_sensor.BinarySensor),
         cv.Required(CONF_API): cv.use_id(binary_sensor.BinarySensor),
     }
 )
@@ -236,9 +234,6 @@ async def text_helpers_to_code(config, display_buffer, display_state):
 
 async def menu_boot_to_code(config, display_buffer, display_state, media_players, menu_header):
     menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header, media_players)
-
-    wifi_sensor = await cg.get_variable(config[CONF_WIFI])
-    cg.add(menu_boot.set_wifi_connected(wifi_sensor))
 
     api_sensor = await cg.get_variable(config[CONF_API])
     cg.add(menu_boot.set_api_connected(api_sensor))

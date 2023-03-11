@@ -2,86 +2,84 @@ esphome:
   name: "homething-lilygo"
   platform: ESP32
   board: featheresp32
-  on_boot:
-    priority: 800
-    then:
-      - wait_until:
-          wifi.connected:
-      - binary_sensor.template.publish:
-          id: wifi_connected
-          state: ON
 
-substitutions:
-  boot_name: '"homeThing <3"'
-  boot_logo_size: "48"
-  friendly_name: "homeThing ttgo"
-  wifi_ssid: !secret wifi_ssid
-  wifi_password: !secret wifi_password
-  wifi_fallback_password: !secret wifi_fallback_password
-  large_font_size: "24"
-  medium_font_size: "15"
-  small_font_size: "14"
-  icon_size: "18"
-  icon_size_large: "19"
-  header_height: "16"
-  margin_size: "4"
-  slider_margin_size: "6"
-  scroll_bar_width: "6"
-  bottom_bar_margin: "1"
-  now_playing_max_lines: "5"
-  draw_now_playing_menu: "false"
-  draw_battery_level: "true"
-  draw_volume_level: "false"
-  draw_shuffle_disabled: "false"
-  draw_header_time: "true"
-  color_accent_primary_red: 0%
-  color_accent_primary_green: 45%
-  color_accent_primary_blue: 68%
-  display_timeout: "16"
-  sleep_after: "7200"
-  menu_rollover_on: "false"
-  sync_active_player: "true"
-  dec_brightness_step: "10"
-  inc_brightness_step: "10"
-  dec_color_temperature_step: "10"
-  inc_color_temperature_step: "10"
-  dark_mode: "true"
-  keep_states_in_sync: "false"
+packages:
+  device_base: !include common/device_base.yaml
+  sensor: !include common/lilygo_tdisplay_ipod_sensor.yaml
+  switch: !include common/lilygo_tdisplay_ipod_switch.yaml
+  binary_sensor: !include common/lilygo_tdisplay_ipod_binary_sensor.yaml
 
-<<: !include homeThing/sharedRemoteConfig.yaml
-external_components:
-  - <<: !include homeThing/sharedExternalComponents.yaml
+font:
+  ## Font needs to be monospace!
+    - file: "fonts/iosevka-heavy.ttf"
+      id: large_heavy_font
+      size: 24
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: "fonts/iosevka.ttf"
+      id: large_font
+      size: 24
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: "fonts/iosevka.ttf"
+      id: medium_font
+      size: 15
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: "fonts/iosevka.ttf"
+      id: small_font
+      size: 14
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: 'fonts/homeThingFontLogo.ttf' 
+      id: home_thing_logo
+      size: 48
+      glyphs: [
+        '',
+      ]  
+    - file: 'fonts/materialdesignicons-webfont.ttf' 
+      id: material_font_large
+      size: 19
+      glyphs: [
+        '󰐊', # mdi-play
+        '󰓛', # mdi-stop
+        '󰏤', # home-pause
+        '󰽥', # mdi-moon-waning-crescent
+        '󰒝', # mdi-shuffle
+        '󰒞', # mdi-shuffle-disabled
+        '󰕾', # mdi-volume-high
+        '󰕿', # mdi-volume-low
+        '󰚺', # mdi-plex
+        '󰝆', # mdi-netflix
+        '󰗃', # mdi-youtube
+        '󰓇', # mdi-spotify
+        '󰔂', # mdi-television
+        '󰋜', # mdi-home
+        '󰌵', # mdi-lightbulb
+        '󰌶', # mdi-lightbulb-outline
+      ]  
+    - file: 'fonts/materialdesignicons-webfont.ttf' 
+      id: material_font_small
+      size: 18
+      glyphs: [
+        '󰐊', # mdi-play
+        '󰓛', # mdi-stop
+        '󰏤', # home-pause
+        '󰽥', # mdi-moon-waning-crescent
+        '󰒝', # mdi-shuffle
+        '󰒞', # mdi-shuffle-disabled
+        '󰕾', # mdi-volume-high
+        '󰕿', # mdi-volume-low
+        '󰚺', # mdi-plex
+        '󰝆', # mdi-netflix
+        '󰗃', # mdi-youtube
+        '󰓇', # mdi-spotify
+        '󰔂', # mdi-television
+        '󰋜', # mdi-home
+        '󰌵', # mdi-lightbulb
+        '󰌶', # mdi-lightbulb-outline
+      ]
 
-light:
-  !include homeThing/sharedLights.yaml
-
+deep_sleep:
+  id: deep_sleep_
+         
 sensor:
-## Rotary
-  - platform: rotary_encoder
-    filters:
-    - throttle: 0.01s
-    name: "Rotary Encoder"
-    internal: true
-    pin_a:
-      number: 21
-      mode:
-        input: true
-        pullup: true
-    pin_b:
-      number: 22
-      mode:
-        input: true
-        pullup: true
-    id: rotary
-    on_clockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
-    on_anticlockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
-          
 ## Battery
   - platform: adc
     pin: 34
@@ -135,121 +133,7 @@ sensor:
           ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(batteryPercent).state);
           // id(sleep_toggle).turn_on();
 
-binary_sensor:
-  - platform: status
-    id: api_connected
-    internal: true
-  - platform: template
-    id: wifi_connected
-    internal: true
-  - platform: gpio
-    pin:
-      number: GPIO0
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    name: "T-Display Button Input 0"
-    id: tdisplay_button_input_0
-    internal: true
-    on_press:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressScreenLeft();
-    on_release:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonReleaseScreenLeft();
-    
-  - platform: gpio
-    pin:
-      number: GPIO35
-      inverted: true
-    name: "T-Display Button Input 1"
-    id: tdisplay_button_input_1
-    internal: true
-    on_press:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressScreenRight();
-          
-## Rotary buttons
-  - platform: gpio
-    internal: true
-    pin:
-      number: 15
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw5
-    on_press:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressLeft();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 2
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw4
-    on_press:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressUp();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 12
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw3
-    on_press:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressRight();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 13
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw2
-    on_press:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressDown();
-  - platform: gpio
-    internal: true
-    pin:
-      number: 17
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw1
-    on_click:
-      min_length: 5ms
-      max_length: 350ms
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
-    on_multi_click:
-    - timing:
-        - ON for at least 0.5s
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
-
 switch:
-  - <<: !include homeThing/sharedSwitches.yaml
   - platform: template
     name: Sleep Toggle
     id: sleep_toggle
@@ -257,19 +141,7 @@ switch:
     on_turn_on:
       then:
         - deep_sleep.enter:
-            id: deep_sleep_1
-  - platform: gpio
-    pin:
-      number: 27
-      inverted: false
-    id: comb
-    internal: true
-  - platform: gpio
-    pin:
-      number: 26
-      inverted: false
-    id: coma
-    internal: true
+            id: deep_sleep_
   - platform: gpio
     pin: GPIO4
     name: "Backlight"
@@ -293,9 +165,9 @@ homeThing:
     then:
       component.update: my_display
   boot:
-    wifi: wifi_connected
     api: api_connected
   display_state:
+    draw_battery_level: false
     font_small: small_font
     font_medium: medium_font
     font_large: large_font
@@ -315,13 +187,5 @@ display:
     rotation: 90
     update_interval: 10s
     lambda: |-
-      // if (idleTime < 0) {
-      //   ESP_LOGD("drawing menu", "turning on");
-      //   id(backlight).turn_on();
-      //   idleTime = 0;
-      // }
-
-      // draw_menu_screen();
       id(homeThingMenu)->draw_menu_screen();
       return;
-      

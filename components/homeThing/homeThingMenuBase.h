@@ -42,6 +42,7 @@ class HomeThingMenuBase : public PollingComponent {
         sensor_group_(new_sensor_group),
         switch_group_(new_switch_group) {}
   void setup();
+
   void draw_menu_screen();
   void topMenu();
   bool selectMenu();

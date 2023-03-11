@@ -149,16 +149,14 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->color_white_);
   }
-  if (speaker_group_ != NULL && speaker_group_->playerSearchFinished == false) {
+  if (!boot_->boot_complete()) {
     return boot_->drawBootSequence(*activeMenuState);
   } else if (*activeMenuState == bootMenu) {
     ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
+    return true;
   }
-  if (autoClearState != 0) {
-    display_buffer_->set_auto_clear(true);
-    autoClearState = 0;
-  }
+
   bool animating = false;
   switch (*activeMenuState) {
     case nowPlayingMenu:

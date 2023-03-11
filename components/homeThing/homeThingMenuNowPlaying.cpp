@@ -56,7 +56,8 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   if (drawOptionMenuAndStop(option_menu)) {
     return;
   }
-  if (active_menu.size() > 0) {
+  if (active_menu.size() > 0 &&
+      display_state_->get_draw_now_playing_bottom_menu()) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }
   int yPos = display_state_->get_header_height() +

@@ -1,13 +1,14 @@
 #include "homeThingMenuBoot.h"
 #include <algorithm>
 #include "esphome/components/homeThing/homeThingMenuGlobals.h"
+#include "esphome/components/network/util.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
 namespace homething_menu_base {
 bool HomeThingMenuBoot::bootSequenceCanSleep(const MenuStates activeMenuState) {
   return activeMenuState == bootMenu &&
-         (!wifi_connected_->state || !api_connected_->state);
+         get_boot_menu_state() < BOOT_MENU_STATE_API;
 }
 
 int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
@@ -46,10 +47,6 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
       }
     }
   } else if (animationTick >= animationLength) {
-    display_buffer_->printf(xPos, yPos, display_state_->get_large_heavy_font(),
-                            display_state_->color_accent_primary_,
-                            display::TextAlign::TOP_CENTER,
-                            "wifi connecting...");
     if (animationTick >= showSleepLength &&
         bootSequenceCanSleep(activeMenuState)) {
       yPos = display_state_->getBottomBarYPosition(
@@ -103,19 +100,25 @@ int HomeThingMenuBoot::drawBootSequenceHeader(
 }
 
 float HomeThingMenuBoot::bootSequenceLoadingProgress() {
-  if (api_connected_->state) {
-    if (speaker_group_ != NULL) {
-      float totalPlayers = static_cast<float>(speaker_group_->totalPlayers());
-      float loadedPlayers = static_cast<float>(speaker_group_->loadedPlayers);
-      float progress = 0.8 * (loadedPlayers / totalPlayers);
-      return 0.25 + progress;
-    }
-    return 0.2;
-  } else if (wifi_connected_->state) {
-    return 0.1;
-  } else {
-    return 0;
+  switch (get_boot_menu_state()) {
+    case BOOT_MENU_STATE_START:
+      return 0;
+    case BOOT_MENU_STATE_NETWORK:
+      return 0.1;
+    case BOOT_MENU_STATE_API:
+      return 0.2;
+    case BOOT_MENU_STATE_PLAYERS:
+      if (speaker_group_ != NULL) {
+        float totalPlayers = static_cast<float>(speaker_group_->totalPlayers());
+        float loadedPlayers = static_cast<float>(speaker_group_->loadedPlayers);
+        float progress = 0.7 * (loadedPlayers / totalPlayers);
+        return 0.3 + progress;
+      }
+      return 0.3;
+    case BOOT_MENU_STATE_COMPLETE:
+      return 1;
   }
+  return 0;
 }
 
 void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
@@ -189,28 +192,41 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
   int yPos = imageYPos + display_state_->get_boot_logo_size() +
              display_state_->get_margin_size();
   int maxAnimationDuration = 0;
-  if (api_connected_->state) {
-    if (speaker_group_ != NULL) {
-      int totalPlayers = speaker_group_->totalPlayers();
-      int loadedPlayers = speaker_group_->loadedPlayers;
+  switch (get_boot_menu_state()) {
+    case BOOT_MENU_STATE_API:
       display_buffer_->printf(
           xPos, yPos, display_state_->get_large_heavy_font(),
           display_state_->color_accent_primary_, display::TextAlign::TOP_CENTER,
-          "%d/%d players loaded", loadedPlayers, totalPlayers);
-    } else {
-      display_buffer_->printf(xPos, yPos,
-                              display_state_->get_large_heavy_font(),
-                              display_state_->color_accent_primary_,
-                              display::TextAlign::TOP_CENTER, "api connected!");
+          "api connecting...");
+      break;
+    case BOOT_MENU_STATE_PLAYERS:
+    case BOOT_MENU_STATE_COMPLETE: {
+      if (speaker_group_ != NULL && speaker_group_->totalPlayers() > 0) {
+        int totalPlayers = speaker_group_->totalPlayers();
+        int loadedPlayers = speaker_group_->loadedPlayers;
+        display_buffer_->printf(
+            xPos, yPos, display_state_->get_large_heavy_font(),
+            display_state_->color_accent_primary_,
+            display::TextAlign::TOP_CENTER, "%d/%d players loaded",
+            loadedPlayers, totalPlayers);
+      } else {
+        display_buffer_->printf(
+            xPos, yPos, display_state_->get_large_heavy_font(),
+            display_state_->color_accent_primary_,
+            display::TextAlign::TOP_CENTER, "api connected!");
+      }
+      break;
     }
-  } else if (wifi_connected_->state) {
-    display_buffer_->printf(xPos, yPos, display_state_->get_large_heavy_font(),
-                            display_state_->color_accent_primary_,
-                            display::TextAlign::TOP_CENTER,
-                            "api connecting...");
-  } else {
-    maxAnimationDuration =
-        drawBootSequenceTitleRainbow(xPos, yPos, activeMenuState);
+    case BOOT_MENU_STATE_NETWORK:
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_large_heavy_font(),
+          display_state_->color_accent_primary_, display::TextAlign::TOP_CENTER,
+          "wifi connecting...");
+      break;
+    case BOOT_MENU_STATE_START:
+      maxAnimationDuration =
+          drawBootSequenceTitleRainbow(xPos, yPos, activeMenuState);
+      break;
   }
   drawBootSequenceSkipTitle(xPos, imageYPos, activeMenuState);
   return maxAnimationDuration;
@@ -236,11 +252,28 @@ bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
   if (animationTick < maxAnimationDuration) {
     return true;
   } else {
-    if (wifi_connected_->state && api_connected_->state) {
-      return false;
-    }
+    return get_boot_menu_state() == BOOT_MENU_STATE_COMPLETE;
   }
   return true;
+}
+
+BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
+  if (api_connected_->has_state() && api_connected_->state) {
+    if (speaker_group_ != NULL) {
+      int totalPlayers = speaker_group_->totalPlayers();
+      int loadedPlayers = speaker_group_->loadedPlayers;
+      return totalPlayers == loadedPlayers ? BOOT_MENU_STATE_COMPLETE
+                                           : BOOT_MENU_STATE_PLAYERS;
+    }
+    return BOOT_MENU_STATE_PLAYERS;
+  } else if (network::is_connected()) {
+    return BOOT_MENU_STATE_API;
+  } else if (animation_->animationTick->state <
+             animation_config_.total_animation_length()) {
+    return BOOT_MENU_STATE_START;
+  } else {
+    return BOOT_MENU_STATE_NETWORK;
+  }
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

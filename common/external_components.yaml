@@ -1,0 +1,12 @@
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [ 
+      homeassistant_switch_group, 
+      homeassistant_sensor_group,
+      homeassistant_light_group,
+      homeassistant_media_player,
+      homeassistant_service_group,
+      homeThing,
+    ]

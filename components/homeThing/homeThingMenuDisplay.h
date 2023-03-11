@@ -63,7 +63,6 @@ class HomeThingMenuDisplay {
 
  private:
   int scrollTop = 0;
-  int autoClearState = 0;
   void drawTitleImage(
       int characterCount, int yPos,
       const homeassistant_media_player::RemotePlayerState& titleState,
