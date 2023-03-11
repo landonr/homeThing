@@ -26,8 +26,28 @@ class HomeThingMenuHeader {
         speaker_group_(new_speaker_group),
         light_group_(new_light_group) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
+  void set_battery_percent(sensor::Sensor* battery_percent) {
+    battery_percent_ = battery_percent;
+  }
+  void set_charging(binary_sensor::BinarySensor* charging) {
+    charging_ = charging;
+  }
 
  private:
+  float get_battery_percent() {
+    if (battery_percent_ != nullptr && battery_percent_->has_state()) {
+      return battery_percent_->state;
+    } else {
+      return 0;
+    }
+  }
+  bool get_charging() {
+    if (charging_ != nullptr && charging_->has_state()) {
+      return charging_->state;
+    } else {
+      return false;
+    }
+  }
   void drawHeaderTitleWithString(std::string title, int xPos,
                                  int yPosOffset = 0);
   void drawHeaderTitle(int yPosOffset, const MenuStates activeMenuState);

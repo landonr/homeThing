@@ -777,7 +777,7 @@ void HomeThingMenuBase::idleTick() {
   if (activeMenuState == bootMenu) {
     if (idleTime == menu_settings_->get_display_timeout() && !get_charging()) {
       ESP_LOGD(TAG, "turning off display");
-      backlight_->turn_off();
+      // backlight_->turn_off();
     }
     idleTime++;
     return;
@@ -798,7 +798,7 @@ void HomeThingMenuBase::idleTick() {
     }
     if (!get_charging()) {
       ESP_LOGD(TAG, "turning off display");
-      backlight_->turn_off();
+      // backlight_->turn_off();
     }
     idleTime++;
     return;
@@ -809,7 +809,7 @@ void HomeThingMenuBase::idleTick() {
   } else if (idleTime > menu_settings_->get_sleep_after()) {
     if (!get_charging()) {
       ESP_LOGI(TAG, "night night");
-      sleep_switch_->toggle();
+      // sleep_switch_->turn_on();
       return;
     }
   }

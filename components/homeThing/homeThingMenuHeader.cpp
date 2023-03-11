@@ -196,9 +196,9 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
   display_buffer_->rectangle(
       xPos + batteryWidth - 1, yPos + (batteryHeight / 2) - (capHeight / 2),
       capWidth, capHeight, display_state_->color_gray_dark_);
-  if (battery_percent_->state <= 100 && !charging_->state) {
+  if (get_battery_percent() <= 100 && !get_charging()) {
     display_buffer_->filled_rectangle(
-        xPos + 1, yPos + 1, (batteryWidth * battery_percent_->state * 0.01) - 2,
+        xPos + 1, yPos + 1, (batteryWidth * get_battery_percent() * 0.01) - 2,
         batteryHeight - 2, display_state_->color_green_);
   } else {
     display_buffer_->filled_rectangle(xPos + 1, yPos + 1, batteryWidth - 2,
