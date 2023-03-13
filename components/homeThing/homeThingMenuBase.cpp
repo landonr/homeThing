@@ -1,5 +1,6 @@
 #include "homeThingMenuBase.h"
 #include "esphome/core/log.h"
+#include "version.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -65,6 +66,7 @@ void HomeThingMenuBase::draw_menu_screen() {
   if (!menu_drawing_) {
     menu_drawing_ = true;
     menu_titles = activeMenu();
+    ESP_LOGI(TAG, "drawMenu: %s", COMPONENTS_HOMETHING_VERSION.c_str());
     ESP_LOGD(TAG, "drawMenu:%d %s #%d", menuIndex,
              menuTitleForType(activeMenuState)->get_name().c_str(),
              menu_titles.size());

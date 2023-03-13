@@ -98,7 +98,7 @@ class HomeThingMenuDisplayState {
     boot_device_name_ = boot_device_name;
   }
 
-// color
+  // color
   Color get_color_gray_dark() { return color_gray_dark_; }
   void set_color_gray_dark(Color color_gray_dark) {
     color_gray_dark_ = color_gray_dark;
