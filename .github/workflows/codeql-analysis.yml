@@ -24,7 +24,7 @@ jobs:
           source: '.'
           extensions: 'h,cpp'
           style: file
-          exclude: 'version.h'
+          exclude: 'components/homeThing/version.h'
           clangFormatVersion: 15
       - name: Create file
         run: |
