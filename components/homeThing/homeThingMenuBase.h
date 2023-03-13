@@ -126,6 +126,7 @@ class HomeThingMenuBase : public PollingComponent {
       return false;
     }
   }
+  bool display_can_sleep();
 
   int idleTime = -2;
   MenuStates activeMenuState = bootMenu;

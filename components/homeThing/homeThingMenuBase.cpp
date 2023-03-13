@@ -67,7 +67,8 @@ void HomeThingMenuBase::setup() {
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
-  if (idleTime > 16 && !get_charging()) {
+  int timeout = menu_settings_->get_display_timeout();
+  if (timeout != 0 && idleTime > timeout && !get_charging()) {
     ESP_LOGW(TAG, "not drawing");
     return;
   }
@@ -225,7 +226,8 @@ bool HomeThingMenuBase::selectRootMenu() {
       break;
     case backlightMenu:
       topMenu();
-      backlight_->turn_off();
+      if (backlight_)
+        backlight_->turn_off();
       return false;
     case sleepMenu:
       sleep_switch_->turn_on();
@@ -346,7 +348,7 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
     idleTime = 0;
   }
 
-  if (backlight_ != NULL && !backlight_->state) {
+  if (backlight_ && !backlight_->state) {
     backlight_->turn_on();
     update_display();
     return true;
@@ -807,10 +809,21 @@ void HomeThingMenuBase::debounceUpdateDisplay() {
   }
 }
 
+bool HomeThingMenuBase::display_can_sleep() {
+    // true care about charging, false dont
+    int timeout = menu_settings_->get_display_timeout();
+    bool idle_timeout = timeout == 0 || idleTime < timeout;
+
+    bool display_timeout_while_charging = false;
+    bool charging_timeout = display_timeout_while_charging ? get_charging() : false;
+
+    return idle_timeout || charging_timeout;
+}
+
 void HomeThingMenuBase::idleTick() {
   ESP_LOGD(TAG, "idle %d", idleTime);
   if (activeMenuState == bootMenu) {
-    if (idleTime == menu_settings_->get_display_timeout() && !get_charging()) {
+    if (display_can_sleep() && backlight_) {
       ESP_LOGD(TAG, "turning off display");
       backlight_->turn_off();
     }
@@ -832,7 +845,7 @@ void HomeThingMenuBase::idleTick() {
       idleMenu(false);
       menu_display_->updateDisplay(false);
     }
-    if (!get_charging()) {
+    if (display_can_sleep() && backlight_) {
       ESP_LOGD(TAG, "turning off display");
       backlight_->turn_off();
     }
@@ -843,9 +856,9 @@ void HomeThingMenuBase::idleTick() {
     idleTime++;
     return;
   } else if (idleTime > menu_settings_->get_sleep_after()) {
-    if (!get_charging()) {
+    if (!get_charging() && sleep_switch_) {
       ESP_LOGI(TAG, "night night");
-      // sleep_switch_->turn_on();
+      sleep_switch_->turn_on();
       return;
     }
   }
@@ -853,11 +866,13 @@ void HomeThingMenuBase::idleTick() {
     bool updatedMediaPositions = media_player_group_->updateMediaPosition();
     if (updatedMediaPositions) {
       switch (activeMenuState) {
-        case nowPlayingMenu:
-          if (idleTime < 16 || get_charging()) {
+        case nowPlayingMenu: {
+          int timeout = menu_settings_->get_display_timeout();
+          if (!display_can_sleep()) {
             update_display();
           }
           break;
+        }
         default:
           break;
       }

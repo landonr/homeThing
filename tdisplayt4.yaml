@@ -141,6 +141,7 @@ homeThing:
   id: homeThingMenu
   settings:
     mode: 3_button
+    display_timeout: 0
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
