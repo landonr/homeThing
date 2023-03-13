@@ -199,6 +199,7 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
     out.push_back(switchesMenu);
   }
   out.push_back(sleepMenu);
+  out.push_back(aboutMenu);
   return out;
 }
 

@@ -6,6 +6,7 @@
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #include "esphome/core/color.h"
+#include "version.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -25,7 +26,8 @@ enum MenuStates {
   nowPlayingMenu,
   sensorsMenu,
   backlightMenu,
-  sleepMenu
+  sleepMenu,
+  aboutMenu
 };
 
 enum MenuTitleLeftIcon {
@@ -65,6 +67,8 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Sensors";
     case bootMenu:
       return "Boot";
+    case aboutMenu:
+      return COMPONENTS_HOMETHING_VERSION;
   }
   return "";
 }
