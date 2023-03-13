@@ -126,6 +126,7 @@ class HomeThingMenuBase : public PollingComponent {
       return false;
     }
   }
+  void sleep_display();
   bool display_can_sleep();
 
   int idleTime = -2;

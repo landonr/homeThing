@@ -67,9 +67,9 @@ void HomeThingMenuBase::setup() {
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
-  int timeout = menu_settings_->get_display_timeout();
-  if (timeout != 0 && idleTime > timeout && !get_charging()) {
+  if (display_can_sleep()) {
     ESP_LOGW(TAG, "not drawing");
+    sleep_display();
     return;
   }
   if (!menu_drawing_) {
@@ -226,8 +226,7 @@ bool HomeThingMenuBase::selectRootMenu() {
       break;
     case backlightMenu:
       topMenu();
-      if (backlight_)
-        backlight_->turn_off();
+      sleep_display();
       return false;
     case sleepMenu:
       sleep_switch_->turn_on();
@@ -810,22 +809,39 @@ void HomeThingMenuBase::debounceUpdateDisplay() {
 }
 
 bool HomeThingMenuBase::display_can_sleep() {
-    // true care about charging, false dont
-    int timeout = menu_settings_->get_display_timeout();
-    bool idle_timeout = timeout == 0 || idleTime < timeout;
+  // true care about charging, false dont
+  int timeout = menu_settings_->get_display_timeout();
+  bool idle_timeout = timeout != 0 && idleTime >= timeout;
 
-    bool display_timeout_while_charging = false;
-    bool charging_timeout = display_timeout_while_charging ? get_charging() : false;
+  bool display_timeout_while_charging = false;
+  bool charging_timeout =
+      display_timeout_while_charging ? get_charging() : false;
 
-    return idle_timeout || charging_timeout;
+  ESP_LOGI(TAG, "screen timeout %d, charging %d, charging timeout %d",
+           idle_timeout, get_charging(), charging_timeout);
+
+  if (get_charging()) {
+    if (display_timeout_while_charging)
+      return idle_timeout;
+    else
+      return false;
+  } else {
+    return idle_timeout;
+  }
+}
+
+void HomeThingMenuBase::sleep_display() {
+  if (backlight_) {
+    ESP_LOGI(TAG, "sleep_display: turning off display");
+    backlight_->turn_off();
+  }
 }
 
 void HomeThingMenuBase::idleTick() {
-  ESP_LOGD(TAG, "idle %d", idleTime);
+  ESP_LOGI(TAG, "idleTick: idle %d", idleTime);
   if (activeMenuState == bootMenu) {
-    if (display_can_sleep() && backlight_) {
-      ESP_LOGD(TAG, "turning off display");
-      backlight_->turn_off();
+    if (display_can_sleep()) {
+      sleep_display();
     }
     idleTime++;
     return;
@@ -840,14 +856,17 @@ void HomeThingMenuBase::idleTick() {
         idleTime++;
         return;
       }
+      ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
       activeMenuState = rootMenu;
       animation_->resetAnimation();
       idleMenu(false);
       menu_display_->updateDisplay(false);
     }
-    if (display_can_sleep() && backlight_) {
-      ESP_LOGD(TAG, "turning off display");
-      backlight_->turn_off();
+
+    ESP_LOGI(TAG, "idleTick: turning off display? %d", display_can_sleep());
+    if (display_can_sleep()) {
+      ESP_LOGI(TAG, "idleTick: turning off display");
+      sleep_display();
     }
     idleTime++;
     return;
@@ -856,8 +875,9 @@ void HomeThingMenuBase::idleTick() {
     idleTime++;
     return;
   } else if (idleTime > menu_settings_->get_sleep_after()) {
+    ESP_LOGI(TAG, "idleTick: night night? %d", get_charging());
     if (!get_charging() && sleep_switch_) {
-      ESP_LOGI(TAG, "night night");
+      ESP_LOGI(TAG, "idleTick: night night");
       sleep_switch_->turn_on();
       return;
     }
@@ -867,9 +887,12 @@ void HomeThingMenuBase::idleTick() {
     if (updatedMediaPositions) {
       switch (activeMenuState) {
         case nowPlayingMenu: {
-          int timeout = menu_settings_->get_display_timeout();
+          ESP_LOGI(TAG, "idleTick: update media positions %d", display_can_sleep());
           if (!display_can_sleep()) {
             update_display();
+          } else {
+            if (!get_charging())
+              sleep_display();
           }
           break;
         }
