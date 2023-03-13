@@ -24,7 +24,7 @@ jobs:
           source: '.'
           extensions: 'h,cpp'
           style: file
-          ignore: 'version.h'
+          exclude: 'version.h'
           clangFormatVersion: 15
       - name: Create file
         run: |
