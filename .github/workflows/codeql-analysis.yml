@@ -1,4 +1,4 @@
-name: ESPHome Builder
+name: homeThing Builder
 on:
   workflow_dispatch:
   push:
@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        devices: [ 'tdisplayremote', 'fireremote', 'tdisplayt4', 'm5stickc' ]
+        devices: [ 'tdisplayremote', 'fireremote', 'tdisplayt4', 'm5stickc', 'homething-lilygo' ]
     steps:
       - uses: actions/checkout@v2
       - uses: DoozyX/clang-format-lint-action@v0.15
@@ -24,6 +24,7 @@ jobs:
           source: '.'
           extensions: 'h,cpp'
           style: file
+          ignore: 'version.h'
           clangFormatVersion: 15
       - name: Create file
         run: |
