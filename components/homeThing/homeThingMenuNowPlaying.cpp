@@ -242,7 +242,7 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
 void HomeThingMenuNowPlaying::drawSpeakerOptionMenu() {
   display_buffer_->circle(display_buffer_->get_width() * 0.5,
                           (display_buffer_->get_height() - 16) * 0.45 + 24, 48,
-                          display_state_->color_gray_);
+                          display_state_->get_color_gray());
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.15 + 16,
@@ -266,7 +266,7 @@ void HomeThingMenuNowPlaying::drawSpeakerOptionMenu() {
 void HomeThingMenuNowPlaying::drawTVOptionMenu() {
   display_buffer_->circle(display_buffer_->get_width() * 0.5,
                           (display_buffer_->get_height() - 16) * 0.45 + 24, 48,
-                          display_state_->color_gray_);
+                          display_state_->get_color_gray());
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.15 + 16,
@@ -310,17 +310,18 @@ void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
       true, display_buffer_->get_height());
   display_buffer_->printf(iconMargin / 2 - display_state_->get_icon_size() / 2,
                           yPos + 1, display_state_->get_material_font_small(),
-                          display_state_->color_accent_primary_, "󰕿");
+                          display_state_->get_color_accent_primary(), "󰕿");
   display_buffer_->printf(display_buffer_->get_width() - iconMargin / 2 -
                               display_state_->get_icon_size() / 2,
                           yPos + 1, display_state_->get_material_font_small(),
-                          display_state_->color_accent_primary_, "󰕾");
+                          display_state_->get_color_accent_primary(), "󰕾");
 
   display_buffer_->rectangle(iconMargin, yPos, totalBarWidth, barHeight,
-                             display_state_->color_accent_primary_);
-  display_buffer_->filled_rectangle(
-      iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth,
-      barHeight - 2 - barMargin * 2, display_state_->color_accent_primary_);
+                             display_state_->get_color_accent_primary());
+  display_buffer_->filled_rectangle(iconMargin + barMargin * 2,
+                                    yPos + barMargin * 2, barWidth,
+                                    barHeight - 2 - barMargin * 2,
+                                    display_state_->get_color_accent_primary());
 }
 
 bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(

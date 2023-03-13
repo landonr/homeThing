@@ -25,9 +25,9 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
     int activeCharacter = currentAnimationTick;
     int maxCharacters = loopLimit;
     std::vector<Color> colors = {
-        display_state_->color_black_, display_state_->color_yellow_,
-        display_state_->color_red_,   display_state_->color_pink_,
-        display_state_->color_green_, display_state_->color_blue_};
+        display_state_->get_color_black(), display_state_->get_color_yellow(),
+        display_state_->get_color_red(),   display_state_->get_color_pink(),
+        display_state_->get_color_green(), display_state_->get_color_blue()};
     int textWidth = maxCharacters *
                     display_state_->get_large_font()->get_baseline() *
                     display_state_->get_font_size_width_ratio();
@@ -36,7 +36,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
       if (colorIndex > 0) {
         auto color = colors.size() > colorIndex
                          ? colors[colorIndex]
-                         : display_state_->color_accent_primary_;
+                         : display_state_->get_color_accent_primary();
         int characterXPos =
             xPos - textWidth / 2 +
             (i * display_state_->get_large_font()->get_baseline() *
@@ -54,7 +54,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
              display_state_->get_margin_size() / 2 -
              display_state_->get_small_font()->get_baseline();
       display_buffer_->printf(xPos, yPos, display_state_->get_small_font(),
-                              display_state_->color_accent_primary_,
+                              display_state_->get_color_accent_primary(),
                               display::TextAlign::TOP_CENTER, "sleep >");
     }
   }
@@ -74,9 +74,10 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
                             display_state_->get_menu_font_logo(), color,
                             display::TextAlign::TOP_CENTER, "");
   } else if (animationTick >= totalDuration) {
-    display_buffer_->printf(
-        xPos, imageYPos, display_state_->get_menu_font_logo(),
-        display_state_->color_white_, display::TextAlign::TOP_CENTER, "");
+    display_buffer_->printf(xPos, imageYPos,
+                            display_state_->get_menu_font_logo(),
+                            display_state_->get_color_white(),
+                            display::TextAlign::TOP_CENTER, "");
   }
   return totalDuration;
 }
@@ -134,10 +135,11 @@ void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
              yPosOffset;
 
   display_buffer_->rectangle(iconMargin, yPos, totalBarWidth, barHeight,
-                             display_state_->color_accent_primary_);
-  display_buffer_->filled_rectangle(
-      iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth,
-      barHeight - 2 - barMargin * 2, display_state_->color_accent_primary_);
+                             display_state_->get_color_accent_primary());
+  display_buffer_->filled_rectangle(iconMargin + barMargin * 2,
+                                    yPos + barMargin * 2, barWidth,
+                                    barHeight - 2 - barMargin * 2,
+                                    display_state_->get_color_accent_primary());
 }
 
 int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
@@ -172,7 +174,7 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
                display_state_->get_margin_size() / 2 -
                display_state_->get_small_font()->get_baseline();
     display_buffer_->printf(xPos, yPos, display_state_->get_small_font(),
-                            display_state_->color_accent_primary_,
+                            display_state_->get_color_accent_primary(),
                             display::TextAlign::TOP_CENTER, "skip >");
   }
 }
@@ -196,8 +198,8 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
     case BOOT_MENU_STATE_API:
       display_buffer_->printf(
           xPos, yPos, display_state_->get_large_heavy_font(),
-          display_state_->color_accent_primary_, display::TextAlign::TOP_CENTER,
-          "api connecting...");
+          display_state_->get_color_accent_primary(),
+          display::TextAlign::TOP_CENTER, "api connecting...");
       break;
     case BOOT_MENU_STATE_PLAYERS:
     case BOOT_MENU_STATE_COMPLETE: {
@@ -206,13 +208,13 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
         int loadedPlayers = speaker_group_->loadedPlayers;
         display_buffer_->printf(
             xPos, yPos, display_state_->get_large_heavy_font(),
-            display_state_->color_accent_primary_,
+            display_state_->get_color_accent_primary(),
             display::TextAlign::TOP_CENTER, "%d/%d players loaded",
             loadedPlayers, totalPlayers);
       } else {
         display_buffer_->printf(
             xPos, yPos, display_state_->get_large_heavy_font(),
-            display_state_->color_accent_primary_,
+            display_state_->get_color_accent_primary(),
             display::TextAlign::TOP_CENTER, "api connected!");
       }
       break;
@@ -220,8 +222,8 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
     case BOOT_MENU_STATE_NETWORK:
       display_buffer_->printf(
           xPos, yPos, display_state_->get_large_heavy_font(),
-          display_state_->color_accent_primary_, display::TextAlign::TOP_CENTER,
-          "wifi connecting...");
+          display_state_->get_color_accent_primary(),
+          display::TextAlign::TOP_CENTER, "wifi connecting...");
       break;
     case BOOT_MENU_STATE_START:
       maxAnimationDuration =

@@ -34,28 +34,29 @@ int HomeThingMenuHeader::drawPlayPauseIcon(int oldXPos,
   switch (menuTitle.media_player_->playerState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState: {
-      display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_small(),
-          menuTitle.mediaSourceIconColor(display_state_->color_accent_primary_),
-          menuTitle.mediaSourceIcon().c_str());
+      display_buffer_->printf(xPos, yPos,
+                              display_state_->get_material_font_small(),
+                              menuTitle.mediaSourceIconColor(
+                                  display_state_->get_color_accent_primary()),
+                              menuTitle.mediaSourceIcon().c_str());
       break;
     }
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
-      display_buffer_->printf(xPos, yPos,
-                              display_state_->get_material_font_small(),
-                              display_state_->color_accent_primary_, "󰏤");
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_material_font_small(),
+          display_state_->get_color_accent_primary(), "󰏤");
       break;
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
-      display_buffer_->printf(xPos, yPos,
-                              display_state_->get_material_font_small(),
-                              display_state_->color_accent_primary_, "󰓛");
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_material_font_small(),
+          display_state_->get_color_accent_primary(), "󰓛");
       break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
-      display_buffer_->printf(xPos, yPos,
-                              display_state_->get_material_font_small(),
-                              display_state_->color_accent_primary_, "󰽥");
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_material_font_small(),
+          display_state_->get_color_accent_primary(), "󰽥");
       break;
     default:
       return oldXPos;
@@ -136,13 +137,13 @@ int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
                display_state_->get_margin_size() / 2;
     int yPos = getHeaderTextYPos(yPosOffset);
     if (speaker_group_->mediaShuffling()) {
-      display_buffer_->printf(xPos, yPos,
-                              display_state_->get_material_font_small(),
-                              display_state_->color_accent_primary_, "󰒝");
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_material_font_small(),
+          display_state_->get_color_accent_primary(), "󰒝");
     } else if (display_state_->get_draw_shuffle_disabled()) {
-      display_buffer_->printf(xPos, yPos,
-                              display_state_->get_material_font_small(),
-                              display_state_->color_accent_primary_, "󰒞");
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_material_font_small(),
+          display_state_->get_color_accent_primary(), "󰒞");
     } else {
       return oldXPos;
     }
@@ -191,18 +192,18 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
   int capWidth = 3;
   float xPos = oldXPos - batteryWidth;
   display_buffer_->rectangle(xPos, yPos, batteryWidth, batteryHeight,
-                             display_state_->color_gray_dark_);
+                             display_state_->get_color_gray_dark());
   display_buffer_->rectangle(
       xPos + batteryWidth - 1, yPos + (batteryHeight / 2) - (capHeight / 2),
-      capWidth, capHeight, display_state_->color_gray_dark_);
+      capWidth, capHeight, display_state_->get_color_gray_dark());
   if (get_battery_percent() <= 100 && !get_charging()) {
     display_buffer_->filled_rectangle(
         xPos + 1, yPos + 1, (batteryWidth * get_battery_percent() * 0.01) - 2,
-        batteryHeight - 2, display_state_->color_green_);
+        batteryHeight - 2, display_state_->get_color_green());
   } else if (get_charging()) {
     display_buffer_->filled_rectangle(xPos + 1, yPos + 1, batteryWidth - 2,
                                       batteryHeight - 2,
-                                      display_state_->color_yellow_);
+                                      display_state_->get_color_yellow());
   }
   return xPos - display_state_->get_margin_size();
 }
@@ -226,9 +227,10 @@ int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
 
 void HomeThingMenuHeader::drawHeader(int yPosOffset,
                                      const MenuStates activeMenuState) {
-  display_buffer_->rectangle(
-      0, display_state_->get_header_height() - yPosOffset,
-      display_buffer_->get_width(), 1, display_state_->color_accent_primary_);
+  display_buffer_->rectangle(0,
+                             display_state_->get_header_height() - yPosOffset,
+                             display_buffer_->get_width(), 1,
+                             display_state_->get_color_accent_primary());
   drawHeaderTitle(yPosOffset, activeMenuState);
   int xPos =
       display_buffer_->get_width() - display_state_->get_margin_size() / 2;
