@@ -9,36 +9,34 @@ namespace homething_menu_base {
 
 class HomeThingMenuDisplayState {
  public:
-  display::Font* get_small_font() { return small_font_; }
-  void set_small_font(display::Font* small_font) { small_font_ = small_font; }
+  display::Font* get_font_small() { return font_small_; }
+  void set_font_small(display::Font* font_small) { font_small_ = font_small; }
 
-  display::Font* get_medium_font() { return medium_font_; }
-  void set_medium_font(display::Font* medium_font) {
-    medium_font_ = medium_font;
+  display::Font* get_font_medium() { return font_medium_; }
+  void set_font_medium(display::Font* font_medium) {
+    font_medium_ = font_medium;
   }
 
-  display::Font* get_large_font() { return large_font_; }
-  void set_large_font(display::Font* large_font) { large_font_ = large_font; }
+  display::Font* get_font_large() { return font_large_; }
+  void set_font_large(display::Font* font_large) { font_large_ = font_large; }
 
-  display::Font* get_large_heavy_font() { return large_heavy_font_; }
-  void set_large_heavy_font(display::Font* large_heavy_font) {
-    large_heavy_font_ = large_heavy_font;
+  display::Font* get_font_large_heavy() { return font_large_heavy_; }
+  void set_font_large_heavy(display::Font* font_large_heavy) {
+    font_large_heavy_ = font_large_heavy;
   }
 
-  display::Font* get_material_font_large() { return material_font_large_; }
-  void set_material_font_large(display::Font* material_font_large) {
-    material_font_large_ = material_font_large;
+  display::Font* get_font_material_large() { return font_material_large_; }
+  void set_font_material_large(display::Font* font_material_large) {
+    font_material_large_ = font_material_large;
   }
 
-  display::Font* get_material_font_small() { return material_font_small_; }
-  void set_material_font_small(display::Font* material_font_small) {
-    material_font_small_ = material_font_small;
+  display::Font* get_font_material_small() { return font_material_small_; }
+  void set_font_material_small(display::Font* font_material_small) {
+    font_material_small_ = font_material_small;
   }
 
-  display::Font* get_menu_font_logo() { return menu_font_logo_; }
-  void set_menu_font_logo(display::Font* menu_font_logo) {
-    menu_font_logo_ = menu_font_logo;
-  }
+  display::Font* get_font_logo() { return font_logo_; }
+  void set_font_logo(display::Font* font_logo) { font_logo_ = font_logo; }
 
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
@@ -129,9 +127,9 @@ class HomeThingMenuDisplayState {
   void set_color_yellow(Color color_yellow) { color_yellow_ = color_yellow; }
 
   int getBottomBarYPosition(bool spaceForMenu, int display_height) {
-    int barHeight = small_font_->get_height();
+    int barHeight = font_small_->get_height();
     int menuSpace = spaceForMenu && get_draw_now_playing_bottom_menu()
-                        ? large_font_->get_height()
+                        ? font_large_->get_height()
                         : 0;
     int yPos = display_height - margin_size_ - menuSpace - bottom_bar_margin_ -
                barHeight;
@@ -151,13 +149,13 @@ class HomeThingMenuDisplayState {
   Color color_red_ = Color(255, 0, 0);
   Color color_yellow_ = Color(255, 191, 25);
 
-  display::Font* small_font_{nullptr};
-  display::Font* medium_font_{nullptr};
-  display::Font* large_font_{nullptr};
-  display::Font* large_heavy_font_{nullptr};
-  display::Font* material_font_large_{nullptr};
-  display::Font* material_font_small_{nullptr};
-  display::Font* menu_font_logo_{nullptr};
+  display::Font* font_small_{nullptr};
+  display::Font* font_medium_{nullptr};
+  display::Font* font_large_{nullptr};
+  display::Font* font_large_heavy_{nullptr};
+  display::Font* font_material_large_{nullptr};
+  display::Font* font_material_small_{nullptr};
+  display::Font* font_logo_{nullptr};
   int header_height_;
   int margin_size_;
   int bottom_bar_margin_;

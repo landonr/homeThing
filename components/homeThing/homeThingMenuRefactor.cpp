@@ -6,9 +6,9 @@ namespace homething_menu_base {
 void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
   int xPos = display_state_->get_margin_size() * 2;
   int width = 8;
-  int lineHeight = extend ? display_state_->get_medium_font()->get_baseline() +
+  int lineHeight = extend ? display_state_->get_font_medium()->get_baseline() +
                                 display_state_->get_margin_size()
-                          : (display_state_->get_medium_font()->get_baseline() +
+                          : (display_state_->get_font_medium()->get_baseline() +
                              display_state_->get_margin_size()) /
                                 2;
   display_buffer_->line(
@@ -16,11 +16,11 @@ void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
   display_buffer_->line(
       xPos,
-      yPos + (display_state_->get_medium_font()->get_baseline() +
+      yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
       xPos + width,
-      yPos + (display_state_->get_medium_font()->get_baseline() +
+      yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
@@ -130,17 +130,17 @@ void HomeThingMenuRefactor::drawLightSliderTitle(
         hsv_to_rgb(slider->displayValue, 1, 1, red, green, blue);
         auto rgbColor = Color(red * 255.0, green * 255.0, blue * 255.0);
         display_buffer_->printf(xPos, yPos + 1,
-                                display_state_->get_medium_font(), rgbColor,
+                                display_state_->get_font_medium(), rgbColor,
                                 sliderTitle.c_str());
       } else {
         display_buffer_->printf(
-            xPos, yPos + 1, display_state_->get_medium_font(),
+            xPos, yPos + 1, display_state_->get_font_medium(),
             display_state_->get_color_accent_primary(), sliderTitle.c_str());
       }
       break;
     case SliderSelectionStateHover:
     case SliderSelectionStateNone:
-      display_buffer_->printf(xPos, yPos + 1, display_state_->get_medium_font(),
+      display_buffer_->printf(xPos, yPos + 1, display_state_->get_font_medium(),
                               display_state_->get_color_white(),
                               sliderTitle.c_str());
       break;
@@ -155,15 +155,15 @@ void HomeThingMenuRefactor::drawLightSlider(
     display_buffer_->filled_rectangle(
         0, yPos, display_buffer_->get_width(),
         (display_state_->get_margin_size() +
-         display_state_->get_medium_font()->get_baseline()) *
+         display_state_->get_font_medium()->get_baseline()) *
             2,
         display_state_->get_color_accent_primary());
   }
   int sliderOffset =
-      static_cast<int>((display_state_->get_medium_font()->get_baseline() +
+      static_cast<int>((display_state_->get_font_medium()->get_baseline() +
                         display_state_->get_margin_size()) /
                        2);
-  int oneRow = display_state_->get_medium_font()->get_baseline() +
+  int oneRow = display_state_->get_font_medium()->get_baseline() +
                display_state_->get_margin_size();
   drawLightSliderBar(xPos, yPos + sliderOffset + oneRow, sliderHeight,
                      sliderState, slider, drawRGB);
@@ -173,9 +173,9 @@ void HomeThingMenuRefactor::drawLightSlider(
 }
 
 void HomeThingMenuRefactor::drawSwitch(bool switchState, int yPos) {
-  int circleSize = display_state_->get_small_font()->get_baseline() / 2;
+  int circleSize = display_state_->get_font_small()->get_baseline() / 2;
   int xPos = display_state_->get_margin_size() + circleSize;
-  int centerYPos = yPos + (display_state_->get_medium_font()->get_baseline() +
+  int centerYPos = yPos + (display_state_->get_font_medium()->get_baseline() +
                            display_state_->get_margin_size()) /
                               2;
   display_buffer_->circle(
@@ -195,18 +195,18 @@ void HomeThingMenuRefactor::drawLightSwitch(bool switchState, int yPos,
   if (rowSelected) {
     display_buffer_->filled_rectangle(
         xPos - 1, yPos, display_state_->get_icon_size() + 1,
-        display_state_->get_medium_font()->get_baseline() +
+        display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
         display_state_->get_color_black());
   }
   yPos += (display_state_->get_margin_size() / 4);
   if (switchState) {
     display_buffer_->printf(xPos, yPos,
-                            display_state_->get_material_font_small(),
+                            display_state_->get_font_material_small(),
                             lightColor, "󰌵");
   } else {
     display_buffer_->printf(xPos, yPos,
-                            display_state_->get_material_font_small(),
+                            display_state_->get_font_material_small(),
                             lightColor, "󰌶");
   }
 }
@@ -219,18 +219,18 @@ void HomeThingMenuRefactor::drawArrow(int yPos, int menuTitlesCount,
   }
   display_buffer_->line(
       xPos, yPos + 4, xPos + 3,
-      yPos + (display_state_->get_medium_font()->get_baseline() +
+      yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
   display_buffer_->line(
       xPos,
       yPos +
-          (display_state_->get_medium_font()->get_baseline() +
+          (display_state_->get_font_medium()->get_baseline() +
            display_state_->get_margin_size()) -
           4,
       xPos + 3,
-      yPos + (display_state_->get_medium_font()->get_baseline() +
+      yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()));

@@ -16,27 +16,30 @@ namespace homething_menu_base {
 
 class HomeThingMenuNowPlaying {
  public:
-  HomeThingMenuNowPlaying(
-      display::DisplayBuffer* new_display_buffer,
-      HomeThingMenuDisplayState* new_display_state,
-      HomeThingMenuTextHelpers* new_text_helpers,
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          new_speaker_group)
+  HomeThingMenuNowPlaying(display::DisplayBuffer* new_display_buffer,
+                          HomeThingMenuDisplayState* new_display_state,
+                          HomeThingMenuTextHelpers* new_text_helpers)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        text_helpers_(new_text_helpers),
-        speaker_group_(new_speaker_group) {}
+        text_helpers_(new_text_helpers) {}
   void drawNowPlaying(int menuIndex, const option_menuType option_menu,
                       std::vector<std::shared_ptr<MenuTitleBase>> active_menu);
   void drawSpeakerOptionMenu();
   void drawTVOptionMenu();
   void drawVolumeOptionMenu();
 
+  void set_media_player_group(
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          media_player_group) {
+    media_player_group_ = media_player_group;
+  }
+
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+      media_player_group_{nullptr};
 
   std::string secondsToString(int seconds);
   void drawMediaDuration();

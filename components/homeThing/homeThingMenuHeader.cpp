@@ -4,7 +4,7 @@ namespace esphome {
 namespace homething_menu_base {
 int HomeThingMenuHeader::getHeaderTextYPos(int yPosOffset) {
   return ((display_state_->get_header_height() -
-           display_state_->get_small_font()->get_baseline() * 1.2) /
+           display_state_->get_font_small()->get_baseline() * 1.2) /
           2) -
          yPosOffset;
 }
@@ -13,7 +13,7 @@ void HomeThingMenuHeader::drawHeaderTitleWithString(std::string title, int xPos,
                                                     int yPosOffset) {
   int yPos = getHeaderTextYPos(yPosOffset);
   display_buffer_->printf(
-      xPos, yPos, display_state_->get_small_font(),
+      xPos, yPos, display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       title.c_str());
 }
@@ -21,7 +21,7 @@ void HomeThingMenuHeader::drawHeaderTitleWithString(std::string title, int xPos,
 int HomeThingMenuHeader::drawHeaderIcon(std::string title, int xPos,
                                         Color iconColor) {
   int yPos = getHeaderTextYPos(0);
-  display_buffer_->printf(xPos, yPos, display_state_->get_material_font_small(),
+  display_buffer_->printf(xPos, yPos, display_state_->get_font_material_small(),
                           iconColor, title.c_str());
   return xPos + display_state_->get_icon_size() +
          display_state_->get_margin_size() / 2;
@@ -35,7 +35,7 @@ int HomeThingMenuHeader::drawPlayPauseIcon(int oldXPos,
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState: {
       display_buffer_->printf(xPos, yPos,
-                              display_state_->get_material_font_small(),
+                              display_state_->get_font_material_small(),
                               menuTitle.mediaSourceIconColor(
                                   display_state_->get_color_accent_primary()),
                               menuTitle.mediaSourceIcon().c_str());
@@ -43,19 +43,19 @@ int HomeThingMenuHeader::drawPlayPauseIcon(int oldXPos,
     }
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_small(),
+          xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_accent_primary(), "󰏤");
       break;
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_small(),
+          xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_accent_primary(), "󰓛");
       break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_small(),
+          xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_accent_primary(), "󰽥");
       break;
     default:
@@ -73,9 +73,9 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case backlightMenu:
     case sleepMenu:
     case nowPlayingMenu: {
-      if (speaker_group_ != NULL) {
+      if (media_player_group_ && media_player_group_->activePlayer) {
         auto headerMenuTitle =
-            headerMediaPlayerTitle(speaker_group_->activePlayer);
+            headerMediaPlayerTitle(media_player_group_->activePlayer);
         xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
         drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
       } else {
@@ -124,25 +124,25 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 }
 
 int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
-  if (speaker_group_ == NULL || speaker_group_->activePlayer == NULL) {
+  if (!media_player_group_ || media_player_group_->activePlayer == NULL) {
     return oldXPos;
   }
-  if (speaker_group_->activePlayer->get_player_type() ==
+  if (media_player_group_->activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     return oldXPos;
   }
-  if (speaker_group_->activePlayer->playerState !=
+  if (media_player_group_->activePlayer->playerState !=
       homeassistant_media_player::RemotePlayerState::StoppedRemotePlayerState) {
     int xPos = oldXPos - display_state_->get_icon_size() +
                display_state_->get_margin_size() / 2;
     int yPos = getHeaderTextYPos(yPosOffset);
-    if (speaker_group_->mediaShuffling()) {
+    if (media_player_group_->mediaShuffling()) {
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_small(),
+          xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_accent_primary(), "󰒝");
     } else if (display_state_->get_draw_shuffle_disabled()) {
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_small(),
+          xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_accent_primary(), "󰒞");
     } else {
       return oldXPos;
@@ -172,10 +172,10 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
     timeString.erase(0, 1);
   }
   int xPos = oldXPos - text_helpers_->getTextWidth(
-                           display_state_->get_small_font()->get_baseline(),
+                           display_state_->get_font_small()->get_baseline(),
                            timeString.length());
   display_buffer_->printf(
-      xPos, yPos, display_state_->get_small_font(),
+      xPos, yPos, display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       timeString.c_str());
   return xPos - display_state_->get_margin_size() / 2;
@@ -209,7 +209,8 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
-  if (speaker_group_ == nullptr || speaker_group_->activePlayer == nullptr) {
+  if (media_player_group_ == nullptr ||
+      media_player_group_->activePlayer == nullptr) {
     return oldXPos;
   }
   if (!display_state_->get_draw_volume_level()) {
@@ -218,10 +219,10 @@ int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
   int xPos = oldXPos - display_state_->get_margin_size() / 2;
   int yPos = getHeaderTextYPos(yPosOffset);
   display_buffer_->printf(
-      xPos, yPos, display_state_->get_small_font(),
+      xPos, yPos, display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_RIGHT, "%.0f%%",
-      speaker_group_->getVolumeLevel());
+      media_player_group_->getVolumeLevel());
   return xPos;
 }
 

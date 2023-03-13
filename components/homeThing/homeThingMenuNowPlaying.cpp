@@ -9,41 +9,41 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
     std::vector<std::shared_ptr<MenuTitleBase>> menu_titles, int menu_index) {
   // auto menu_titles = getNowPlayingMenuStates();
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
-             display_state_->get_large_font()->get_baseline();
+             display_state_->get_font_large()->get_baseline();
   if (menu_titles.size() < 1) {
     return;
   }
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5, yPos,
-      display_state_->get_large_font(),
+      display_state_->get_font_large(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER,
       menu_titles[menu_index]->get_name().c_str());
   if (menu_index + 1 < menu_titles.size()) {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.85, yPos,
-        display_state_->get_small_font(),
+        display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER,
         menu_titles[menu_index + 1]->get_name().c_str());
   } else {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.85, yPos,
-        display_state_->get_small_font(),
+        display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER, menu_titles[0]->get_name().c_str());
   }
   if (menu_index - 1 >= 0) {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.15, yPos,
-        display_state_->get_small_font(),
+        display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER,
         menu_titles[menu_index - 1]->get_name().c_str());
   } else {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.15, yPos,
-        display_state_->get_small_font(),
+        display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER,
         menu_titles[menu_titles.size() - 1]->get_name().c_str());
@@ -62,23 +62,23 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   }
   int yPos = display_state_->get_header_height() +
              display_state_->get_margin_size() / 4;
-  if (speaker_group_->activePlayer->playerState ==
+  if (media_player_group_->activePlayer->playerState ==
       homeassistant_media_player::RemotePlayerState::
           PowerOffRemotePlayerState) {
     display_buffer_->printf(
         display_buffer_->get_width() / 2, yPos,
-        display_state_->get_large_font(),
+        display_state_->get_font_large(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER, "Power Off");
     return;
   }
   std::string nowPlayingText = "Now Playing,";
 
-  if (speaker_group_->activePlayer->get_player_type() !=
+  if (media_player_group_->activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
-            speaker_group_->activePlayer);
+            media_player_group_->activePlayer);
     if (activeSpeaker->mediaPlaylist != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->mediaPlaylist;
     } else if (activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
@@ -88,14 +88,15 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   int xPos = display_buffer_->get_width() / 2;
   auto nowPlayingWrappedText =
       getWrappedTitles(display_state_->get_margin_size(),
-                       display_state_->get_medium_font()->get_baseline(),
+                       display_state_->get_font_medium()->get_baseline(),
                        display::TextAlign::TOP_LEFT, nowPlayingText);
   auto mediaArtistWrappedText = getWrappedTitles(
-      xPos, display_state_->get_large_font()->get_baseline(),
-      display::TextAlign::TOP_CENTER, speaker_group_->mediaTitleString());
-  auto mediaTitleWrappedText = getWrappedTitles(
-      xPos, display_state_->get_medium_font()->get_baseline(),
-      display::TextAlign::TOP_CENTER, speaker_group_->mediaSubtitleString());
+      xPos, display_state_->get_font_large()->get_baseline(),
+      display::TextAlign::TOP_CENTER, media_player_group_->mediaTitleString());
+  auto mediaTitleWrappedText =
+      getWrappedTitles(xPos, display_state_->get_font_medium()->get_baseline(),
+                       display::TextAlign::TOP_CENTER,
+                       media_player_group_->mediaSubtitleString());
   int lineCount = nowPlayingWrappedText->size() +
                   mediaArtistWrappedText->size() +
                   mediaTitleWrappedText->size();
@@ -109,8 +110,8 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   }
   yPos = drawTextWrapped(
       display_state_->get_margin_size(), yPos,
-      display_state_->get_medium_font()->get_baseline(),
-      display_state_->get_medium_font(),
+      display_state_->get_font_medium()->get_baseline(),
+      display_state_->get_font_medium(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_LEFT, *nowPlayingWrappedText, maxLines);
   delete nowPlayingWrappedText;
@@ -118,7 +119,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
       mediaTitleWrappedText->size() == 0) {
     display_buffer_->printf(
         display_buffer_->get_width() / 2, yPos,
-        display_state_->get_large_font(),
+        display_state_->get_font_large(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER, "Nothing!");
     delete mediaArtistWrappedText;
@@ -133,8 +134,8 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   yPos = yPos + display_state_->get_margin_size() / 2;
   if (mediaArtistWrappedText->size() > 0) {
     yPos = drawTextWrapped(
-        xPos, yPos, display_state_->get_large_font()->get_baseline(),
-        display_state_->get_large_font(),
+        xPos, yPos, display_state_->get_font_large()->get_baseline(),
+        display_state_->get_font_large(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER, *mediaArtistWrappedText, maxLines);
   }
@@ -143,8 +144,8 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
     yPos = yPos + display_state_->get_margin_size();
     drawTextWrapped(
         display_buffer_->get_width() / 2, yPos,
-        display_state_->get_medium_font()->get_baseline(),
-        display_state_->get_medium_font(),
+        display_state_->get_font_medium()->get_baseline(),
+        display_state_->get_font_medium(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER, *mediaTitleWrappedText, maxLines);
   }
@@ -157,19 +158,19 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
-  if (speaker_group_->activePlayer->get_player_type() !=
+  if (media_player_group_->activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
         static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
-            speaker_group_->activePlayer);
+            media_player_group_->activePlayer);
     int mediaDuration = activeSpeaker->mediaDuration;
     int mediaPosition = activeSpeaker->mediaPosition;
     if (mediaDuration <= 0 && mediaPosition <= 0) {
       return;
     }
     int barMargin = 1;
-    int barHeight = display_state_->get_small_font()->get_baseline();
-    int textWidth = (display_state_->get_small_font()->get_baseline() *
+    int barHeight = display_state_->get_font_small()->get_baseline();
+    int textWidth = (display_state_->get_font_small()->get_baseline() *
                      display_state_->get_font_size_width_ratio() * 5) +
                     display_state_->get_margin_size() / 2;
     int totalBarWidth = display_buffer_->get_width() - textWidth * 2;
@@ -190,18 +191,18 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
 
     int textYPos =
-        yPos - display_state_->get_small_font()->get_baseline() * 0.1;
+        yPos - display_state_->get_font_small()->get_baseline() * 0.1;
     std::string mediaDurationSeconds = secondsToString(mediaDuration);
     std::string mediaPositionSeconds = secondsToString(mediaPosition);
     display_buffer_->printf(
         display_state_->get_margin_size(), textYPos,
-        display_state_->get_small_font(),
+        display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_LEFT, "%d:%s", mediaPosition / 60,
         mediaPositionSeconds.c_str());
     display_buffer_->printf(
         display_buffer_->get_width() - display_state_->get_margin_size(),
-        textYPos, display_state_->get_small_font(),
+        textYPos, display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_RIGHT, "%d:%s", mediaDuration / 60,
         mediaDurationSeconds.c_str());
@@ -212,7 +213,7 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
     NowPlayingMenuState state) {
   switch (state) {
     case pauseNowPlayingMenuState:
-      return speaker_group_->playTitleString();
+      return media_player_group_->playTitleString();
     case volumeUpNowPlayingMenuState:
       return "Vol Up";
     case volumeDownNowPlayingMenuState:
@@ -230,7 +231,7 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
     case groupNowPlayingMenuState:
       return "Group";
     case shuffleNowPlayingMenuState:
-      if (speaker_group_->mediaShuffling()) {
+      if (media_player_group_->mediaShuffling()) {
         return "Shfl on";
       } else {
         return "Shfl off";
@@ -246,21 +247,23 @@ void HomeThingMenuNowPlaying::drawSpeakerOptionMenu() {
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.15 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, speaker_group_->shuffleString().c_str());
+      display::TextAlign::TOP_CENTER,
+      media_player_group_->shuffleString().c_str());
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.75 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER, "Group");
   display_buffer_->printf(
       display_buffer_->get_width() * 0.8,
       (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, speaker_group_->muteString().c_str());
+      display::TextAlign::TOP_CENTER,
+      media_player_group_->muteString().c_str());
 }
 
 void HomeThingMenuNowPlaying::drawTVOptionMenu() {
@@ -270,50 +273,51 @@ void HomeThingMenuNowPlaying::drawTVOptionMenu() {
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.15 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER, "Remote Menu");
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.75 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER, "Pause");
   display_buffer_->printf(
       display_buffer_->get_width() * 0.2,
       (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER, "Back");
   display_buffer_->printf(
       display_buffer_->get_width() * 0.8,
       (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER, "Home");
   display_buffer_->printf(
       display_buffer_->get_width() * 0.5,
       (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_small_font(),
+      display_state_->get_font_small(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER, "TV Power");
 }
 
 void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int barMargin = 1;
-  int barHeight = display_state_->get_small_font()->get_baseline();
-  int iconMargin = display_state_->get_small_font()->get_baseline() *
+  int barHeight = display_state_->get_font_small()->get_baseline();
+  int iconMargin = display_state_->get_font_small()->get_baseline() *
                    display_state_->get_font_size_width_ratio() * 3;
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
-  int barWidth = (totalBarWidth - 4) * (speaker_group_->getVolumeLevel() / 100);
+  int barWidth =
+      (totalBarWidth - 4) * (media_player_group_->getVolumeLevel() / 100);
   int yPos = display_state_->getBottomBarYPosition(
       true, display_buffer_->get_height());
   display_buffer_->printf(iconMargin / 2 - display_state_->get_icon_size() / 2,
-                          yPos + 1, display_state_->get_material_font_small(),
+                          yPos + 1, display_state_->get_font_material_small(),
                           display_state_->get_color_accent_primary(), "󰕿");
   display_buffer_->printf(display_buffer_->get_width() - iconMargin / 2 -
                               display_state_->get_icon_size() / 2,
-                          yPos + 1, display_state_->get_material_font_small(),
+                          yPos + 1, display_state_->get_font_material_small(),
                           display_state_->get_color_accent_primary(), "󰕾");
 
   display_buffer_->rectangle(iconMargin, yPos, totalBarWidth, barHeight,
@@ -343,19 +347,20 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
           display_buffer_->get_width() / 2,
           display_state_->get_header_height() +
               display_state_->get_margin_size(),
-          display_state_->get_medium_font(),
+          display_state_->get_font_medium(),
           text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
           display::TextAlign::TOP_CENTER, "Playing...");
-      auto playingNewSourceWrappedText = getWrappedTitles(
-          display_buffer_->get_width() / 2,
-          display_state_->get_large_font()->get_baseline(),
-          display::TextAlign::TOP_CENTER, speaker_group_->playingNewSourceText);
+      auto playingNewSourceWrappedText =
+          getWrappedTitles(display_buffer_->get_width() / 2,
+                           display_state_->get_font_large()->get_baseline(),
+                           display::TextAlign::TOP_CENTER,
+                           media_player_group_->playingNewSourceText);
       drawTextWrapped(
           display_buffer_->get_width() / 2,
           display_state_->get_header_height() +
               display_state_->get_margin_size() * 2 +
-              display_state_->get_medium_font()->get_baseline(),
-          24, display_state_->get_large_font(),
+              display_state_->get_font_medium()->get_baseline(),
+          24, display_state_->get_font_large(),
           text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
           display::TextAlign::TOP_CENTER, *playingNewSourceWrappedText, 0);
       delete playingNewSourceWrappedText;

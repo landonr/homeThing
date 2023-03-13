@@ -13,24 +13,27 @@ namespace homething_menu_base {
 
 class HomeThingMenuHeader {
  public:
-  HomeThingMenuHeader(
-      display::DisplayBuffer* new_display_buffer,
-      HomeThingMenuDisplayState* new_display_state,
-      HomeThingMenuTextHelpers* new_text_helpers,
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          new_speaker_group,
-      homeassistant_light_group::HomeAssistantLightGroup* new_light_group)
+  HomeThingMenuHeader(display::DisplayBuffer* new_display_buffer,
+                      HomeThingMenuDisplayState* new_display_state,
+                      HomeThingMenuTextHelpers* new_text_helpers)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        text_helpers_(new_text_helpers),
-        speaker_group_(new_speaker_group),
-        light_group_(new_light_group) {}
+        text_helpers_(new_text_helpers) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
   void set_battery_percent(sensor::Sensor* battery_percent) {
     battery_percent_ = battery_percent;
   }
   void set_charging(binary_sensor::BinarySensor* charging) {
     charging_ = charging;
+  }
+  void set_media_player_group(
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          media_player_group) {
+    media_player_group_ = media_player_group;
+  }
+  void set_light_group(
+      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
+    light_group_ = light_group;
   }
 
  private:
@@ -58,8 +61,9 @@ class HomeThingMenuHeader {
   int drawHeaderTime(int oldXPos, int yPosOffset);
   int drawShuffle(int oldXPos, int yPosOffset);
   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+      media_player_group_{nullptr};
+  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};

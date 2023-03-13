@@ -27,21 +27,9 @@ namespace homething_menu_base {
 
 class HomeThingMenuBase : public PollingComponent {
  public:
-  HomeThingMenuBase(
-      HomeThingMenuSettings* menu_settings, HomeThingMenuDisplay* menu_display,
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          new_speaker_group,
-      homeassistant_light_group::HomeAssistantLightGroup* new_light_group,
-      homeassistant_service_group::HomeAssistantServiceGroup* new_service_group,
-      homeassistant_sensor_group::HomeAssistantSensorGroup* new_sensor_group,
-      homeassistant_switch_group::HomeAssistantSwitchGroup* new_switch_group)
-      : menu_settings_(menu_settings),
-        menu_display_(menu_display),
-        speaker_group_(new_speaker_group),
-        light_group_(new_light_group),
-        service_group_(new_service_group),
-        sensor_group_(new_sensor_group),
-        switch_group_(new_switch_group) {}
+  HomeThingMenuBase(HomeThingMenuSettings* menu_settings,
+                    HomeThingMenuDisplay* menu_display)
+      : menu_settings_(menu_settings), menu_display_(menu_display) {}
   void setup();
 
   void set_charging(binary_sensor::BinarySensor* charging) {
@@ -54,6 +42,44 @@ class HomeThingMenuBase : public PollingComponent {
     sleep_switch_ = sleep_switch;
   }
   void set_backlight(switch_::Switch* backlight) { backlight_ = backlight; }
+  homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
+    return service_group_;
+  }
+
+  void set_service_group(
+      homeassistant_service_group::HomeAssistantServiceGroup* service_group) {
+    service_group_ = service_group;
+  }
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+  get_media_player_group() {
+    return media_player_group_;
+  }
+  void set_media_player_group(
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          media_player_group) {
+    media_player_group_ = media_player_group;
+  }
+  homeassistant_light_group::HomeAssistantLightGroup* get_light_group() {
+    return light_group_;
+  }
+  void set_light_group(
+      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
+    light_group_ = light_group;
+  }
+  homeassistant_switch_group::HomeAssistantSwitchGroup* get_switch_group() {
+    return switch_group_;
+  }
+  void set_switch_group(
+      homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group) {
+    switch_group_ = switch_group;
+  }
+  homeassistant_sensor_group::HomeAssistantSensorGroup* get_sensor_group() {
+    return sensor_group_;
+  }
+  void set_sensor_group(
+      homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group) {
+    sensor_group_ = sensor_group;
+  }
 
   void draw_menu_screen();
   void topMenu();
@@ -110,16 +136,19 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
-  homeassistant_service_group::HomeAssistantServiceGroup* service_group_;
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_;
-  homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_;
-  homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_;
+  homeassistant_service_group::HomeAssistantServiceGroup* service_group_{
+      nullptr};
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+      media_player_group_{nullptr};
+  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
+  homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_{nullptr};
+  homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_{nullptr};
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();
   std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
   void selectNowPlayingMenu();
+  std::vector<MenuStates> rootMenuTitles();
 
   sensor::Sensor* display_update_tick_;
   int rotary_ = 0;

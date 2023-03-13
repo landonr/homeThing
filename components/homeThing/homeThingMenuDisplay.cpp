@@ -10,12 +10,12 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
                                            std::string title, int yPos,
                                            bool buttonSpace) {
   bool animating = false;
-  int xPos = buttonSpace ? display_state_->get_small_font()->get_baseline() +
+  int xPos = buttonSpace ? display_state_->get_font_small()->get_baseline() +
                                display_state_->get_margin_size() * 2
                          : display_state_->get_margin_size();
   int textYPos = yPos + (display_state_->get_margin_size() / 4);
   if (menuState == i) {
-    int characterHeight = display_state_->get_medium_font()->get_baseline();
+    int characterHeight = display_state_->get_font_medium()->get_baseline();
     int characterLimit = text_helpers_->getCharacterLimit(
         xPos, characterHeight, display::TextAlign::TOP_LEFT);
     ESP_LOGD(TAG, "characterLimit %d, title %d height %d", characterLimit,
@@ -35,16 +35,16 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
     display_buffer_->filled_rectangle(
         0, yPos, display_buffer_->get_width(),
-        display_state_->get_medium_font()->get_baseline() +
+        display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
         display_state_->get_color_accent_primary());
     display_buffer_->printf(
-        xPos, textYPos, display_state_->get_medium_font(),
+        xPos, textYPos, display_state_->get_font_medium(),
         text_helpers_->secondaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
   } else {
     display_buffer_->printf(
-        xPos, textYPos, display_state_->get_medium_font(),
+        xPos, textYPos, display_state_->get_font_medium(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
@@ -73,7 +73,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
                                     yPos, false) ||
                     animating;
         drawRightTitleIcon(menuTitles, i, menuState, yPos);
-        yPos += display_state_->get_medium_font()->get_baseline() +
+        yPos += display_state_->get_font_medium()->get_baseline() +
                 display_state_->get_margin_size();
         break;
       case LightMenuTitleType: {
@@ -84,7 +84,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
                                       yPos, lightTitle->indentLine());
           drawLeftTitleIcon(menuTitles, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
-          yPos += display_state_->get_medium_font()->get_baseline() +
+          yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
         break;
@@ -97,7 +97,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
                                       yPos, toggleTitle->indentLine());
           drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
-          yPos += display_state_->get_medium_font()->get_baseline() +
+          yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
         break;
@@ -112,7 +112,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         refactor_->drawLightSlider(0, yPos, sliderState, item, i == 2);
         sliderExtra += 0;
 
-        yPos += (display_state_->get_medium_font()->get_baseline() +
+        yPos += (display_state_->get_font_medium()->get_baseline() +
                  display_state_->get_margin_size()) *
                 2;
         break;
@@ -129,7 +129,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
                          menuState == i);
           drawLeftTitleIcon(menuTitles, playerTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitles, i, menuState, yPos);
-          yPos += display_state_->get_medium_font()->get_baseline() +
+          yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
         break;
@@ -162,15 +162,16 @@ bool HomeThingMenuDisplay::draw_menu_screen(
       now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
       break;
     case groupMenu: {
-      if (speaker_group_->newSpeakerGroupParent != NULL) {
+      if (media_player_group_->newSpeakerGroupParent != NULL) {
         auto playerSwitches =
-            groupTitleSwitches(speaker_group_->media_players_,
-                               speaker_group_->newSpeakerGroupParent);
+            groupTitleSwitches(media_player_group_->media_players_,
+                               media_player_group_->newSpeakerGroupParent);
         animating = draw_menu_titles(
             {playerSwitches.begin(), playerSwitches.end()}, menuIndex);
         break;
       }
-      auto playerStrings = groupTitleString(speaker_group_->media_players_);
+      auto playerStrings =
+          groupTitleString(media_player_group_->media_players_);
       animating = draw_menu_titles({playerStrings.begin(), playerStrings.end()},
                                    menuIndex);
       break;
@@ -218,7 +219,7 @@ void HomeThingMenuDisplay::scrollMenuPosition(int menuIndex) {
 int HomeThingMenuDisplay::maxItems() {
   int maxItems =
       ((display_buffer_->get_height() - display_state_->get_header_height()) /
-       (display_state_->get_medium_font()->get_baseline() +
+       (display_state_->get_font_medium()->get_baseline() +
         display_state_->get_margin_size())) -
       1;
   return maxItems;
@@ -291,7 +292,7 @@ void HomeThingMenuDisplay::drawTitleImage(
   ESP_LOGW(TAG, "draw title image %d", titleState);
   int adjustedYPos = yPos;
   int xPos = ((characterCount + 0.5) *
-              (display_state_->get_medium_font()->get_baseline() *
+              (display_state_->get_font_medium()->get_baseline() *
                display_state_->get_font_size_width_ratio())) +
              4;
   auto color =
@@ -302,21 +303,21 @@ void HomeThingMenuDisplay::drawTitleImage(
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_large(), color, "󰐊");
+          xPos, yPos, display_state_->get_font_material_large(), color, "󰐊");
       break;
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_large(), color, "󰏤");
+          xPos, yPos, display_state_->get_font_material_large(), color, "󰏤");
       break;
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_large(), color, "󰓛");
+          xPos, yPos, display_state_->get_font_material_large(), color, "󰓛");
       break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
       display_buffer_->printf(
-          xPos, yPos, display_state_->get_material_font_large(), color, "󰽥");
+          xPos, yPos, display_state_->get_font_material_large(), color, "󰽥");
       break;
     default:
       break;

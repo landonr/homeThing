@@ -32,15 +32,15 @@ CONF_DISPLAY_STATE = "display_state"
 CONF_TEXT_HELPERS = "text_helpers"
 CONF_REFACTOR = "refactor_me"
 CONF_NOW_PLAYING = "now_playing"
-CONF_API = "api"
+CONF_API = "api_connected"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
 CONF_MENU_Display = "menu_display"
-CONF_MEDIA_PLAYERS = "media_players"
-CONF_LIGHTS = "lights"
-CONF_SERVICES = "services"
-CONF_SENSORS = "sensors"
-CONF_SWITCHES = "switches"
+CONF_MEDIA_PLAYERS = "media_player_group"
+CONF_LIGHTS = "light_group"
+CONF_SERVICES = "service_group"
+CONF_SENSORS = "sensor_group"
+CONF_SWITCHES = "switch_group"
 CONF_ON_REDRAW = "on_redraw"
 
 # battery settings
@@ -87,7 +87,7 @@ CONF_BOOT_DEVICE_NAME = "boot_device_name"
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
-        cv.Required(CONF_API): cv.use_id(binary_sensor.BinarySensor),
+        cv.Optional(CONF_API, default="api_connected"): cv.use_id(binary_sensor.BinarySensor),
     }
 )
 
@@ -160,33 +160,47 @@ HEADER_SCHEMA = cv.Schema(
     }
 )
 
-CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
-        cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
-        cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
-        cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
-        cv.Optional(CONF_BATTERY): BATTERY_SCHEMA,
-        cv.Optional(CONF_BACKLIGHT): cv.use_id(switch.Switch),
-        cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
-        cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
-        cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,
-        cv.Required(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
-        cv.Required(CONF_LIGHTS): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
-        cv.Required(CONF_SERVICES): cv.use_id(homeassistant_light_group_ns.HomeAssistantServiceGroup),
-        cv.Required(CONF_SWITCHES): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
-        cv.Required(CONF_SENSORS): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
-        cv.GenerateID(CONF_BOOT): BOOT_SCHEMA,
-        cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
-            {
-                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
-                    HomeThingDisplayMenuOnRedrawTrigger
-                )
-            }
-        )
-    }
-).extend(cv.polling_component_schema("1s"))
+CONFIG_SCHEMA =  cv.All(
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
+            cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
+            cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
+            cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
+            cv.Optional(CONF_BATTERY): BATTERY_SCHEMA,
+            cv.Optional(CONF_BACKLIGHT): cv.use_id(switch.Switch),
+            cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
+            cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
+            cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,
+            cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
+            cv.Optional(CONF_LIGHTS): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
+            cv.Optional(CONF_SERVICES): cv.use_id(homeassistant_light_group_ns.HomeAssistantServiceGroup),
+            cv.Optional(CONF_SWITCHES): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
+            cv.Optional(CONF_SENSORS): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
+            cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
+            cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
+                {
+                    cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                        HomeThingDisplayMenuOnRedrawTrigger
+                    )
+                }
+            )
+        }
+    ).extend(cv.polling_component_schema("1s")),
+    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS,  CONF_LIGHTS, CONF_SERVICES, CONF_SWITCHES, CONF_SENSORS)
+)
 
+async def ids_to_code(config, var, types):
+    for key in types:
+        if key in config:
+            conf = await cg.get_variable(config[key])
+            cg.add(getattr(var, f"set_{key}")(conf))
+
+def keys_to_code(config, var, types):
+    for key in types:
+        if key in config:
+            conf = config[key]
+            cg.add(getattr(var, f"set_{key}")(conf))
 
 MENU_SETTING_TYPES = [
     CONF_MODE,
@@ -197,52 +211,42 @@ MENU_SETTING_TYPES = [
 
 async def menu_settings_to_code(config):
     menu_settings = cg.new_Pvariable(config[CONF_ID])
-    for key in MENU_SETTING_TYPES:
-        if key in config:
-            conf = config[key]
-            cg.add(getattr(menu_settings, f"set_{key}")(conf))
+    keys_to_code(config, menu_settings, MENU_SETTING_TYPES)
     return menu_settings
+
+DISPLAY_STATE_IDS = [
+    CONF_FONT_SMALL,
+    CONF_FONT_MEDIUM,
+    CONF_FONT_LARGE,
+    CONF_FONT_LARGE_HEAVY,
+    CONF_FONT_MATERIAL_LARGE,
+    CONF_FONT_MATERIAL_SMALL,
+    CONF_FONT_LOGO
+]
+
+DISPLAY_STATE_TYPES = [
+    CONF_DRAW_NOW_PLAYING_BOTTOM_MENU,
+    CONF_HEADER_HEIGHT,
+    CONF_MARGIN_SIZE,
+    CONF_BOTTOM_BAR_MARGIN,
+    CONF_SLIDER_MARGIN_SIZE,
+    CONF_ICON_SIZE,
+    CONF_SCROLL_BAR_WIDTH,
+    CONF_BOOT_LOGO_SIZE,
+    CONF_NOW_PLAYING_MAX_LINES,
+    CONF_FONT_SIZE_WIDTH_RATIO,
+    CONF_DRAW_SHUFFLE_DISABLED,
+    CONF_DRAW_HEADER_TIME,
+    CONF_DRAW_BATTERY_LEVEL,
+    CONF_DARK_MODE,
+    CONF_DRAW_VOLUME_LEVEL,
+    CONF_BOOT_DEVICE_NAME
+]
 
 async def display_state_to_code(config):
     display_state = cg.new_Pvariable(config[CONF_ID])
-
-    menu_font_small = await cg.get_variable(config[CONF_FONT_SMALL])
-    cg.add(display_state.set_small_font(menu_font_small))
-
-    menu_font_medium = await cg.get_variable(config[CONF_FONT_MEDIUM])
-    cg.add(display_state.set_medium_font(menu_font_medium))
-
-    menu_font_large = await cg.get_variable(config[CONF_FONT_LARGE])
-    cg.add(display_state.set_large_font(menu_font_large))
-
-    menu_font_large_heavy = await cg.get_variable(config[CONF_FONT_LARGE_HEAVY])
-    cg.add(display_state.set_large_heavy_font(menu_font_large_heavy))
-
-    menu_font_material_large = await cg.get_variable(config[CONF_FONT_MATERIAL_LARGE])
-    cg.add(display_state.set_material_font_large(menu_font_material_large))
-
-    menu_font_material_small = await cg.get_variable(config[CONF_FONT_MATERIAL_SMALL])
-    cg.add(display_state.set_material_font_small(menu_font_material_small))
-
-    menu_font_logo = await cg.get_variable(config[CONF_FONT_LOGO])
-    cg.add(display_state.set_menu_font_logo(menu_font_logo))
-
-    cg.add(display_state.set_draw_now_playing_bottom_menu(config[CONF_DRAW_NOW_PLAYING_BOTTOM_MENU]))
-    cg.add(display_state.set_header_height(config[CONF_HEADER_HEIGHT]))
-    cg.add(display_state.set_margin_size(config[CONF_MARGIN_SIZE]))
-    cg.add(display_state.set_bottom_bar_margin(config[CONF_BOTTOM_BAR_MARGIN]))
-    cg.add(display_state.set_slider_margin_size(config[CONF_SLIDER_MARGIN_SIZE]))
-    cg.add(display_state.set_icon_size(config[CONF_ICON_SIZE]))
-    cg.add(display_state.set_scroll_bar_width(config[CONF_SCROLL_BAR_WIDTH]))
-    cg.add(display_state.set_boot_logo_size(config[CONF_BOOT_LOGO_SIZE]))
-    cg.add(display_state.set_now_playing_max_lines(config[CONF_NOW_PLAYING_MAX_LINES]))
-    cg.add(display_state.set_font_size_width_ratio(config[CONF_FONT_SIZE_WIDTH_RATIO]))
-    cg.add(display_state.set_draw_shuffle_disabled(config[CONF_DRAW_SHUFFLE_DISABLED]))
-    cg.add(display_state.set_draw_header_time(config[CONF_DRAW_HEADER_TIME]))
-    cg.add(display_state.set_draw_battery_level(config[CONF_DRAW_BATTERY_LEVEL]))
-    cg.add(display_state.set_dark_mode(config[CONF_DARK_MODE]))
-    cg.add(display_state.set_draw_volume_level(config[CONF_DRAW_VOLUME_LEVEL]))
-    cg.add(display_state.set_boot_device_name(config[CONF_BOOT_DEVICE_NAME]))
+    keys_to_code(config, display_state, DISPLAY_STATE_TYPES)
+    await ids_to_code(config, display_state, DISPLAY_STATE_IDS)
     return display_state
 
 async def text_helpers_to_code(config, display_buffer, display_state):
@@ -251,65 +255,77 @@ async def text_helpers_to_code(config, display_buffer, display_state):
     cg.add(text_helpers.set_display_state(display_state))
     return text_helpers
 
-async def menu_boot_to_code(config, display_buffer, display_state, media_players, menu_header):
-    menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header, media_players)
+MENU_BOOT_IDS = [
+    CONF_API,
+    CONF_MEDIA_PLAYERS
+]
 
-    api_sensor = await cg.get_variable(config[CONF_API])
-    cg.add(menu_boot.set_api_connected(api_sensor))
-
+async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
+    menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header)
+    await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
     return menu_boot
 
-BATTERY_TYPES = [
+BATTERY_IDS = [
     CONF_BATTERY_PERCENT,
     CONF_CHARGING,
 ]
 
 async def battery_to_code(config, var):
     if CONF_BATTERY in config:
-        for key in BATTERY_TYPES:
-            conf = await cg.get_variable(config[CONF_BATTERY][key])
-            cg.add(getattr(var, f"set_{key}")(conf))
+        await ids_to_code(config[CONF_BATTERY], var, BATTERY_IDS)
 
+NOW_PLAYING_IDS = [
+    CONF_MEDIA_PLAYERS
+]
+MENU_HEADER_IDS = [
+    CONF_MEDIA_PLAYERS, CONF_LIGHTS
+]
+MENU_DISPLAY_IDS = [
+    CONF_MEDIA_PLAYERS, CONF_LIGHTS
+]
+MENU_BOOT_IDS = [
+    CONF_MEDIA_PLAYERS, CONF_API
+]
 
-async def menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches):
+async def menu_display_to_code(config, display_buffer):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
     display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
     text_helpers = await text_helpers_to_code(menu_display_conf[CONF_TEXT_HELPERS], display_buffer, display_state)
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
-    now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers, media_players)
-    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers, media_players, lights)
+    now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
+    await ids_to_code(config, now_playing, NOW_PLAYING_IDS)
+    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
+    await ids_to_code(config, menu_header, MENU_HEADER_IDS)
     await battery_to_code(config, menu_header)
-    menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, media_players, menu_header)
+    menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header)
+    await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot, media_players, lights, services, sensors, switches)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot)
+    await ids_to_code(config, menu_display, MENU_BOOT_IDS)
     return menu_display
 
-MENU_TYPES = [
+MENU_IDS = [
     CONF_BACKLIGHT,
     CONF_SLEEP_SWITCH,
+    CONF_MEDIA_PLAYERS,
+    CONF_LIGHTS, 
+    CONF_SERVICES, 
+    CONF_SWITCHES, 
+    CONF_SENSORS
 ]
 
 async def to_code(config):
-    media_players = await cg.get_variable(config[CONF_MEDIA_PLAYERS])
-    lights = await cg.get_variable(config[CONF_LIGHTS])
-    services = await cg.get_variable(config[CONF_SERVICES])
-    sensors = await cg.get_variable(config[CONF_SENSORS])
-    switches = await cg.get_variable(config[CONF_SWITCHES])
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
-    menu_display = await menu_display_to_code(config, display_buffer, media_players, lights, services, sensors, switches)
+    menu_display = await menu_display_to_code(config, display_buffer)
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
 
-    menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display, media_players, lights, services, sensors, switches)
+    menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display)
     await cg.register_component(menu, config)
 
     await battery_to_code(config, menu)
-
-    for key in MENU_TYPES:
-        if key in config:
-            conf = await cg.get_variable(config[key])
-            cg.add(getattr(menu, f"set_{key}")(conf))
+    await ids_to_code(config, menu, MENU_IDS)
 
     for conf in config.get(CONF_ON_REDRAW, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], menu)

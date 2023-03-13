@@ -43,13 +43,10 @@ class HomeThingMenuBoot {
  public:
   HomeThingMenuBoot(display::DisplayBuffer* new_display_buffer,
                     HomeThingMenuDisplayState* new_display_state,
-                    HomeThingMenuHeader* new_header,
-                    homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-                        new_speaker_group)
+                    HomeThingMenuHeader* new_header)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        header_(new_header),
-        speaker_group_(new_speaker_group) {}
+        header_(new_header) {}
   bool drawBootSequence(const MenuStates activeMenuState);
   void skipBootSequence(const MenuStates activeMenuState);
   void set_api_connected(binary_sensor::BinarySensor* api_connected) {
@@ -60,6 +57,11 @@ class HomeThingMenuBoot {
   }
   bool boot_complete() {
     return get_boot_menu_state() == BOOT_MENU_STATE_COMPLETE;
+  }
+  void set_media_player_group(
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          media_player_group) {
+    media_player_group_ = media_player_group;
   }
 
  private:
@@ -82,7 +84,8 @@ class HomeThingMenuBoot {
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+      media_player_group_{nullptr};
   binary_sensor::BinarySensor* api_connected_{nullptr};
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =

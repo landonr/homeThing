@@ -25,30 +25,19 @@ namespace homething_menu_base {
 
 class HomeThingMenuDisplay {
  public:
-  HomeThingMenuDisplay(
-      display::DisplayBuffer* display_buffer,
-      HomeThingMenuDisplayState* display_state,
-      HomeThingMenuTextHelpers* text_helpers, HomeThingMenuRefactor* refactor,
-      HomeThingMenuNowPlaying* now_playing, HomeThingMenuHeader* header,
-      HomeThingMenuBoot* boot,
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          new_speaker_group,
-      homeassistant_light_group::HomeAssistantLightGroup* new_light_group,
-      homeassistant_service_group::HomeAssistantServiceGroup* new_service_group,
-      homeassistant_sensor_group::HomeAssistantSensorGroup* new_sensor_group,
-      homeassistant_switch_group::HomeAssistantSwitchGroup* new_switch_group)
+  HomeThingMenuDisplay(display::DisplayBuffer* display_buffer,
+                       HomeThingMenuDisplayState* display_state,
+                       HomeThingMenuTextHelpers* text_helpers,
+                       HomeThingMenuRefactor* refactor,
+                       HomeThingMenuNowPlaying* now_playing,
+                       HomeThingMenuHeader* header, HomeThingMenuBoot* boot)
       : display_buffer_(display_buffer),
         display_state_(display_state),
         text_helpers_(text_helpers),
         refactor_(refactor),
         now_playing_(now_playing),
         header_(header),
-        boot_(boot),
-        speaker_group_(new_speaker_group),
-        light_group_(new_light_group),
-        service_group_(new_service_group),
-        sensor_group_(new_sensor_group),
-        switch_group_(new_switch_group) {}
+        boot_(boot) {}
   void setup();
   bool draw_menu_screen(MenuStates* activeMenuState,
                         std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
@@ -59,6 +48,16 @@ class HomeThingMenuDisplay {
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;
     boot_->set_animation(animation);
+  }
+
+  void set_media_player_group(
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          media_player_group) {
+    media_player_group_ = media_player_group;
+  }
+  void set_light_group(
+      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
+    light_group_ = light_group;
   }
 
  private:
@@ -89,11 +88,9 @@ class HomeThingMenuDisplay {
   HomeThingMenuBoot* boot_{nullptr};
   HomeThingMenuNowPlaying* now_playing_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
-  homeassistant_service_group::HomeAssistantServiceGroup* service_group_;
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup* speaker_group_;
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_;
-  homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_;
-  homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_;
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+      media_player_group_{nullptr};
+  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
   const char* const TAG = "homething.menu.display";
 };
 
