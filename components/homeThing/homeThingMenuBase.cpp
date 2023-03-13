@@ -68,7 +68,7 @@ void HomeThingMenuBase::setup() {
 
 void HomeThingMenuBase::draw_menu_screen() {
   if (display_can_sleep()) {
-    ESP_LOGW(TAG, "not drawing");
+    ESP_LOGI(TAG, "not drawing");
     sleep_display();
     return;
   }
@@ -817,7 +817,7 @@ bool HomeThingMenuBase::display_can_sleep() {
   bool charging_timeout =
       display_timeout_while_charging ? get_charging() : false;
 
-  ESP_LOGI(TAG, "screen timeout %d, charging %d, charging timeout %d",
+  ESP_LOGD(TAG, "screen timeout %d, charging %d, charging timeout %d",
            idle_timeout, get_charging(), charging_timeout);
 
   if (get_charging()) {
@@ -832,13 +832,13 @@ bool HomeThingMenuBase::display_can_sleep() {
 
 void HomeThingMenuBase::sleep_display() {
   if (backlight_) {
-    ESP_LOGI(TAG, "sleep_display: turning off display");
+    ESP_LOGD(TAG, "sleep_display: turning off display");
     backlight_->turn_off();
   }
 }
 
 void HomeThingMenuBase::idleTick() {
-  ESP_LOGI(TAG, "idleTick: idle %d", idleTime);
+  ESP_LOGD(TAG, "idleTick: idle %d", idleTime);
   if (activeMenuState == bootMenu) {
     if (display_can_sleep()) {
       sleep_display();
@@ -856,16 +856,16 @@ void HomeThingMenuBase::idleTick() {
         idleTime++;
         return;
       }
-      ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
+      ESP_LOGD(TAG, "idleTick: idle root menu %d", display_can_sleep());
       activeMenuState = rootMenu;
       animation_->resetAnimation();
       idleMenu(false);
       menu_display_->updateDisplay(false);
     }
 
-    ESP_LOGI(TAG, "idleTick: turning off display? %d", display_can_sleep());
+    ESP_LOGD(TAG, "idleTick: turning off display? %d", display_can_sleep());
     if (display_can_sleep()) {
-      ESP_LOGI(TAG, "idleTick: turning off display");
+      ESP_LOGD(TAG, "idleTick: turning off display");
       sleep_display();
     }
     idleTime++;
@@ -875,9 +875,9 @@ void HomeThingMenuBase::idleTick() {
     idleTime++;
     return;
   } else if (idleTime > menu_settings_->get_sleep_after()) {
-    ESP_LOGI(TAG, "idleTick: night night? %d", get_charging());
+    ESP_LOGD(TAG, "idleTick: night night? %d", get_charging());
     if (!get_charging() && sleep_switch_) {
-      ESP_LOGI(TAG, "idleTick: night night");
+      ESP_LOGD(TAG, "idleTick: night night");
       sleep_switch_->turn_on();
       return;
     }
@@ -887,7 +887,8 @@ void HomeThingMenuBase::idleTick() {
     if (updatedMediaPositions) {
       switch (activeMenuState) {
         case nowPlayingMenu: {
-          ESP_LOGI(TAG, "idleTick: update media positions %d", display_can_sleep());
+          ESP_LOGD(TAG, "idleTick: update media positions %d",
+                   display_can_sleep());
           if (!display_can_sleep()) {
             update_display();
           } else {

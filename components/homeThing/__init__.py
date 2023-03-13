@@ -283,9 +283,6 @@ MENU_HEADER_IDS = [
 MENU_DISPLAY_IDS = [
     CONF_MEDIA_PLAYERS, CONF_LIGHTS
 ]
-MENU_BOOT_IDS = [
-    CONF_MEDIA_PLAYERS, CONF_API
-]
 
 async def menu_display_to_code(config, display_buffer):
     menu_display_conf = config[CONF_MENU_DISPLAY]
