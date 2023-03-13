@@ -123,6 +123,7 @@ bool HomeThingMenuBase::selectMenu() {
     }
     case lightsDetailMenu:
       light_group_->lightDetailSelected = true;
+      break;
     case mediaPlayersMenu: {
       auto media_player_title =
           std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
@@ -256,6 +257,13 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return sensorTitles(sensor_group_->sensors);
     case lightsMenu:
       return lightTitleSwitches(light_group_->lights);
+    case lightsDetailMenu:
+      if (light_group_->getActiveLight() != NULL) {
+        return lightTitleItems(light_group_->getActiveLight());
+      } else {
+        return {};
+      }
+      break;
     case switchesMenu:
       return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:

@@ -167,7 +167,6 @@ homeThing:
     bottom_bar_margin: 8
     now_playing_max_lines: 10
     draw_now_playing_bottom_menu: true
-    draw_battery_level: false
     dark_mode: true
     draw_volume_level: false
     draw_shuffle_disabled: false

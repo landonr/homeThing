@@ -236,15 +236,26 @@ class MenuTitleSlider : public MenuTitleBase {
   bool currentState;
   int sliderValue;
   int displayValue;
+  int value_min_;
+  int value_max_;
   std::string sliderUnit;
   MenuTitleSlider(std::string newTitle, std::string newEntityId,
                   MenuTitleRightIcon newRightIconState, int newSliderValue,
-                  int newDisplayValue, std::string newSliderUnit)
+                  int newDisplayValue, std::string newSliderUnit, int value_min,
+                  int value_max)
       : MenuTitleBase{newTitle, newEntityId, newRightIconState,
                       SliderMenuTitleType},
         sliderValue(newSliderValue),
         displayValue(newDisplayValue),
-        sliderUnit(newSliderUnit) {}
+        sliderUnit(newSliderUnit),
+        value_min_(value_min),
+        value_max_(value_max) {}
+
+  float percent_value() {
+    float value_minus_min = sliderValue - value_min_;
+    float old_range = value_max_ - value_min_;
+    return value_minus_min / old_range;
+  }
 };
 
 class MenuTitleLight : public MenuTitleToggle {
@@ -496,8 +507,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches(
 
 static std::shared_ptr<MenuTitleSlider> makeSlider(
     std::string title, std::string unit, std::string entity_id_, int min,
-    int max, int value, int displayUnitMin, int displayUnitMax,
-    int displayWidth) {
+    int max, int value, int displayUnitMin, int displayUnitMax) {
   int displayValue = value;
   float oldRange = max - min;
   float valueMinusMin = value - min;
@@ -510,15 +520,16 @@ static std::shared_ptr<MenuTitleSlider> makeSlider(
 
   // float newMin = display_state_->get_slider_margin_size();
   float newMin = 8;
-  float newRange = displayWidth - 4 * newMin;
+  // float newRange = displayWidth - 4 * newMin;
+  float newRange = 100;
   int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
   return std::make_shared<MenuTitleSlider>(title.c_str(), entity_id_,
-                                           NoMenuTitleRightIcon, sliderValue,
-                                           displayValue, unit);
+                                           NoMenuTitleRightIcon, value,
+                                           displayValue, unit, min, max);
 }
 
 static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
-    homeassistant_light::HomeAssistantLight* light, int displayWidth) {
+    homeassistant_light::HomeAssistantLight* light) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   if (light->supportsBrightness()) {
     auto is_on = light->get_light_state_()->remote_values.is_on();
@@ -528,7 +539,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
                      light->get_light_state_()->remote_values.get_brightness() *
                      255);
     out.push_back(makeSlider("Brightness", "%%", light->get_entity_id(), 0,
-                             MAX_BRIGHTNESS, brightness, 0, 100, displayWidth));
+                             MAX_BRIGHTNESS, brightness, 0, 100));
   }
   if (light->supportsColorTemperature()) {
     auto max_mireds = light->get_traits().get_max_mireds();
@@ -536,11 +547,11 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
     out.push_back(makeSlider(
         "Temperature", "K", light->get_entity_id(), min_mireds, max_mireds,
         light->get_light_state_()->remote_values.get_color_temperature(),
-        1000000 / min_mireds, 1000000 / max_mireds, displayWidth));
+        1000000 / min_mireds, 1000000 / max_mireds));
   }
   if (light->supportsColor()) {
     out.push_back(makeSlider("Color", "", light->get_entity_id(), 0, 360,
-                             light->get_hsv_color(), 0, 360, displayWidth));
+                             light->get_hsv_color(), 0, 360));
   }
   return out;
 }

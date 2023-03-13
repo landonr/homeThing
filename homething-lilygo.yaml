@@ -178,7 +178,7 @@ homeThing:
   boot:
     api: api_connected
   display_state:
-    draw_battery_level: false
+    draw_battery_level: true
     font_small: small_font
     font_medium: medium_font
     font_large: large_font

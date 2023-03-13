@@ -109,8 +109,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
             menuState == i && lightDetailSelected ? SliderSelectionStateActive
             : menuState == i                      ? SliderSelectionStateHover
                                                   : SliderSelectionStateNone;
-        refactor_->drawLightSlider(display_state_->get_slider_margin_size(),
-                                   yPos, sliderState, item, i == 2);
+        refactor_->drawLightSlider(0, yPos, sliderState, item, i == 2);
         sliderExtra += 0;
 
         yPos += (display_state_->get_medium_font()->get_baseline() +
@@ -161,14 +160,6 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   switch (*activeMenuState) {
     case nowPlayingMenu:
       now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
-      break;
-    case lightsDetailMenu:
-      if (light_group_->getActiveLight() != NULL) {
-        animating =
-            draw_menu_titles(lightTitleItems(light_group_->getActiveLight(),
-                                             display_buffer_->get_width()),
-                             menuIndex);
-      }
       break;
     case groupMenu: {
       if (speaker_group_->newSpeakerGroupParent != NULL) {

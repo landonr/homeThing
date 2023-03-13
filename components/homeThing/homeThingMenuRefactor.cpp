@@ -27,17 +27,16 @@ void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
 }
 
 void HomeThingMenuRefactor::drawLightSliderRGBBar(int xPos, int yPos,
-                                                  int sliderHeight) {
-  double rgbBarWidth = display_buffer_->get_width() -
-                       2 * display_state_->get_slider_margin_size();
-  display_buffer_->filled_rectangle(xPos - 1, yPos - 1, rgbBarWidth + 2,
+                                                  int sliderHeight,
+                                                  int slider_width) {
+  display_buffer_->filled_rectangle(xPos - 1, yPos - 1, slider_width + 2,
                                     sliderHeight + 2,
                                     display_state_->color_gray_dark_2_);
-  for (double i = 0; i < rgbBarWidth; i++) {
-    double hue = (360.0f / rgbBarWidth) * i;
+  for (double i = 0; i < slider_width; i++) {
+    double hue = (360.0f / slider_width) * i;
     float red, green, blue = 0;
     hsv_to_rgb(hue, 1, 1, red, green, blue);
-    auto rgbColor = Color(red, green, blue);
+    auto rgbColor = Color(red * 255.0, green * 255.0, blue * 255.0);
     display_buffer_->line(i + display_state_->get_slider_margin_size(), yPos,
                           i + display_state_->get_slider_margin_size(),
                           yPos + sliderHeight, rgbColor);
@@ -47,23 +46,25 @@ void HomeThingMenuRefactor::drawLightSliderRGBBar(int xPos, int yPos,
 void HomeThingMenuRefactor::drawLightSliderBar(
     int xPos, int yPos, int sliderHeight, SliderSelectionState sliderState,
     std::shared_ptr<MenuTitleSlider> slider, bool drawRGB) {
+  int slider_min = xPos + display_state_->get_slider_margin_size();
+  int slider_width = display_buffer_->get_width() -
+                     2 * display_state_->get_slider_margin_size();
   if (drawRGB) {
-    drawLightSliderRGBBar(xPos, yPos, sliderHeight);
+    drawLightSliderRGBBar(xPos, yPos, sliderHeight, slider_width);
     return;
   }
-  display_buffer_->filled_rectangle(
-      xPos, yPos,
-      display_buffer_->get_width() -
-          2 * display_state_->get_slider_margin_size(),
-      sliderHeight, display_state_->color_gray_dark_2_);
+  display_buffer_->filled_rectangle(slider_min, yPos, slider_width,
+                                    sliderHeight,
+                                    display_state_->color_gray_dark_2_);
+  int slider_value_width = slider->percent_value() * slider_width;
   switch (sliderState) {
     case SliderSelectionStateActive:
-      display_buffer_->filled_rectangle(xPos, yPos, slider->sliderValue,
+      display_buffer_->filled_rectangle(slider_min, yPos, slider_value_width,
                                         sliderHeight,
                                         display_state_->color_accent_primary_);
       break;
     case SliderSelectionStateHover:
-      display_buffer_->filled_rectangle(xPos, yPos, slider->sliderValue,
+      display_buffer_->filled_rectangle(slider_min, yPos, slider_value_width,
                                         sliderHeight,
                                         display_state_->color_white_);
       break;
@@ -76,15 +77,17 @@ void HomeThingMenuRefactor::drawLightSliderCircle(
     int xPos, int yPos, int sliderHeight, SliderSelectionState sliderState,
     std::shared_ptr<MenuTitleSlider> slider, bool drawRGB) {
   int circleSize = 5;
-  int dotPositionX =
-      slider->sliderValue + display_state_->get_slider_margin_size();
+  int slider_width = display_buffer_->get_width() -
+                     2 * display_state_->get_slider_margin_size();
+  int dotPositionX = display_state_->get_slider_margin_size() +
+                     slider->percent_value() * slider_width;
   int dotPositionY = yPos + (sliderHeight / 2);
   switch (sliderState) {
     case SliderSelectionStateActive:
       if (drawRGB) {
         float red, green, blue = 0;
         hsv_to_rgb(slider->displayValue, 1, 1, red, green, blue);
-        auto rgbColor = Color(red, green, blue);
+        auto rgbColor = Color(red * 255.0, green * 255.0, blue * 255.0);
         display_buffer_->filled_circle(dotPositionX, dotPositionY, circleSize,
                                        rgbColor);
         display_buffer_->circle(dotPositionX, dotPositionY, circleSize + 1,
@@ -125,7 +128,7 @@ void HomeThingMenuRefactor::drawLightSliderTitle(
       if (drawRGB) {
         float red, green, blue = 0;
         hsv_to_rgb(slider->displayValue, 1, 1, red, green, blue);
-        auto rgbColor = Color(red, green, blue);
+        auto rgbColor = Color(red * 255.0, green * 255.0, blue * 255.0);
         display_buffer_->printf(xPos, yPos + 1,
                                 display_state_->get_medium_font(), rgbColor,
                                 sliderTitle.c_str());

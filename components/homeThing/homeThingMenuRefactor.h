@@ -27,7 +27,8 @@ class HomeThingMenuRefactor {
                           SliderSelectionState sliderState,
                           std::shared_ptr<MenuTitleSlider> slider,
                           bool drawRGB);
-  void drawLightSliderRGBBar(int xPos, int yPos, int sliderHeight);
+  void drawLightSliderRGBBar(int xPos, int yPos, int sliderHeight,
+                             int slider_width);
   void drawLightSlider(int xPos, int yPos, SliderSelectionState sliderState,
                        std::shared_ptr<MenuTitleSlider> slider, bool drawRGB);
   void drawLightSwitch(bool switchState, int yPos, Color lightColor,
