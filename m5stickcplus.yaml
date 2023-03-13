@@ -214,17 +214,15 @@ spi:
 
 homeThing:
   id: homeThingMenu
-  media_players: media_group_component
-  lights: light_group_component
-  services: service_group_component
-  sensors: sensor_group_component
-  switches: switch_group_component
+  media_player_group: media_group_component
+  light_group: light_group_component
+  service_group: service_group_component
+  sensor_group: sensor_group_component
+  switch_group: switch_group_component
   display: my_display
   on_redraw:
     then:
       component.update: my_display
-  boot:
-    api: api_connected
   display_state:
     font_small: small_font
     font_medium: medium_font
