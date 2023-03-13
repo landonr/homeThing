@@ -8,9 +8,9 @@ class HomeThingMenuAnimation {
  public:
   HomeThingMenuAnimation() {
     animationTick = new sensor::Sensor();
+    animationTick->publish_state(0);
     auto filter = new sensor::DebounceFilter(17);
     animationTick->add_filter(filter);
-    animationTick->publish_state(0);
   }
   void resetAnimation(bool force = false);
   void updateMarqueePosition(int titleLength);

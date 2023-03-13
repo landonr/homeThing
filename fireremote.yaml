@@ -87,17 +87,17 @@ i2c:
 ip5306:
   battery_level:
     name: ${friendly_name} Battery Percent
-    id: batteryPercent
+    id: battery_percent
     on_value :
       then:
         - lambda: |-
             ESP_LOGD("TEST", "Battery Percent");
-            // if(id(batteryPercent).state > previousBatteryLevel && !charging) {
+            // if(id(battery_percent).state > previousBatteryLevel && !charging) {
             //     charging = true;
-            // } else if(id(batteryPercent).state <= previousBatteryLevel && charging) {
+            // } else if(id(battery_percent).state <= previousBatteryLevel && charging) {
             //     charging = false;
             // }
-            // previousBatteryLevel = id(batteryPercent).state;
+            // previousBatteryLevel = id(battery_percent).state;
   charger_connected:
     internal: true
     id: connected
@@ -202,6 +202,11 @@ homeThing:
   id: homeThingMenu
   settings:
     mode: 3_button
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  battery:
+    battery_percent: battery_percent
+    charging: connected
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
