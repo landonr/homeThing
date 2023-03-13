@@ -120,8 +120,8 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(HomeThingMenuSettings),
         cv.Optional(CONF_MODE, default=CONF_ROTARY): cv.enum(MENU_MODES),
         cv.Optional(CONF_DISPLAY_TIMEOUT, default=16): cv.int_,
-        cv.Optional(CONF_MENU_ROLLOVER_ON, default=True): cv.boolean,
         cv.Optional(CONF_SLEEP_AFTER, default=3600): cv.int_,
+        cv.Optional(CONF_MENU_ROLLOVER_ON, default=False): cv.boolean,
     }
 )
 
