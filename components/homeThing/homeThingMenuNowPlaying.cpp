@@ -10,7 +10,7 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
   // auto menu_titles = getNowPlayingMenuStates();
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
              display_state_->get_font_large()->get_baseline();
-  if (menu_titles.size() < 1) {
+  if (menu_titles.size() < 1 || menu_index >= menu_titles.size()) {
     return;
   }
   display_buffer_->printf(

@@ -77,12 +77,57 @@ font:
       ]
 
 sensor:
+  - platform: rotary_encoder
+    filters:
+    - throttle: 0.01s
+    name: "Rotary Encoder"
+    internal: true
+    pin_a:
+      number: 26
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: 33
+      mode:
+        input: true
+        pullup: true
+    id: rotary
+    on_clockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+    on_anticlockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
   - platform: template
     name: Battery Percent
     id: batteryPercent
     unit_of_measurement: '%'
 
 binary_sensor:
+  - platform: gpio
+    internal: true
+    pin:
+      number: 00
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw1
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelect();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelectHold();
   - platform: gpio
     id: T4_BtnA
     pin:

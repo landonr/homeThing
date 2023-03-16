@@ -123,7 +123,7 @@ class HomeThingMenuBase : public PollingComponent {
     if (charging_ != nullptr && charging_->has_state()) {
       return charging_->state;
     } else {
-      return false;
+      return charging_ == nullptr;
     }
   }
   void sleep_display();
