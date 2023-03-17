@@ -155,9 +155,27 @@ switch:
     internal: true
     restore_mode: RESTORE_DEFAULT_ON
 
-spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
+color:
+  - id: my_red
+    red_int: 197
+    green_int: 43
+    blue_int: 48
+  - id: my_green
+    red_int: 115
+    green_int: 126
+    blue_int: 59
+  - id: my_blue
+    red_int: 129
+    green_int: 196
+    blue_int: 255
+  - id: my_yellow
+    red_int: 255
+    green_int: 204
+    blue_int: 0
+  - id: my_primary_accent
+    red_int: 22
+    green_int: 88
+    blue_int: 142
 
 homeThing:
   id: homeThingMenu
@@ -176,6 +194,12 @@ homeThing:
     then:
       component.update: my_display
   display_state:
+    colors:
+      accent_primary: my_primary_accent
+      red: my_red
+      green: my_green
+      blue: my_blue
+      yellow: my_yellow
     draw_battery_level: true
     font_small: small_font
     font_medium: medium_font
@@ -184,6 +208,10 @@ homeThing:
     font_material_large: material_font_large
     font_material_small: material_font_small
     font_logo: home_thing_logo
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
 
 display:
   - platform: st7789v

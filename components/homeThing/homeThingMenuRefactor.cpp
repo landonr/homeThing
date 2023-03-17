@@ -29,9 +29,9 @@ void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
 void HomeThingMenuRefactor::drawLightSliderRGBBar(int xPos, int yPos,
                                                   int sliderHeight,
                                                   int slider_width) {
-  display_buffer_->filled_rectangle(xPos - 1, yPos - 1, slider_width + 2,
-                                    sliderHeight + 2,
-                                    display_state_->get_color_gray_dark_2());
+  display_buffer_->filled_rectangle(
+      xPos - 1, yPos - 1, slider_width + 2, sliderHeight + 2,
+      display_state_->get_color_palette()->get_gray_dark_2());
   for (double i = 0; i < slider_width; i++) {
     double hue = (360.0f / slider_width) * i;
     float red, green, blue = 0;
@@ -53,20 +53,20 @@ void HomeThingMenuRefactor::drawLightSliderBar(
     drawLightSliderRGBBar(xPos, yPos, sliderHeight, slider_width);
     return;
   }
-  display_buffer_->filled_rectangle(slider_min, yPos, slider_width,
-                                    sliderHeight,
-                                    display_state_->get_color_gray_dark_2());
+  display_buffer_->filled_rectangle(
+      slider_min, yPos, slider_width, sliderHeight,
+      display_state_->get_color_palette()->get_gray_dark_2());
   int slider_value_width = slider->percent_value() * slider_width;
   switch (sliderState) {
     case SliderSelectionStateActive:
       display_buffer_->filled_rectangle(
           slider_min, yPos, slider_value_width, sliderHeight,
-          display_state_->get_color_accent_primary());
+          display_state_->get_color_palette()->get_accent_primary());
       break;
     case SliderSelectionStateHover:
-      display_buffer_->filled_rectangle(slider_min, yPos, slider_value_width,
-                                        sliderHeight,
-                                        display_state_->get_color_white());
+      display_buffer_->filled_rectangle(
+          slider_min, yPos, slider_value_width, sliderHeight,
+          display_state_->get_color_palette()->get_white());
       break;
     case SliderSelectionStateNone:
       break;
@@ -90,23 +90,27 @@ void HomeThingMenuRefactor::drawLightSliderCircle(
         auto rgbColor = Color(red * 255.0, green * 255.0, blue * 255.0);
         display_buffer_->filled_circle(dotPositionX, dotPositionY, circleSize,
                                        rgbColor);
-        display_buffer_->circle(dotPositionX, dotPositionY, circleSize + 1,
-                                display_state_->get_color_gray_dark_2());
+        display_buffer_->circle(
+            dotPositionX, dotPositionY, circleSize + 1,
+            display_state_->get_color_palette()->get_gray_dark_2());
       } else {
         display_buffer_->filled_circle(
             dotPositionX, dotPositionY, circleSize - 1,
-            display_state_->get_color_accent_primary());
-        display_buffer_->circle(dotPositionX, dotPositionY, circleSize,
-                                display_state_->get_color_white());
+            display_state_->get_color_palette()->get_accent_primary());
+        display_buffer_->circle(
+            dotPositionX, dotPositionY, circleSize,
+            display_state_->get_color_palette()->get_white());
       }
       break;
     case SliderSelectionStateHover:
-      display_buffer_->filled_circle(dotPositionX, dotPositionY, circleSize,
-                                     display_state_->get_color_white());
+      display_buffer_->filled_circle(
+          dotPositionX, dotPositionY, circleSize,
+          display_state_->get_color_palette()->get_white());
       break;
     case SliderSelectionStateNone:
-      display_buffer_->filled_circle(dotPositionX, dotPositionY, circleSize,
-                                     display_state_->get_color_white());
+      display_buffer_->filled_circle(
+          dotPositionX, dotPositionY, circleSize,
+          display_state_->get_color_palette()->get_white());
       break;
   }
 }
@@ -135,13 +139,14 @@ void HomeThingMenuRefactor::drawLightSliderTitle(
       } else {
         display_buffer_->printf(
             xPos, yPos + 1, display_state_->get_font_medium(),
-            display_state_->get_color_accent_primary(), sliderTitle.c_str());
+            display_state_->get_color_palette()->get_accent_primary(),
+            sliderTitle.c_str());
       }
       break;
     case SliderSelectionStateHover:
     case SliderSelectionStateNone:
       display_buffer_->printf(xPos, yPos + 1, display_state_->get_font_medium(),
-                              display_state_->get_color_white(),
+                              display_state_->get_color_palette()->get_white(),
                               sliderTitle.c_str());
       break;
   }
@@ -157,7 +162,7 @@ void HomeThingMenuRefactor::drawLightSlider(
         (display_state_->get_margin_size() +
          display_state_->get_font_medium()->get_baseline()) *
             2,
-        display_state_->get_color_accent_primary());
+        display_state_->get_color_palette()->get_accent_primary());
   }
   int sliderOffset =
       static_cast<int>((display_state_->get_font_medium()->get_baseline() +
@@ -197,7 +202,7 @@ void HomeThingMenuRefactor::drawLightSwitch(bool switchState, int yPos,
         xPos - 1, yPos, display_state_->get_icon_size() + 1,
         display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
-        display_state_->get_color_black());
+        display_state_->get_color_palette()->get_black());
   }
   yPos += (display_state_->get_margin_size() / 4);
   if (switchState) {

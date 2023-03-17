@@ -5,17 +5,17 @@ namespace esphome {
 namespace homething_menu_base {
 Color HomeThingMenuTextHelpers::primaryTextColor(bool dark_mode) {
   if (dark_mode) {
-    return display_state_->get_color_white();
+    return display_state_->get_color_palette()->get_white();
   } else {
-    return display_state_->get_color_black();
+    return display_state_->get_color_palette()->get_black();
   }
 }
 
 Color HomeThingMenuTextHelpers::secondaryTextColor(bool dark_mode) {
   if (dark_mode) {
-    return display_state_->get_color_white();
+    return display_state_->get_color_palette()->get_white();
   } else {
-    return display_state_->get_color_white();
+    return display_state_->get_color_palette()->get_white();
   }
 }
 

@@ -37,7 +37,7 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
         0, yPos, display_buffer_->get_width(),
         display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
-        display_state_->get_color_accent_primary());
+        display_state_->get_color_palette()->get_accent_primary());
     display_buffer_->printf(
         xPos, textYPos, display_state_->get_font_medium(),
         text_helpers_->secondaryTextColor(display_state_->get_dark_mode()),
@@ -146,7 +146,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
     const int menuIndex, const option_menuType option_menu) {
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
-    display_buffer_->fill(display_state_->get_color_white());
+    display_buffer_->fill(display_state_->get_color_palette()->get_white());
   }
   if (!boot_->boot_complete()) {
     return boot_->drawBootSequence(*activeMenuState);
@@ -196,11 +196,12 @@ void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
         headerHeight;
     display_buffer_->filled_rectangle(
         display_buffer_->get_width() - scrollBarWidth, headerHeight,
-        scrollBarWidth, screenHeight, display_state_->get_color_gray_dark_2());
+        scrollBarWidth, screenHeight,
+        display_state_->get_color_palette()->get_gray_dark_2());
     display_buffer_->filled_rectangle(
         display_buffer_->get_width() - scrollBarWidth + scrollBarMargin, yPos,
         scrollBarWidth - scrollBarMargin * 2, height - 1,
-        display_state_->get_color_accent_primary());
+        display_state_->get_color_palette()->get_accent_primary());
   }
 }
 
@@ -241,7 +242,7 @@ void HomeThingMenuDisplay::drawLeftTitleIcon(
           auto lightColor =
               lightToggleTitle->leftIconState == OnMenuTitleLeftIcon
                   ? lightToggleTitle->lightColor
-                  : display_state_->get_color_white();
+                  : display_state_->get_color_palette()->get_white();
           refactor_->drawLightSwitch(
               lightToggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos,
               lightColor, menuState == i);
@@ -298,7 +299,7 @@ void HomeThingMenuDisplay::drawTitleImage(
   auto color =
       selected
           ? text_helpers_->primaryTextColor(display_state_->get_dark_mode())
-          : display_state_->get_color_accent_primary();
+          : display_state_->get_color_palette()->get_accent_primary();
   switch (titleState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:

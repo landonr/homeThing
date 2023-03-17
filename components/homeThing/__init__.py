@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
 from esphome.components.homeassistant_service_group import homeassistant_service_group_ns
@@ -20,6 +20,7 @@ HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
 HomeThingMenuNowPlaying = homething_menu_base_ns.class_("HomeThingMenuNowPlaying")
+HomeThingColorPalette = homething_menu_base_ns.class_("HomeThingColorPalette")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
@@ -84,6 +85,17 @@ CONF_DARK_MODE = "dark_mode"
 CONF_DRAW_VOLUME_LEVEL = "draw_volume_level"
 CONF_BOOT_DEVICE_NAME = "boot_device_name"
 
+# colors
+CONF_COLORS = "colors"
+CONF_GRAY_DARK = "gray_dark"
+CONF_GRAY_DARK_2 = "gray_dark_2"
+CONF_GRAY = "gray"
+CONF_ACCENT_PRIMARY = "accent_primary"
+CONF_BLACK = "black"
+CONF_WHITE = "white"
+CONF_PINK = "pink"
+CONF_YELLOW = "yellow"
+
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
@@ -125,6 +137,38 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
     }
 )
 
+COLOR_PALETTE_IDS = [
+    CONF_GRAY_DARK,
+    CONF_GRAY_DARK_2,
+    CONF_GRAY,
+    CONF_ACCENT_PRIMARY,
+    CONF_BLUE,
+    CONF_GREEN,
+    CONF_BLACK,
+    CONF_WHITE,
+    CONF_PINK,
+    CONF_RED,
+    CONF_YELLOW
+]
+
+COLOR_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.declare_id(HomeThingColorPalette),
+        cv.Optional(CONF_GRAY_DARK): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_GRAY_DARK_2): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_GRAY): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_ACCENT_PRIMARY): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_BLUE): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_GREEN): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_BLACK): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_WHITE): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_PINK): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_RED): cv.use_id(color.ColorStruct),
+        cv.Optional(CONF_YELLOW): cv.use_id(color.ColorStruct),
+    },
+    cv.has_at_least_one_key()
+)
+
 DISPLAY_STATE_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuDisplayState),
@@ -151,6 +195,7 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
         cv.Optional(CONF_DRAW_VOLUME_LEVEL, default=False): cv.boolean,
         cv.Optional(CONF_DRAW_NOW_PLAYING_BOTTOM_MENU, default=False): cv.boolean,
         cv.Optional(CONF_BOOT_DEVICE_NAME, default="homeThing"): cv.string,
+        cv.Optional(CONF_COLORS, default={}): COLOR_SCHEMA,
     }
 )
 
@@ -244,9 +289,16 @@ DISPLAY_STATE_TYPES = [
 ]
 
 async def display_state_to_code(config):
+
     display_state = cg.new_Pvariable(config[CONF_ID])
     keys_to_code(config, display_state, DISPLAY_STATE_TYPES)
     await ids_to_code(config, display_state, DISPLAY_STATE_IDS)
+    
+    if CONF_COLORS in config:
+        color_palette = cg.new_Pvariable(config[CONF_COLORS][CONF_ID])
+        await ids_to_code(config[CONF_COLORS], color_palette, COLOR_PALETTE_IDS)
+        cg.add(display_state.set_color_palette(color_palette))
+
     return display_state
 
 async def text_helpers_to_code(config, display_buffer, display_state):

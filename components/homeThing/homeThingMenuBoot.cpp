@@ -25,18 +25,22 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
     int activeCharacter = currentAnimationTick;
     int maxCharacters = loopLimit;
     std::vector<Color> colors = {
-        display_state_->get_color_black(), display_state_->get_color_yellow(),
-        display_state_->get_color_red(),   display_state_->get_color_pink(),
-        display_state_->get_color_green(), display_state_->get_color_blue()};
+        display_state_->get_color_palette()->get_black(),
+        display_state_->get_color_palette()->get_yellow(),
+        display_state_->get_color_palette()->get_red(),
+        display_state_->get_color_palette()->get_pink(),
+        display_state_->get_color_palette()->get_green(),
+        display_state_->get_color_palette()->get_blue()};
     int textWidth = maxCharacters *
                     display_state_->get_font_large()->get_baseline() *
                     display_state_->get_font_size_width_ratio();
     for (int i = 0; i < maxCharacters; i++) {
       int colorIndex = i <= currentAnimationTick ? currentAnimationTick - i : 0;
       if (colorIndex > 0) {
-        auto color = colors.size() > colorIndex
-                         ? colors[colorIndex]
-                         : display_state_->get_color_accent_primary();
+        auto color =
+            colors.size() > colorIndex
+                ? colors[colorIndex]
+                : display_state_->get_color_palette()->get_accent_primary();
         int characterXPos =
             xPos - textWidth / 2 +
             (i * display_state_->get_font_large()->get_baseline() *
@@ -53,9 +57,10 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
                  false, display_buffer_->get_height()) -
              display_state_->get_margin_size() / 2 -
              display_state_->get_font_small()->get_baseline();
-      display_buffer_->printf(xPos, yPos, display_state_->get_font_small(),
-                              display_state_->get_color_accent_primary(),
-                              display::TextAlign::TOP_CENTER, "sleep >");
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_font_small(),
+          display_state_->get_color_palette()->get_accent_primary(),
+          display::TextAlign::TOP_CENTER, "sleep >");
     }
   }
   return showSleepLength;
@@ -74,7 +79,7 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
                             color, display::TextAlign::TOP_CENTER, "");
   } else if (animationTick >= totalDuration) {
     display_buffer_->printf(xPos, imageYPos, display_state_->get_font_logo(),
-                            display_state_->get_color_white(),
+                            display_state_->get_color_palette()->get_white(),
                             display::TextAlign::TOP_CENTER, "");
   }
   return totalDuration;
@@ -134,12 +139,13 @@ void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
                  false, display_buffer_->get_height()) +
              yPosOffset;
 
-  display_buffer_->rectangle(iconMargin, yPos, totalBarWidth, barHeight,
-                             display_state_->get_color_accent_primary());
-  display_buffer_->filled_rectangle(iconMargin + barMargin * 2,
-                                    yPos + barMargin * 2, barWidth,
-                                    barHeight - 2 - barMargin * 2,
-                                    display_state_->get_color_accent_primary());
+  display_buffer_->rectangle(
+      iconMargin, yPos, totalBarWidth, barHeight,
+      display_state_->get_color_palette()->get_accent_primary());
+  display_buffer_->filled_rectangle(
+      iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth,
+      barHeight - 2 - barMargin * 2,
+      display_state_->get_color_palette()->get_accent_primary());
 }
 
 int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
@@ -173,9 +179,10 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
                    false, display_buffer_->get_height()) -
                display_state_->get_margin_size() / 2 -
                display_state_->get_font_small()->get_baseline();
-    display_buffer_->printf(xPos, yPos, display_state_->get_font_small(),
-                            display_state_->get_color_accent_primary(),
-                            display::TextAlign::TOP_CENTER, "skip >");
+    display_buffer_->printf(
+        xPos, yPos, display_state_->get_font_small(),
+        display_state_->get_color_palette()->get_accent_primary(),
+        display::TextAlign::TOP_CENTER, "skip >");
   }
 }
 
@@ -198,7 +205,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
     case BOOT_MENU_STATE_API:
       display_buffer_->printf(
           xPos, yPos, display_state_->get_font_large_heavy(),
-          display_state_->get_color_accent_primary(),
+          display_state_->get_color_palette()->get_accent_primary(),
           display::TextAlign::TOP_CENTER, "api connecting...");
       break;
     case BOOT_MENU_STATE_PLAYERS:
@@ -208,13 +215,13 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
         int loadedPlayers = media_player_group_->loadedPlayers;
         display_buffer_->printf(
             xPos, yPos, display_state_->get_font_large_heavy(),
-            display_state_->get_color_accent_primary(),
+            display_state_->get_color_palette()->get_accent_primary(),
             display::TextAlign::TOP_CENTER, "%d/%d players loaded",
             loadedPlayers, totalPlayers);
       } else {
         display_buffer_->printf(
             xPos, yPos, display_state_->get_font_large_heavy(),
-            display_state_->get_color_accent_primary(),
+            display_state_->get_color_palette()->get_accent_primary(),
             display::TextAlign::TOP_CENTER, "api connected!");
       }
       break;
@@ -222,7 +229,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
     case BOOT_MENU_STATE_NETWORK:
       display_buffer_->printf(
           xPos, yPos, display_state_->get_font_large_heavy(),
-          display_state_->get_color_accent_primary(),
+          display_state_->get_color_palette()->get_accent_primary(),
           display::TextAlign::TOP_CENTER, "wifi connecting...");
       break;
     case BOOT_MENU_STATE_START:

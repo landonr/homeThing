@@ -2,7 +2,7 @@
 
 #include <string>
 #include "esphome/components/display/display_buffer.h"
-#include "esphome/core/color.h"
+#include "homeThingColorPalette.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -96,36 +96,6 @@ class HomeThingMenuDisplayState {
     boot_device_name_ = boot_device_name;
   }
 
-  // color
-  Color get_color_gray_dark() { return color_gray_dark_; }
-  void set_color_gray_dark(Color color_gray_dark) {
-    color_gray_dark_ = color_gray_dark;
-  }
-  Color get_color_gray_dark_2() { return color_gray_dark_2_; }
-  void set_color_gray_dark_2(Color color_gray_dark_2) {
-    color_gray_dark_2_ = color_gray_dark_2;
-  }
-  Color get_color_gray() { return color_gray_; }
-  void set_color_gray(Color color_gray) { color_gray_ = color_gray; }
-  Color get_color_accent_primary() { return color_accent_primary_; }
-  void set_color_accent_primary(Color color_accent_primary) {
-    color_accent_primary_ = color_accent_primary;
-  }
-  Color get_color_blue() { return color_blue_; }
-  void set_color_blue(Color color_blue) { color_blue_ = color_blue; }
-  Color get_color_green() { return color_green_; }
-  void set_color_green(Color color_green) { color_green_ = color_green; }
-  Color get_color_black() { return color_black_; }
-  void set_color_black(Color color_black) { color_black_ = color_black; }
-  Color get_color_white() { return color_white_; }
-  void set_color_white(Color color_white) { color_white_ = color_white; }
-  Color get_color_pink() { return color_pink_; }
-  void set_color_pink(Color color_pink) { color_pink_ = color_pink; }
-  Color get_color_red() { return color_red_; }
-  void set_color_red(Color color_red) { color_red_ = color_red; }
-  Color get_color_yellow() { return color_yellow_; }
-  void set_color_yellow(Color color_yellow) { color_yellow_ = color_yellow; }
-
   int getBottomBarYPosition(bool spaceForMenu, int display_height) {
     int barHeight = font_small_->get_height();
     int menuSpace = spaceForMenu && get_draw_now_playing_bottom_menu()
@@ -136,19 +106,13 @@ class HomeThingMenuDisplayState {
     return yPos;
   }
 
- private:
-  Color color_gray_dark_ = Color(102, 102, 102);
-  Color color_gray_dark_2_ = Color(20, 20, 20);
-  Color color_gray_ = Color(25, 25, 25);
-  Color color_accent_primary_ = Color(0, 114, 165);
-  Color color_blue_ = Color(0, 0, 255);
-  Color color_green_ = Color(0, 255, 0);
-  Color color_black_ = Color(0, 0, 0);
-  Color color_white_ = Color(255, 255, 255);
-  Color color_pink_ = Color(255, 40, 255);
-  Color color_red_ = Color(255, 0, 0);
-  Color color_yellow_ = Color(255, 191, 25);
+  HomeThingColorPalette* get_color_palette() { return color_palette_; }
+  void set_color_palette(HomeThingColorPalette* color_palette) {
+    color_palette_ = color_palette;
+  }
 
+ private:
+  HomeThingColorPalette* color_palette_;
   display::Font* font_small_{nullptr};
   display::Font* font_medium_{nullptr};
   display::Font* font_large_{nullptr};
