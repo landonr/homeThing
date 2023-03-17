@@ -212,7 +212,7 @@ switch:
     on_turn_on:
       then:
         - light.turn_off:
-            id: axpbacklight
+            id: backlight
             transition_length: 0s
         - delay: 0.5s
         - deep_sleep.enter:

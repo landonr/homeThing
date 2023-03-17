@@ -193,6 +193,13 @@ switch:
     id: coma
     internal: true
 
+light:
+  - platform: monochromatic
+    output: gpio_32_backlight_pwm
+    name: "Display Backlight"
+    id: backlight
+    restore_mode: ALWAYS_ON
+
 spi:
   clk_pin: 18
   miso_pin: 12
