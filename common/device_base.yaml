@@ -1,27 +1,3 @@
-logger:
-  level: INFO
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true
-  id: wifi_id
-  ap:
-    ssid: "${friendly_name} Fallback"
-    password: !secret wifi_fallback_password
-
-api:
-  id: homeassistant_api_id
-  services:
-    - service: goto_screen
-      variables:
-        screen_name: string
-      then:
-      - lambda: |-
-          id(homeThingMenu)->goToScreenFromString(screen_name);
-
-ota:
-
 http_request:
   useragent: esphome/device
   timeout: 10s
