@@ -9,8 +9,6 @@ external_components:
       url: https://github.com/landonr/homeThing
       ref: lando/codeCleanup
     refresh: 0s
-      # type: local
-      # path: components
     components: [ 
       homeassistant_switch_group, 
       homeassistant_sensor_group,
@@ -22,10 +20,6 @@ external_components:
 
 #leave this to include default ipod controls
 packages:
-  # base: !include common/device_base.yaml
-  # sensor: !include common/lilygo_tdisplay_ipod_sensor.yaml
-    # switch: !include common/lilygo_tdisplay_ipod_switch.yaml
-    # binary_sensor: !include common/lilygo_tdisplay_ipod_binary_sensor.yaml
   remote_package:
     url: https://github.com/landonr/homeThing
     ref: lando/codeCleanup # optional
