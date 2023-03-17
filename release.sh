@@ -28,7 +28,7 @@ if [ -z $2 ] || [ ! $2 == "-f" ]; then
     if [[ $(git tag -l "$TAG_NAME") ]]; then
         echo "Error: Tag '$TAG_NAME' already exists."
         exit 1
-    elif [[ $(printf "%s\n%s" "$LATEST_TAG" "$TAG_NAME" | sort -V | head -n1) != "$TAG_NAME" ]]; then
+    elif [[ $(printf "%s\n%s" "$LATEST_TAG" "$TAG_NAME" | sort -V | head -n1) != "$LATEST_TAG" ]]; then
         echo "Error: New tag version must be greater than the latest tag version ('$LATEST_TAG')."
         exit 1
     fi
