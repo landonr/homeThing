@@ -594,16 +594,31 @@ enum NowPlayingMenuState {
   groupNowPlayingMenuState
 };
 
-static std::vector<std::shared_ptr<MenuTitleBase>>
-speakerNowPlayingMenuStates() {
+static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
+    homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
+  std::string playString =
+      player->playerState == homeassistant_media_player::RemotePlayerState::
+                                 PlayingRemotePlayerState
+          ? "Pause"
+          : "Play";
+  std::string shuffleString = "Shuffle";
+  auto speaker =
+      static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+          player);
+  if (speaker != NULL && speaker->shuffle) {
+    shuffleString = "Shuffling";
+  }
   return {
-      std::make_shared<MenuTitleBase>("Pause", "", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Vl Up", "", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Vl Down", "", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Next", "", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Shuffle", "", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Group", "", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Menu", "", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>(playString, "play", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Vl Up", "volume_up",
+                                      NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Vl Down", "volume_down",
+                                      NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Next", "next", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>(shuffleString, "shuffle",
+                                      NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Group", "group", NoMenuTitleRightIcon),
+      std::make_shared<MenuTitleBase>("Menu", "menu", NoMenuTitleRightIcon),
   };
 }
 
@@ -616,12 +631,12 @@ static std::vector<std::shared_ptr<MenuTitleBase>> TVNowPlayingMenuStates() {
 }
 
 static std::vector<std::shared_ptr<MenuTitleBase>> getNowPlayingMenuStates(
-    homeassistant_media_player::RemotePlayerType player_type) {
-  if (player_type ==
+    homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
+  if (player->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     return TVNowPlayingMenuStates();
   }
-  return speakerNowPlayingMenuStates();
+  return speakerNowPlayingMenuStates(player);
 }
 
 }  // namespace homething_menu_base

@@ -293,8 +293,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case switchesMenu:
       return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:
-      return getNowPlayingMenuStates(
-          media_player_group_->activePlayer->get_player_type());
+      return getNowPlayingMenuStates(media_player_group_->activePlayer);
     case bootMenu:
       return {};
     default:
@@ -309,31 +308,30 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     return;
   }
   auto menu_name =
-      getNowPlayingMenuStates(
-          media_player_group_->activePlayer->get_player_type())[menuIndex]
-          ->get_name();
-  if (menu_name == "Pause") {
+      getNowPlayingMenuStates(media_player_group_->activePlayer)[menuIndex]
+          ->entity_id_;
+  if (menu_name == "play") {
     media_player_group_->activePlayer->playPause();
-  } else if (menu_name == "Vl Up") {
+  } else if (menu_name == "volume_up") {
     media_player_group_->increaseSpeakerVolume();
     option_menu_ = volumeOptionMenu;
-  } else if (menu_name == "Vl Down") {
+  } else if (menu_name == "volume_down") {
     media_player_group_->decreaseSpeakerVolume();
     option_menu_ = volumeOptionMenu;
-  } else if (menu_name == "Next") {
+  } else if (menu_name == "next") {
     media_player_group_->activePlayer->nextTrack();
-  } else if (menu_name == "Shuffle") {
+  } else if (menu_name == "shuffle") {
     media_player_group_->toggleShuffle();
-  } else if (menu_name == "Menu") {
+  } else if (menu_name == "menu") {
     topMenu();
-  } else if (menu_name == "Group") {
+  } else if (menu_name == "group") {
     menuIndex = 0;
     activeMenuState = groupMenu;
-  } else if (menu_name == "Power") {
+  } else if (menu_name == "power") {
     media_player_group_->sendActivePlayerRemoteCommand("power");
-  } else if (menu_name == "Back") {
+  } else if (menu_name == "back") {
     media_player_group_->sendActivePlayerRemoteCommand("back");
-  } else if (menu_name == "Home") {
+  } else if (menu_name == "menu") {
     media_player_group_->sendActivePlayerRemoteCommand("menu");
   }
   update_display();

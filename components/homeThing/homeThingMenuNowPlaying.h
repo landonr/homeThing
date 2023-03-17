@@ -45,7 +45,6 @@ class HomeThingMenuNowPlaying {
   void drawMediaDuration();
   bool drawOptionMenuAndStop(const option_menuType option_menu);
   std::string stringForNowPlayingMenuState(NowPlayingMenuState state);
-  std::vector<NowPlayingMenuState> getNowPlayingMenuStates();
   void drawNowPlayingSelectMenu(
       std::vector<std::shared_ptr<MenuTitleBase>> menu_titles, int menu_index);
   std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
