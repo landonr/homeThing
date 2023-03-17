@@ -1,4 +1,0 @@
-binary_sensor:
-  - platform: status
-    id: api_connected
-    internal: true

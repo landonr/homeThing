@@ -1,0 +1,67 @@
+
+homeassistant_switch_group:
+  id: switch_group_component
+  switches:
+    - id: "oven_fan_switch"
+
+homeassistant_sensor_group:
+  id: sensor_group_component
+  sensors:
+    - id: sensor_weather
+    - id: sensor_temperature
+    - id: sensor_washing_machine
+    - id: sensor_plant_moisture
+    - id: sensor_kitchen_air
+
+homeassistant_light_group:
+  id: light_group_component
+  lights:
+    - id: light_bathroom_lights
+    - id: light_bedroom_lights
+    - id: light_kitchen_lights
+    - id: light_living_room_lights
+    - id: light_office_lamp
+
+homeassistant_media_player:
+  id: media_group_component
+  media_players:
+    - id: media_player_beam
+      type: sonos
+    - id: media_player_tv
+      type: roku
+
+homeassistant_service_group:
+  id: service_group_component
+  commands:
+    - text: "desk down"
+      command:
+        - lambda: |-
+            ESP_LOGI("homeassistant_service_group", "down");
+        - homeassistant.service:
+            service: script.set_desk_height
+            data:
+              height: "low"
+    - text: "desk up"
+      command:
+        - lambda: |-
+            ESP_LOGI("homeassistant_service_group", "up");
+        - homeassistant.service:
+            service: script.set_desk_height
+            data:
+              height: "high"
+    - text: "desk nudge up"
+      command:
+        - lambda: |-
+            ESP_LOGI("homeassistant_service_group", "nudge up");
+        - homeassistant.service:
+            service: button.press
+            data:
+              entity_id: "button.desk_position_nudge_up"
+    - text: "desk nudge down"
+      command:
+        - lambda: |-
+            ESP_LOGI("homeassistant_service_group", "nudge down");
+        - homeassistant.service:
+            service: button.press
+            data:
+              entity_id: "button.desk_position_nudge_down"
