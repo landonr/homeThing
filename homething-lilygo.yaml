@@ -108,9 +108,9 @@ color:
     green_int: 43
     blue_int: 48
   - id: my_green
-    red_int: 115
-    green_int: 126
-    blue_int: 59
+    red_int: 120
+    green_int: 191
+    blue_int: 26
   - id: my_blue
     red_int: 129
     green_int: 196

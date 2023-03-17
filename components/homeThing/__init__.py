@@ -351,7 +351,7 @@ async def menu_display_to_code(config, display_buffer):
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
     menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot)
-    await ids_to_code(config, menu_display, MENU_BOOT_IDS)
+    await ids_to_code(config, menu_display, MENU_DISPLAY_IDS)
     return menu_display
 
 MENU_IDS = [
