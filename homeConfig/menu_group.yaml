@@ -1,4 +1,3 @@
-
 homeassistant_switch_group:
   id: switch_group_component
   switches:
