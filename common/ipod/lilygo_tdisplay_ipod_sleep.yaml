@@ -1,0 +1,12 @@
+switch:
+  - platform: template
+    name: Sleep Toggle
+    id: sleep_toggle
+    optimistic: true
+    on_turn_on:
+      then:
+        - deep_sleep.enter:
+            id: deep_sleep_
+
+deep_sleep:
+  id: deep_sleep_

@@ -3,12 +3,32 @@ esphome:
   platform: ESP32
   board: featheresp32
 
+external_components:
+  - source:
+    #   type: git
+    #   url: https://github.com/landonr/homeThing
+    #   ref: lando/codeCleanup
+    # refresh: 0s
+      type: local
+      path: components
+    components: [ 
+      homeassistant_switch_group, 
+      homeassistant_sensor_group,
+      homeassistant_light_group,
+      homeassistant_media_player,
+      homeassistant_service_group,
+      homeThing,
+    ]
+
 packages:
   device_base: !include common/device_base.yaml
-  sensor: !include common/lilygo_tdisplay_ipod_sensor.yaml
-  switch: !include common/lilygo_tdisplay_ipod_switch.yaml
-  binary_sensor: !include common/lilygo_tdisplay_ipod_binary_sensor.yaml
-
+  ipod_control_backlight: !include common/ipod/lilygo_tdisplay_ipod_backlight.yaml
+  ipod_control_battery: !include common/ipod/lilygo_tdisplay_ipod_battery.yaml
+  ipod_control_binary_sensor: !include common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
+  ipod_control_rotary: !include common/ipod/lilygo_tdisplay_ipod_rotary.yaml
+  ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
+  ipod_control_switch: !include common/ipod/lilygo_tdisplay_ipod_switch.yaml
+  setup: !include homeConfig/device_setup.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
@@ -81,85 +101,6 @@ font:
         '󰌵', # mdi-lightbulb
         '󰌶', # mdi-lightbulb-outline
       ]
-
-deep_sleep:
-  id: deep_sleep_
-      
-binary_sensor:
-  - platform: template
-    id: charging
-
-sensor:
-## Battery
-  - platform: adc
-    pin: 34
-    attenuation: 11db
-    name: "vccadc"
-    update_interval: 250ms
-    id: vcc_adc
-    internal: true
-    on_value:
-      then:
-        lambda: |-
-          if (!id(charging)->has_state()) {
-              id(charging)->publish_state(false);
-          } else if (id(vcc_adc).state > 2.23) {
-            if (!id(charging).state) {
-              id(charging)->publish_state(true);
-            }
-          } else {
-            if (id(charging).state) {
-              id(charging)->publish_state(false);
-            }
-          }
-          id(vcc_adc_avg).publish_state(id(vcc_adc).state);
-  - platform: template
-    id: vcc_adc_avg
-    filters:
-      - sliding_window_moving_average:
-          window_size: 4
-          send_every: 4
-    on_value :
-      then:
-        - sensor.template.publish:
-            id: batteryVoltage
-            state: !lambda 'return id(vcc_adc).state;'
-  - platform: template
-    name: batteryVoltage
-    id: batteryVoltage
-    internal: true
-    unit_of_measurement: 'V'
-    on_value :
-      then:
-        - sensor.template.publish:
-            id: battery_percent
-            state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
-  - platform: template
-    name: Battery Percent
-    id: battery_percent
-    unit_of_measurement: '%'
-    on_value_range:
-      below: 5
-      then:
-        lambda: |-
-          ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(battery_percent).state);
-          id(sleep_toggle).turn_on();
-
-switch:
-  - platform: template
-    name: Sleep Toggle
-    id: sleep_toggle
-    optimistic: true
-    on_turn_on:
-      then:
-        - deep_sleep.enter:
-            id: deep_sleep_
-  - platform: gpio
-    pin: GPIO4
-    name: "Backlight"
-    id: backlight
-    internal: true
-    restore_mode: RESTORE_DEFAULT_ON
 
 color:
   - id: my_red

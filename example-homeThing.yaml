@@ -25,9 +25,12 @@ packages:
     ref: lando/codeCleanup # optional
     files: [
       common/device_base.yaml, 
-      common/lilygo_tdisplay_ipod_sensor.yaml,
-      common/lilygo_tdisplay_ipod_switch.yaml,
-      common/lilygo_tdisplay_ipod_binary_sensor.yaml
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml,
+      common/ipod/lilygo_tdisplay_ipod_battery.yaml,
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml,
+      common/ipod/lilygo_tdisplay_ipod_rotary.yaml,
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml,
+      common/ipod/lilygo_tdisplay_ipod_switch.yaml
     ]
     refresh: 0s
   setup: !include homeConfig/device_setup.yaml

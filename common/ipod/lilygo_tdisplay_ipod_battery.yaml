@@ -1,0 +1,59 @@
+sensor:
+## Battery
+  - platform: adc
+    pin: 34
+    attenuation: 11db
+    name: "vccadc"
+    update_interval: 250ms
+    id: vcc_adc
+    internal: true
+    on_value:
+      then:
+        lambda: |-
+          if (!id(charging)->has_state()) {
+              id(charging)->publish_state(false);
+          } else if (id(vcc_adc).state > 2.23) {
+            if (!id(charging).state) {
+              id(charging)->publish_state(true);
+            }
+          } else {
+            if (id(charging).state) {
+              id(charging)->publish_state(false);
+            }
+          }
+          id(vcc_adc_avg).publish_state(id(vcc_adc).state);
+  - platform: template
+    id: vcc_adc_avg
+    filters:
+      - sliding_window_moving_average:
+          window_size: 4
+          send_every: 4
+    on_value :
+      then:
+        - sensor.template.publish:
+            id: batteryVoltage
+            state: !lambda 'return id(vcc_adc).state;'
+  - platform: template
+    name: batteryVoltage
+    id: batteryVoltage
+    internal: true
+    unit_of_measurement: 'V'
+    on_value :
+      then:
+        - sensor.template.publish:
+            id: battery_percent
+            state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
+  - platform: template
+    name: Battery Percent
+    id: battery_percent
+    unit_of_measurement: '%'
+    on_value_range:
+      below: 5
+      then:
+        lambda: |-
+          ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(battery_percent).state);
+          id(sleep_toggle).turn_on();
+
+binary_sensor:
+  - platform: template
+    id: charging

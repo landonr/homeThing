@@ -6,8 +6,31 @@ esp32:
   framework:
     type: arduino
 
+external_components:
+  - source:
+    #   type: git
+    #   url: https://github.com/landonr/homeThing
+    #   ref: lando/codeCleanup
+    # refresh: 0s
+      type: local
+      path: components
+    components: [ 
+      homeassistant_switch_group, 
+      homeassistant_sensor_group,
+      homeassistant_light_group,
+      homeassistant_media_player,
+      homeassistant_service_group,
+      homeThing,
+    ]
+
 packages:
   device_base: !include common/device_base.yaml
+  setup: !include homeConfig/device_setup.yaml
+  home_media_player: !include homeConfig/media_player.yaml
+  home_text_sensor: !include homeConfig/text_sensor.yaml
+  home_light: !include homeConfig/light.yaml
+  home_switch: !include homeConfig/switch.yaml
+  menu_group: !include homeConfig/menu_group.yaml
   
 font:
   ## Font needs to be monospace!

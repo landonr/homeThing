@@ -1,4 +1,5 @@
 binary_sensor:
+  ## controls
   - platform: gpio
     pin:
       number: GPIO0

@@ -1,5 +1,6 @@
-# echo "formatting"
-# bash formatFiles.sh &> /dev/null
+echo "formatting"
+bash formatFiles.sh &> /dev/null
+
 defaultDevice="homething-lilygo.yaml"
 hasTTYUSB=0
 moreThanOne=0

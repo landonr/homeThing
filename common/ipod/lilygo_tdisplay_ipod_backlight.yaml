@@ -1,0 +1,7 @@
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "Backlight"
+    id: backlight
+    internal: true
+    restore_mode: RESTORE_DEFAULT_ON

@@ -40,6 +40,8 @@ OUTPUT_FILE=homeThing_${TAG_NAME}.tar.gz
 # Include the example.yaml file
 INCLUDE_FILE=example-homeThing.yaml
 
+rm homeThing_*.tar.gz
+
 # Tar and gzip the folder, including the example.yaml file
 tar -czvf $OUTPUT_FILE --exclude=secrets.yaml $FOLDER fonts --add=$INCLUDE_FILE
 
