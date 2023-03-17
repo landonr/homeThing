@@ -137,7 +137,7 @@ light:
    output: axp_ldo3
    restore_mode: ALWAYS_ON
    name: "Backlight"
-   id: axpbacklight
+   id: backlight
    internal: True
 
 output:
@@ -214,19 +214,6 @@ switch:
       - delay: 0.5s
       - deep_sleep.enter:
           id: deep_sleep_
-- platform: template
-  id: backlight
-  optimistic: true
-  internal: true
-  on_turn_on:
-    then:
-      - light.turn_on:
-          id: axpbacklight
-  on_turn_off:
-    then:
-      - light.turn_off:
-          id: axpbacklight
-          transition_length: 0.5s
 
 spi:
   clk_pin: GPIO13
@@ -240,6 +227,7 @@ homeThing:
   sensor_group: sensor_group_component
   switch_group: switch_group_component
   display: my_display
+  backlight: backlight
   on_redraw:
     then:
       component.update: my_display

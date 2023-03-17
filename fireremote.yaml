@@ -228,7 +228,7 @@ homeThing:
   settings:
     mode: 3_button
   sleep_switch: sleep_toggle
-  # backlight: backlight
+  backlight: backlight
   battery:
     battery_percent: battery_percent
     charging: connected

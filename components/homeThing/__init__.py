@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch
+from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch, light
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
@@ -213,7 +213,7 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
             cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
             cv.Optional(CONF_BATTERY): BATTERY_SCHEMA,
-            cv.Optional(CONF_BACKLIGHT): cv.use_id(switch.Switch),
+            cv.Optional(CONF_BACKLIGHT): cv.use_id(light.LightState),
             cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
             cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,

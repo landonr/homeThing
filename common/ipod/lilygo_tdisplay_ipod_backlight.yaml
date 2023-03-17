@@ -1,7 +1,10 @@
-switch:
-  - platform: gpio
+output:
+  - platform: ledc
     pin: GPIO4
+    id: gpio4
+
+light:
+  - platform: monochromatic
+    output: gpio4
     name: "Backlight"
     id: backlight
-    internal: true
-    restore_mode: RESTORE_DEFAULT_ON

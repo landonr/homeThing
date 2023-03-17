@@ -204,6 +204,7 @@ homeThing:
     mode: 3_button
     display_timeout: 0
   media_player_group: media_group_component
+  backlight: backlight
   light_group: light_group_component
   service_group: service_group_component
   sensor_group: sensor_group_component

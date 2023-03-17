@@ -41,7 +41,7 @@ class HomeThingMenuBase : public PollingComponent {
   void set_sleep_switch(switch_::Switch* sleep_switch) {
     sleep_switch_ = sleep_switch;
   }
-  void set_backlight(switch_::Switch* backlight) { backlight_ = backlight; }
+  void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
   homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
     return service_group_;
   }
@@ -131,7 +131,7 @@ class HomeThingMenuBase : public PollingComponent {
 
   int idleTime = -2;
   MenuStates activeMenuState = bootMenu;
-  switch_::Switch* backlight_{nullptr};
+  light::LightState* backlight_{nullptr};
   switch_::Switch* sleep_switch_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
@@ -158,6 +158,7 @@ class HomeThingMenuBase : public PollingComponent {
     if (media_player_group_)
       media_player_group_->newSpeakerGroupParent = NULL;
   }
+  void turn_on_backlight();
 
   sensor::Sensor* display_update_tick_;
   int rotary_ = 0;

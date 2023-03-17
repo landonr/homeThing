@@ -342,8 +342,9 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
     idleTime = 0;
   }
 
-  if (backlight_ && !backlight_->state) {
-    backlight_->turn_on();
+  if (backlight_ && !backlight_->remote_values.is_on()) {
+    ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display");
+    turn_on_backlight();
     update_display();
     return true;
   }
@@ -825,10 +826,21 @@ bool HomeThingMenuBase::display_can_sleep() {
   }
 }
 
+void HomeThingMenuBase::turn_on_backlight() {
+  if (backlight_ && !backlight_->remote_values.is_on()) {
+    ESP_LOGI(TAG, "turn_on_backlight: turning on display");
+    auto call = backlight_->turn_on();
+    call.set_transition_length(0.5);
+    call.perform();
+  }
+}
+
 void HomeThingMenuBase::sleep_display() {
-  if (backlight_) {
+  if (backlight_ && backlight_->remote_values.is_on()) {
     ESP_LOGD(TAG, "sleep_display: turning off display");
-    backlight_->turn_off();
+    auto call = backlight_->turn_off();
+    call.set_transition_length(0.25);
+    call.perform();
   }
 }
 
