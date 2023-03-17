@@ -12,13 +12,13 @@ wifi:
 
 api:
   id: homeassistant_api_id
-  # services:
-  #   - service: goto_screen
-  #     variables:
-  #       screen_name: string
-  #     then:
-  #     - lambda: |-
-  #         goToScreenFromString(screen_name);
+  services:
+    - service: goto_screen
+      variables:
+        screen_name: string
+      then:
+      - lambda: |-
+          id(homeThingMenu)->goToScreenFromString(screen_name);
 
 ota:
 

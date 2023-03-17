@@ -92,12 +92,8 @@ void HomeThingMenuBase::topMenu() {
   if (activeMenuState == bootMenu) {
     return;
   }
-  animation_->resetAnimation(true);
-  if (media_player_group_)
-    media_player_group_->newSpeakerGroupParent = NULL;
-  option_menu_ = noOptionMenu;
   activeMenuState = rootMenu;
-  menuIndex = 0;
+  reset_menu();
 }
 
 void HomeThingMenuBase::update() {
@@ -559,7 +555,7 @@ void HomeThingMenuBase::buttonPressUp() {
   switch (activeMenuState) {
     case nowPlayingMenu:
       if (option_menu_ == tvOptionMenu) {
-        option_menu_ = noOptionMenu;
+        reset_menu();
         topMenu();
         update_display();
         return;
@@ -909,11 +905,33 @@ void HomeThingMenuBase::idleTick() {
 void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
   if (screenName == "nowPlaying") {
     activeMenuState = nowPlayingMenu;
+  } else if (screenName == "sources") {
+    activeMenuState = sourcesMenu;
+  } else if (screenName == "backlight") {
+    activeMenuState = backlightMenu;
+  } else if (screenName == "sleep") {
+    activeMenuState = sleepMenu;
+  } else if (screenName == "mediaPlayers") {
+    activeMenuState = mediaPlayersMenu;
+  } else if (screenName == "lights") {
+    activeMenuState = lightsMenu;
+  } else if (screenName == "lightDetail") {
+    activeMenuState = lightsDetailMenu;
+  } else if (screenName == "switches") {
+    activeMenuState = switchesMenu;
+  } else if (screenName == "scenes") {
+    activeMenuState = scenesMenu;
+  } else if (screenName == "home") {
+    activeMenuState = rootMenu;
+  } else if (screenName == "speakerGroup") {
+    activeMenuState = groupMenu;
   } else if (screenName == "sensors") {
     activeMenuState = sensorsMenu;
+  } else if (screenName == "boot") {
+    activeMenuState = bootMenu;
   }
-  menuIndex = 0;
-  // displayUpdate.updateDisplay(true);
+  reset_menu();
+  update_display();
 }
 
 void HomeThingMenuBase::idleMenu(bool force) {
@@ -924,9 +942,7 @@ void HomeThingMenuBase::idleMenu(bool force) {
   if (!get_charging() || force) {
     if (light_group_)
       light_group_->clearActiveLight();
-    menuIndex = 0;
-    animation_->resetAnimation();
-    option_menu_ = noOptionMenu;
+    reset_menu();
     activeMenuState = nowPlayingMenu;
     if (media_player_group_)
       media_player_group_->newSpeakerGroupParent = NULL;

@@ -7,9 +7,9 @@ namespace esphome {
 namespace homething_menu_base {
 
 void HomeThingMenuAnimation::resetAnimation(bool force) {
-  if (!force) {
-    return;
-  }
+  // if (!force) {
+  //   return;
+  // }
   animating = false;
   animationTick->publish_state(0);
 }

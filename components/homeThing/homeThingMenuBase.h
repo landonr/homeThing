@@ -151,6 +151,13 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
   void selectNowPlayingMenu();
   std::vector<MenuStates> rootMenuTitles();
+  void reset_menu() {
+    menuIndex = 0;
+    option_menu_ = noOptionMenu;
+    animation_->resetAnimation();
+    if (media_player_group_)
+      media_player_group_->newSpeakerGroupParent = NULL;
+  }
 
   sensor::Sensor* display_update_tick_;
   int rotary_ = 0;
