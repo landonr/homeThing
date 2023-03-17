@@ -26,9 +26,6 @@ external_components:
 
 packages:
   device_base: !include common/device_base.yaml
-  sensor: !include common/lilygo_tdisplay_ipod_sensor.yaml
-  switch: !include common/lilygo_tdisplay_ipod_switch.yaml
-  binary_sensor: !include common/lilygo_tdisplay_ipod_binary_sensor.yaml
   setup: !include homeConfig/device_setup.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
@@ -194,14 +191,18 @@ switch:
       then:
         - deep_sleep.enter:
             id: deep_sleep_
-  - platform: gpio
+
+output:
+  - platform: ledc
     pin: 32
-    name: ${friendly_name} Backlight
-    id: backlight
-    restore_mode: ALWAYS_ON
-    internal: true
+    id: gpio_32_backlight_pwm
 
 light:
+  - platform: monochromatic
+    output: gpio_32_backlight_pwm
+    name: "Display Backlight"
+    id: backlight
+    restore_mode: ALWAYS_ON
   - platform: fastled_clockless
     chipset: SK6812
     pin: GPIO15
@@ -227,7 +228,7 @@ homeThing:
   settings:
     mode: 3_button
   sleep_switch: sleep_toggle
-  backlight: backlight
+  # backlight: backlight
   battery:
     battery_percent: battery_percent
     charging: connected
@@ -262,11 +263,10 @@ homeThing:
     draw_header_time: true
 
 display:
-  - platform: ili9341
+  - platform: ili9xxx
     model: M5STACK
     cs_pin: 14
     dc_pin: 27
-    led_pin: 32  ### see note below ###
     reset_pin: 33
     id: my_display
     update_interval: 3600s 

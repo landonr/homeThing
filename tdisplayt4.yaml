@@ -179,7 +179,6 @@ binary_sensor:
         - lambda: |-
             id(homeThingMenu)->rotaryScrollClockwise(0);
 
-# We can still control the backlight independently
 switch:
   - platform: gpio
     pin:
@@ -193,12 +192,6 @@ switch:
       inverted: false
     id: coma
     internal: true
-  - platform: gpio
-    pin: GPIO4
-    name: "Backlight"
-    id: backlight
-    internal: true
-    restore_mode: RESTORE_DEFAULT_ON
 
 spi:
   clk_pin: 18
@@ -240,12 +233,11 @@ homeThing:
     draw_header_time: true
 
 display:
-  - platform: ili9341
+  - platform: ili9xxx
     id: my_display
     model: TFT_2.4
     cs_pin: 27
     dc_pin: 32
-    led_pin: 04  ### see note below ###
     reset_pin: 05
     update_interval: 3600s
     rotation: 90
