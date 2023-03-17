@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        devices: [ 'tdisplayremote', 'fireremote', 'tdisplayt4', 'm5stickc', 'homething-lilygo' ]
+        devices: [ 'tdisplayremote', 'fireremote', 'tdisplayt4', 'm5stickc', 'm5stickcplus' 'homething-lilygo', 'example-homeThing' ]
     steps:
       - uses: actions/checkout@v2
       - uses: DoozyX/clang-format-lint-action@v0.15
