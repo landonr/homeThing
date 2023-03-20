@@ -112,6 +112,18 @@ class HomeThingMenuBase : public PollingComponent {
   }
 
  private:
+  bool button_press_and_continue() {
+    if (buttonPressWakeUpDisplay()) {
+      return false;
+    }
+    if (activeMenuState != bootMenu) {
+      animation_->resetAnimation();
+      return true;
+    } else {
+      return false;
+    }
+    return true;
+  }
   float get_battery_percent() {
     if (battery_percent_ != nullptr && battery_percent_->has_state()) {
       return battery_percent_->state;
@@ -154,7 +166,9 @@ class HomeThingMenuBase : public PollingComponent {
   void reset_menu() {
     menuIndex = 0;
     option_menu_ = noOptionMenu;
-    animation_->resetAnimation();
+    if (activeMenuState != bootMenu) {
+      animation_->resetAnimation();
+    }
     if (media_player_group_)
       media_player_group_->newSpeakerGroupParent = NULL;
   }

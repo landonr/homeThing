@@ -61,7 +61,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   }
   int yPos = display_state_->get_header_height() +
              display_state_->get_margin_size() / 4;
-  if (media_player_group_->activePlayer->playerState ==
+  if (media_player_group_->active_player_->playerState ==
       homeassistant_media_player::RemotePlayerState::
           PowerOffRemotePlayerState) {
     display_buffer_->printf(
@@ -73,12 +73,12 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   }
   std::string nowPlayingText = "Now Playing,";
 
-  if (media_player_group_->activePlayer->get_player_type() !=
+  if (media_player_group_->active_player_->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
         static_cast<
             homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-            media_player_group_->activePlayer);
+            media_player_group_->active_player_);
     if (activeSpeaker->playlist_title != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->playlist_title;
     } else if (activeSpeaker->media_album_name != activeSpeaker->mediaTitle) {
@@ -158,12 +158,12 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
-  if (media_player_group_->activePlayer->get_player_type() !=
+  if (media_player_group_->active_player_->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
         static_cast<
             homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-            media_player_group_->activePlayer);
+            media_player_group_->active_player_);
     int mediaDuration = activeSpeaker->mediaDuration;
     int mediaPosition = activeSpeaker->mediaPosition;
     if (mediaDuration <= 0 && mediaPosition <= 0) {
@@ -232,75 +232,81 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
     case groupNowPlayingMenuState:
       return "Group";
     case shuffleNowPlayingMenuState:
-      if (media_player_group_->mediaShuffling()) {
-        return "Shfl on";
-      } else {
-        return "Shfl off";
-      }
+      return media_player_group_->shuffle_string();
   }
   return "";
 }
 
-void HomeThingMenuNowPlaying::drawSpeakerOptionMenu() {
-  display_buffer_->circle(display_buffer_->get_width() * 0.5,
-                          (display_buffer_->get_height() - 16) * 0.45 + 24, 48,
+void HomeThingMenuNowPlaying::drawCircleOptionMenu() {
+  int y_pos =
+      (display_buffer_->get_height() - display_state_->get_header_height());
+  int radius = y_pos * 0.4;
+  y_pos = (y_pos * 0.5) + display_state_->get_header_height();
+  display_buffer_->circle(display_buffer_->get_width() * 0.5, y_pos, radius,
                           display_state_->get_color_palette()->get_gray());
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.5,
-      (display_buffer_->get_height() - 16) * 0.15 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER,
-      media_player_group_->shuffleString().c_str());
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.5,
-      (display_buffer_->get_height() - 16) * 0.75 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, "Group");
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.8,
-      (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER,
-      media_player_group_->muteString().c_str());
-}
 
-void HomeThingMenuNowPlaying::drawTVOptionMenu() {
-  display_buffer_->circle(display_buffer_->get_width() * 0.5,
-                          (display_buffer_->get_height() - 16) * 0.45 + 24, 48,
-                          display_state_->get_color_palette()->get_gray());
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.5,
-      (display_buffer_->get_height() - 16) * 0.15 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, "Remote Menu");
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.5,
-      (display_buffer_->get_height() - 16) * 0.75 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, "Pause");
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.2,
-      (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, "Back");
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.8,
-      (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, "Home");
-  display_buffer_->printf(
-      display_buffer_->get_width() * 0.5,
-      (display_buffer_->get_height() - 16) * 0.45 + 16,
-      display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_CENTER, "TV Power");
+  auto supported_features =
+      media_player_group_->active_player_->get_option_menu_features();
+  auto max_index = min(static_cast<int>(supported_features.size()), 5);
+
+  for (int i = 0; i < max_index; i++) {
+    auto element = *(supported_features[i].get());
+    double angle = i * M_PI / 2.0;
+    auto coordinate = get_coordinate(radius, angle);
+
+    auto title = homeassistant_media_player::supported_feature_string(element);
+
+    display::TextAlign text_alignment;
+    switch (i) {
+      case 0:
+        text_alignment = display::TextAlign::CENTER_LEFT;
+        break;
+      case 1:
+        text_alignment = display::TextAlign::BOTTOM_CENTER;
+        break;
+      case 2:
+        text_alignment = display::TextAlign::CENTER_RIGHT;
+        break;
+      case 3:
+        text_alignment = display::TextAlign::TOP_CENTER;
+        break;
+      case 4:
+        text_alignment = display::TextAlign::CENTER;
+        coordinate.x = 0;
+        coordinate.y = 0;
+        break;
+      default:
+        break;
+    }
+
+    ESP_LOGD(TAG, "drawCircleOptionMenu: %d - %s: %f %f", i, title.c_str(),
+             coordinate.x, coordinate.y);
+    display_buffer_->printf(
+        (display_buffer_->get_width() / 2) + coordinate.x, y_pos + coordinate.y,
+        display_state_->get_font_small(),
+        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+        text_alignment, title.c_str());
+  }
+  // display_buffer_->printf(
+  //     display_buffer_->get_width() * 0.5,
+  //     (display_buffer_->get_height() - 16) * 0.15 + 16,
+  //     display_state_->get_font_small(),
+  //     text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+  //     display::TextAlign::TOP_CENTER,
+  //     media_player_group_->shuffle_string().c_str());
+  // display_buffer_->printf(
+  //     display_buffer_->get_width() * 0.5,
+  //     (display_buffer_->get_height() - 16) * 0.75 + 16,
+  //     display_state_->get_font_small(),
+  //     text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+  //     display::TextAlign::TOP_CENTER, "Group");
+  // display_buffer_->printf(
+  //     display_buffer_->get_width() * 0.8,
+  //     (display_buffer_->get_height() - 16) * 0.45 + 16,
+  //     display_state_->get_font_small(),
+  //     text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+  //     display::TextAlign::TOP_CENTER,
+  //     media_player_group_->muteString().c_str());
 }
 
 void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
@@ -336,10 +342,8 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
     const option_menuType option_menu) {
   switch (option_menu) {
     case tvOptionMenu:
-      drawTVOptionMenu();
-      return true;
     case speakerOptionMenu:
-      drawSpeakerOptionMenu();
+      drawCircleOptionMenu();
       return true;
     case volumeOptionMenu:
       // called later so it's over text

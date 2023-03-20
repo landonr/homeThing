@@ -73,9 +73,9 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case backlightMenu:
     case sleepMenu:
     case nowPlayingMenu: {
-      if (media_player_group_ && media_player_group_->activePlayer) {
+      if (media_player_group_ && media_player_group_->active_player_) {
         auto headerMenuTitle =
-            headerMediaPlayerTitle(media_player_group_->activePlayer);
+            headerMediaPlayerTitle(media_player_group_->active_player_);
         xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
         drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
       } else {
@@ -124,10 +124,10 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 }
 
 int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
-  if (!media_player_group_ || media_player_group_->activePlayer == NULL) {
+  if (!media_player_group_ || media_player_group_->active_player_ == NULL) {
     return oldXPos;
   }
-  auto active_player = media_player_group_->activePlayer;
+  auto active_player = media_player_group_->active_player_;
   if (active_player->get_player_type() ==
           homeassistant_media_player::RemotePlayerType::TVRemotePlayerType ||
       !active_player->supports(homeassistant_media_player::
@@ -215,7 +215,7 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
 
 int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
   if (media_player_group_ == nullptr ||
-      media_player_group_->activePlayer == nullptr) {
+      media_player_group_->active_player_ == nullptr) {
     return oldXPos;
   }
   if (!display_state_->get_draw_volume_level()) {

@@ -36,7 +36,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
                                       public Component,
                                       public sensor::Sensor {
  public:
-  HomeAssistantBaseMediaPlayer* activePlayer = NULL;
+  HomeAssistantBaseMediaPlayer* active_player_ = NULL;
   std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
   bool playerSearchFinished = false;
   std::string playingNewSourceText = "";
@@ -60,7 +60,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   bool mediaShuffling();
   void toggle_shuffle();
   void toggle_mute();
-  std::string shuffleString();
+  std::string shuffle_string();
   std::string muteString();
   double getVolumeLevel();
   void selectGroup(HomeAssistantBaseMediaPlayer* selected_group_parent,

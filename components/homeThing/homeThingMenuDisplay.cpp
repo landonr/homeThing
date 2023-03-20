@@ -149,12 +149,14 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
   }
-  if (!boot_->boot_complete()) {
+  if (!boot_->boot_complete() && *activeMenuState != bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
   } else if (*activeMenuState == bootMenu) {
     ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
     return true;
+  } else if (!boot_->boot_complete() && *activeMenuState != bootMenu) {
+    ESP_LOGW(TAG, "boot not complete but ");
   }
 
   bool animating = false;

@@ -10,6 +10,7 @@ void HomeThingMenuAnimation::resetAnimation(bool force) {
   // if (!force) {
   //   return;
   // }
+  ESP_LOGI(TAG, "resetAnimation: %d", force);
   animating = false;
   animationTick->publish_state(0);
 }

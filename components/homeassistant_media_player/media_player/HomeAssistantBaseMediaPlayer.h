@@ -12,20 +12,20 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-enum MediaPlayerSupportedState {
-  MEDIA_CONTENT_ID,
-  MEDIA_CONTENT_TYPE,
-  MEDIA_SERIES_TITLE,
-  MEDIA_SEASON,
-  MEDIA_EPISODE,
-  MEDIA_CONTENT_RATING,
-  MEDIA_LIBRARY_TITLE,
-  MEDIA_SUMMARY,
-  MEDIA_TITLE,
-  MEDIA_ARTIST,
-  MEDIA_ALBUM_NAME,
-  MEDIA_ALBUM_ARTIST
-};
+// enum MediaPlayerSupportedState {
+//   MEDIA_CONTENT_ID,
+//   MEDIA_CONTENT_TYPE,
+//   MEDIA_SERIES_TITLE,
+//   MEDIA_SEASON,
+//   MEDIA_EPISODE,
+//   MEDIA_CONTENT_RATING,
+//   MEDIA_LIBRARY_TITLE,
+//   MEDIA_SUMMARY,
+//   MEDIA_TITLE,
+//   MEDIA_ARTIST,
+//   MEDIA_ALBUM_NAME,
+//   MEDIA_ALBUM_ARTIST
+// };
 
 enum MediaPlayerSupportedFeature {
   PAUSE = 1,
@@ -48,6 +48,51 @@ enum MediaPlayerSupportedFeature {
   REPEAT_SET = 262144,
   GROUPING = 524288
 };
+
+static std::string supported_feature_string(
+    MediaPlayerSupportedFeature feature) {
+  switch (feature) {
+    case PAUSE:
+      return "Pause";
+    case SEEK:
+      return "Seek";
+    case VOLUME_SET:
+      return "Volume Set";
+    case VOLUME_MUTE:
+      return "Mute";
+    case PREVIOUS_TRACK:
+      return "Previous Track";
+    case NEXT_TRACK:
+      return "Next Track";
+    case TURN_ON:
+      return "Turn On";
+    case TURN_OFF:
+      return "Turn Off";
+    case PLAY_MEDIA:
+      return "Play Media";
+    case VOLUME_STEP:
+      return "Volume Step";
+    case SELECT_SOURCE:
+      return "Select Source";
+    case STOP:
+      return "Stop";
+    case CLEAR_PLAYLIST:
+      return "Clear Playlist";
+    case PLAY:
+      return "Play";
+    case SHUFFLE_SET:
+      return "Shuffle";
+    case SELECT_SOUND_MODE:
+      return "Select Sound Mode";
+    case BROWSE_MEDIA:
+      return "Browse Media";
+    case REPEAT_SET:
+      return "Repeat";
+    case GROUPING:
+      return "Grouping";
+  }
+  return "";
+}
 
 static std::map<MediaPlayerSupportedFeature, std::string>
     supported_feature_string_map = {
@@ -107,6 +152,43 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   bool is_shuffling() const { return this->shuffle_; }
   void toggle_shuffle();
   void toggle_mute();
+  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> get_features() {
+    return supported_features_;
+  }
+  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
+  get_option_menu_features() {
+    std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> out;
+    std::copy_if(supported_features_.begin(), supported_features_.end(),
+                 std::back_inserter(out),
+                 [](std::shared_ptr<MediaPlayerSupportedFeature> i) {
+                   switch (*(i.get())) {
+                     case PAUSE:
+                     case VOLUME_SET:
+                     case SEEK:
+                     case SELECT_SOURCE:
+                     case SELECT_SOUND_MODE:
+                     case BROWSE_MEDIA:
+                     case PLAY_MEDIA:
+                     case VOLUME_STEP:
+                     case STOP:
+                     case PLAY:
+                     case PREVIOUS_TRACK:
+                     case NEXT_TRACK:
+                       return false;
+                     case SHUFFLE_SET:
+                     case VOLUME_MUTE:
+                     case CLEAR_PLAYLIST:
+                     case GROUPING:
+                     case REPEAT_SET:
+                     case TURN_ON:
+                     case TURN_OFF:
+                       return true;
+                     default:
+                       return false;
+                   }
+                 });
+    return out;
+  }
 
   bool supports(MediaPlayerSupportedFeature feature);
 

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,6 +15,18 @@
 namespace esphome {
 namespace homething_menu_base {
 
+struct PositionCoordinate {
+  double x;
+  double y;
+};
+
+static PositionCoordinate get_coordinate(double radius, double angle) {
+  PositionCoordinate coordinate;
+  coordinate.x = radius * cos(angle);
+  coordinate.y = radius * sin(angle);
+  return coordinate;
+}
+
 class HomeThingMenuNowPlaying {
  public:
   HomeThingMenuNowPlaying(display::DisplayBuffer* new_display_buffer,
@@ -24,8 +37,7 @@ class HomeThingMenuNowPlaying {
         text_helpers_(new_text_helpers) {}
   void drawNowPlaying(int menuIndex, const option_menuType option_menu,
                       std::vector<std::shared_ptr<MenuTitleBase>> active_menu);
-  void drawSpeakerOptionMenu();
-  void drawTVOptionMenu();
+  void drawCircleOptionMenu();
   void drawVolumeOptionMenu();
 
   void set_media_player_group(

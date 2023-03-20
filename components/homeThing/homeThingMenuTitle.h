@@ -416,13 +416,13 @@ static std::vector<MenuTitlePlayer*> groupTitleString(
 }
 
 static MenuTitlePlayer headerMediaPlayerTitle(
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer* activePlayer) {
-  std::string friendlyName = activePlayer->get_name();
-  if (activePlayer->get_player_type() !=
+    homeassistant_media_player::HomeAssistantBaseMediaPlayer* active_player) {
+  std::string friendlyName = active_player->get_name();
+  if (active_player->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
     auto activeSpeaker = static_cast<
         homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-        activePlayer);
+        active_player);
     if (activeSpeaker != NULL) {
       if (activeSpeaker->groupMembers.size() > 1) {
         friendlyName = friendlyName + " + " +
@@ -430,9 +430,9 @@ static MenuTitlePlayer headerMediaPlayerTitle(
       }
     }
   }
-  return MenuTitlePlayer(friendlyName, activePlayer->entity_id_,
+  return MenuTitlePlayer(friendlyName, active_player->entity_id_,
                          NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                         activePlayer);
+                         active_player);
 }
 
 // switch
@@ -580,25 +580,36 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
                                  PlayingRemotePlayerState
           ? "Pause"
           : "Play";
-  std::string shuffleString = "Shuffle";
-  auto speaker =
-      static_cast<homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-          player);
-  if (speaker != NULL && speaker->is_shuffling()) {
-    shuffleString = "Shuffling";
+
+  std::vector<std::shared_ptr<MenuTitleBase>> out;
+  auto supported_features = player->get_features();
+  for (auto iter = supported_features.begin(); iter != supported_features.end();
+       ++iter) {
+    switch (*(iter->get())) {
+      case homeassistant_media_player::MediaPlayerSupportedFeature::
+          SHUFFLE_SET: {
+        std::string shuffle_string =
+            player->is_shuffling() ? "Shuffling" : "Shuffle";
+        out.push_back(std::make_shared<MenuTitleBase>(shuffle_string, "shuffle",
+                                                      NoMenuTitleRightIcon));
+        break;
+      }
+      default:
+        break;
+    }
   }
-  return {
-      std::make_shared<MenuTitleBase>(playString, "play", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Vl Up", "volume_up",
-                                      NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Vl Down", "volume_down",
-                                      NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Next", "next", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>(shuffleString, "shuffle",
-                                      NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Group", "group", NoMenuTitleRightIcon),
-      std::make_shared<MenuTitleBase>("Menu", "menu", NoMenuTitleRightIcon),
-  };
+  return out;
+  // return {
+  //     std::make_shared<MenuTitleBase>(playString, "play", NoMenuTitleRightIcon),
+  //     std::make_shared<MenuTitleBase>("Vl Up", "volume_up",
+  //                                     NoMenuTitleRightIcon),
+  //     std::make_shared<MenuTitleBase>("Vl Down", "volume_down",
+  //                                     NoMenuTitleRightIcon),
+  //     std::make_shared<MenuTitleBase>("Next", "next", NoMenuTitleRightIcon),
+
+  //     std::make_shared<MenuTitleBase>("Group", "group", NoMenuTitleRightIcon),
+  //     std::make_shared<MenuTitleBase>("Menu", "menu", NoMenuTitleRightIcon),
+  // };
 }
 
 static std::vector<std::shared_ptr<MenuTitleBase>> TVNowPlayingMenuStates() {

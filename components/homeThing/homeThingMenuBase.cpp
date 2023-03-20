@@ -293,7 +293,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case switchesMenu:
       return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:
-      return getNowPlayingMenuStates(media_player_group_->activePlayer);
+      return getNowPlayingMenuStates(media_player_group_->active_player_);
     case bootMenu:
       return {};
     default:
@@ -308,10 +308,10 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     return;
   }
   auto menu_name =
-      getNowPlayingMenuStates(media_player_group_->activePlayer)[menuIndex]
+      getNowPlayingMenuStates(media_player_group_->active_player_)[menuIndex]
           ->entity_id_;
   if (menu_name == "play") {
-    media_player_group_->activePlayer->playPause();
+    media_player_group_->active_player_->playPause();
   } else if (menu_name == "volume_up") {
     media_player_group_->increaseSpeakerVolume();
     option_menu_ = volumeOptionMenu;
@@ -319,7 +319,7 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     media_player_group_->decreaseSpeakerVolume();
     option_menu_ = volumeOptionMenu;
   } else if (menu_name == "next") {
-    media_player_group_->activePlayer->nextTrack();
+    media_player_group_->active_player_->nextTrack();
   } else if (menu_name == "shuffle") {
     media_player_group_->toggle_shuffle();
   } else if (menu_name == "menu") {
@@ -352,10 +352,8 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
 }
 
 void HomeThingMenuBase::buttonPressSelect() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (activeMenuState) {
       case lightsDetailMenu:
@@ -374,7 +372,7 @@ void HomeThingMenuBase::buttonPressSelect() {
           return;
         }
 
-        switch (media_player_group_->activePlayer->get_player_type()) {
+        switch (media_player_group_->active_player_->get_player_type()) {
           case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
             media_player_group_->sendActivePlayerRemoteCommand("select");
             break;
@@ -418,17 +416,18 @@ void HomeThingMenuBase::buttonPressSelectHold() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
+  if (activeMenuState == bootMenu) {
+    return;
+  }
   if (selectMenuHold()) {
     update_display();
   }
 }
 
 void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
-  rotary_ = rotary;
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
-  animation_->resetAnimation();
+  rotary_ = rotary;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (activeMenuState) {
       case nowPlayingMenu:
@@ -486,11 +485,9 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 }
 
 void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
-  rotary_ = rotary;
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
-  animation_->resetAnimation();
+  rotary_ = rotary;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (activeMenuState) {
       case nowPlayingMenu:
@@ -547,10 +544,8 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
 }
 
 void HomeThingMenuBase::buttonPressUp() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   switch (activeMenuState) {
     case nowPlayingMenu:
       if (option_menu_ == tvOptionMenu) {
@@ -560,7 +555,7 @@ void HomeThingMenuBase::buttonPressUp() {
         return;
       }
 
-      switch (media_player_group_->activePlayer->get_player_type()) {
+      switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           media_player_group_->sendActivePlayerRemoteCommand("up");
           return;
@@ -609,10 +604,8 @@ void HomeThingMenuBase::buttonPressUp() {
 }
 
 void HomeThingMenuBase::buttonPressDown() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   switch (activeMenuState) {
     case nowPlayingMenu:
       if (option_menu_ == tvOptionMenu) {
@@ -622,7 +615,7 @@ void HomeThingMenuBase::buttonPressDown() {
         return;
       }
 
-      switch (media_player_group_->activePlayer->get_player_type()) {
+      switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           media_player_group_->sendActivePlayerRemoteCommand("down");
           break;
@@ -632,7 +625,7 @@ void HomeThingMenuBase::buttonPressDown() {
             activeMenuState = groupMenu;
             update_display();
           } else {
-            media_player_group_->activePlayer->playPause();
+            media_player_group_->active_player_->playPause();
             option_menu_ = noOptionMenu;
           }
           break;
@@ -643,10 +636,8 @@ void HomeThingMenuBase::buttonPressDown() {
 }
 
 void HomeThingMenuBase::buttonPressLeft() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   switch (activeMenuState) {
     case nowPlayingMenu:
       if (option_menu_ == tvOptionMenu) {
@@ -656,7 +647,7 @@ void HomeThingMenuBase::buttonPressLeft() {
         return;
       }
 
-      switch (media_player_group_->activePlayer->get_player_type()) {
+      switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           media_player_group_->sendActivePlayerRemoteCommand("left");
           break;
@@ -672,10 +663,8 @@ void HomeThingMenuBase::buttonPressLeft() {
 }
 
 void HomeThingMenuBase::buttonPressRight() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   switch (activeMenuState) {
     case bootMenu:
       menu_display_->skipBootSequence(activeMenuState);
@@ -687,7 +676,7 @@ void HomeThingMenuBase::buttonPressRight() {
         update_display();
         return;
       }
-      switch (media_player_group_->activePlayer->get_player_type()) {
+      switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           media_player_group_->sendActivePlayerRemoteCommand("right");
           break;
@@ -697,7 +686,7 @@ void HomeThingMenuBase::buttonPressRight() {
             media_player_group_->toggle_mute();
             update_display();
           } else {
-            media_player_group_->activePlayer->nextTrack();
+            media_player_group_->active_player_->nextTrack();
           }
           option_menu_ = noOptionMenu;
           break;
@@ -709,13 +698,11 @@ void HomeThingMenuBase::buttonPressRight() {
 }
 
 void HomeThingMenuBase::buttonReleaseScreenLeft() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   switch (activeMenuState) {
     case nowPlayingMenu:
-      switch (media_player_group_->activePlayer->get_player_type()) {
+      switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           update_display();
           break;
@@ -730,13 +717,11 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
 }
 
 void HomeThingMenuBase::buttonPressScreenLeft() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   switch (activeMenuState) {
     case nowPlayingMenu:
-      switch (media_player_group_->activePlayer->get_player_type()) {
+      switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           if (option_menu_ == tvOptionMenu) {
             option_menu_ = noOptionMenu;
@@ -762,10 +747,8 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
 }
 
 void HomeThingMenuBase::buttonPressScreenRight() {
-  animation_->resetAnimation();
-  if (buttonPressWakeUpDisplay()) {
+  if (!button_press_and_continue())
     return;
-  }
   option_menu_ = noOptionMenu;
   switch (activeMenuState) {
     case rootMenu:
@@ -863,7 +846,7 @@ void HomeThingMenuBase::idleTick() {
         idleTime++;
         return;
       }
-      ESP_LOGD(TAG, "idleTick: idle root menu %d", display_can_sleep());
+      ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
       activeMenuState = rootMenu;
       animation_->resetAnimation();
       idleMenu(false);
