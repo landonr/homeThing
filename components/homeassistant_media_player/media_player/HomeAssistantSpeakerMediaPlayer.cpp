@@ -13,13 +13,13 @@ void HomeAssistantSpeakerMediaPlayer::setup() {
 
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("media_title"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::player_media_title_changed,
-                this, std::placeholders::_1));
+      std::bind(&HomeAssistantSpeakerMediaPlayer::media_title_changed, this,
+                std::placeholders::_1));
 
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("media_artist"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::player_media_artist_changed,
-                this, std::placeholders::_1));
+      std::bind(&HomeAssistantSpeakerMediaPlayer::media_artist_changed, this,
+                std::placeholders::_1));
 
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("media_album_name"),
@@ -28,12 +28,12 @@ void HomeAssistantSpeakerMediaPlayer::setup() {
 
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("media_content_id"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::media_source_changed, this,
-                std::placeholders::_1));
+      std::bind(&HomeAssistantSpeakerMediaPlayer::media_content_id_changed,
+                this, std::placeholders::_1));
 }
 
 void HomeAssistantSpeakerMediaPlayer::ungroup() {
-  ESP_LOGI(TAG, "%s ungroup speaker", this->entity_id_.c_str());
+  ESP_LOGI(TAG, "ungroup: %s", this->entity_id_.c_str());
   call_homeassistant_service("media_player.unjoin",
                              {
                                  {"entity_id", this->entity_id_},
@@ -41,41 +41,13 @@ void HomeAssistantSpeakerMediaPlayer::ungroup() {
 }
 
 void HomeAssistantSpeakerMediaPlayer::joinGroup(std::string newSpeakerName) {
-  ESP_LOGI(TAG, "%s group speaker to %s", this->entity_id_.c_str(),
+  ESP_LOGI(TAG, "joinGroup: %s group to %s", this->entity_id_.c_str(),
            newSpeakerName.c_str());
   call_homeassistant_service("media_player.join",
                              {
                                  {"entity_id", newSpeakerName.c_str()},
                                  {"group_members", this->entity_id_.c_str()},
                              });
-}
-
-void HomeAssistantSpeakerMediaPlayer::increaseVolume() {
-  // if (speaker_volume == -1) {
-  //   localVolume = 0;
-  //   return;
-  // }
-  // if (localVolume + volume_step_ > 1) {
-  //   localVolume = 1;
-  // } else {
-  //   localVolume = localVolume + volume_step_;
-  // }
-  volume = min(1.0f, volume + volume_step_);
-  updateVolumeLevel();
-}
-
-void HomeAssistantSpeakerMediaPlayer::decreaseVolume() {
-  // if (speaker_volume == -1 || localVolume - volume_step_ < 0) {
-  //   localVolume = 0;
-  //   return;
-  // }
-  // if (localVolume - volume_step_ > 1) {
-  //   localVolume = 0;
-  // } else {
-  //   localVolume = localVolume - volume_step_;
-  // }
-  volume = max(0.0f, volume - volume_step_);
-  updateVolumeLevel();
 }
 
 void HomeAssistantSpeakerMediaPlayer::updateVolumeLevel() {
@@ -104,13 +76,12 @@ void HomeAssistantSpeakerMediaPlayer::updateVolumeLevel() {
 void HomeAssistantSpeakerMediaPlayer::clearSource() {
   HomeAssistantBaseMediaPlayer::clearSource();
   playlist_title = "";
-  mediaAlbumName = "";
+  media_album_name = "";
 }
 
-void HomeAssistantSpeakerMediaPlayer::player_media_title_changed(
-    std::string state) {
-  ESP_LOGI(TAG, "%s Player media title changed to %s", this->entity_id_.c_str(),
-           state.c_str());
+void HomeAssistantSpeakerMediaPlayer::media_title_changed(std::string state) {
+  ESP_LOGI(TAG, "media_title_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
   if (strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
     mediaPosition = 0;
   }
@@ -126,18 +97,17 @@ void HomeAssistantSpeakerMediaPlayer::player_media_title_changed(
   this->publish_state();
 }
 
-void HomeAssistantSpeakerMediaPlayer::player_media_artist_changed(
-    std::string state) {
-  ESP_LOGI(TAG, "%s Player artist changed to %s", this->entity_id_.c_str(),
-           state.c_str());
+void HomeAssistantSpeakerMediaPlayer::media_artist_changed(std::string state) {
+  ESP_LOGI(TAG, "media_artist_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
   mediaArtist = state.c_str();
   this->publish_state();
 }
 
 void HomeAssistantSpeakerMediaPlayer::media_album_changed(std::string state) {
-  ESP_LOGI(TAG, "%s Sonos Speaker album changed to %s",
+  ESP_LOGI(TAG, "media_album_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
-  mediaAlbumName = state.c_str();
+  media_album_name = state.c_str();
   this->publish_state();
 }
 
@@ -176,7 +146,7 @@ std::string HomeAssistantSpeakerMediaPlayer::filter(std::string str) {
 }
 
 void HomeAssistantSpeakerMediaPlayer::group_members_changed(std::string state) {
-  ESP_LOGI(TAG, "%s Sonos Speaker group members changed to %s",
+  ESP_LOGI(TAG, "group_members_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
   groupMembers.clear();
   std::vector<std::string>* out = new std::vector<std::string>();
@@ -188,9 +158,10 @@ void HomeAssistantSpeakerMediaPlayer::group_members_changed(std::string state) {
   this->publish_state();
 }
 
-void HomeAssistantSpeakerMediaPlayer::media_source_changed(std::string state) {
-  ESP_LOGI(TAG, "%s Speaker source changed to %s", this->entity_id_.c_str(),
-           state.c_str());
+void HomeAssistantSpeakerMediaPlayer::media_content_id_changed(
+    std::string state) {
+  ESP_LOGI(TAG, "media_content_id_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
   if (state.find("spdif") != std::string::npos) {
     mediaSource = TVRemotePlayerMediaSource;
   } else if (state.find("spotify") != std::string::npos) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -10,6 +11,21 @@
 
 namespace esphome {
 namespace homeassistant_media_player {
+
+enum MediaPlayerSupportedState {
+  MEDIA_CONTENT_ID,
+  MEDIA_CONTENT_TYPE,
+  MEDIA_SERIES_TITLE,
+  MEDIA_SEASON,
+  MEDIA_EPISODE,
+  MEDIA_CONTENT_RATING,
+  MEDIA_LIBRARY_TITLE,
+  MEDIA_SUMMARY,
+  MEDIA_TITLE,
+  MEDIA_ARTIST,
+  MEDIA_ALBUM_NAME,
+  MEDIA_ALBUM_ARTIST
+};
 
 enum MediaPlayerSupportedFeature {
   PAUSE = 1,
@@ -83,7 +99,6 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   void nextTrack();
   std::string mediaTitleString();
   std::string mediaSubtitleString();
-  virtual void clearSource() {}
   void clearMedia();
   std::string entity_id_;
   void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
@@ -92,18 +107,20 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   bool is_shuffling() const { return this->shuffle_; }
   void toggle_shuffle();
   void toggle_mute();
+  virtual void increaseVolume();
+  virtual void decreaseVolume();
+  virtual void updateVolumeLevel();
+
+  virtual void clearSource() {}
   int mediaDuration = -1;
   int mediaPosition = -1;
   std::string playlist_title = "";
+  std::vector<std::string> groupMembers;
 
  protected:
   bool muted_ = false;
   bool shuffle_ = false;
   float volume_step_ = 0.04;
-
-  virtual void subscribe_sources() = 0;
-  virtual void sources_changed(std::string state) = 0;
-  virtual void group_members_changed(std::string state) = 0;
 
   void call_homeassistant_service(
       const std::string& service_name,
@@ -140,6 +157,9 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   void media_duration_changed(std::string state);
   void media_position_changed(std::string state);
   void playlist_changed(std::string state);
+  virtual void subscribe_sources() {}
+  virtual void sources_changed(std::string state) {}
+  virtual void group_members_changed(std::string state) {}
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

@@ -5,7 +5,7 @@ from esphome.components.homeassistant_media_player.media_player import (
     homeassistant_media_player_ns, 
     HomeAssistantSpeakerMediaPlayer, 
     HomeAssistantRokuMediaPlayer,
-    CONF_SONOS,
+    CONF_SPEAKER,
     CONF_ROKU,
 )
 from esphome.components import sensor
@@ -16,7 +16,7 @@ DEPENDENCIES = ["api"]
 
 HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA = cv.typed_schema(
     {
-        CONF_SONOS: cv.Schema(
+        CONF_SPEAKER: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantSpeakerMediaPlayer),
             }

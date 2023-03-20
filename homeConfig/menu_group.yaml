@@ -24,12 +24,14 @@ homeassistant_light_group:
 homeassistant_media_player:
   id: media_group_component
   media_players:
-    # - id: media_player_beam
-    #   type: sonos
-    # - id: media_player_tv
-    #   type: roku
+    - id: media_player_beam
+      type: speaker
+    - id: media_player_tv
+      type: roku
     - id: media_player_spotify
-      type: sonos
+      type: speaker
+    - id: media_player_tower
+      type: speaker
 
 homeassistant_service_group:
   id: service_group_component

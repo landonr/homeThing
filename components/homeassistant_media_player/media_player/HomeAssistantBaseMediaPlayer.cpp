@@ -317,5 +317,51 @@ void HomeAssistantBaseMediaPlayer::toggle_mute() {
           {"is_volume_muted", is_muted() ? "false" : "true"},
       });
 }
+
+void HomeAssistantBaseMediaPlayer::increaseVolume() {
+  // if (speaker_volume == -1) {
+  //   localVolume = 0;
+  //   return;
+  // }
+  // if (localVolume + volume_step_ > 1) {
+  //   localVolume = 1;
+  // } else {
+  //   localVolume = localVolume + volume_step_;
+  // }
+  volume = std::min(1.0f, volume + volume_step_);
+  updateVolumeLevel();
+}
+
+void HomeAssistantBaseMediaPlayer::decreaseVolume() {
+  // if (speaker_volume == -1 || localVolume - volume_step_ < 0) {
+  //   localVolume = 0;
+  //   return;
+  // }
+  // if (localVolume - volume_step_ > 1) {
+  //   localVolume = 0;
+  // } else {
+  //   localVolume = localVolume - volume_step_;
+  // }
+  volume = std::max(0.0f, volume - volume_step_);
+  updateVolumeLevel();
+}
+
+void HomeAssistantBaseMediaPlayer::updateVolumeLevel() {
+  std::string entityIds = this->entity_id_;
+  if (is_muted()) {
+    // unmute all speakers
+    call_homeassistant_service("media_player.volume_mute",
+                               {
+                                   {"entity_id", this->entity_id_.c_str()},
+                                   {"is_volume_muted", "false"},
+                               });
+  }
+  ESP_LOGI(TAG, "%s volume update %f", this->entity_id_.c_str(), volume);
+  call_homeassistant_service("media_player.volume_set",
+                             {
+                                 {"entity_id", this->entity_id_.c_str()},
+                                 {"volume_level", to_string(volume)},
+                             });
+}
 }  // namespace homeassistant_media_player
 }  // namespace esphome

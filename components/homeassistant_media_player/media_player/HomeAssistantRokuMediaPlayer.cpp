@@ -25,7 +25,7 @@ void HomeAssistantRokuMediaPlayer::subscribe_sources() {
 }
 
 void HomeAssistantRokuMediaPlayer::player_source_changed(std::string state) {
-  ESP_LOGI(TAG, "%s Player source changed to %s", get_name().c_str(),
+  ESP_LOGI(TAG, "player_source_changed: %s changed to %s", get_name().c_str(),
            state.c_str());
   if (state.find("YouTube") != std::string::npos) {
     mediaSource = YouTubeRemotePlayerMediaSource;
@@ -48,7 +48,7 @@ void HomeAssistantRokuMediaPlayer::sources_changed(std::string state) {
 
 void HomeAssistantRokuMediaPlayer::tvRemoteCommand(std::string command) {
   std::string remoteName = entity_id_.substr(12).insert(0, "remote");
-  ESP_LOGI(TAG, "remote %s, %s", command.c_str(), remoteName.c_str());
+  ESP_LOGI(TAG, "tvRemoteCommand: %s, %s", command.c_str(), remoteName.c_str());
   call_homeassistant_service("remote.send_command",
                              {
                                  {"entity_id", remoteName},

@@ -81,8 +81,8 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
             media_player_group_->activePlayer);
     if (activeSpeaker->playlist_title != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->playlist_title;
-    } else if (activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
-      nowPlayingText += " " + activeSpeaker->mediaAlbumName;
+    } else if (activeSpeaker->media_album_name != activeSpeaker->mediaTitle) {
+      nowPlayingText += " " + activeSpeaker->media_album_name;
     }
   }
   int xPos = display_buffer_->get_width() / 2;

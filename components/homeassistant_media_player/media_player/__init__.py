@@ -11,7 +11,7 @@ HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssista
 HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantRokuMediaPlayer", media_player.MediaPlayer, cg.Component)
 
-CONF_SONOS = "sonos"
+CONF_SPEAKER = "speaker"
 CONF_ROKU = "roku"
 CONF_SOUNDBAR = "soundbar"
 
@@ -27,7 +27,7 @@ MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
 
 CONFIG_SCHEMA = cv.typed_schema(
     {
-        CONF_SONOS: MEDIA_PLAYER_COMMON_SCHEMA.extend(
+        CONF_SPEAKER: MEDIA_PLAYER_COMMON_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantSpeakerMediaPlayer),
             }
@@ -37,9 +37,9 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantRokuMediaPlayer),
                 cv.Optional(CONF_SOUNDBAR): cv.Schema(
                     {
-                        cv.Optional(CONF_SONOS): cv.use_id(HomeAssistantSpeakerMediaPlayer)
+                        cv.Optional(CONF_SPEAKER): cv.use_id(HomeAssistantSpeakerMediaPlayer)
                     },
-                    cv.has_exactly_one_key(CONF_SONOS),
+                    cv.has_exactly_one_key(CONF_SPEAKER),
                 ),
             },
         ),
@@ -57,6 +57,6 @@ async def to_code(config):
     cg.add(var.set_disabled_by_default(config[CONF_DISABLED_BY_DEFAULT]))
 
     if CONF_SOUNDBAR in config:
-        if CONF_SONOS in config[CONF_SOUNDBAR]:
-            soundbar = await cg.get_variable(config[CONF_SOUNDBAR][CONF_SONOS])
+        if CONF_SPEAKER in config[CONF_SOUNDBAR]:
+            soundbar = await cg.get_variable(config[CONF_SOUNDBAR][CONF_SPEAKER])
             cg.add(var.set_soundbar(soundbar))

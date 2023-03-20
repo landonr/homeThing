@@ -17,8 +17,8 @@ class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void player_source_changed(std::string state);
 
   void tvRemoteCommand(std::string command);
-  void increaseVolume();
-  void decreaseVolume();
+  void increaseVolume() override;
+  void decreaseVolume() override;
   media_player::MediaPlayerTraits get_traits();
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
@@ -29,7 +29,6 @@ class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
  private:
   void sources_changed(std::string state) override;
   void subscribe_sources() override;
-  void group_members_changed(std::string state) {}
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome
