@@ -299,6 +299,17 @@ void HomeAssistantBaseMediaPlayer::playlist_changed(std::string state) {
   this->publish_state();
 }
 
+bool HomeAssistantBaseMediaPlayer::supports(
+    MediaPlayerSupportedFeature feature) {
+  for (auto iter = supported_features_.begin();
+       iter != supported_features_.end(); ++iter) {
+    if (feature == *(iter->get())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void HomeAssistantBaseMediaPlayer::toggle_shuffle() {
   ESP_LOGI(TAG, "%s toggle shuffle", this->entity_id_.c_str());
   call_homeassistant_service("media_player.shuffle_set",

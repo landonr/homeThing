@@ -127,11 +127,14 @@ int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
   if (!media_player_group_ || media_player_group_->activePlayer == NULL) {
     return oldXPos;
   }
-  if (media_player_group_->activePlayer->get_player_type() ==
-      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+  auto active_player = media_player_group_->activePlayer;
+  if (active_player->get_player_type() ==
+          homeassistant_media_player::RemotePlayerType::TVRemotePlayerType ||
+      !active_player->supports(homeassistant_media_player::
+                                   MediaPlayerSupportedFeature::SHUFFLE_SET)) {
     return oldXPos;
   }
-  if (media_player_group_->activePlayer->playerState !=
+  if (active_player->playerState !=
       homeassistant_media_player::RemotePlayerState::StoppedRemotePlayerState) {
     int xPos = oldXPos - display_state_->get_icon_size() +
                display_state_->get_margin_size() / 2;

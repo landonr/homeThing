@@ -107,11 +107,14 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   bool is_shuffling() const { return this->shuffle_; }
   void toggle_shuffle();
   void toggle_mute();
+
+  bool supports(MediaPlayerSupportedFeature feature);
+
   virtual void increaseVolume();
   virtual void decreaseVolume();
   virtual void updateVolumeLevel();
-
   virtual void clearSource() {}
+
   int mediaDuration = -1;
   int mediaPosition = -1;
   std::string playlist_title = "";
