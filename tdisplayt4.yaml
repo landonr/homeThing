@@ -240,7 +240,7 @@ display:
     dc_pin: 32
     reset_pin: 05
     update_interval: 3600s
-    rotation: 90
+    rotation: 270
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;

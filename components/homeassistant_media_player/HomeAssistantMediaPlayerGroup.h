@@ -6,7 +6,7 @@
 #include "esphome/components/sensor/sensor.h"
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
 #include "media_player/HomeAssistantRokuMediaPlayer.h"
-#include "media_player/HomeAssistantSonosMediaPlayer.h"
+#include "media_player/HomeAssistantSpeakerMediaPlayer.h"
 #include "media_player/JSONTextHelpers.h"
 
 namespace esphome {
@@ -58,8 +58,8 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void increaseSpeakerVolume();
   void decreaseSpeakerVolume();
   bool mediaShuffling();
-  void toggleShuffle();
-  void toggleMute();
+  void toggle_shuffle();
+  void toggle_mute();
   std::string shuffleString();
   std::string muteString();
   double getVolumeLevel();
@@ -85,6 +85,8 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void state_updated(RemotePlayerState state);
   void playlists_changed(std::string state);
   bool sync_active_player = false;
+  bool sonos_active = false;
+  bool spotify_active = false;
 };
 
 }  // namespace homeassistant_media_player

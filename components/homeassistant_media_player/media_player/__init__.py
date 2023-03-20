@@ -8,7 +8,7 @@ homeassistant_media_player_ns = cg.esphome_ns.namespace("homeassistant_media_pla
 AUTO_LOAD = ['media_player']
 
 HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantBaseMediaPlayer", media_player.MediaPlayer, cg.Component)
-HomeAssistantSonosMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSonosMediaPlayer", media_player.MediaPlayer, cg.Component)
+HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantRokuMediaPlayer", media_player.MediaPlayer, cg.Component)
 
 CONF_SONOS = "sonos"
@@ -29,7 +29,7 @@ CONFIG_SCHEMA = cv.typed_schema(
     {
         CONF_SONOS: MEDIA_PLAYER_COMMON_SCHEMA.extend(
             {
-                cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantSonosMediaPlayer),
+                cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantSpeakerMediaPlayer),
             }
         ),
         CONF_ROKU: MEDIA_PLAYER_COMMON_SCHEMA.extend(
@@ -37,7 +37,7 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantRokuMediaPlayer),
                 cv.Optional(CONF_SOUNDBAR): cv.Schema(
                     {
-                        cv.Optional(CONF_SONOS): cv.use_id(HomeAssistantSonosMediaPlayer)
+                        cv.Optional(CONF_SONOS): cv.use_id(HomeAssistantSpeakerMediaPlayer)
                     },
                     cv.has_exactly_one_key(CONF_SONOS),
                 ),

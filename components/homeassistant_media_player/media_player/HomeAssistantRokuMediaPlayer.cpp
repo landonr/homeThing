@@ -10,12 +10,18 @@ static const char* const TAG = "homeassistant.media_player_roku";
 void HomeAssistantRokuMediaPlayer::setup() {
   setupBase();
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
-  subscribe_homeassistant_state(
-      &HomeAssistantRokuMediaPlayer::player_source_changed, entity_id_,
-      "source");
-  subscribe_homeassistant_state(
-      &HomeAssistantRokuMediaPlayer::player_source_list_changed, entity_id_,
-      "source_list");
+
+  api::global_api_server->subscribe_home_assistant_state(
+      this->entity_id_, optional<std::string>("source"),
+      std::bind(&HomeAssistantRokuMediaPlayer::player_source_changed, this,
+                std::placeholders::_1));
+}
+
+void HomeAssistantRokuMediaPlayer::subscribe_sources() {
+  api::global_api_server->subscribe_home_assistant_state(
+      this->entity_id_, optional<std::string>("source_list"),
+      std::bind(&HomeAssistantRokuMediaPlayer::sources_changed, this,
+                std::placeholders::_1));
 }
 
 void HomeAssistantRokuMediaPlayer::player_source_changed(std::string state) {
@@ -34,10 +40,8 @@ void HomeAssistantRokuMediaPlayer::player_source_changed(std::string state) {
   }
 }
 
-void HomeAssistantRokuMediaPlayer::player_source_list_changed(
-    std::string state) {
-  ESP_LOGI(TAG, "%s Player source list changed to %s", get_name().c_str(),
-           state.c_str());
+void HomeAssistantRokuMediaPlayer::sources_changed(std::string state) {
+  ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
   auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
   sources.assign(newSources.begin(), newSources.end());
 }

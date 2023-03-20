@@ -6,7 +6,7 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonSource(
+static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonDictionary(
     std::string state, std::string nameKey, std::string valueKey) {
   StaticJsonDocument<3072> doc;
   DeserializationError err = deserializeJson(doc, state);
@@ -18,18 +18,17 @@ static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonSource(
   }
   JsonArray array = doc.as<JsonArray>();
   for (JsonVariant v : array) {
-    std::string playlistName = v[nameKey].as<std::string>();
-    std::string playlistId = v[valueKey].as<std::string>();
-    ESP_LOGD("JSON", "new JSON object value %s %s", playlistId.c_str(),
-             playlistName.c_str());
+    std::string key = v[nameKey].as<std::string>();
+    std::string value = v[valueKey].as<std::string>();
+    ESP_LOGD("JSON", "new JSON object value %s %s", value.c_str(), key.c_str());
     auto newsource = std::make_shared<MediaPlayerSource>(
-        MusicRemotePlayerSourceType, playlistName, playlistId);
+        PlaylistRemotePlayerSourceType, key, value);
     sources.push_back(newsource);
   }
   return sources;
 }
 
-static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonKeyValue(
+static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonObject(
     std::string state) {
   StaticJsonDocument<3072> doc;
   DeserializationError err = deserializeJson(doc, state);
@@ -41,12 +40,11 @@ static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonKeyValue(
   }
   JsonObject array = doc.as<JsonObject>();
   for (JsonPair v : array) {
-    std::string playlistName(v.value().as<std::string>());
-    std::string playlistId(v.key().c_str());
-    ESP_LOGD("group", "new JSON key value %s %s", playlistId.c_str(),
-             playlistName.c_str());
+    std::string value = v.value().as<std::string>();
+    std::string key = v.key().c_str();
+    ESP_LOGD("group", "new JSON key value %s %s", key.c_str(), value.c_str());
     auto newsource = std::make_shared<MediaPlayerSource>(
-        FavoriteItemIDRemotePlayerSourceType, playlistName, playlistId);
+        FavoriteItemIDRemotePlayerSourceType, value, key);
     sources.push_back(newsource);
   }
   return sources;

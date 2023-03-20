@@ -11,6 +11,7 @@ static const char* const TAG = "homeassistant.light";
 
 void HomeAssistantLight::subscribe_states() {
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
+
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, {},
       std::bind(&HomeAssistantLight::state_changed, this,

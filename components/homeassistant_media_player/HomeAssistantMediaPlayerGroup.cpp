@@ -8,23 +8,33 @@ static const char* const TAG = "homeassistant.media_player_group";
 
 void HomeAssistantMediaPlayerGroup::setup() {
   ESP_LOGI(TAG, "Subscribe states");
-
-  subscribe_homeassistant_state(
-      &HomeAssistantMediaPlayerGroup::playlists_changed,
-      "sensor.playlists_sensor", "playlists");
-  subscribe_homeassistant_state(
-      &HomeAssistantMediaPlayerGroup::sonos_favorites_changed,
-      "sensor.sonos_favorites", "items");
 }
 
 void HomeAssistantMediaPlayerGroup::register_media_player(
     HomeAssistantBaseMediaPlayer* new_media_player) {
   new_media_player->index = media_players_.size();
   media_players_.push_back(new_media_player);
+
+  if (new_media_player->get_player_type() ==
+      homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
+    HomeAssistantSpeakerMediaPlayer* sonos_speaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(new_media_player);
+    if (!sonos_active && sonos_speaker) {
+      sonos_active = true;
+      subscribe_homeassistant_state(
+          &HomeAssistantMediaPlayerGroup::sonos_favorites_changed,
+          "sensor.sonos_favorites", "items");
+    }
+
+    if (!spotify_active && sonos_speaker) {
+      spotify_active = true;
+      subscribe_homeassistant_state(
+          &HomeAssistantMediaPlayerGroup::playlists_changed,
+          "sensor.playlists_sensor", "playlists");
+    }
+  }
+
   new_media_player->add_on_state_callback([this, new_media_player]() {
-    // if (this->display != NULL) {
-    //   this->display->updateDisplay(false);
-    // }
     this->state_updated(new_media_player->playerState);
   });
 }
@@ -68,8 +78,8 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
   for (auto& media_player : media_players_) {
     if (media_player->get_player_type() ==
         homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-      HomeAssistantSonosMediaPlayer* speaker =
-          static_cast<HomeAssistantSonosMediaPlayer*>(media_player);
+      HomeAssistantSpeakerMediaPlayer* speaker =
+          static_cast<HomeAssistantSpeakerMediaPlayer*>(media_player);
       if (speaker->playerState == NoRemotePlayerState) {
         return;
       } else if (speaker->tv != NULL &&
@@ -146,8 +156,8 @@ void HomeAssistantMediaPlayerGroup::stripUnicode(std::string* str) {
 void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
   if (activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-    HomeAssistantSonosMediaPlayer* activeSpeaker =
-        static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+    HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
     if (activeSpeaker != NULL) {
       activeSpeaker->increaseVolume();
     }
@@ -156,8 +166,8 @@ void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
         static_cast<HomeAssistantRokuMediaPlayer*>(activePlayer);
     if (activeTV != NULL) {
       if (activeTV->speaker != NULL) {
-        HomeAssistantSonosMediaPlayer* tvSpeaker =
-            static_cast<HomeAssistantSonosMediaPlayer*>(activeTV->speaker);
+        HomeAssistantSpeakerMediaPlayer* tvSpeaker =
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(activeTV->speaker);
         tvSpeaker->increaseVolume();
       } else {
         activeTV->increaseVolume();
@@ -169,8 +179,8 @@ void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
 void HomeAssistantMediaPlayerGroup::decreaseSpeakerVolume() {
   if (activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-    HomeAssistantSonosMediaPlayer* activeSpeaker =
-        static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+    HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
     if (activeSpeaker != NULL) {
       activeSpeaker->decreaseVolume();
     }
@@ -179,8 +189,8 @@ void HomeAssistantMediaPlayerGroup::decreaseSpeakerVolume() {
         static_cast<HomeAssistantRokuMediaPlayer*>(activePlayer);
     if (activeTV != NULL) {
       if (activeTV->speaker != NULL) {
-        HomeAssistantSonosMediaPlayer* tvSpeaker =
-            static_cast<HomeAssistantSonosMediaPlayer*>(activeTV->speaker);
+        HomeAssistantSpeakerMediaPlayer* tvSpeaker =
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(activeTV->speaker);
         tvSpeaker->decreaseVolume();
       } else {
         activeTV->decreaseVolume();
@@ -190,10 +200,10 @@ void HomeAssistantMediaPlayerGroup::decreaseSpeakerVolume() {
 }
 
 bool HomeAssistantMediaPlayerGroup::mediaShuffling() {
-  HomeAssistantSonosMediaPlayer* activeSpeaker =
-      static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+  HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+      static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
   if (activeSpeaker != NULL) {
-    if (activeSpeaker->shuffle) {
+    if (activeSpeaker->is_shuffling()) {
       return true;
     } else {
       return false;
@@ -202,19 +212,19 @@ bool HomeAssistantMediaPlayerGroup::mediaShuffling() {
   return false;
 }
 
-void HomeAssistantMediaPlayerGroup::toggleShuffle() {
-  HomeAssistantSonosMediaPlayer* activeSpeaker =
-      static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+void HomeAssistantMediaPlayerGroup::toggle_shuffle() {
+  HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+      static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
   if (activeSpeaker != NULL) {
-    activeSpeaker->toggleShuffle();
+    activeSpeaker->toggle_shuffle();
   }
 }
 
-void HomeAssistantMediaPlayerGroup::toggleMute() {
-  HomeAssistantSonosMediaPlayer* activeSpeaker =
-      static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+void HomeAssistantMediaPlayerGroup::toggle_mute() {
+  HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+      static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
   if (activeSpeaker != NULL) {
-    activeSpeaker->toggleMute();
+    activeSpeaker->toggle_mute();
   }
 }
 
@@ -227,8 +237,8 @@ std::string HomeAssistantMediaPlayerGroup::shuffleString() {
 }
 
 std::string HomeAssistantMediaPlayerGroup::muteString() {
-  HomeAssistantSonosMediaPlayer* activeSpeaker =
-      static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+  HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+      static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
   if (activeSpeaker != NULL) {
     if (activeSpeaker->is_muted()) {
       return "Unmute";
@@ -249,8 +259,8 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
         static_cast<HomeAssistantRokuMediaPlayer*>(activePlayer);
     if (activeTV != NULL) {
       if (activeTV->speaker != NULL) {
-        HomeAssistantSonosMediaPlayer* tvSpeaker =
-            static_cast<HomeAssistantSonosMediaPlayer*>(activeTV->speaker);
+        HomeAssistantSpeakerMediaPlayer* tvSpeaker =
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(activeTV->speaker);
         if (tvSpeaker->volume != -1) {
           double volume = tvSpeaker->volume * 100;
           return volume;
@@ -260,8 +270,8 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
       }
     }
   } else {
-    HomeAssistantSonosMediaPlayer* activeSpeaker =
-        static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+    HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
     if (activeSpeaker != NULL) {
       if (activeSpeaker->volume != -1) {
         double volume = activeSpeaker->volume * 100;
@@ -282,14 +292,14 @@ void HomeAssistantMediaPlayerGroup::selectGroup(
     return;
   }
 
-  std::vector<HomeAssistantSonosMediaPlayer*> speakerList;
+  std::vector<HomeAssistantSpeakerMediaPlayer*> speakerList;
   for (auto& media_player : media_players_) {
     if (media_player->entity_id_ == newSpeakerGroupParent->entity_id_ ||
         media_player->get_player_type() != SpeakerRemotePlayerType) {
       continue;
     }
-    HomeAssistantSonosMediaPlayer* speaker =
-        static_cast<HomeAssistantSonosMediaPlayer*>(media_player);
+    HomeAssistantSpeakerMediaPlayer* speaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(media_player);
     speakerList.push_back(speaker);
   }
   auto speaker = speakerList[menuIndex - 1];
@@ -314,8 +324,8 @@ bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
     if (media_player->get_player_type() != SpeakerRemotePlayerType) {
       continue;
     }
-    HomeAssistantSonosMediaPlayer* speaker =
-        static_cast<HomeAssistantSonosMediaPlayer*>(media_player);
+    HomeAssistantSpeakerMediaPlayer* speaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(media_player);
     if (speaker->playerState == PlayingRemotePlayerState &&
         speaker->mediaDuration >= 0 && speaker->mediaPosition >= 0 &&
         speaker->mediaPosition < speaker->mediaDuration) {
@@ -379,8 +389,8 @@ std::string HomeAssistantMediaPlayerGroup::mediaTitleString() {
       return activePlayer->mediaTitleString();
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
       if (activePlayer->mediaSource == TVRemotePlayerMediaSource) {
-        HomeAssistantSonosMediaPlayer* activeSpeaker =
-            static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
+        HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
         if (activeSpeaker != NULL && activeSpeaker->tv != NULL) {
           return activeSpeaker->tv->mediaTitleString();
         }
@@ -476,16 +486,17 @@ void HomeAssistantMediaPlayerGroup::playSource(MediaPlayerSource source) {
   playingNewSourceText = source.title_;
   if (activePlayer->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-    HomeAssistantSonosMediaPlayer* activeSpeaker =
-        static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
-    activeSpeaker->mediaPlaylist = source.title_;
+    HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+        static_cast<HomeAssistantSpeakerMediaPlayer*>(activePlayer);
+    activeSpeaker->playlist_title = source.title_;
   }
   activePlayer->playSource(source);
 }
 
+// should use same json and just set the source type
 void HomeAssistantMediaPlayerGroup::sonos_favorites_changed(std::string state) {
   ESP_LOGI(TAG, "Sonos Favorites changes to %s", state.c_str());
-  auto sources = parseJsonKeyValue(state);
+  auto sources = parseJsonObject(state);
   for (auto& player : media_players_) {
     if (player->get_player_type() == SpeakerRemotePlayerType) {
       player->sources.assign(sources.begin(), sources.end());
@@ -497,7 +508,7 @@ void HomeAssistantMediaPlayerGroup::sonos_favorites_changed(std::string state) {
 void HomeAssistantMediaPlayerGroup::playlists_changed(std::string state) {
   stripUnicode(&state);
   ESP_LOGI(TAG, "Spotify playlists changes to %s", state.c_str());
-  auto sources = parseJsonSource(state, "name", "uri");
+  auto sources = parseJsonDictionary(state, "name", "uri");
   for (auto& player : media_players_) {
     player->sources.assign(sources.begin(), sources.end());
   }

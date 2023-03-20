@@ -75,11 +75,12 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
 
   if (media_player_group_->activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
-        static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+    homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+        static_cast<
+            homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
             media_player_group_->activePlayer);
-    if (activeSpeaker->mediaPlaylist != activeSpeaker->mediaTitle) {
-      nowPlayingText += " " + activeSpeaker->mediaPlaylist;
+    if (activeSpeaker->playlist_title != activeSpeaker->mediaTitle) {
+      nowPlayingText += " " + activeSpeaker->playlist_title;
     } else if (activeSpeaker->mediaAlbumName != activeSpeaker->mediaTitle) {
       nowPlayingText += " " + activeSpeaker->mediaAlbumName;
     }
@@ -159,8 +160,9 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
 void HomeThingMenuNowPlaying::drawMediaDuration() {
   if (media_player_group_->activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    homeassistant_media_player::HomeAssistantSonosMediaPlayer* activeSpeaker =
-        static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+    homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+        static_cast<
+            homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
             media_player_group_->activePlayer);
     int mediaDuration = activeSpeaker->mediaDuration;
     int mediaPosition = activeSpeaker->mediaPosition;

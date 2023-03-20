@@ -11,3 +11,8 @@ media_player:
     type: roku
     soundbar:
       sonos: media_player_beam
+  - platform: homeassistant_media_player
+    name: Spotify
+    entity_id: "media_player.spotify_landorghini"
+    id: media_player_spotify
+    type: sonos

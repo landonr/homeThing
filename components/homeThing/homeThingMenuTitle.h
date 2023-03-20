@@ -322,27 +322,6 @@ static std::vector<std::shared_ptr<MenuTitleSource>> activePlayerSourceTitles(
     out.push_back(new_menu_title);
   }
   return out;
-  // switch (activePlayer->get_player_type()) {
-  //   case TVRemotePlayerType:
-  //     return activePlayer->sources;
-  //   case SpeakerRemotePlayerType: {
-  //     HomeAssistantSonosMediaPlayer* activeSpeaker =
-  //         static_cast<HomeAssistantSonosMediaPlayer*>(activePlayer);
-  //     if (activeSpeaker != NULL) {
-  //       if (activeSpeaker->tv != NULL &&
-  //           activeSpeaker->tv->get_name().size() > 0) {
-  //         auto tvSource = std::make_shared<MediaPlayerSource>(
-  //             activeSpeaker->tv->get_name(), "", NoMenuTitleRightIcon,
-  //             SourceRemotePlayerSourceType);
-  //         out.push_back(tvSource);
-  //       }
-  //       out.insert(out.end(), spotifyPlaylists.begin(), spotifyPlaylists.end());
-  //       out.insert(out.end(), sonosFavorites.begin(), sonosFavorites.end());
-  //     }
-  //     return out;
-  //   }
-  // }
-  // return out;
 }
 
 static std::vector<MenuTitlePlayer*> groupTitleSwitches(
@@ -367,7 +346,7 @@ static std::vector<MenuTitlePlayer*> groupTitleSwitches(
       continue;
     } else {
       auto speaker = static_cast<
-          homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+          homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
           media_player);
       if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(),
                     newSpeakerGroupParent->entity_id_) !=
@@ -404,9 +383,9 @@ static std::vector<MenuTitlePlayer*> groupTitleString(
       // skip grouped members that were already found
       continue;
     }
-    auto speaker =
-        static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
-            media_player);
+    auto speaker = static_cast<
+        homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
+        media_player);
     if (speaker->groupMembers.size() > 1) {
       if (speaker->groupMembers[0] != speaker->entity_id_) {
         ESP_LOGD(MENU_TITLE_TAG, "%s not parent %s",
@@ -441,9 +420,9 @@ static MenuTitlePlayer headerMediaPlayerTitle(
   std::string friendlyName = activePlayer->get_name();
   if (activePlayer->get_player_type() !=
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    auto activeSpeaker =
-        static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
-            activePlayer);
+    auto activeSpeaker = static_cast<
+        homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
+        activePlayer);
     if (activeSpeaker != NULL) {
       if (activeSpeaker->groupMembers.size() > 1) {
         friendlyName = friendlyName + " + " +
@@ -603,9 +582,9 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
           : "Play";
   std::string shuffleString = "Shuffle";
   auto speaker =
-      static_cast<homeassistant_media_player::HomeAssistantSonosMediaPlayer*>(
+      static_cast<homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
           player);
-  if (speaker != NULL && speaker->shuffle) {
+  if (speaker != NULL && speaker->is_shuffling()) {
     shuffleString = "Shuffling";
   }
   return {

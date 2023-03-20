@@ -321,7 +321,7 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
   } else if (menu_name == "next") {
     media_player_group_->activePlayer->nextTrack();
   } else if (menu_name == "shuffle") {
-    media_player_group_->toggleShuffle();
+    media_player_group_->toggle_shuffle();
   } else if (menu_name == "menu") {
     topMenu();
   } else if (menu_name == "group") {
@@ -596,7 +596,7 @@ void HomeThingMenuBase::buttonPressUp() {
       break;
   }
   if (option_menu_ == speakerOptionMenu) {
-    media_player_group_->toggleShuffle();
+    media_player_group_->toggle_shuffle();
     option_menu_ = noOptionMenu;
     update_display();
     return;
@@ -694,7 +694,7 @@ void HomeThingMenuBase::buttonPressRight() {
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
           if (option_menu_ == speakerOptionMenu) {
-            media_player_group_->toggleMute();
+            media_player_group_->toggle_mute();
             update_display();
           } else {
             media_player_group_->activePlayer->nextTrack();

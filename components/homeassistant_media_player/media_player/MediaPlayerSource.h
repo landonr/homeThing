@@ -37,7 +37,8 @@ static std::string playerSourceStateString(
 enum RemotePlayerSourceType {
   MusicRemotePlayerSourceType,
   FavoriteItemIDRemotePlayerSourceType,
-  SourceRemotePlayerSourceType
+  SourceRemotePlayerSourceType,
+  PlaylistRemotePlayerSourceType
 };
 
 class MediaPlayerSource {
@@ -60,6 +61,8 @@ class MediaPlayerSource {
         return "favorite_item_id";
       case SourceRemotePlayerSourceType:
         return "source";
+      case PlaylistRemotePlayerSourceType:
+        return "playlist";
     }
     return "";
   }

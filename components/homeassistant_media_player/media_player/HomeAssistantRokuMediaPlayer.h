@@ -16,7 +16,6 @@ class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
 
   void player_source_changed(std::string state);
 
-  void player_source_list_changed(std::string state);
   void tvRemoteCommand(std::string command);
   void increaseVolume();
   void decreaseVolume();
@@ -26,6 +25,11 @@ class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void set_soundbar(HomeAssistantBaseMediaPlayer* new_sound_bar) {
     speaker = new_sound_bar;
   }
+
+ private:
+  void sources_changed(std::string state) override;
+  void subscribe_sources() override;
+  void group_members_changed(std::string state) {}
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome
