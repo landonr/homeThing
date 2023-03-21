@@ -145,13 +145,13 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState,
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-    const int menuIndex, const option_menuType option_menu) {
+    const int menuIndex, HomeThingOptionMenu* option_menu) {
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
   }
-  if (!boot_->boot_complete() && *activeMenuState != bootMenu) {
+  if (!boot_->boot_complete() && *activeMenuState == bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
-  } else if (*activeMenuState == bootMenu) {
+  } else if (*activeMenuState == bootMenu && boot_->boot_complete()) {
     ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
     return true;

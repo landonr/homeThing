@@ -86,7 +86,7 @@ void HomeAssistantBaseMediaPlayer::selectSource(MediaPlayerSource source) {
 }
 
 void HomeAssistantBaseMediaPlayer::playMedia(MediaPlayerSource source) {
-  ESP_LOGI(TAG, "%s play media %s %s", this->entity_id_.c_str(),
+  ESP_LOGI(TAG, "playMedia: %s - %s %s", this->entity_id_.c_str(),
            source.title_.c_str(), source.media_content_id_.c_str());
   call_homeassistant_service(
       "media_player.play_media",
@@ -98,8 +98,8 @@ void HomeAssistantBaseMediaPlayer::playMedia(MediaPlayerSource source) {
 }
 
 void HomeAssistantBaseMediaPlayer::playerState_changed(std::string state) {
-  ESP_LOGI(TAG, "%s state changed to %s", this->entity_id_.c_str(),
-           state.c_str());
+  ESP_LOGI(TAG, "playerState_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
   if (state.length() == 0) {
     playerState = StoppedRemotePlayerState;
     this->state = media_player::MEDIA_PLAYER_STATE_IDLE;
@@ -144,8 +144,17 @@ void HomeAssistantBaseMediaPlayer::playerState_changed(std::string state) {
 
 void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     std::string state) {
-  ESP_LOGI(TAG, "%s state changed to %s", this->entity_id_.c_str(),
-           state.c_str());
+  ESP_LOGI(TAG, "player_supported_features_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
+
+  if (playerState == NoRemotePlayerState) {
+    ESP_LOGW(TAG,
+             "player_supported_features_changed: %s updated without state. "
+             "making it unavailable until it updates",
+             this->entity_id_.c_str());
+    this->state = media_player::MEDIA_PLAYER_STATE_NONE;
+    playerState = UnavailableRemotePlayerState;
+  }
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> out;
   for (auto const& x : supported_feature_string_map) {
     if (state.find(x.second) != std::string::npos) {

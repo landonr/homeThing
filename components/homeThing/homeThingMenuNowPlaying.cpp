@@ -5,6 +5,69 @@
 namespace esphome {
 namespace homething_menu_base {
 
+PositionCoordinate HomeThingMenuNowPlaying::get_coordinate(double radius,
+                                                           double angle) {
+  PositionCoordinate coordinate;
+  coordinate.x = radius * cos(angle);
+  coordinate.y = radius * sin(angle);
+  return coordinate;
+}
+
+display::TextAlign HomeThingMenuNowPlaying::text_align_for_circle_position(
+    CircleOptionMenuPosition position) {
+  switch (position) {
+    case RIGHT:
+      return display::TextAlign::CENTER_LEFT;
+      break;
+    case BOTTOM:
+      return display::TextAlign::BOTTOM_CENTER;
+      break;
+    case LEFT:
+      return display::TextAlign::CENTER_RIGHT;
+      break;
+    case TOP:
+      return display::TextAlign::TOP_CENTER;
+      break;
+    case CENTER:
+      return display::TextAlign::CENTER;
+      break;
+  }
+  return display::TextAlign::CENTER;
+}
+
+void HomeThingMenuNowPlaying::drawCircleOptionMenu(
+    std::vector<CircleOptionMenuItem> supported_features) {
+  int y_pos =
+      (display_buffer_->get_height() - display_state_->get_header_height());
+  int radius = y_pos * 0.4;
+  y_pos = (y_pos * 0.5) + display_state_->get_header_height();
+  display_buffer_->circle(display_buffer_->get_width() * 0.5, y_pos, radius,
+                          display_state_->get_color_palette()->get_gray());
+
+  for (auto& feature : supported_features) {
+    auto element = feature.feature;
+    double angle = feature.position * M_PI / 2.0;
+    auto coordinate = get_coordinate(radius, angle);
+
+    auto title = homeassistant_media_player::supported_feature_string(element);
+
+    display::TextAlign text_alignment =
+        text_align_for_circle_position(feature.position);
+    if (feature.position == CENTER) {
+      coordinate.x = 0;
+      coordinate.y = 0;
+    }
+
+    ESP_LOGD(TAG, "drawCircleOptionMenu: %d - %s: %f %f", i, title.c_str(),
+             coordinate.x, coordinate.y);
+    display_buffer_->printf(
+        (display_buffer_->get_width() / 2) + coordinate.x, y_pos + coordinate.y,
+        display_state_->get_font_small(),
+        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+        text_alignment, title.c_str());
+  }
+}
+
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
     std::vector<std::shared_ptr<MenuTitleBase>> menu_titles, int menu_index) {
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
@@ -50,9 +113,9 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 }
 
 void HomeThingMenuNowPlaying::drawNowPlaying(
-    int menuIndex, const option_menuType option_menu,
+    int menuIndex, HomeThingOptionMenu* option_menu,
     std::vector<std::shared_ptr<MenuTitleBase>> active_menu) {
-  if (drawOptionMenuAndStop(option_menu)) {
+  if (option_menu && drawOptionMenuAndStop(option_menu)) {
     return;
   }
   if (active_menu.size() > 0 &&
@@ -150,7 +213,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
         display::TextAlign::TOP_CENTER, *mediaTitleWrappedText, maxLines);
   }
   delete mediaTitleWrappedText;
-  if (option_menu == volumeOptionMenu) {
+  if (option_menu && option_menu->type == volumeOptionMenu) {
     drawVolumeOptionMenu();
   } else {
     drawMediaDuration();
@@ -237,78 +300,6 @@ std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
   return "";
 }
 
-void HomeThingMenuNowPlaying::drawCircleOptionMenu() {
-  int y_pos =
-      (display_buffer_->get_height() - display_state_->get_header_height());
-  int radius = y_pos * 0.4;
-  y_pos = (y_pos * 0.5) + display_state_->get_header_height();
-  display_buffer_->circle(display_buffer_->get_width() * 0.5, y_pos, radius,
-                          display_state_->get_color_palette()->get_gray());
-
-  auto supported_features =
-      media_player_group_->active_player_->get_option_menu_features();
-  auto max_index = min(static_cast<int>(supported_features.size()), 5);
-
-  for (int i = 0; i < max_index; i++) {
-    auto element = *(supported_features[i].get());
-    double angle = i * M_PI / 2.0;
-    auto coordinate = get_coordinate(radius, angle);
-
-    auto title = homeassistant_media_player::supported_feature_string(element);
-
-    display::TextAlign text_alignment;
-    switch (i) {
-      case 0:
-        text_alignment = display::TextAlign::CENTER_LEFT;
-        break;
-      case 1:
-        text_alignment = display::TextAlign::BOTTOM_CENTER;
-        break;
-      case 2:
-        text_alignment = display::TextAlign::CENTER_RIGHT;
-        break;
-      case 3:
-        text_alignment = display::TextAlign::TOP_CENTER;
-        break;
-      case 4:
-        text_alignment = display::TextAlign::CENTER;
-        coordinate.x = 0;
-        coordinate.y = 0;
-        break;
-      default:
-        break;
-    }
-
-    ESP_LOGD(TAG, "drawCircleOptionMenu: %d - %s: %f %f", i, title.c_str(),
-             coordinate.x, coordinate.y);
-    display_buffer_->printf(
-        (display_buffer_->get_width() / 2) + coordinate.x, y_pos + coordinate.y,
-        display_state_->get_font_small(),
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-        text_alignment, title.c_str());
-  }
-  // display_buffer_->printf(
-  //     display_buffer_->get_width() * 0.5,
-  //     (display_buffer_->get_height() - 16) * 0.15 + 16,
-  //     display_state_->get_font_small(),
-  //     text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-  //     display::TextAlign::TOP_CENTER,
-  //     media_player_group_->shuffle_string().c_str());
-  // display_buffer_->printf(
-  //     display_buffer_->get_width() * 0.5,
-  //     (display_buffer_->get_height() - 16) * 0.75 + 16,
-  //     display_state_->get_font_small(),
-  //     text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-  //     display::TextAlign::TOP_CENTER, "Group");
-  // display_buffer_->printf(
-  //     display_buffer_->get_width() * 0.8,
-  //     (display_buffer_->get_height() - 16) * 0.45 + 16,
-  //     display_state_->get_font_small(),
-  //     text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-  //     display::TextAlign::TOP_CENTER,
-  //     media_player_group_->muteString().c_str());
-}
-
 void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int barMargin = 1;
   int barHeight = display_state_->get_font_small()->get_baseline();
@@ -339,12 +330,18 @@ void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
 }
 
 bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
-    const option_menuType option_menu) {
-  switch (option_menu) {
+    const HomeThingOptionMenu* option_menu) {
+  if (option_menu == nullptr) {
+    return false;
+  }
+  switch (option_menu->type) {
     case tvOptionMenu:
     case speakerOptionMenu:
-      drawCircleOptionMenu();
-      return true;
+      if (option_menu && option_menu->circle_options.size() > 0) {
+        drawCircleOptionMenu(option_menu->circle_options);
+        return true;
+      }
+      return false;
     case volumeOptionMenu:
       // called later so it's over text
       return false;
@@ -424,6 +421,5 @@ int HomeThingMenuNowPlaying::drawTextWrapped(
   }
   return yPos + (max * fontSize);
 }
-
 }  // namespace homething_menu_base
 }  // namespace esphome

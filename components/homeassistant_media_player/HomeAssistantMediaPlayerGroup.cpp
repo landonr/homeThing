@@ -81,6 +81,8 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
       HomeAssistantSpeakerMediaPlayer* speaker =
           static_cast<HomeAssistantSpeakerMediaPlayer*>(media_player);
       if (speaker->playerState == NoRemotePlayerState) {
+        ESP_LOGD(TAG, "findActivePlayer: didnt load player %s",
+                 media_player->entity_id_.c_str());
         return;
       } else if (speaker->tv != NULL &&
                  speaker->mediaSource == TVRemotePlayerMediaSource &&
@@ -95,6 +97,8 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
         newActivePlayer = speaker;
       }
       tempLoadedPlayers++;
+      ESP_LOGD(TAG, "findActivePlayer: loaded player %s",
+               media_player->entity_id_.c_str());
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     } else {
       HomeAssistantRokuMediaPlayer* tv =
@@ -109,6 +113,8 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
         newActivePlayer = tv;
       }
       tempLoadedPlayers++;
+      ESP_LOGD(TAG, "findActivePlayer: loaded player %s",
+               media_player->entity_id_.c_str());
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     }
   }

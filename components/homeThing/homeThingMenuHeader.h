@@ -2,9 +2,9 @@
 
 #include <string>
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
-#include "esphome/components/homeThing/homeThingMenuGlobals.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 

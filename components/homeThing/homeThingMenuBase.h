@@ -9,11 +9,12 @@
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
-#include "esphome/components/homeThing/homeThingMenuGlobals.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
+#include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
@@ -92,6 +93,8 @@ class HomeThingMenuBase : public PollingComponent {
   void idleMenu(bool force);
 
   // controls
+  bool button_press_now_playing_option_continue(
+      CircleOptionMenuPosition position);
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
   void buttonPressUp();
@@ -117,6 +120,8 @@ class HomeThingMenuBase : public PollingComponent {
       return false;
     }
     if (activeMenuState != bootMenu) {
+      ESP_LOGI(TAG, "button_press_and_continue: reset animation %d",
+               activeMenuState);
       animation_->resetAnimation();
       return true;
     } else {
@@ -147,6 +152,8 @@ class HomeThingMenuBase : public PollingComponent {
   switch_::Switch* sleep_switch_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
+  HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
+      new HomeThingMenuNowPlayingOptionMenu();
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
@@ -165,8 +172,9 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
-    option_menu_ = noOptionMenu;
+    circle_menu_->clear_active_menu();
     if (activeMenuState != bootMenu) {
+      ESP_LOGI(TAG, "reset_menu: reset animation %d", activeMenuState);
       animation_->resetAnimation();
     }
     if (media_player_group_)
@@ -182,7 +190,6 @@ class HomeThingMenuBase : public PollingComponent {
   CallbackManager<void()> on_redraw_callbacks_{};
   const char* const TAG = "homething.menu.base";
   bool menu_drawing_ = false;
-  option_menuType option_menu_ = noOptionMenu;
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};
 };  // namespace homething_menu_base

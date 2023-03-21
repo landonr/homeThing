@@ -1,5 +1,4 @@
 #include "homeThingMenuAnimation.h"
-#include "esphome/components/homeThing/homeThingMenuGlobals.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/core/log.h"
 
@@ -10,9 +9,11 @@ void HomeThingMenuAnimation::resetAnimation(bool force) {
   // if (!force) {
   //   return;
   // }
-  ESP_LOGI(TAG, "resetAnimation: %d", force);
-  animating = false;
-  animationTick->publish_state(0);
+  ESP_LOGI(TAG, "resetAnimation: %f force", animationTick->state, force);
+  if (animationTick->state != 0 || force) {
+    animating = false;
+    animationTick->publish_state(0);
+  }
 }
 
 void HomeThingMenuAnimation::activeTick() {

@@ -7,12 +7,12 @@
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
-#include "esphome/components/homeThing/homeThingMenuGlobals.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeThing/homeThingMenuRefactor.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
@@ -41,7 +41,7 @@ class HomeThingMenuDisplay {
   void setup();
   bool draw_menu_screen(MenuStates* activeMenuState,
                         std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-                        const int menuIndex, const option_menuType option_menu);
+                        const int menuIndex, HomeThingOptionMenu* option_menu);
   void updateDisplay(bool force);
   void skipBootSequence(const MenuStates activeMenuState);
 

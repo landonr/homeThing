@@ -1,6 +1,5 @@
 #include "homeThingMenuBoot.h"
 #include <algorithm>
-#include "esphome/components/homeThing/homeThingMenuGlobals.h"
 #include "esphome/components/network/util.h"
 #include "esphome/core/log.h"
 

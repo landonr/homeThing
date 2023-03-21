@@ -46,6 +46,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   int totalPlayers() { return media_players_.size(); }
   void selectFirstActivePlayer();
   void setup();
+  HomeAssistantBaseMediaPlayer* get_active_player() { return active_player_; }
   void findActivePlayer(bool background = false);
   bool selectMediaPlayers(HomeAssistantBaseMediaPlayer* selected_media_player);
   void setActivePlayer(HomeAssistantBaseMediaPlayer* newActivePlayer);
