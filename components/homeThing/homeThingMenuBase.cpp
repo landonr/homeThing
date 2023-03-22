@@ -363,8 +363,19 @@ bool HomeThingMenuBase::button_press_now_playing_option_continue(
         position, media_player_group_->get_active_player());
     if (feature) {
       ESP_LOGD(TAG, "buttonPressSelect: option menu selected %d", *feature);
+      switch (*feature) {
+        case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
+          menuIndex = 0;
+          activeMenuState = groupMenu;
+          return false;
+          break;
+        default:
+          media_player_group_->call_feature(*feature);
+          break;
+      }
       // media_player_group_->sendActivePlayerRemoteCommand("power");
-      // update_display();
+      circle_menu_->clear_active_menu();
+      update_display();
       return false;
     }
     ESP_LOGW(TAG, "buttonPressSelect: option menu NOT selected");

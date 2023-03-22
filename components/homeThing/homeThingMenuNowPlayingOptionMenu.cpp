@@ -30,11 +30,27 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
   auto supported_features = player->get_option_menu_features();
   auto out = std::vector<CircleOptionMenuItem>();
   auto max_index = min(static_cast<int>(supported_features.size()), 5);
+  int i_offset = 0;
   for (int i = 0; i < max_index; i++) {
-    auto element = *(supported_features[i].get());
+    auto feature = *(supported_features[i].get());
+    ESP_LOGI(
+        TAG, "get_supported_feature_options: %d - %s", player->playerState,
+        homeassistant_media_player::supported_feature_string(feature).c_str());
+    if (feature == homeassistant_media_player::TURN_ON &&
+        player->playerState != homeassistant_media_player::RemotePlayerState::
+                                   PowerOffRemotePlayerState) {
+      i_offset++;
+      continue;
+    } else if (feature == homeassistant_media_player::TURN_OFF &&
+               player->playerState ==
+                   homeassistant_media_player::RemotePlayerState::
+                       PowerOffRemotePlayerState) {
+      i_offset++;
+      continue;
+    }
     auto newItem = CircleOptionMenuItem();
-    newItem.position = static_cast<CircleOptionMenuPosition>(i);
-    newItem.feature = element;
+    newItem.position = static_cast<CircleOptionMenuPosition>(i - i_offset);
+    newItem.feature = feature;
     out.push_back(newItem);
   }
   return out;

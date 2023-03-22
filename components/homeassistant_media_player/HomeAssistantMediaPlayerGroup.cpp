@@ -428,6 +428,39 @@ void HomeAssistantMediaPlayerGroup::sendActivePlayerRemoteCommand(
   }
 }
 
+void HomeAssistantMediaPlayerGroup::call_feature(
+    MediaPlayerSupportedFeature feature) {
+  switch (feature) {
+    case TURN_ON:
+    case TURN_OFF:
+      sendActivePlayerRemoteCommand("power");
+      break;
+    case SHUFFLE_SET:
+      toggle_shuffle();
+      break;
+    case VOLUME_MUTE:
+      toggle_mute();
+      break;
+    case PAUSE:
+    case VOLUME_SET:
+    case SEEK:
+    case SELECT_SOURCE:
+    case CLEAR_PLAYLIST:
+    case GROUPING:
+    case SELECT_SOUND_MODE:
+    case BROWSE_MEDIA:
+    case REPEAT_SET:
+    case PLAY_MEDIA:
+    case VOLUME_STEP:
+    case STOP:
+    case PLAY:
+    case PREVIOUS_TRACK:
+    case NEXT_TRACK:
+    default:
+      break;
+  }
+}
+
 std::vector<std::shared_ptr<MediaPlayerSource>>
 HomeAssistantMediaPlayerGroup::activePlayerSources() {
   return active_player_->sources;
