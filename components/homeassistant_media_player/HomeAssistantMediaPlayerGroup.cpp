@@ -441,6 +441,13 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case VOLUME_MUTE:
       toggle_mute();
       break;
+    case TV_BACK:
+      sendActivePlayerRemoteCommand("back");
+      break;
+    case TV_HOME:
+      sendActivePlayerRemoteCommand("home");
+      break;
+    case MENU_HOME:
     case PAUSE:
     case VOLUME_SET:
     case SEEK:

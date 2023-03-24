@@ -46,7 +46,13 @@ enum MediaPlayerSupportedFeature {
   SELECT_SOUND_MODE = 65536,
   BROWSE_MEDIA = 131072,
   REPEAT_SET = 262144,
-  GROUPING = 524288
+  GROUPING = 524288,
+
+  // bonus features
+  TV_BACK = 9,
+  TV_HOME = 10,
+  MENU_HOME = 11,
+  REMOTE_MODE = 12
 };
 
 static std::string supported_feature_string(
@@ -90,6 +96,14 @@ static std::string supported_feature_string(
       return "Repeat";
     case GROUPING:
       return "Grouping";
+    case TV_BACK:
+      return "Back";
+    case TV_HOME:
+      return "TV Home";
+    case MENU_HOME:
+      return "Menu";
+    case REMOTE_MODE:
+      return "Remote";
   }
   return "";
 }
@@ -162,19 +176,6 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
                  std::back_inserter(out),
                  [](std::shared_ptr<MediaPlayerSupportedFeature> i) {
                    switch (*(i.get())) {
-                     case PAUSE:
-                     case VOLUME_SET:
-                     case SEEK:
-                     case SELECT_SOURCE:
-                     case SELECT_SOUND_MODE:
-                     case BROWSE_MEDIA:
-                     case PLAY_MEDIA:
-                     case VOLUME_STEP:
-                     case STOP:
-                     case PLAY:
-                     case PREVIOUS_TRACK:
-                     case NEXT_TRACK:
-                       return false;
                      case SHUFFLE_SET:
                      case VOLUME_MUTE:
                      case CLEAR_PLAYLIST:
@@ -182,6 +183,10 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
                      case REPEAT_SET:
                      case TURN_ON:
                      case TURN_OFF:
+                     case TV_BACK:
+                     case TV_HOME:
+                     case MENU_HOME:
+                       //  case REMOTE_MODE:
                        return true;
                      default:
                        return false;
@@ -206,6 +211,8 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   bool muted_ = false;
   bool shuffle_ = false;
   float volume_step_ = 0.04;
+  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
+      supported_features_ = {};
 
   void call_homeassistant_service(
       const std::string& service_name,
@@ -223,7 +230,6 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
 
  private:
   RemotePlayerType player_type_;
-  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> supported_features_;
 
   void selectSource(MediaPlayerSource source);
   void playMedia(MediaPlayerSource source);

@@ -155,11 +155,10 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     this->state = media_player::MEDIA_PLAYER_STATE_NONE;
     playerState = UnavailableRemotePlayerState;
   }
-  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> out;
   for (auto const& x : supported_feature_string_map) {
     if (state.find(x.second) != std::string::npos) {
       auto new_feature = std::make_shared<MediaPlayerSupportedFeature>(x.first);
-      out.push_back(new_feature);
+      supported_features_.push_back(new_feature);
       ESP_LOGI(TAG, "%s, supported feature: %s", this->entity_id_.c_str(),
                x.second.c_str());
       switch (x.first) {
@@ -206,7 +205,6 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
       }
     }
   }
-  supported_features_ = out;
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_player_state() {

@@ -15,6 +15,15 @@ void HomeAssistantRokuMediaPlayer::setup() {
       this->entity_id_, optional<std::string>("source"),
       std::bind(&HomeAssistantRokuMediaPlayer::player_source_changed, this,
                 std::placeholders::_1));
+
+  supported_features_.push_back(
+      std::make_shared<MediaPlayerSupportedFeature>(TV_BACK));
+  supported_features_.push_back(
+      std::make_shared<MediaPlayerSupportedFeature>(TV_HOME));
+  supported_features_.push_back(
+      std::make_shared<MediaPlayerSupportedFeature>(MENU_HOME));
+  supported_features_.push_back(
+      std::make_shared<MediaPlayerSupportedFeature>(REMOTE_MODE));
 }
 
 void HomeAssistantRokuMediaPlayer::subscribe_sources() {

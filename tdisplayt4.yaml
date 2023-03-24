@@ -37,19 +37,23 @@ font:
     - file: "fonts/iosevka-heavy.ttf"
       id: large_heavy_font
       size: 24
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+
     - file: "fonts/iosevka.ttf"
       id: large_font
       size: 22
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+
     - file: "fonts/iosevka.ttf"
       id: medium_font
       size: 20
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+
     - file: "fonts/iosevka.ttf"
       id: small_font
       size: 18
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+
     - file: 'fonts/homeThingFontLogo.ttf' 
       id: home_thing_logo
       size: 64
