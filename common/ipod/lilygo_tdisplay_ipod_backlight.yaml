@@ -8,3 +8,4 @@ light:
     output: gpio4
     name: "Backlight"
     id: backlight
+    restore_mode: ALWAYS_ON 

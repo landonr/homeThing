@@ -68,7 +68,7 @@ void HomeThingMenuBase::setup() {
 
 void HomeThingMenuBase::draw_menu_screen() {
   if (display_can_sleep()) {
-    ESP_LOGI(TAG, "not drawing");
+    ESP_LOGD(TAG, "not drawing");
     sleep_display();
     return;
   }
@@ -836,7 +836,6 @@ void HomeThingMenuBase::debounceUpdateDisplay() {
 }
 
 bool HomeThingMenuBase::display_can_sleep() {
-  // true care about charging, false dont
   int timeout = menu_settings_->get_display_timeout();
   bool idle_timeout = timeout != 0 && idleTime >= timeout;
 
@@ -844,8 +843,8 @@ bool HomeThingMenuBase::display_can_sleep() {
   bool charging_timeout =
       display_timeout_while_charging ? get_charging() : false;
 
-  ESP_LOGD(TAG, "screen timeout %d, charging %d, charging timeout %d",
-           idle_timeout, get_charging(), charging_timeout);
+  ESP_LOGD(TAG, "screen timeout %d, charging %d, charging timeout %d idle %d",
+           idle_timeout, get_charging(), charging_timeout, idle_timeout);
 
   if (get_charging()) {
     if (display_timeout_while_charging)
@@ -861,17 +860,20 @@ void HomeThingMenuBase::turn_on_backlight() {
   if (backlight_ && !backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "turn_on_backlight: turning on display");
     auto call = backlight_->turn_on();
-    call.set_transition_length(0.5);
+    call.set_transition_length(0);
     call.perform();
   }
 }
 
 void HomeThingMenuBase::sleep_display() {
   if (backlight_ && backlight_->remote_values.is_on()) {
-    ESP_LOGD(TAG, "sleep_display: turning off display");
+    ESP_LOGI(TAG, "sleep_display: turning off display");
     auto call = backlight_->turn_off();
-    call.set_transition_length(0.25);
+    call.set_transition_length(0.5);
     call.perform();
+  } else {
+    ESP_LOGD(TAG, "turn_on_backlight: NOT turning off display %d, %d",
+             backlight_, backlight_->remote_values.is_on());
   }
 }
 

@@ -140,7 +140,6 @@ display:
   - platform: st7789v
     model: TTGO_TDisplay_135x240
     id: my_display
-    backlight_pin: GPIO4
     cs_pin: GPIO5
     dc_pin: GPIO16
     reset_pin: GPIO23

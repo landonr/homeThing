@@ -31,9 +31,9 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
   auto out = std::vector<CircleOptionMenuItem>();
   auto max_index = min(static_cast<int>(supported_features.size()), 5);
   int i_offset = 0;
-  for (int i = 0; i < max_index; i++) {
+  for (int i = 0; i - i_offset < max_index; i++) {
     auto feature = *(supported_features[i].get());
-    ESP_LOGI(
+    ESP_LOGD(
         TAG, "get_supported_feature_options: %d - %s", player->playerState,
         homeassistant_media_player::supported_feature_string(feature).c_str());
     if (feature == homeassistant_media_player::TURN_ON &&
