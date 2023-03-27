@@ -347,11 +347,18 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
     idleTime = 0;
   }
 
-  if (backlight_ && !backlight_->remote_values.is_on()) {
-    ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display");
-    turn_on_backlight();
-    update_display();
-    return true;
+  if (backlight_) {
+    if (!backlight_->remote_values.is_on()) {
+      ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display");
+      turn_on_backlight();
+      update_display();
+      return true;
+    } else {
+      backlight_->turn_on()
+          .set_transition_length(250)
+          .set_brightness(1)
+          .perform();
+    }
   }
   return false;
 }
@@ -860,7 +867,8 @@ void HomeThingMenuBase::turn_on_backlight() {
   if (backlight_ && !backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "turn_on_backlight: turning on display");
     auto call = backlight_->turn_on();
-    call.set_transition_length(0);
+    call.set_transition_length(250);
+    call.set_brightness(1);
     call.perform();
   }
 }
@@ -869,11 +877,21 @@ void HomeThingMenuBase::sleep_display() {
   if (backlight_ && backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "sleep_display: turning off display");
     auto call = backlight_->turn_off();
-    call.set_transition_length(0.5);
+    call.set_transition_length(500);
     call.perform();
   } else {
     ESP_LOGD(TAG, "turn_on_backlight: NOT turning off display %d, %d",
              backlight_, backlight_->remote_values.is_on());
+  }
+}
+
+void HomeThingMenuBase::fade_out_display() {
+  if (backlight_ && backlight_->remote_values.is_on()) {
+    ESP_LOGI(TAG, "remote_values: fading out display");
+    auto call = backlight_->turn_on();
+    call.set_brightness(0.3);
+    call.set_transition_length(500);
+    call.perform();
   }
 }
 
@@ -889,6 +907,8 @@ void HomeThingMenuBase::idleTick() {
   if (idleTime == 3) {
     circle_menu_->clear_active_menu();
     update_display();
+  } else if (idleTime == menu_settings_->get_display_timeout() - 4) {
+    fade_out_display();
   } else if (idleTime == menu_settings_->get_display_timeout()) {
     if (media_player_group_ != NULL &&
         media_player_group_->playerSearchFinished) {

@@ -4,7 +4,7 @@
 
 namespace esphome {
 namespace homething_menu_base {
-static const std::string COMPONENTS_HOMETHING_VERSION = "lando/codeCleanup/319-2023-03-25";
+static const std::string COMPONENTS_HOMETHING_VERSION = "lando/codeCleanup/320-2023-03-27";
 }
 }  // namespace esphome
 #endif  // COMPONENTS_HOMETHING_VERSION_H_

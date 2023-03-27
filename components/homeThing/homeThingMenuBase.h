@@ -143,6 +143,7 @@ class HomeThingMenuBase : public PollingComponent {
       return charging_ == nullptr;
     }
   }
+  void fade_out_display();
   void sleep_display();
   bool display_can_sleep();
 
