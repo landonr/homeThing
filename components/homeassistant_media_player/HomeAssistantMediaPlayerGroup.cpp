@@ -143,16 +143,6 @@ std::vector<std::string> HomeAssistantMediaPlayerGroup::groupNames() {
   return output;
 }
 
-std::string HomeAssistantMediaPlayerGroup::friendlyNameForEntityId(
-    std::string speakerentityId) {
-  for (auto& speaker : media_players_) {
-    if (speaker->entity_id_ == speakerentityId) {
-      return speaker->get_name();
-    }
-  }
-  return "";
-}
-
 void HomeAssistantMediaPlayerGroup::stripUnicode(std::string* str) {
   str->erase(remove_if(str->begin(), str->end(),
                        [](char c) { return !(c >= 0 && c < 128); }),
@@ -301,7 +291,9 @@ void HomeAssistantMediaPlayerGroup::selectGroup(
   std::vector<HomeAssistantSpeakerMediaPlayer*> speakerList;
   for (auto& media_player : media_players_) {
     if (media_player->entity_id_ == newSpeakerGroupParent->entity_id_ ||
-        media_player->get_player_type() != SpeakerRemotePlayerType) {
+        media_player->get_player_type() != SpeakerRemotePlayerType ||
+        !media_player->supports(homeassistant_media_player::
+                                    MediaPlayerSupportedFeature::GROUPING)) {
       continue;
     }
     HomeAssistantSpeakerMediaPlayer* speaker =

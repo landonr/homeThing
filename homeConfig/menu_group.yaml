@@ -32,6 +32,8 @@ homeassistant_media_player:
       type: speaker
     - id: media_player_tower
       type: speaker
+    - id: media_player_kitchen
+      type: speaker
 
 homeassistant_service_group:
   id: service_group_component

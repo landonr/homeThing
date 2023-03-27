@@ -324,15 +324,15 @@ static std::vector<std::shared_ptr<MenuTitleSource>> activePlayerSourceTitles(
   return out;
 }
 
-static std::vector<MenuTitlePlayer*> groupTitleSwitches(
+static std::vector<std::shared_ptr<MenuTitleBase>> groupTitleSwitches(
     const std::vector<
         homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
         media_players,
     homeassistant_media_player::HomeAssistantBaseMediaPlayer*
         newSpeakerGroupParent) {
-  std::vector<MenuTitlePlayer*> out;
+  std::vector<std::shared_ptr<MenuTitleBase>> out;
   std::vector<std::string> groupedMembers;
-  out.push_back(new MenuTitlePlayer(
+  out.push_back(std::make_shared<MenuTitlePlayer>(
       "Group " + newSpeakerGroupParent->get_name(),
       newSpeakerGroupParent->get_entity_id(), NoMenuTitleLeftIcon,
       ArrowMenuTitleRightIcon, newSpeakerGroupParent));
@@ -342,7 +342,9 @@ static std::vector<MenuTitlePlayer*> groupTitleSwitches(
             media_player->get_entity_id() ||
         media_player->get_player_type() !=
             homeassistant_media_player::RemotePlayerType::
-                SpeakerRemotePlayerType) {
+                SpeakerRemotePlayerType ||
+        !media_player->supports(homeassistant_media_player::
+                                    MediaPlayerSupportedFeature::GROUPING)) {
       continue;
     } else {
       auto speaker = static_cast<
@@ -351,11 +353,11 @@ static std::vector<MenuTitlePlayer*> groupTitleSwitches(
       if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(),
                     newSpeakerGroupParent->entity_id_) !=
           speaker->groupMembers.end()) {
-        out.push_back(new MenuTitlePlayer(
+        out.push_back(std::make_shared<MenuTitlePlayer>(
             speaker->get_name(), speaker->entity_id_, OnMenuTitleLeftIcon,
             NoMenuTitleRightIcon, speaker));
       } else {
-        out.push_back(new MenuTitlePlayer(
+        out.push_back(std::make_shared<MenuTitlePlayer>(
             speaker->get_name(), speaker->entity_id_, OffMenuTitleLeftIcon,
             NoMenuTitleRightIcon, speaker));
       }
@@ -364,22 +366,36 @@ static std::vector<MenuTitlePlayer*> groupTitleSwitches(
   return out;
 }
 
-static std::string friendlyNameForEntityId(std::string speakerentityId) {
-  return "";
-}
-
-static std::vector<MenuTitlePlayer*> groupTitleString(
+static std::string friendlyNameForEntityId(
+    std::string speakerentityId,
     const std::vector<
         homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
         media_players) {
-  std::vector<MenuTitlePlayer*> out;
+  for (auto& speaker : media_players) {
+    if (speaker->entity_id_ == speakerentityId) {
+      return speaker->get_name();
+    }
+  }
+  return "";
+}
+
+static std::vector<std::shared_ptr<MenuTitleBase>> groupTitleString(
+    const std::vector<
+        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
+        media_players) {
+  std::vector<std::shared_ptr<MenuTitleBase>> out;
   std::vector<std::string> groupedMembers;
   for (auto& media_player : media_players) {
+    ESP_LOGD(MENU_TITLE_TAG, "groupTitleString: %s %s",
+             media_player->get_name().c_str(),
+             media_player->entity_id_.c_str());
     if (std::find(groupedMembers.begin(), groupedMembers.end(),
                   media_player->entity_id_) != groupedMembers.end() ||
         media_player->get_player_type() !=
             homeassistant_media_player::RemotePlayerType::
-                SpeakerRemotePlayerType) {
+                SpeakerRemotePlayerType ||
+        !media_player->supports(homeassistant_media_player::
+                                    MediaPlayerSupportedFeature::GROUPING)) {
       // skip grouped members that were already found
       continue;
     }
@@ -393,21 +409,23 @@ static std::vector<MenuTitlePlayer*> groupTitleString(
         // speaker isn't the group parent
         continue;
       }
-      out.push_back(new MenuTitlePlayer(
+      out.push_back(std::make_shared<MenuTitlePlayer>(
           speaker->get_name(), speaker->entity_id_, NoMenuTitleLeftIcon,
           ArrowMenuTitleRightIcon, speaker));
       for (auto& groupedSpeaker : speaker->groupMembers) {
         if (groupedSpeaker != speaker->entity_id_) {
           groupedMembers.push_back(groupedSpeaker);
           std::string groupedSpeakerName =
-              friendlyNameForEntityId(groupedSpeaker);
-          out.push_back(new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker,
-                                            GroupedMenuTitleLeftIcon,
-                                            ArrowMenuTitleRightIcon, speaker));
+              friendlyNameForEntityId(groupedSpeaker, media_players);
+          if (groupedSpeakerName != "") {
+            out.push_back(std::make_shared<MenuTitlePlayer>(
+                groupedSpeakerName, groupedSpeaker, GroupedMenuTitleLeftIcon,
+                ArrowMenuTitleRightIcon, speaker));
+          }
         }
       }
     } else {
-      out.push_back(new MenuTitlePlayer(
+      out.push_back(std::make_shared<MenuTitlePlayer>(
           speaker->get_name(), speaker->entity_id_, NoMenuTitleLeftIcon,
           ArrowMenuTitleRightIcon, speaker));
     }

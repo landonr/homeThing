@@ -297,6 +297,13 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:
       return getNowPlayingMenuStates(media_player_group_->active_player_);
+    case groupMenu: {
+      if (media_player_group_->newSpeakerGroupParent != NULL) {
+        return groupTitleSwitches(media_player_group_->media_players_,
+                                  media_player_group_->newSpeakerGroupParent);
+      }
+      return groupTitleString(media_player_group_->media_players_);
+    }
     case bootMenu:
       return {};
     default:
@@ -374,8 +381,8 @@ bool HomeThingMenuBase::button_press_now_playing_option_continue(
         case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
           menuIndex = 0;
           activeMenuState = groupMenu;
+          update_display();
           return false;
-          break;
         default:
           media_player_group_->call_feature(*feature);
           break;

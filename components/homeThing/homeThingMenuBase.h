@@ -120,7 +120,7 @@ class HomeThingMenuBase : public PollingComponent {
       return false;
     }
     if (activeMenuState != bootMenu) {
-      ESP_LOGI(TAG, "button_press_and_continue: reset animation %d",
+      ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
                activeMenuState);
       animation_->resetAnimation();
       return true;
@@ -175,7 +175,7 @@ class HomeThingMenuBase : public PollingComponent {
     menuIndex = 0;
     circle_menu_->clear_active_menu();
     if (activeMenuState != bootMenu) {
-      ESP_LOGI(TAG, "reset_menu: reset animation %d", activeMenuState);
+      ESP_LOGD(TAG, "reset_menu: reset animation %d", activeMenuState);
       animation_->resetAnimation();
     }
     if (media_player_group_)

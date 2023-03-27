@@ -5,6 +5,11 @@ media_player:
     id: media_player_beam
     type: speaker
   - platform: homeassistant_media_player
+    name: Kitchen
+    entity_id: "media_player.kitchen"
+    id: media_player_kitchen
+    type: speaker
+  - platform: homeassistant_media_player
     name: TV
     entity_id: "media_player.55_tcl_roku_tv"
     id: media_player_tv
