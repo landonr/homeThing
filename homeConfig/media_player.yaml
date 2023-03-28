@@ -13,7 +13,7 @@ media_player:
     name: TV
     entity_id: "media_player.55_tcl_roku_tv"
     id: media_player_tv
-    type: tv
+    type: roku
     soundbar:
       speaker: media_player_beam
   - platform: homeassistant_media_player

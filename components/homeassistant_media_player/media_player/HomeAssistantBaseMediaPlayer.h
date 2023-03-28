@@ -152,7 +152,7 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   std::vector<std::shared_ptr<MediaPlayerSource>> sources;
   int index;
   virtual RemotePlayerType get_player_type() { return player_type_; }
-  void setupBase();
+  void setup() override;
   void playSource(MediaPlayerSource source);
   void playPause();
   void nextTrack();

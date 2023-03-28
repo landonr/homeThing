@@ -5,8 +5,8 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/sensor/sensor.h"
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
-#include "media_player/HomeAssistantRokuMediaPlayer.h"
 #include "media_player/HomeAssistantSpeakerMediaPlayer.h"
+#include "media_player/HomeAssistantTVMediaPlayer.h"
 #include "media_player/JSONTextHelpers.h"
 
 namespace esphome {
@@ -54,7 +54,6 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   //            std::vector<SpeakerSetup> newSpeakerSetups);
   void register_media_player(HomeAssistantBaseMediaPlayer* new_media_player);
   std::vector<std::string> groupNames();
-  std::string friendlyNameForEntityId(std::string speakerentityId);
   void stripUnicode(std::string* str);
   void increaseSpeakerVolume();
   void decreaseSpeakerVolume();
@@ -71,7 +70,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   std::string playTitleString();
   std::string mediaTitleString();
   std::string mediaSubtitleString();
-  void sendActivePlayerRemoteCommand(std::string command);
+  void sendActivePlayerRemoteCommand(MediaPlayerTVRemoteCommand command);
   void call_feature(MediaPlayerSupportedFeature feature);
   std::vector<std::shared_ptr<MediaPlayerSource>> activePlayerSources();
   void syncActivePlayer(RemotePlayerState state);

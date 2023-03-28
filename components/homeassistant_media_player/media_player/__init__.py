@@ -10,6 +10,7 @@ AUTO_LOAD = ['media_player']
 HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantBaseMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVMediaPlayer", media_player.MediaPlayer, cg.Component)
+HomeAssistantTVRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVRokuMediaPlayer", media_player.MediaPlayer, cg.Component)
 
 CONF_SPEAKER = "speaker"
 CONF_ROKU = "roku"
@@ -18,13 +19,23 @@ CONF_SOUNDBAR = "soundbar"
 
 MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantBaseMediaPlayer),
         cv.Required(CONF_ENTITY_ID): cv.entity_id,
         cv.Required(CONF_NAME): cv.string,
         cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
         cv.Optional(CONF_DISABLED_BY_DEFAULT, default=True): cv.boolean,
     }
 ).extend(cv.COMPONENT_SCHEMA)
+
+TV_CONFIG_SCHEMA = MEDIA_PLAYER_COMMON_SCHEMA.extend(
+    {
+        cv.Optional(CONF_SOUNDBAR): cv.Schema(
+            {
+                cv.Optional(CONF_SPEAKER): cv.use_id(HomeAssistantSpeakerMediaPlayer)
+            },
+            cv.has_exactly_one_key(CONF_SPEAKER),
+        ),
+    },
+)
 
 CONFIG_SCHEMA = cv.typed_schema(
     {
@@ -33,16 +44,15 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantSpeakerMediaPlayer),
             }
         ),
-        CONF_TV: MEDIA_PLAYER_COMMON_SCHEMA.extend(
+        CONF_TV: TV_CONFIG_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantTVMediaPlayer),
-                cv.Optional(CONF_SOUNDBAR): cv.Schema(
-                    {
-                        cv.Optional(CONF_SPEAKER): cv.use_id(HomeAssistantSpeakerMediaPlayer)
-                    },
-                    cv.has_exactly_one_key(CONF_SPEAKER),
-                ),
-            },
+            }
+        ),
+        CONF_ROKU: TV_CONFIG_SCHEMA.extend(
+            {
+                cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantTVRokuMediaPlayer),
+            }
         ),
     },
     lower=True,

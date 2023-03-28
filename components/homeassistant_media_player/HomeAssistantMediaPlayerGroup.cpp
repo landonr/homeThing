@@ -412,7 +412,7 @@ std::string HomeAssistantMediaPlayerGroup::mediaSubtitleString() {
 }
 
 void HomeAssistantMediaPlayerGroup::sendActivePlayerRemoteCommand(
-    std::string command) {
+    MediaPlayerTVRemoteCommand command) {
   HomeAssistantTVMediaPlayer* activeTV =
       static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
   if (activeTV != NULL) {
@@ -425,7 +425,7 @@ void HomeAssistantMediaPlayerGroup::call_feature(
   switch (feature) {
     case TURN_ON:
     case TURN_OFF:
-      sendActivePlayerRemoteCommand("power");
+      sendActivePlayerRemoteCommand(POWER);
       break;
     case SHUFFLE_SET:
       toggle_shuffle();
@@ -434,10 +434,10 @@ void HomeAssistantMediaPlayerGroup::call_feature(
       toggle_mute();
       break;
     case TV_BACK:
-      sendActivePlayerRemoteCommand("back");
+      sendActivePlayerRemoteCommand(BACK);
       break;
     case TV_HOME:
-      sendActivePlayerRemoteCommand("home");
+      sendActivePlayerRemoteCommand(HOME);
       break;
     case MENU_HOME:
     case PAUSE:

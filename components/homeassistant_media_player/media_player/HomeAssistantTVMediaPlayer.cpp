@@ -1,35 +1,19 @@
-#include "HomeAssistantRokuMediaPlayer.h"
+#include "HomeAssistantTVMediaPlayer.h"
 #include "JSONTextHelpers.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
 
-static const char* const TAG = "homeassistant.media_player_roku";
+static const char* const TAG = "homeassistant.media_player_tv";
 
 void HomeAssistantTVMediaPlayer::setup() {
-  setupBase();
+  HomeAssistantBaseMediaPlayer::setup();
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("source"),
       std::bind(&HomeAssistantTVMediaPlayer::player_source_changed, this,
-                std::placeholders::_1));
-
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(TV_BACK));
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(TV_HOME));
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(MENU_HOME));
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(REMOTE_MODE));
-}
-
-void HomeAssistantTVMediaPlayer::subscribe_sources() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("source_list"),
-      std::bind(&HomeAssistantTVMediaPlayer::sources_changed, this,
                 std::placeholders::_1));
 }
 
@@ -49,34 +33,22 @@ void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
   }
 }
 
+void HomeAssistantTVMediaPlayer::subscribe_sources() {
+  api::global_api_server->subscribe_home_assistant_state(
+      this->entity_id_, optional<std::string>("source_list"),
+      std::bind(&HomeAssistantTVMediaPlayer::sources_changed, this,
+                std::placeholders::_1));
+}
+
 void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
   ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
   auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
   sources.assign(newSources.begin(), newSources.end());
 }
 
-void HomeAssistantTVMediaPlayer::tvRemoteCommand(std::string command) {
-  std::string remoteName = entity_id_.substr(12).insert(0, "remote");
-  ESP_LOGI(TAG, "tvRemoteCommand: %s, %s", command.c_str(), remoteName.c_str());
-  call_homeassistant_service("remote.send_command",
-                             {
-                                 {"entity_id", remoteName},
-                                 {"command", command.c_str()},
-                             });
-}
-
-void HomeAssistantTVMediaPlayer::increaseVolume() {
-  tvRemoteCommand("volume_up");
-}
-
-void HomeAssistantTVMediaPlayer::decreaseVolume() {
-  tvRemoteCommand("volume_down");
-}
-
-media_player::MediaPlayerTraits HomeAssistantTVMediaPlayer::get_traits() {
-  auto traits = media_player::MediaPlayerTraits();
-  traits.set_supports_pause(true);
-  return traits;
+void HomeAssistantTVMediaPlayer::tvRemoteCommand(
+    MediaPlayerTVRemoteCommand command) {
+  ESP_LOGI(TAG, "tvRemoteCommand: %d", command);
 }
 
 void HomeAssistantTVMediaPlayer::control(

@@ -31,10 +31,14 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
   auto out = std::vector<CircleOptionMenuItem>();
   auto max_index = min(static_cast<int>(supported_features.size()), 5);
   int i_offset = 0;
-  for (int i = 0; i - i_offset < max_index; i++) {
+  for (int i = 0; i < max_index; i++) {
+    if (i - i_offset >= max_index) {
+      return out;
+    }
     auto feature = *(supported_features[i].get());
     ESP_LOGD(
-        TAG, "get_supported_feature_options: %d - %s", player->playerState,
+        TAG, "get_supported_feature_options: %s index %d of %d, state: %d - %s",
+        player->get_name().c_str(), i, max_index, player->playerState,
         homeassistant_media_player::supported_feature_string(feature).c_str());
     if (feature == homeassistant_media_player::TURN_ON &&
         player->playerState != homeassistant_media_player::RemotePlayerState::

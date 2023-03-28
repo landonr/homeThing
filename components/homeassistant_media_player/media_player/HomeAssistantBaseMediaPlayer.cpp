@@ -6,7 +6,7 @@ namespace homeassistant_media_player {
 
 static const char* const TAG = "homeassistant.media_player_base";
 
-void HomeAssistantBaseMediaPlayer::setupBase() {
+void HomeAssistantBaseMediaPlayer::setup() {
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 
   api::global_api_server->subscribe_home_assistant_state(

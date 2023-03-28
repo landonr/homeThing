@@ -340,11 +340,14 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     menuIndex = 0;
     activeMenuState = groupMenu;
   } else if (menu_name == "power") {
-    media_player_group_->sendActivePlayerRemoteCommand("power");
+    media_player_group_->sendActivePlayerRemoteCommand(
+        homeassistant_media_player::MediaPlayerTVRemoteCommand::POWER);
   } else if (menu_name == "back") {
-    media_player_group_->sendActivePlayerRemoteCommand("back");
+    media_player_group_->sendActivePlayerRemoteCommand(
+        homeassistant_media_player::MediaPlayerTVRemoteCommand::BACK);
   } else if (menu_name == "menu") {
-    media_player_group_->sendActivePlayerRemoteCommand("home");
+    media_player_group_->sendActivePlayerRemoteCommand(
+        homeassistant_media_player::MediaPlayerTVRemoteCommand::HOME);
   }
   update_display();
 }
@@ -418,7 +421,8 @@ void HomeThingMenuBase::buttonPressSelect() {
 
         switch (media_player_group_->active_player_->get_player_type()) {
           case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-            media_player_group_->sendActivePlayerRemoteCommand("select");
+            media_player_group_->sendActivePlayerRemoteCommand(
+                homeassistant_media_player::MediaPlayerTVRemoteCommand::SELECT);
             break;
           case homeassistant_media_player::RemotePlayerType::
               SpeakerRemotePlayerType:
@@ -606,7 +610,8 @@ void HomeThingMenuBase::buttonPressUp() {
 
       switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand("up");
+          media_player_group_->sendActivePlayerRemoteCommand(
+              homeassistant_media_player::MediaPlayerTVRemoteCommand::UP);
           return;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
@@ -669,7 +674,8 @@ void HomeThingMenuBase::buttonPressDown() {
 
       switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand("down");
+          media_player_group_->sendActivePlayerRemoteCommand(
+              homeassistant_media_player::MediaPlayerTVRemoteCommand::DOWN);
           return;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
@@ -702,7 +708,8 @@ void HomeThingMenuBase::buttonPressLeft() {
 
       switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand("left");
+          media_player_group_->sendActivePlayerRemoteCommand(
+              homeassistant_media_player::MediaPlayerTVRemoteCommand::LEFT);
           return;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
@@ -734,7 +741,8 @@ void HomeThingMenuBase::buttonPressRight() {
       // }
       switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand("right");
+          media_player_group_->sendActivePlayerRemoteCommand(
+              homeassistant_media_player::MediaPlayerTVRemoteCommand::RIGHT);
           return;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
