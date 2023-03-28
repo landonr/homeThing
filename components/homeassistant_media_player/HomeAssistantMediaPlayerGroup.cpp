@@ -101,8 +101,8 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
                media_player->entity_id_.c_str());
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     } else {
-      HomeAssistantRokuMediaPlayer* tv =
-          static_cast<HomeAssistantRokuMediaPlayer*>(media_player);
+      HomeAssistantTVMediaPlayer* tv =
+          static_cast<HomeAssistantTVMediaPlayer*>(media_player);
       if (tv->playerState == NoRemotePlayerState) {
         return;
       } else if (newActivePlayer != NULL) {
@@ -158,8 +158,8 @@ void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
       activeSpeaker->increaseVolume();
     }
   } else {
-    HomeAssistantRokuMediaPlayer* activeTV =
-        static_cast<HomeAssistantRokuMediaPlayer*>(active_player_);
+    HomeAssistantTVMediaPlayer* activeTV =
+        static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
       if (activeTV->speaker != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
@@ -181,8 +181,8 @@ void HomeAssistantMediaPlayerGroup::decreaseSpeakerVolume() {
       activeSpeaker->decreaseVolume();
     }
   } else {
-    HomeAssistantRokuMediaPlayer* activeTV =
-        static_cast<HomeAssistantRokuMediaPlayer*>(active_player_);
+    HomeAssistantTVMediaPlayer* activeTV =
+        static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
       if (activeTV->speaker != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
@@ -251,8 +251,8 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
   }
   if (active_player_->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    HomeAssistantRokuMediaPlayer* activeTV =
-        static_cast<HomeAssistantRokuMediaPlayer*>(active_player_);
+    HomeAssistantTVMediaPlayer* activeTV =
+        static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
       if (activeTV->speaker != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
@@ -413,8 +413,8 @@ std::string HomeAssistantMediaPlayerGroup::mediaSubtitleString() {
 
 void HomeAssistantMediaPlayerGroup::sendActivePlayerRemoteCommand(
     std::string command) {
-  HomeAssistantRokuMediaPlayer* activeTV =
-      static_cast<HomeAssistantRokuMediaPlayer*>(active_player_);
+  HomeAssistantTVMediaPlayer* activeTV =
+      static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
   if (activeTV != NULL) {
     activeTV->tvRemoteCommand(command);
   }

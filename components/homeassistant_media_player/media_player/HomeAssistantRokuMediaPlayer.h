@@ -8,7 +8,7 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-class HomeAssistantRokuMediaPlayer : public HomeAssistantBaseMediaPlayer {
+class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
  public:
   HomeAssistantBaseMediaPlayer* speaker;
 

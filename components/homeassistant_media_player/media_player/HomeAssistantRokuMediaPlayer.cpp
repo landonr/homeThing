@@ -7,13 +7,13 @@ namespace homeassistant_media_player {
 
 static const char* const TAG = "homeassistant.media_player_roku";
 
-void HomeAssistantRokuMediaPlayer::setup() {
+void HomeAssistantTVMediaPlayer::setup() {
   setupBase();
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("source"),
-      std::bind(&HomeAssistantRokuMediaPlayer::player_source_changed, this,
+      std::bind(&HomeAssistantTVMediaPlayer::player_source_changed, this,
                 std::placeholders::_1));
 
   supported_features_.push_back(
@@ -26,14 +26,14 @@ void HomeAssistantRokuMediaPlayer::setup() {
       std::make_shared<MediaPlayerSupportedFeature>(REMOTE_MODE));
 }
 
-void HomeAssistantRokuMediaPlayer::subscribe_sources() {
+void HomeAssistantTVMediaPlayer::subscribe_sources() {
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("source_list"),
-      std::bind(&HomeAssistantRokuMediaPlayer::sources_changed, this,
+      std::bind(&HomeAssistantTVMediaPlayer::sources_changed, this,
                 std::placeholders::_1));
 }
 
-void HomeAssistantRokuMediaPlayer::player_source_changed(std::string state) {
+void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
   ESP_LOGI(TAG, "player_source_changed: %s changed to %s", get_name().c_str(),
            state.c_str());
   if (state.find("YouTube") != std::string::npos) {
@@ -49,13 +49,13 @@ void HomeAssistantRokuMediaPlayer::player_source_changed(std::string state) {
   }
 }
 
-void HomeAssistantRokuMediaPlayer::sources_changed(std::string state) {
+void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
   ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
   auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
   sources.assign(newSources.begin(), newSources.end());
 }
 
-void HomeAssistantRokuMediaPlayer::tvRemoteCommand(std::string command) {
+void HomeAssistantTVMediaPlayer::tvRemoteCommand(std::string command) {
   std::string remoteName = entity_id_.substr(12).insert(0, "remote");
   ESP_LOGI(TAG, "tvRemoteCommand: %s, %s", command.c_str(), remoteName.c_str());
   call_homeassistant_service("remote.send_command",
@@ -65,21 +65,21 @@ void HomeAssistantRokuMediaPlayer::tvRemoteCommand(std::string command) {
                              });
 }
 
-void HomeAssistantRokuMediaPlayer::increaseVolume() {
+void HomeAssistantTVMediaPlayer::increaseVolume() {
   tvRemoteCommand("volume_up");
 }
 
-void HomeAssistantRokuMediaPlayer::decreaseVolume() {
+void HomeAssistantTVMediaPlayer::decreaseVolume() {
   tvRemoteCommand("volume_down");
 }
 
-media_player::MediaPlayerTraits HomeAssistantRokuMediaPlayer::get_traits() {
+media_player::MediaPlayerTraits HomeAssistantTVMediaPlayer::get_traits() {
   auto traits = media_player::MediaPlayerTraits();
   traits.set_supports_pause(true);
   return traits;
 }
 
-void HomeAssistantRokuMediaPlayer::control(
+void HomeAssistantTVMediaPlayer::control(
     const media_player::MediaPlayerCall& call) {
   if (call.get_media_url().has_value()) {
     // if (this->audio_->isRunning())

@@ -27,7 +27,7 @@ homeassistant_media_player:
     - id: media_player_beam
       type: speaker
     - id: media_player_tv
-      type: roku
+      type: tv
     - id: media_player_spotify
       type: speaker
     - id: media_player_tower

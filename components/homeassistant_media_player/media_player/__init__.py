@@ -9,10 +9,11 @@ AUTO_LOAD = ['media_player']
 
 HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantBaseMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)
-HomeAssistantRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantRokuMediaPlayer", media_player.MediaPlayer, cg.Component)
+HomeAssistantTVMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVMediaPlayer", media_player.MediaPlayer, cg.Component)
 
 CONF_SPEAKER = "speaker"
 CONF_ROKU = "roku"
+CONF_TV = "tv"
 CONF_SOUNDBAR = "soundbar"
 
 MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
@@ -32,9 +33,9 @@ CONFIG_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantSpeakerMediaPlayer),
             }
         ),
-        CONF_ROKU: MEDIA_PLAYER_COMMON_SCHEMA.extend(
+        CONF_TV: MEDIA_PLAYER_COMMON_SCHEMA.extend(
             {
-                cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantRokuMediaPlayer),
+                cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantTVMediaPlayer),
                 cv.Optional(CONF_SOUNDBAR): cv.Schema(
                     {
                         cv.Optional(CONF_SPEAKER): cv.use_id(HomeAssistantSpeakerMediaPlayer)
