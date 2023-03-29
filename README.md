@@ -28,6 +28,8 @@ Supports many different hardware configurations:
 ## Latest Hardware 💪
 ![homething case](https://user-images.githubusercontent.com/2607659/228553486-d76d198d-14d9-4ded-9076-7a9f6e77b342.png)
 
+[Case 3D Print Files](https://github.com/landonr/homeThing/tree/main/Case%20Design)
+
 ## Features 📝
 ### iPod classic style menu 
 |t-display demo|m5stack fire demo|lilygo T4 demo|
