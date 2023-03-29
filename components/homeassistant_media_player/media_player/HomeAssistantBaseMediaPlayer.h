@@ -228,29 +228,38 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
     api::global_api_server->send_homeassistant_service_call(resp);
   }
 
+  virtual void subscribe_source() {}
+  virtual void subscribe_sources() {}
+  virtual void sources_changed(std::string state) {}
+  virtual void group_members_changed(std::string state) {}
+
  private:
   RemotePlayerType player_type_;
 
   void selectSource(MediaPlayerSource source);
   void playMedia(MediaPlayerSource source);
-  void playerState_changed(std::string state);
-  void player_supported_features_changed(std::string state);
+
+  // subscriptions
   void subscribe_player_state();
+  void subscribe_supported_features();
+  void subscribe_media_title();
   void subscribe_muted();
   void subscribe_shuffle();
   void subscribe_volume();
   void subscribe_media_position();
   void subscribe_playlist();
   void subscribe_group_members();
+
+  // changes
+  void playerState_changed(std::string state);
+  void player_supported_features_changed(std::string state);
+  void media_title_changed(std::string state);
   void muted_changed(std::string state);
   void shuffle_changed(std::string state);
   void volume_changed(std::string state);
   void media_duration_changed(std::string state);
   void media_position_changed(std::string state);
   void playlist_changed(std::string state);
-  virtual void subscribe_sources() {}
-  virtual void sources_changed(std::string state) {}
-  virtual void group_members_changed(std::string state) {}
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

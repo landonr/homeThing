@@ -15,9 +15,7 @@ homeassistant_sensor_group:
 homeassistant_light_group:
   id: light_group_component
   lights:
-    - id: light_bathroom_lights
-    - id: light_bedroom_lights
-    - id: light_kitchen_lights
+    - id: light_rgb_lights
     - id: light_living_room_lights
     - id: light_office_lamp
 
@@ -34,6 +32,8 @@ homeassistant_media_player:
       type: speaker
     - id: media_player_kitchen
       type: speaker
+    - id: media_player_kodi
+      type: kodi
 
 homeassistant_service_group:
   id: service_group_component

@@ -8,14 +8,15 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-class HomeAssistantTVRokuMediaPlayer : public HomeAssistantTVMediaPlayer {
+class HomeAssistantTVKodiMediaPlayer : public HomeAssistantTVMediaPlayer {
  public:
   void setup() override;
 
   void tvRemoteCommand(MediaPlayerTVRemoteCommand command) override;
 
- private:
+ protected:
   std::string stringForRemoteCommand(MediaPlayerTVRemoteCommand command);
+  void subscribe_source() override;
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

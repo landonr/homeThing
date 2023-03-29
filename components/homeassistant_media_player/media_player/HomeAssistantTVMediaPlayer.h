@@ -35,15 +35,18 @@ class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
   }
 
   virtual void tvRemoteCommand(MediaPlayerTVRemoteCommand command);
+  void increaseVolume() override;
+  void decreaseVolume() override;
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
   void set_soundbar(HomeAssistantBaseMediaPlayer* new_sound_bar) {
     speaker = new_sound_bar;
   }
-
- private:
-  void sources_changed(std::string state) override;
   void player_source_changed(std::string state);
+
+ protected:
+  void subscribe_source() override;
+  void sources_changed(std::string state) override;
   void subscribe_sources() override;
 };
 }  // namespace homeassistant_media_player

@@ -11,6 +11,10 @@ void HomeAssistantTVMediaPlayer::setup() {
   HomeAssistantBaseMediaPlayer::setup();
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 
+  subscribe_source();
+}
+
+void HomeAssistantTVMediaPlayer::subscribe_source() {
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("source"),
       std::bind(&HomeAssistantTVMediaPlayer::player_source_changed, this,
@@ -28,6 +32,8 @@ void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
     mediaSource = PlexRemotePlayerMediaSource;
   } else if (state.find("Roku") != std::string::npos) {
     mediaSource = HomeRemotePlayerMediaSource;
+  } else if (state.find("tvshow") != std::string::npos) {
+    mediaSource = TVRemotePlayerMediaSource;
   } else {
     mediaSource = NoRemotePlayerMediaSource;
   }
@@ -49,6 +55,14 @@ void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
 void HomeAssistantTVMediaPlayer::tvRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   ESP_LOGI(TAG, "tvRemoteCommand: %d", command);
+}
+
+void HomeAssistantTVMediaPlayer::increaseVolume() {
+  tvRemoteCommand(VOLUME_UP);
+}
+
+void HomeAssistantTVMediaPlayer::decreaseVolume() {
+  tvRemoteCommand(VOLUME_DOWN);
 }
 
 void HomeAssistantTVMediaPlayer::control(

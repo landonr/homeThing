@@ -10,12 +10,9 @@ static const char* const TAG = "homeassistant.media_player_speaker";
 void HomeAssistantSpeakerMediaPlayer::setup() {
   HomeAssistantBaseMediaPlayer::setup();
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
+}
 
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_title"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::media_title_changed, this,
-                std::placeholders::_1));
-
+void HomeAssistantSpeakerMediaPlayer::subscribe_source() {
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("media_artist"),
       std::bind(&HomeAssistantSpeakerMediaPlayer::media_artist_changed, this,
@@ -79,23 +76,23 @@ void HomeAssistantSpeakerMediaPlayer::clearSource() {
   media_album_name = "";
 }
 
-void HomeAssistantSpeakerMediaPlayer::media_title_changed(std::string state) {
-  ESP_LOGI(TAG, "media_title_changed: %s changed to %s",
-           this->entity_id_.c_str(), state.c_str());
-  if (strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
-    mediaPosition = 0;
-  }
-  if (strcmp("TV", state.c_str()) != 0) {
-    mediaTitle = state.c_str();
-  } else {
-    mediaTitle = "";
-    mediaArtist = "";
-    playlist_title = "";
-    mediaPosition = -1;
-  }
-  mediaDuration = -1;
-  this->publish_state();
-}
+// void HomeAssistantSpeakerMediaPlayer::media_title_changed(std::string state) {
+//   ESP_LOGI(TAG, "media_title_changed: %s changed to %s",
+//            this->entity_id_.c_str(), state.c_str());
+//   if (strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
+//     mediaPosition = 0;
+//   }
+//   if (strcmp("TV", state.c_str()) != 0) {
+//     mediaTitle = state.c_str();
+//   } else {
+//     mediaTitle = "";
+//     mediaArtist = "";
+//     playlist_title = "";
+//     mediaPosition = -1;
+//   }
+//   mediaDuration = -1;
+//   this->publish_state();
+// }
 
 void HomeAssistantSpeakerMediaPlayer::media_artist_changed(std::string state) {
   ESP_LOGI(TAG, "media_artist_changed: %s changed to %s",

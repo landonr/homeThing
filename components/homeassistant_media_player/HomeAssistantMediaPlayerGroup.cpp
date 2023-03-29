@@ -26,12 +26,12 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
           "sensor.sonos_favorites", "items");
     }
 
-    if (!spotify_active && sonos_speaker) {
-      spotify_active = true;
-      subscribe_homeassistant_state(
-          &HomeAssistantMediaPlayerGroup::playlists_changed,
-          "sensor.playlists_sensor", "playlists");
-    }
+    // if (!spotify_active && sonos_speaker) {
+    //   spotify_active = true;
+    //   subscribe_homeassistant_state(
+    //       &HomeAssistantMediaPlayerGroup::playlists_changed,
+    //       "sensor.playlists_sensor", "playlists");
+    // }
   }
 
   new_media_player->add_on_state_callback([this, new_media_player]() {
