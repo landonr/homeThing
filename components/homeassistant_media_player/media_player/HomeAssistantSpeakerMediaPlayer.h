@@ -26,8 +26,6 @@ class HomeAssistantSpeakerMediaPlayer : public HomeAssistantBaseMediaPlayer {
  private:
   void subscribe_source() override;
   void group_members_changed(std::string state) override;
-  // void media_title_changed(std::string state);
-  void media_artist_changed(std::string state);
   void media_album_changed(std::string state);
   void media_content_id_changed(std::string state);
   void tokenize(std::string const& str, std::string delim,

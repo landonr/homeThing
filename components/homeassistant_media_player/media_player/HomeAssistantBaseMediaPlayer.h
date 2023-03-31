@@ -201,6 +201,7 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   virtual void decreaseVolume();
   virtual void updateVolumeLevel();
   virtual void clearSource() {}
+  virtual void media_artist_changed(std::string state);
 
   int mediaDuration = -1;
   int mediaPosition = -1;
@@ -232,6 +233,7 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   virtual void subscribe_sources() {}
   virtual void sources_changed(std::string state) {}
   virtual void group_members_changed(std::string state) {}
+  virtual void subscribe_media_artist();
 
  private:
   RemotePlayerType player_type_;

@@ -11,12 +11,12 @@ namespace homeassistant_media_player {
 class HomeAssistantTVKodiMediaPlayer : public HomeAssistantTVMediaPlayer {
  public:
   void setup() override;
-
   void tvRemoteCommand(MediaPlayerTVRemoteCommand command) override;
 
- protected:
-  std::string stringForRemoteCommand(MediaPlayerTVRemoteCommand command);
+ private:
+  void subscribe_media_artist() override;
   void subscribe_source() override;
+  std::string stringForRemoteCommand(MediaPlayerTVRemoteCommand command);
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

@@ -13,6 +13,7 @@ void HomeAssistantBaseMediaPlayer::setup() {
   subscribe_supported_features();
   subscribe_source();
   subscribe_media_title();
+  subscribe_media_artist();
 }
 
 void HomeAssistantBaseMediaPlayer::playSource(MediaPlayerSource source) {
@@ -49,8 +50,12 @@ void HomeAssistantBaseMediaPlayer::nextTrack() {
 
 std::string HomeAssistantBaseMediaPlayer::mediaTitleString() {
   switch (get_player_type()) {
-    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType: {
+      if (mediaArtist != "") {
+        return mediaArtist;
+      }
       return playerSourceStateString(mediaSource);
+    }
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
       return mediaArtist;
   }
@@ -59,8 +64,12 @@ std::string HomeAssistantBaseMediaPlayer::mediaTitleString() {
 
 std::string HomeAssistantBaseMediaPlayer::mediaSubtitleString() {
   switch (get_player_type()) {
-    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-      return "";
+    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType: {
+      if (mediaTitle != "") {
+        return mediaTitle;
+      }
+      return playerSourceStateString(mediaSource);
+    }
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
       return mediaTitle;
   }
@@ -231,6 +240,14 @@ void HomeAssistantBaseMediaPlayer::subscribe_media_title() {
                 std::placeholders::_1));
 }
 
+void HomeAssistantBaseMediaPlayer::subscribe_media_artist() {
+  ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
+  api::global_api_server->subscribe_home_assistant_state(
+      this->entity_id_, optional<std::string>("media_artist"),
+      std::bind(&HomeAssistantBaseMediaPlayer::media_artist_changed, this,
+                std::placeholders::_1));
+}
+
 void HomeAssistantBaseMediaPlayer::subscribe_shuffle() {
   ESP_LOGI(TAG, "subscribe_shuffle: %s", this->entity_id_.c_str());
   api::global_api_server->subscribe_home_assistant_state(
@@ -296,6 +313,13 @@ void HomeAssistantBaseMediaPlayer::media_title_changed(std::string state) {
     mediaPosition = -1;
   }
   mediaDuration = -1;
+  this->publish_state();
+}
+
+void HomeAssistantBaseMediaPlayer::media_artist_changed(std::string state) {
+  ESP_LOGI(TAG, "media_artist_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
+  mediaArtist = state.c_str();
   this->publish_state();
 }
 

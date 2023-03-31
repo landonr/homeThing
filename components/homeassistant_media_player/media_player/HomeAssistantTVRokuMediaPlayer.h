@@ -11,7 +11,6 @@ namespace homeassistant_media_player {
 class HomeAssistantTVRokuMediaPlayer : public HomeAssistantTVMediaPlayer {
  public:
   void setup() override;
-
   void tvRemoteCommand(MediaPlayerTVRemoteCommand command) override;
 
  private:

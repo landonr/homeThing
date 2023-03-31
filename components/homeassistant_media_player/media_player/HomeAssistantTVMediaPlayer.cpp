@@ -28,9 +28,12 @@ void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
     mediaSource = NetflixRemotePlayerMediaSource;
   } else if (state.find("Plex") != std::string::npos) {
     mediaSource = PlexRemotePlayerMediaSource;
-  } else if (state.find("Roku") != std::string::npos) {
+  } else if (state.find("Roku") != std::string::npos ||
+             state.find("idle") != std::string::npos) {
     mediaSource = HomeRemotePlayerMediaSource;
-  } else if (state.find("tvshow") != std::string::npos) {
+    mediaTitle = "";
+  } else if (state.find("tvshow") != std::string::npos ||
+             state.find("playing") != std::string::npos) {
     mediaSource = TVRemotePlayerMediaSource;
   } else {
     mediaSource = NoRemotePlayerMediaSource;

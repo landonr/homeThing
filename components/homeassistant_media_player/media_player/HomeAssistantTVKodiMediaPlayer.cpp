@@ -27,6 +27,14 @@ void HomeAssistantTVKodiMediaPlayer::subscribe_source() {
                 std::placeholders::_1));
 }
 
+void HomeAssistantTVKodiMediaPlayer::subscribe_media_artist() {
+  ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
+  api::global_api_server->subscribe_home_assistant_state(
+      this->entity_id_, optional<std::string>("media_series_title"),
+      std::bind(&HomeAssistantBaseMediaPlayer::media_artist_changed, this,
+                std::placeholders::_1));
+}
+
 std::string HomeAssistantTVKodiMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {

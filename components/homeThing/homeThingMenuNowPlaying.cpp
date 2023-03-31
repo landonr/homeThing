@@ -136,18 +136,21 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   }
   std::string nowPlayingText = "Now Playing,";
 
-  if (media_player_group_->active_player_->get_player_type() !=
-      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
-        static_cast<
-            homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-            media_player_group_->active_player_);
-    if (activeSpeaker->playlist_title != activeSpeaker->mediaTitle) {
-      nowPlayingText += " " + activeSpeaker->playlist_title;
-    } else if (activeSpeaker->media_album_name != activeSpeaker->mediaTitle) {
-      nowPlayingText += " " + activeSpeaker->media_album_name;
-    }
+  // if (media_player_group_->active_player_->get_player_type() !=
+  //     homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+  //   homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+  //       static_cast<
+  //           homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
+  //           media_player_group_->active_player_);
+  if (media_player_group_->active_player_->playlist_title !=
+      media_player_group_->active_player_->mediaTitle) {
+    nowPlayingText += " " + media_player_group_->active_player_->playlist_title;
+    // } else if (media_player_group_->active_player_->media_album_name !=
+    //            media_player_group_->active_player_->mediaTitle) {
+    //   nowPlayingText +=
+    //       " " + media_player_group_->active_player_->media_album_name;
   }
+  // }
   int xPos = display_buffer_->get_width() / 2;
   auto nowPlayingWrappedText =
       getWrappedTitles(display_state_->get_margin_size(),

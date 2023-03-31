@@ -14,11 +14,6 @@ void HomeAssistantSpeakerMediaPlayer::setup() {
 
 void HomeAssistantSpeakerMediaPlayer::subscribe_source() {
   api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_artist"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::media_artist_changed, this,
-                std::placeholders::_1));
-
-  api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("media_album_name"),
       std::bind(&HomeAssistantSpeakerMediaPlayer::media_album_changed, this,
                 std::placeholders::_1));
@@ -93,13 +88,6 @@ void HomeAssistantSpeakerMediaPlayer::clearSource() {
 //   mediaDuration = -1;
 //   this->publish_state();
 // }
-
-void HomeAssistantSpeakerMediaPlayer::media_artist_changed(std::string state) {
-  ESP_LOGI(TAG, "media_artist_changed: %s changed to %s",
-           this->entity_id_.c_str(), state.c_str());
-  mediaArtist = state.c_str();
-  this->publish_state();
-}
 
 void HomeAssistantSpeakerMediaPlayer::media_album_changed(std::string state) {
   ESP_LOGI(TAG, "media_album_changed: %s changed to %s",
