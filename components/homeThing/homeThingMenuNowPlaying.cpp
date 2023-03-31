@@ -224,56 +224,54 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
-  if (media_player_group_->active_player_->get_player_type() !=
-      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
-        static_cast<
-            homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-            media_player_group_->active_player_);
-    int mediaDuration = activeSpeaker->mediaDuration;
-    int mediaPosition = activeSpeaker->mediaPosition;
-    if (mediaDuration <= 0 && mediaPosition <= 0) {
-      return;
-    }
-    int barMargin = 1;
-    int barHeight = display_state_->get_font_small()->get_baseline();
-    int textWidth = (display_state_->get_font_small()->get_baseline() *
-                     display_state_->get_font_size_width_ratio() * 5) +
-                    display_state_->get_margin_size() / 2;
-    int totalBarWidth = display_buffer_->get_width() - textWidth * 2;
-    int barWidth = 0;
-    if (mediaDuration > 0 && mediaPosition > 0) {
-      barWidth = (totalBarWidth - 4) * (static_cast<double>(mediaPosition) /
-                                        static_cast<double>(mediaDuration));
-    }
-
-    int yPos = display_state_->getBottomBarYPosition(
-        true, display_buffer_->get_height());
-    display_buffer_->rectangle(
-        textWidth, yPos, totalBarWidth, barHeight,
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
-    display_buffer_->filled_rectangle(
-        textWidth + barMargin * 2, yPos + barMargin * 2, barWidth,
-        barHeight - 2 - barMargin * 2,
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
-
-    int textYPos =
-        yPos - display_state_->get_font_small()->get_baseline() * 0.1;
-    std::string mediaDurationSeconds = secondsToString(mediaDuration);
-    std::string mediaPositionSeconds = secondsToString(mediaPosition);
-    display_buffer_->printf(
-        display_state_->get_margin_size(), textYPos,
-        display_state_->get_font_small(),
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_LEFT, "%d:%s", mediaPosition / 60,
-        mediaPositionSeconds.c_str());
-    display_buffer_->printf(
-        display_buffer_->get_width() - display_state_->get_margin_size(),
-        textYPos, display_state_->get_font_small(),
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_RIGHT, "%d:%s", mediaDuration / 60,
-        mediaDurationSeconds.c_str());
+  // if (media_player_group_->active_player_->get_player_type() !=
+  //     homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+  //   homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+  //       static_cast<
+  //           homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
+  //           media_player_group_->active_player_);
+  int mediaDuration = media_player_group_->active_player_->mediaDuration;
+  int mediaPosition = media_player_group_->active_player_->mediaPosition;
+  if (mediaDuration <= 0 && mediaPosition <= 0) {
+    return;
   }
+  int barMargin = 1;
+  int barHeight = display_state_->get_font_small()->get_baseline();
+  int textWidth = (display_state_->get_font_small()->get_baseline() *
+                   display_state_->get_font_size_width_ratio() * 5) +
+                  display_state_->get_margin_size() / 2;
+  int totalBarWidth = display_buffer_->get_width() - textWidth * 2;
+  int barWidth = 0;
+  if (mediaDuration > 0 && mediaPosition > 0) {
+    barWidth = (totalBarWidth - 4) * (static_cast<double>(mediaPosition) /
+                                      static_cast<double>(mediaDuration));
+  }
+
+  int yPos = display_state_->getBottomBarYPosition(
+      true, display_buffer_->get_height());
+  display_buffer_->rectangle(
+      textWidth, yPos, totalBarWidth, barHeight,
+      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+  display_buffer_->filled_rectangle(
+      textWidth + barMargin * 2, yPos + barMargin * 2, barWidth,
+      barHeight - 2 - barMargin * 2,
+      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+
+  int textYPos = yPos - display_state_->get_font_small()->get_baseline() * 0.1;
+  std::string mediaDurationSeconds = secondsToString(mediaDuration);
+  std::string mediaPositionSeconds = secondsToString(mediaPosition);
+  display_buffer_->printf(
+      display_state_->get_margin_size(), textYPos,
+      display_state_->get_font_small(),
+      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+      display::TextAlign::TOP_LEFT, "%d:%s", mediaPosition / 60,
+      mediaPositionSeconds.c_str());
+  display_buffer_->printf(
+      display_buffer_->get_width() - display_state_->get_margin_size(),
+      textYPos, display_state_->get_font_small(),
+      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+      display::TextAlign::TOP_RIGHT, "%d:%s", mediaDuration / 60,
+      mediaDurationSeconds.c_str());
 }
 
 std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(

@@ -186,6 +186,7 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
                      case TV_BACK:
                      case TV_HOME:
                      case MENU_HOME:
+                     case PAUSE:
                        //  case REMOTE_MODE:
                        return true;
                      default:

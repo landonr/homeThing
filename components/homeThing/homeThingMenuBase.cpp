@@ -381,6 +381,9 @@ bool HomeThingMenuBase::button_press_now_playing_option_continue(
     if (feature) {
       ESP_LOGD(TAG, "buttonPressSelect: option menu selected %d", *feature);
       switch (*feature) {
+        case homeassistant_media_player::MediaPlayerSupportedFeature::PAUSE:
+          media_player_group_->active_player_->playPause();
+          break;
         case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
           menuIndex = 0;
           activeMenuState = groupMenu;
