@@ -31,19 +31,19 @@ std::string HomeAssistantTVKodiMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {
     case UP:
-      return "up";
+      return "Input.Up";
     case DOWN:
-      return "down";
+      return "Input.Down";
     case LEFT:
-      return "left";
+      return "Input.Left";
     case RIGHT:
-      return "right";
+      return "Input.Right";
     case SELECT:
-      return "select";
+      return "Input.Select";
     case BACK:
-      return "back";
+      return "Input.Back";
     case HOME:
-      return "home";
+      return "Input.ContextMenu";
     case POWER:
       return "power";
     case VOLUME_UP:
@@ -58,15 +58,12 @@ std::string HomeAssistantTVKodiMediaPlayer::stringForRemoteCommand(
 
 void HomeAssistantTVKodiMediaPlayer::tvRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
-  std::string remoteName = entity_id_.substr(12).insert(0, "remote");
   auto commandString = stringForRemoteCommand(command);
   ESP_LOGI(TAG, "tvRemoteCommand: %s, %s", commandString.c_str(),
-           remoteName.c_str());
-  call_homeassistant_service("remote.send_command",
-                             {
-                                 {"entity_id", remoteName},
-                                 {"command", commandString.c_str()},
-                             });
+           entity_id_.c_str());
+  call_homeassistant_service(
+      "kodi.call_method",
+      {{"entity_id", entity_id_.c_str()}, {"method", commandString.c_str()}});
 }
 }  // namespace homeassistant_media_player
 }  // namespace esphome
