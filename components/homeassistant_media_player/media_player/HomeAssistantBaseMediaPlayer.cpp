@@ -11,6 +11,7 @@ void HomeAssistantBaseMediaPlayer::setup() {
 
   subscribe_player_state();
   subscribe_supported_features();
+  subscribe_source();
   subscribe_media_title();
 }
 
@@ -206,7 +207,7 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_supported_features() {
-  ESP_LOGI(TAG, "subscribe_player_state: %s", this->entity_id_.c_str());
+  ESP_LOGI(TAG, "subscribe_supported_features: %s", this->entity_id_.c_str());
   api::global_api_server->subscribe_home_assistant_state(
       this->entity_id_, optional<std::string>("supported_features"),
       std::bind(

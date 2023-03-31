@@ -10,8 +10,6 @@ static const char* const TAG = "homeassistant.media_player_tv";
 void HomeAssistantTVMediaPlayer::setup() {
   HomeAssistantBaseMediaPlayer::setup();
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
-
-  subscribe_source();
 }
 
 void HomeAssistantTVMediaPlayer::subscribe_source() {
