@@ -439,8 +439,10 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case TV_HOME:
       sendActivePlayerRemoteCommand(HOME);
       break;
-    case MENU_HOME:
     case PAUSE:
+      active_player_->playPause();
+      break;
+    case MENU_HOME:
     case VOLUME_SET:
     case SEEK:
     case SELECT_SOURCE:

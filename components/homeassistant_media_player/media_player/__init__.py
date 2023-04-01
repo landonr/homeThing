@@ -12,11 +12,13 @@ HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssi
 HomeAssistantTVMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVRokuMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVKodiMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVKodiMediaPlayer", media_player.MediaPlayer, cg.Component)
+HomeAssistantTVSamsungMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVSamsungMediaPlayer", media_player.MediaPlayer, cg.Component)
 
 CONF_SPEAKER = "speaker"
 CONF_TV = "tv"
 CONF_ROKU = "roku"
 CONF_KODI = "kodi"
+CONF_SAMSUNG = "samsung"
 CONF_SOUNDBAR = "soundbar"
 
 MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
@@ -59,6 +61,11 @@ CONFIG_SCHEMA = cv.typed_schema(
         CONF_KODI: TV_CONFIG_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantTVKodiMediaPlayer),
+            }
+        ),
+        CONF_SAMSUNG: TV_CONFIG_SCHEMA.extend(
+            {
+                cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantTVSamsungMediaPlayer),
             }
         ),
     },
