@@ -19,14 +19,6 @@ void HomeAssistantTVSamsungMediaPlayer::setup() {
   HomeAssistantTVMediaPlayer::setup();
 }
 
-void HomeAssistantTVSamsungMediaPlayer::subscribe_source() {
-  // HomeAssistantBaseMediaPlayer::subscribe_source();
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_content_type"),
-      std::bind(&HomeAssistantTVMediaPlayer::player_source_changed, this,
-                std::placeholders::_1));
-}
-
 void HomeAssistantTVSamsungMediaPlayer::subscribe_media_artist() {
   ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
   api::global_api_server->subscribe_home_assistant_state(
