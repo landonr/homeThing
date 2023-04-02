@@ -37,6 +37,9 @@ packages:
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 
+substitutions:
+  friendly_name: "homeThingClear"
+
 color:
   - id: my_red
     red_int: 197

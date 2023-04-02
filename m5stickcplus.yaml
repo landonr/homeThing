@@ -38,79 +38,17 @@ packages:
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
   menu_group: !include homeConfig/menu_group.yaml
+  fonts: !include common/fonts.yaml
+  icon_fonts: !include common/icon_fonts.yaml
+
+substitutions:
+  friendly_name: "homeThingM5StickPlus"
 
 i2c:
    - id: bus_a
      sda: GPIO21
      scl: GPIO22
      scan: true
-
-font:
-## Font needs to be monospace!
-  - file: "fonts/iosevka-heavy.ttf"
-    id: large_heavy_font
-    size: 24
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-  - file: "fonts/iosevka.ttf"
-    id: large_font
-    size: 24
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-  - file: "fonts/iosevka.ttf"
-    id: medium_font
-    size: 15
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-  - file: "fonts/iosevka.ttf"
-    id: small_font
-    size: 14
-    glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-  - file: 'fonts/homeThingFontLogo.ttf' 
-    id: home_thing_logo
-    size: 48
-    glyphs: [
-      '',
-    ]  
-  - file: 'fonts/materialdesignicons-webfont.ttf' 
-    id: material_font_large
-    size: 19
-    glyphs: [
-      '󰐊', # mdi-play
-      '󰓛', # mdi-stop
-      '󰏤', # home-pause
-      '󰽥', # mdi-moon-waning-crescent
-      '󰒝', # mdi-shuffle
-      '󰒞', # mdi-shuffle-disabled
-      '󰕾', # mdi-volume-high
-      '󰕿', # mdi-volume-low
-      '󰚺', # mdi-plex
-      '󰝆', # mdi-netflix
-      '󰗃', # mdi-youtube
-      '󰓇', # mdi-spotify
-      '󰔂', # mdi-television
-      '󰋜', # mdi-home
-      '󰌵', # mdi-lightbulb
-      '󰌶', # mdi-lightbulb-outline
-    ]  
-  - file: 'fonts/materialdesignicons-webfont.ttf' 
-    id: material_font_small
-    size: 18
-    glyphs: [
-      '󰐊', # mdi-play
-      '󰓛', # mdi-stop
-      '󰏤', # home-pause
-      '󰽥', # mdi-moon-waning-crescent
-      '󰒝', # mdi-shuffle
-      '󰒞', # mdi-shuffle-disabled
-      '󰕾', # mdi-volume-high
-      '󰕿', # mdi-volume-low
-      '󰚺', # mdi-plex
-      '󰝆', # mdi-netflix
-      '󰗃', # mdi-youtube
-      '󰓇', # mdi-spotify
-      '󰔂', # mdi-television
-      '󰋜', # mdi-home
-      '󰌵', # mdi-lightbulb
-      '󰌶', # mdi-lightbulb-outline
-    ]
 
 axp192:
   id: axp

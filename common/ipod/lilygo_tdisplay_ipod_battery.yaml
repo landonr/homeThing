@@ -44,7 +44,7 @@ sensor:
             id: battery_percent
             state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
   - platform: template
-    name: Battery Percent
+    name: "${friendly_name} Battery Percent"
     id: battery_percent
     unit_of_measurement: '%'
     on_value_range:

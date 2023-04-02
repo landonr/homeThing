@@ -32,73 +32,18 @@ packages:
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
   menu_group: !include homeConfig/menu_group.yaml
-  
-font:
-  ## Font needs to be monospace!
-    - file: "fonts/iosevka-heavy.ttf"
-      id: large_heavy_font
-      size: 24
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-    - file: "fonts/iosevka.ttf"
-      id: large_font
-      size: 24
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-    - file: "fonts/iosevka.ttf"
-      id: medium_font
-      size: 20
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-    - file: "fonts/iosevka.ttf"
-      id: small_font
-      size: 18
-      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-    - file: 'fonts/homeThingFontLogo.ttf' 
-      id: home_thing_logo
-      size: 48
-      glyphs: [
-        '',
-      ]  
-    - file: 'fonts/materialdesignicons-webfont.ttf' 
-      id: material_font_large
-      size: 28
-      glyphs: [
-        '󰐊', # mdi-play
-        '󰓛', # mdi-stop
-        '󰏤', # home-pause
-        '󰽥', # mdi-moon-waning-crescent
-        '󰒝', # mdi-shuffle
-        '󰒞', # mdi-shuffle-disabled
-        '󰕾', # mdi-volume-high
-        '󰕿', # mdi-volume-low
-        '󰚺', # mdi-plex
-        '󰝆', # mdi-netflix
-        '󰗃', # mdi-youtube
-        '󰓇', # mdi-spotify
-        '󰔂', # mdi-television
-        '󰋜', # mdi-home
-        '󰌵', # mdi-lightbulb
-        '󰌶', # mdi-lightbulb-outline
-      ]  
-    - file: 'fonts/materialdesignicons-webfont.ttf' 
-      id: material_font_small
-      size: 24
-      glyphs: [
-        '󰐊', # mdi-play
-        '󰓛', # mdi-stop
-        '󰏤', # home-pause
-        '󰽥', # mdi-moon-waning-crescent
-        '󰒝', # mdi-shuffle
-        '󰒞', # mdi-shuffle-disabled
-        '󰕾', # mdi-volume-high
-        '󰕿', # mdi-volume-low
-        '󰚺', # mdi-plex
-        '󰝆', # mdi-netflix
-        '󰗃', # mdi-youtube
-        '󰓇', # mdi-spotify
-        '󰔂', # mdi-television
-        '󰋜', # mdi-home
-        '󰌵', # mdi-lightbulb
-        '󰌶', # mdi-lightbulb-outline
-      ]
+  fonts: !include common/fonts.yaml
+  icon_fonts: !include common/icon_fonts.yaml
+
+substitutions:
+  friendly_name: "homeThingFireRemote"
+  large_heavy_font_size: "24"
+  large_font_size: "24"
+  medium_font_size: "20"
+  small_font_size: "18"
+  home_thing_logo_size: "64"
+  material_font_large_size: "28"
+  material_font_small_size: "24"
 
 i2c:
   sda: 21

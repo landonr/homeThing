@@ -1,8 +1,10 @@
+# set up your name
 esphome:
   name: "homething-lilygo"
   platform: ESP32
   board: featheresp32
 
+# don't modify: include homeThing
 external_components:
   - source:
       type: git
@@ -18,7 +20,26 @@ external_components:
       homeThing,
     ]
 
-#leave this to include default ipod controls
+# maybe modify: display setup
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+display:
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
+    id: my_display
+    backlight_pin: GPIO4
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    rotation: 90
+    update_interval: 10s
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
+
+# maybe modify: include default ipod controls
 packages:
   remote_package:
     url: https://github.com/landonr/homeThing
@@ -37,7 +58,11 @@ packages:
     refresh: 0s
   setup: !include homeConfig/device_setup.yaml
 
-# customize these
+# modify: device setup
+substitutions:
+  friendly_name: "homeThing example"
+
+# menu configs: if you don't need a menu, remove it from here and in the homeThing config below
 
 # switch menu
 switch:
@@ -113,24 +138,28 @@ homeassistant_service_group:
             data:
               entity_id: "button.desk_position_nudge_up"
 
+# homeThing config
+# you only need one menu _group
 homeThing:
   id: homeThingMenu
-  sleep_switch: sleep_toggle
-  backlight: backlight
-  battery:
+  sleep_switch: sleep_toggle #optional
+  backlight: backlight #optional
+  battery: #optional
     battery_percent: battery_percent
     charging: charging
+   # need atleast 1 group_component
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
-  display: my_display
-  on_redraw:
+  display: my_display # required
+  on_redraw: # required
     then:
       component.update: my_display
   display_state:
-    draw_battery_level: true
+    draw_battery_level: true # only needed if you have a battery
+    # probably leave these alone
     font_small: small_font
     font_medium: medium_font
     font_large: large_font
@@ -138,21 +167,3 @@ homeThing:
     font_material_large: material_font_large
     font_material_small: material_font_small
     font_logo: home_thing_logo
-
-spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
-
-display:
-  - platform: st7789v
-    model: TTGO_TDisplay_135x240
-    id: my_display
-    backlight_pin: GPIO4
-    cs_pin: GPIO5
-    dc_pin: GPIO16
-    reset_pin: GPIO23
-    rotation: 90
-    update_interval: 10s
-    lambda: |-
-      id(homeThingMenu)->draw_menu_screen();
-      return;

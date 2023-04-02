@@ -1,6 +1,6 @@
 switch:
   - platform: template
-    name: Sleep Toggle
+    name: "${friendly_name} Sleep Toggle"
     id: sleep_toggle
     optimistic: true
     on_turn_on:
