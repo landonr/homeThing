@@ -17,7 +17,7 @@ homeassistant_light_group:
   lights:
     - id: light_rgb_lights
     - id: light_living_room_lights
-    - id: light_office_lamp
+    - id: light_desk_lamp
 
 homeassistant_media_player:
   id: media_group_component

@@ -75,7 +75,7 @@ void HomeThingMenuBase::draw_menu_screen() {
   if (!menu_drawing_) {
     menu_drawing_ = true;
     menu_titles = activeMenu();
-    ESP_LOGI(TAG, "drawMenu:%d %s #%d", menuIndex,
+    ESP_LOGD(TAG, "drawMenu:%d %s #%d", menuIndex,
              menuTitleForType(activeMenuState)->get_name().c_str(),
              menu_titles.size());
     if (menu_display_->draw_menu_screen(&activeMenuState, menu_titles,

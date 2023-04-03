@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
 #include "esphome/core/color.h"
@@ -32,14 +33,11 @@ class HomeAssistantLightState : public light::LightState {
   using LightState::LightState;
 };
 
-class HomeAssistantLight : public light::LightOutput,
-                           public EntityBase,
-                           public Component,
-                           public api::CustomAPIDevice {
+class HomeAssistantLight
+    : public light::LightOutput,
+      public homeassistant_component::HomeAssistantComponent {
  public:
   void setup() override;
-  void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
-  std::string get_entity_id() { return entity_id_; }
   light::LightState* get_light_state_() { return light_state_; }
   light::LightTraits get_traits() override;
   void add_on_state_callback(std::function<void()>&& callback);
@@ -50,6 +48,7 @@ class HomeAssistantLight : public light::LightOutput,
   void incTemperature();
   void decBrightness();
   void incBrightness();
+  void toggle();
   void decColor();
   void incColor();
   void setAttribute(const std::map<std::string, std::string>& data);
@@ -64,11 +63,9 @@ class HomeAssistantLight : public light::LightOutput,
   void publish_api_state(light::LightState* state);
   void write_state(light::LightState* state) override;
   bool get_state();
-  bool next_api_publish_ = false;
 
  private:
   CallbackManager<void()> state_callback_{};
-  std::string entity_id_;
   light::LightState* light_state_{nullptr};
   light::LightTraits light_traits_ = light::LightTraits();
   void subscribe_states();
@@ -84,14 +81,11 @@ class HomeAssistantLight : public light::LightOutput,
   void color_mode_changed(std::string state);
   void supported_color_modes_changed(std::string state);
   void update_color_with_hsv(const float hsv_color);
-  bool can_update_from_api();
-  void ignore_api_updates_with_seconds(int seconds);
   std::vector<std::string> split(const std::string& s,
                                  const std::string& delim);
   uint32_t min_value_ = 0;
   uint32_t max_value_ = 255;
   uint32_t color_temperature_max_value_ = 500;
-  uint32_t ignore_update_until_ = 0;
 };
 
 }  // namespace homeassistant_light

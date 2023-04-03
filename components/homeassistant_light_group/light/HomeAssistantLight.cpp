@@ -208,6 +208,11 @@ void HomeAssistantLight::incBrightness() {
   call.perform();
 }
 
+void HomeAssistantLight::toggle() {
+  next_api_publish_ = true;
+  this->light_state_->toggle().perform();
+}
+
 void HomeAssistantLight::update_color_with_hsv(const float hsv_color) {
   next_api_publish_ = true;
   auto call = this->light_state_->make_call();
@@ -438,15 +443,6 @@ void HomeAssistantLight::supported_color_modes_changed(std::string state) {
 
 bool HomeAssistantLight::get_state() {
   return light_state_->remote_values.is_on();
-}
-
-bool HomeAssistantLight::can_update_from_api() {
-  return micros() > ignore_update_until_;
-}
-
-void HomeAssistantLight::ignore_api_updates_with_seconds(int seconds) {
-  uint32_t delayTime = seconds * 1000000;
-  ignore_update_until_ = micros() + delayTime;
 }
 
 }  // namespace homeassistant_light

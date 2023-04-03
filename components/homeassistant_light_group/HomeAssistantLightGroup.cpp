@@ -45,9 +45,7 @@ void HomeAssistantLightGroup::toggleLight(int index) {
   if (output == NULL) {
     return;
   }
-  output->next_api_publish_ = true;
-  auto call = light->toggle();
-  call.perform();
+  output->toggle();
 }
 
 }  // namespace homeassistant_light_group
