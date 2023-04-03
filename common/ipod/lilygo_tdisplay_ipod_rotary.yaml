@@ -1,3 +1,7 @@
+substitutions:
+  rotary_pin_a: "21"
+  rotary_pin_b: "22"
+  
 sensor:
   - platform: rotary_encoder
     filters:
@@ -5,12 +9,12 @@ sensor:
     name: "Rotary Encoder"
     internal: true
     pin_a:
-      number: 21
+      number: $rotary_pin_a
       mode:
         input: true
         pullup: true
     pin_b:
-      number: 22
+      number: $rotary_pin_b
       mode:
         input: true
         pullup: true

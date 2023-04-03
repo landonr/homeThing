@@ -4,43 +4,6 @@ esphome:
   platform: ESP32
   board: featheresp32
 
-# maybe modify: display setup
-spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
-
-display:
-  - platform: st7789v
-    model: TTGO_TDisplay_135x240
-    id: my_display
-    backlight_pin: GPIO4
-    cs_pin: GPIO5
-    dc_pin: GPIO16
-    reset_pin: GPIO23
-    rotation: 90
-    update_interval: 10s
-    lambda: |-
-      id(homeThingMenu)->draw_menu_screen();
-      return;
-
-# maybe modify: include default ipod controls
-packages:
-  remote_package:
-    url: https://github.com/landonr/homeThing
-    ref: lando/codeCleanup # optional
-    files: [
-      common/device_base.yaml, 
-      common/ipod/lilygo_tdisplay_ipod_backlight.yaml,
-      common/ipod/lilygo_tdisplay_ipod_battery.yaml,
-      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml,
-      common/ipod/lilygo_tdisplay_ipod_rotary.yaml,
-      common/ipod/lilygo_tdisplay_ipod_sleep.yaml,
-      common/ipod/lilygo_tdisplay_ipod_switch.yaml,
-      common/fonts.yaml,
-      common/icon_fonts.yaml
-    ]
-    refresh: 0s
-
 # modify: device setup
 substitutions:
   friendly_name: "homeThing example"
@@ -151,6 +114,42 @@ homeThing:
     font_material_small: material_font_small
     font_logo: home_thing_logo
 
+# maybe modify: display setup
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+display:
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
+    id: my_display
+    backlight_pin: GPIO4
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    rotation: 90
+    update_interval: 10s
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
+
+# maybe modify: include default ipod controls
+packages:
+  remote_package:
+    url: https://github.com/landonr/homeThing
+    ref: lando/codeCleanup # optional
+    files: [
+      common/device_base.yaml, 
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml,
+      common/ipod/lilygo_tdisplay_ipod_battery.yaml,
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml,
+      common/ipod/lilygo_tdisplay_ipod_rotary.yaml,
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml,
+      common/fonts.yaml,
+      common/icon_fonts.yaml
+    ]
+    refresh: 0s
+    
 # only remove components if you aren't using the group
 external_components:
   - source:

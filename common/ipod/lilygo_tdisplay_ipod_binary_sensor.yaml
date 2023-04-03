@@ -1,3 +1,10 @@
+substitutions:
+  rotary_left_pin: "15"
+  rotary_right_pin: "12"
+  rotary_up_pin: "2"
+  rotary_down_pin: "13"
+  rotary_select_pin: "17"
+
 binary_sensor:
   ## controls
   - platform: gpio
@@ -32,7 +39,7 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 15
+      number: $rotary_left_pin
       inverted: true
       mode:
         input: true
@@ -45,7 +52,7 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 2
+      number: $rotary_up_pin
       inverted: true
       mode:
         input: true
@@ -58,7 +65,7 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 12
+      number: $rotary_right_pin
       inverted: true
       mode:
         input: true
@@ -71,7 +78,7 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 13
+      number: $rotary_down_pin
       inverted: true
       mode:
         input: true
@@ -84,7 +91,7 @@ binary_sensor:
   - platform: gpio
     internal: true
     pin:
-      number: 17
+      number: $rotary_select_pin
       inverted: true
       mode:
         input: true

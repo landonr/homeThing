@@ -27,7 +27,6 @@ packages:
   ipod_control_binary_sensor: !include common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
   ipod_control_rotary: !include common/ipod/lilygo_tdisplay_ipod_rotary.yaml
   ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
-  ipod_control_switch: !include common/ipod/lilygo_tdisplay_ipod_switch.yaml
   setup: !include homeConfig/device_setup.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
