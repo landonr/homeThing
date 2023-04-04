@@ -10,10 +10,13 @@ static const char* const TAG = "homeassistant.switch";
 
 void HomeAssistantSwitch::setup() {
   ESP_LOGI(TAG, "'%s': Setup", get_name().c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, this->attribute_,
-      std::bind(&HomeAssistantSwitch::state_changed, this,
-                std::placeholders::_1));
+  if (this->attribute_) {
+    subscribe_homeassistant_state(&HomeAssistantSwitch::state_changed,
+                                  this->entity_id_, *this->attribute_);
+  } else {
+    subscribe_homeassistant_state(&HomeAssistantSwitch::state_changed,
+                                  this->entity_id_);
+  }
 }
 
 void HomeAssistantSwitch::write_state(bool state) {
@@ -23,16 +26,7 @@ void HomeAssistantSwitch::write_state(bool state) {
 
 void HomeAssistantSwitch::toggleSwitch() {
   std::map<std::string, std::string> data = {{"entity_id", entity_id_}};
-
-  api::HomeassistantServiceResponse resp;
-  resp.service = "switch.toggle";
-  for (auto& it : data) {
-    api::HomeassistantServiceMap kv;
-    kv.key = it.first;
-    kv.value = it.second;
-    resp.data.push_back(kv);
-  }
-  api::global_api_server->send_homeassistant_service_call(resp);
+  call_homeassistant_service("switch.toggle", data);
 }
 
 void HomeAssistantSwitch::state_changed(std::string state) {

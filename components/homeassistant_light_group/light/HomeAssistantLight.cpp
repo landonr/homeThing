@@ -12,38 +12,23 @@ static const char* const TAG = "homeassistant.light";
 void HomeAssistantLight::subscribe_states() {
   ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, {},
-      std::bind(&HomeAssistantLight::state_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("min_mireds"),
-      std::bind(&HomeAssistantLight::min_mireds_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("max_mireds"),
-      std::bind(&HomeAssistantLight::max_mireds_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("brightness"),
-      std::bind(&HomeAssistantLight::brightness_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("color_temp"),
-      std::bind(&HomeAssistantLight::color_temp_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("hs_color"),
-      std::bind(&HomeAssistantLight::color_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("color_mode"),
-      std::bind(&HomeAssistantLight::color_mode_changed, this,
-                std::placeholders::_1));
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("supported_color_modes"),
-      std::bind(&HomeAssistantLight::supported_color_modes_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(&HomeAssistantLight::state_changed,
+                                this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantLight::min_mireds_changed,
+                                "min_mireds", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantLight::max_mireds_changed,
+                                "max_mireds", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantLight::brightness_changed,
+                                "brightness", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantLight::color_temp_changed,
+                                "color_temp", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantLight::color_changed, "hs_color",
+                                this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantLight::color_mode_changed,
+                                "color_mode", this->entity_id_);
+  subscribe_homeassistant_state(
+      &HomeAssistantLight::supported_color_modes_changed,
+      "supported_color_modes", this->entity_id_);
 }
 
 void HomeAssistantLight::setup() {

@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import switch
+from esphome.components import switch, homeassistant_component
 from esphome.const import CONF_ATTRIBUTE, CONF_ENTITY_ID, CONF_ID, CONF_NAME, CONF_INTERNAL
 
 homeassistant_switch_ns = cg.esphome_ns.namespace("homeassistant_switch")
@@ -21,10 +21,8 @@ CONFIG_SCHEMA = switch.SWITCH_SCHEMA.extend(
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
-    cg.add(var.set_entity_id(config[CONF_ENTITY_ID]))
-    cg.add(var.set_name(config[CONF_NAME]))
-    cg.add(var.set_internal(config[CONF_INTERNAL]))
-    if CONF_ATTRIBUTE in config:
-        cg.add(var.set_attribute(config[CONF_ATTRIBUTE]))
     await cg.register_component(var, config)
     await switch.register_switch(var, config)
+    homeassistant_component.base_to_code(var, config)
+    if CONF_ATTRIBUTE in config:
+        cg.add(var.set_attribute(config[CONF_ATTRIBUTE]))

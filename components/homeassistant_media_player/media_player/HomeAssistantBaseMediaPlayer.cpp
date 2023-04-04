@@ -217,85 +217,70 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
 
 void HomeAssistantBaseMediaPlayer::subscribe_supported_features() {
   ESP_LOGI(TAG, "subscribe_supported_features: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("supported_features"),
-      std::bind(
-          &HomeAssistantBaseMediaPlayer::player_supported_features_changed,
-          this, std::placeholders::_1));
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::player_supported_features_changed,
+      "supported_features", this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_player_state() {
   ESP_LOGI(TAG, "subscribe_player_state: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, {},
-      std::bind(&HomeAssistantBaseMediaPlayer::playerState_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::playerState_changed, this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_media_title() {
   ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_title"),
-      std::bind(&HomeAssistantBaseMediaPlayer::media_title_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::media_title_changed, "media_title",
+      this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_media_artist() {
   ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_artist"),
-      std::bind(&HomeAssistantBaseMediaPlayer::media_artist_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::media_artist_changed, "media_artist",
+      this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_shuffle() {
   ESP_LOGI(TAG, "subscribe_shuffle: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("shuffle"),
-      std::bind(&HomeAssistantBaseMediaPlayer::shuffle_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::shuffle_changed,
+                                "shuffle", this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_muted() {
   ESP_LOGI(TAG, "subscribe_muted: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("is_volume_muted"),
-      std::bind(&HomeAssistantBaseMediaPlayer::muted_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::muted_changed,
+                                "is_volume_muted", this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_media_position() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_duration"),
-      std::bind(&HomeAssistantBaseMediaPlayer::media_duration_changed, this,
-                std::placeholders::_1));
-
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_position"),
-      std::bind(&HomeAssistantBaseMediaPlayer::media_position_changed, this,
-                std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_media_position: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::media_duration_changed, "media_duration",
+      this->entity_id_);
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::media_position_changed, "media_position",
+      this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_volume() {
   ESP_LOGI(TAG, "subscribe_volume: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("volume_level"),
-      std::bind(&HomeAssistantBaseMediaPlayer::volume_changed, this,
-                std::placeholders::_1));
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::volume_changed,
+                                "volume_level", this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_playlist() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_playlist"),
-      std::bind(&HomeAssistantBaseMediaPlayer::playlist_changed, this,
-                std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_playlist: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::playlist_changed,
+                                "media_playlist", this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_group_members() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("group_members"),
-      std::bind(&HomeAssistantBaseMediaPlayer::group_members_changed, this,
-                std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_playlist: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::group_members_changed, "group_members",
+      this->entity_id_);
 }
 
 void HomeAssistantBaseMediaPlayer::media_title_changed(std::string state) {

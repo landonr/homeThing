@@ -2,7 +2,6 @@
 #include <memory>
 #include <vector>
 
-#include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/homeassistant_light_group/light/HomeAssistantLight.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/core/component.h"
@@ -10,9 +9,7 @@
 namespace esphome {
 namespace homeassistant_light_group {
 
-class HomeAssistantLightGroup : public api::CustomAPIDevice,
-                                public Component,
-                                public sensor::Sensor {
+class HomeAssistantLightGroup : public Component, public sensor::Sensor {
  public:
   std::vector<homeassistant_light::HomeAssistantLightState*> lights;
   bool selectLightDetailAtIndex(int index);

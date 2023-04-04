@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include "MediaPlayerSource.h"
-#include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 #include "esphome/components/media_player/media_player.h"
 
 namespace esphome {
@@ -142,8 +142,9 @@ enum RemotePlayerState {
   PlayingRemotePlayerState
 };
 
-class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
-                                     public Component {
+class HomeAssistantBaseMediaPlayer
+    : public media_player::MediaPlayer,
+      public homeassistant_component::HomeAssistantComponent {
  public:
   std::string mediaTitle = "";
   std::string mediaArtist = "";
@@ -159,9 +160,6 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   std::string mediaTitleString();
   std::string mediaSubtitleString();
   void clearMedia();
-  std::string entity_id_;
-  void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
-  std::string get_entity_id() { return entity_id_; }
   bool is_muted() const override { return this->muted_; }
   bool is_shuffling() const { return this->shuffle_; }
   void toggle_shuffle();
@@ -215,20 +213,6 @@ class HomeAssistantBaseMediaPlayer : public media_player::MediaPlayer,
   float volume_step_ = 0.04;
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
       supported_features_ = {};
-
-  void call_homeassistant_service(
-      const std::string& service_name,
-      const std::map<std::string, std::string>& data) {
-    api::HomeassistantServiceResponse resp;
-    resp.service = service_name;
-    for (auto& it : data) {
-      api::HomeassistantServiceMap kv;
-      kv.key = it.first;
-      kv.value = it.second;
-      resp.data.push_back(kv);
-    }
-    api::global_api_server->send_homeassistant_service_call(resp);
-  }
 
   virtual void subscribe_source() {}
   virtual void subscribe_sources() {}

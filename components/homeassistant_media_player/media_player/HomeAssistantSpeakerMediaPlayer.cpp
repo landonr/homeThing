@@ -9,19 +9,16 @@ static const char* const TAG = "homeassistant.media_player_speaker";
 
 void HomeAssistantSpeakerMediaPlayer::setup() {
   HomeAssistantBaseMediaPlayer::setup();
-  ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 }
 
 void HomeAssistantSpeakerMediaPlayer::subscribe_source() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_album_name"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::media_album_changed, this,
-                std::placeholders::_1));
-
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_content_id"),
-      std::bind(&HomeAssistantSpeakerMediaPlayer::media_content_id_changed,
-                this, std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(
+      &HomeAssistantSpeakerMediaPlayer::media_album_changed, "media_album_name",
+      this->entity_id_);
+  subscribe_homeassistant_state(
+      &HomeAssistantSpeakerMediaPlayer::media_content_id_changed,
+      "media_content_id", this->entity_id_);
 }
 
 void HomeAssistantSpeakerMediaPlayer::ungroup() {

@@ -9,14 +9,13 @@ static const char* const TAG = "homeassistant.media_player_tv";
 
 void HomeAssistantTVMediaPlayer::setup() {
   HomeAssistantBaseMediaPlayer::setup();
-  ESP_LOGI(TAG, "'%s': Subscribe states", get_name().c_str());
 }
 
 void HomeAssistantTVMediaPlayer::subscribe_source() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("source"),
-      std::bind(&HomeAssistantTVMediaPlayer::player_source_changed, this,
-                std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(
+      &HomeAssistantTVMediaPlayer::player_source_changed, "source",
+      this->entity_id_);
 }
 
 void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
@@ -41,10 +40,9 @@ void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
 }
 
 void HomeAssistantTVMediaPlayer::subscribe_sources() {
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("source_list"),
-      std::bind(&HomeAssistantTVMediaPlayer::sources_changed, this,
-                std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_sources: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(&HomeAssistantTVMediaPlayer::sources_changed,
+                                "source_list", this->entity_id_);
 }
 
 void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {

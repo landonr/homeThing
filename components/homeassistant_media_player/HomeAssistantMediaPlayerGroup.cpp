@@ -42,12 +42,13 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
 bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
     HomeAssistantBaseMediaPlayer* selected_media_player) {
   ESP_LOGI(TAG, "selecting media player %s",
-           selected_media_player->entity_id_.c_str());
+           selected_media_player->get_entity_id().c_str());
   for (auto& media_player : media_players_) {
     ESP_LOGI(TAG, "selecting mediar player? %s",
-             media_player->entity_id_.c_str());
+             media_player->get_entity_id().c_str());
 
-    if (media_player->entity_id_ == selected_media_player->entity_id_) {
+    if (media_player->get_entity_id() ==
+        selected_media_player->get_entity_id()) {
       setActivePlayer(media_player);
       return true;
     }
@@ -82,7 +83,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
           static_cast<HomeAssistantSpeakerMediaPlayer*>(media_player);
       if (speaker->playerState == NoRemotePlayerState) {
         ESP_LOGD(TAG, "findActivePlayer: didnt load player %s",
-                 media_player->entity_id_.c_str());
+                 media_player->get_entity_id().c_str());
         return;
       } else if (speaker->tv != NULL &&
                  speaker->mediaSource == TVRemotePlayerMediaSource &&
@@ -98,7 +99,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
       }
       tempLoadedPlayers++;
       ESP_LOGD(TAG, "findActivePlayer: loaded player %s",
-               media_player->entity_id_.c_str());
+               media_player->get_entity_id().c_str());
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     } else {
       HomeAssistantTVMediaPlayer* tv =
@@ -114,13 +115,13 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
       }
       tempLoadedPlayers++;
       ESP_LOGD(TAG, "findActivePlayer: loaded player %s",
-               media_player->entity_id_.c_str());
+               media_player->get_entity_id().c_str());
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     }
   }
   if (newActivePlayer != NULL) {
     ESP_LOGI(TAG, "setting active player %s",
-             newActivePlayer->entity_id_.c_str());
+             newActivePlayer->get_entity_id().c_str());
     setActivePlayer(newActivePlayer);
     playerSearchFinished = true;
     if (!background) {
@@ -131,7 +132,8 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
 
 void HomeAssistantMediaPlayerGroup::setActivePlayer(
     HomeAssistantBaseMediaPlayer* newActivePlayer) {
-  ESP_LOGI(TAG, "New active player %s", newActivePlayer->entity_id_.c_str());
+  ESP_LOGI(TAG, "New active player %s",
+           newActivePlayer->get_entity_id().c_str());
   active_player_ = newActivePlayer;
 }
 
@@ -290,7 +292,8 @@ void HomeAssistantMediaPlayerGroup::selectGroup(
 
   std::vector<HomeAssistantSpeakerMediaPlayer*> speakerList;
   for (auto& media_player : media_players_) {
-    if (media_player->entity_id_ == newSpeakerGroupParent->entity_id_ ||
+    if (media_player->get_entity_id() ==
+            newSpeakerGroupParent->get_entity_id() ||
         media_player->get_player_type() != SpeakerRemotePlayerType ||
         !media_player->supports(homeassistant_media_player::
                                     MediaPlayerSupportedFeature::GROUPING)) {
@@ -304,12 +307,12 @@ void HomeAssistantMediaPlayerGroup::selectGroup(
 
   if (speaker->groupMembers.size() > 1) {
     if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(),
-                  newSpeakerGroupParent->entity_id_) !=
+                  newSpeakerGroupParent->get_entity_id()) !=
         speaker->groupMembers.end()) {
       speaker->ungroup();
     }
   } else {
-    speaker->joinGroup(newSpeakerGroupParent->entity_id_);
+    speaker->joinGroup(newSpeakerGroupParent->get_entity_id());
   }
 }
 

@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
@@ -35,6 +34,7 @@ class HomeAssistantLightState : public light::LightState {
 
 class HomeAssistantLight
     : public light::LightOutput,
+      public EntityBase,
       public homeassistant_component::HomeAssistantComponent {
  public:
   void setup() override;

@@ -20,11 +20,10 @@ void HomeAssistantTVSamsungMediaPlayer::setup() {
 }
 
 void HomeAssistantTVSamsungMediaPlayer::subscribe_media_artist() {
-  ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
-  api::global_api_server->subscribe_home_assistant_state(
-      this->entity_id_, optional<std::string>("media_series_title"),
-      std::bind(&HomeAssistantBaseMediaPlayer::media_artist_changed, this,
-                std::placeholders::_1));
+  ESP_LOGI(TAG, "subscribe_media_artist: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(
+      &HomeAssistantBaseMediaPlayer::media_artist_changed, "media_series_title",
+      this->entity_id_);
 }
 
 std::string HomeAssistantTVSamsungMediaPlayer::stringForRemoteCommand(
