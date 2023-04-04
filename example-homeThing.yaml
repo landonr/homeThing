@@ -158,6 +158,7 @@ external_components:
       ref: lando/codeCleanup
     refresh: 0s
     components: [ 
+      homeassistant_component,
       homeassistant_switch_group, 
       homeassistant_sensor_group,
       homeassistant_light_group,
