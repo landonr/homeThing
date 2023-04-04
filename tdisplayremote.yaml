@@ -12,6 +12,7 @@ external_components:
       type: local
       path: components
     components: [ 
+      homeassistant_component, 
       homeassistant_switch_group, 
       homeassistant_sensor_group,
       homeassistant_light_group,
