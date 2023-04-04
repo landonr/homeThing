@@ -482,7 +482,7 @@ void HomeAssistantMediaPlayerGroup::syncActivePlayer(RemotePlayerState state) {
 }
 
 void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
-  ESP_LOGD(TAG, "state update callback %d %d", activePlayer == NULL,
+  ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
            sync_active_player);
   if (active_player_ != NULL) {
     return;
@@ -494,7 +494,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
   ESP_LOGD(TAG,
            "Trying to sync active player, state: %d activePlayerNull: %d, "
            "sync_active_player: %d",
-           state, activePlayer == NULL, sync_active_player == true);
+           state, active_player_ == NULL, sync_active_player == true);
   switch (state) {
     case homeassistant_media_player::RemotePlayerState::NoRemotePlayerState:
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:

@@ -6,9 +6,7 @@
 namespace esphome {
 namespace homeassistant_component {
 
-class HomeAssistantComponent : public Component,
-                               //  public EntityBase,
-                               public api::CustomAPIDevice {
+class HomeAssistantComponent : public Component, public api::CustomAPIDevice {
  public:
   void setup() override{};
   void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }

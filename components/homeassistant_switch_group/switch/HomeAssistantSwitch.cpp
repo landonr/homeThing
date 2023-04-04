@@ -26,6 +26,7 @@ void HomeAssistantSwitch::write_state(bool state) {
 
 void HomeAssistantSwitch::toggleSwitch() {
   std::map<std::string, std::string> data = {{"entity_id", entity_id_}};
+  ignore_api_updates_with_seconds(2);
   call_homeassistant_service("switch.toggle", data);
 }
 

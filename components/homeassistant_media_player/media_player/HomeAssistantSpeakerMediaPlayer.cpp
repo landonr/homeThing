@@ -23,6 +23,7 @@ void HomeAssistantSpeakerMediaPlayer::subscribe_source() {
 
 void HomeAssistantSpeakerMediaPlayer::ungroup() {
   ESP_LOGI(TAG, "ungroup: %s", this->entity_id_.c_str());
+  ignore_api_updates_with_seconds(2);
   call_homeassistant_service("media_player.unjoin",
                              {
                                  {"entity_id", this->entity_id_},
@@ -32,6 +33,7 @@ void HomeAssistantSpeakerMediaPlayer::ungroup() {
 void HomeAssistantSpeakerMediaPlayer::joinGroup(std::string newSpeakerName) {
   ESP_LOGI(TAG, "joinGroup: %s group to %s", this->entity_id_.c_str(),
            newSpeakerName.c_str());
+  ignore_api_updates_with_seconds(2);
   call_homeassistant_service("media_player.join",
                              {
                                  {"entity_id", newSpeakerName.c_str()},
@@ -46,6 +48,7 @@ void HomeAssistantSpeakerMediaPlayer::updateVolumeLevel() {
       entityIds = entityIds + ", " + speaker;
     }
   }
+  ignore_api_updates_with_seconds(2);
   if (is_muted()) {
     // unmute all speakers
     call_homeassistant_service("media_player.volume_mute",
@@ -130,6 +133,9 @@ std::string HomeAssistantSpeakerMediaPlayer::filter(std::string str) {
 void HomeAssistantSpeakerMediaPlayer::group_members_changed(std::string state) {
   ESP_LOGI(TAG, "group_members_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   groupMembers.clear();
   std::vector<std::string>* out = new std::vector<std::string>();
   tokenize(state, ",", out);
@@ -144,6 +150,9 @@ void HomeAssistantSpeakerMediaPlayer::media_content_id_changed(
     std::string state) {
   ESP_LOGI(TAG, "media_content_id_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   if (state.find("spdif") != std::string::npos) {
     mediaSource = TVRemotePlayerMediaSource;
   } else if (state.find("spotify") != std::string::npos) {

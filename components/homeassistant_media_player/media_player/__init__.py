@@ -28,7 +28,7 @@ MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
         cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
         cv.Optional(CONF_DISABLED_BY_DEFAULT, default=True): cv.boolean,
     }
-).extend(cv.COMPONENT_SCHEMA)
+).extend(homeassistant_component.COMPONENT_CONFIG_SCHEMA)
 
 TV_CONFIG_SCHEMA = MEDIA_PLAYER_COMMON_SCHEMA.extend(
     {
@@ -76,10 +76,7 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await media_player.register_media_player(var, config)
-    # cg.add(var.set_entity_id(config[CONF_ENTITY_ID]))
-    # cg.add(var.set_name(config[CONF_NAME]))
-    # cg.add(var.set_internal(config[CONF_INTERNAL]))
-    # cg.add(var.set_disabled_by_default(config[CONF_DISABLED_BY_DEFAULT]))
+    homeassistant_component.base_to_code(var, config)
 
     if CONF_SOUNDBAR in config:
         if CONF_SPEAKER in config[CONF_SOUNDBAR]:

@@ -176,7 +176,6 @@ class HomeAssistantBaseMediaPlayer
                    switch (*(i.get())) {
                      case SHUFFLE_SET:
                      case VOLUME_MUTE:
-                     case CLEAR_PLAYLIST:
                      case GROUPING:
                      case REPEAT_SET:
                      case TURN_ON:

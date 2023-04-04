@@ -58,7 +58,7 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
       coordinate.y = 0;
     }
 
-    ESP_LOGD(TAG, "drawCircleOptionMenu: %d - %s: %f %f", i, title.c_str(),
+    ESP_LOGD(TAG, "drawCircleOptionMenu: %s: %f %f", title.c_str(),
              coordinate.x, coordinate.y);
     display_buffer_->printf(
         (display_buffer_->get_width() / 2) + coordinate.x, y_pos + coordinate.y,

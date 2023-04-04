@@ -218,8 +218,7 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
 void HomeAssistantBaseMediaPlayer::subscribe_supported_features() {
   ESP_LOGI(TAG, "subscribe_supported_features: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantBaseMediaPlayer::player_supported_features_changed,
-      "supported_features", this->entity_id_);
+      &HomeAssistantBaseMediaPlayer::player_supported_features_changed, this->entity_id_, "supported_features");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_player_state() {
@@ -231,61 +230,55 @@ void HomeAssistantBaseMediaPlayer::subscribe_player_state() {
 void HomeAssistantBaseMediaPlayer::subscribe_media_title() {
   ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantBaseMediaPlayer::media_title_changed, "media_title",
-      this->entity_id_);
+      &HomeAssistantBaseMediaPlayer::media_title_changed, this->entity_id_, "media_title");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_media_artist() {
   ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantBaseMediaPlayer::media_artist_changed, "media_artist",
-      this->entity_id_);
+      &HomeAssistantBaseMediaPlayer::media_artist_changed, this->entity_id_, "media_artist");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_shuffle() {
   ESP_LOGI(TAG, "subscribe_shuffle: %s", this->entity_id_.c_str());
-  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::shuffle_changed,
-                                "shuffle", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::shuffle_changed, this->entity_id_, "shuffle");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_muted() {
   ESP_LOGI(TAG, "subscribe_muted: %s", this->entity_id_.c_str());
-  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::muted_changed,
-                                "is_volume_muted", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::muted_changed, this->entity_id_, "is_volume_muted");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_media_position() {
   ESP_LOGI(TAG, "subscribe_media_position: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantBaseMediaPlayer::media_duration_changed, "media_duration",
-      this->entity_id_);
+      &HomeAssistantBaseMediaPlayer::media_duration_changed, this->entity_id_, "media_duration");
   subscribe_homeassistant_state(
-      &HomeAssistantBaseMediaPlayer::media_position_changed, "media_position",
-      this->entity_id_);
+      &HomeAssistantBaseMediaPlayer::media_position_changed, this->entity_id_, "media_position");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_volume() {
   ESP_LOGI(TAG, "subscribe_volume: %s", this->entity_id_.c_str());
-  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::volume_changed,
-                                "volume_level", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::volume_changed, this->entity_id_, "volume_level");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_playlist() {
   ESP_LOGI(TAG, "subscribe_playlist: %s", this->entity_id_.c_str());
-  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::playlist_changed,
-                                "media_playlist", this->entity_id_);
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::playlist_changed, this->entity_id_, "media_playlist");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_group_members() {
   ESP_LOGI(TAG, "subscribe_playlist: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantBaseMediaPlayer::group_members_changed, "group_members",
-      this->entity_id_);
+      &HomeAssistantBaseMediaPlayer::group_members_changed, this->entity_id_, "group_members");
 }
 
 void HomeAssistantBaseMediaPlayer::media_title_changed(std::string state) {
   ESP_LOGI(TAG, "media_title_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   if (strcmp(state.c_str(), mediaTitle.c_str()) != 0) {
     mediaPosition = 0;
   }
@@ -304,6 +297,9 @@ void HomeAssistantBaseMediaPlayer::media_title_changed(std::string state) {
 void HomeAssistantBaseMediaPlayer::media_artist_changed(std::string state) {
   ESP_LOGI(TAG, "media_artist_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   mediaArtist = state.c_str();
   this->publish_state();
 }
@@ -311,6 +307,9 @@ void HomeAssistantBaseMediaPlayer::media_artist_changed(std::string state) {
 void HomeAssistantBaseMediaPlayer::muted_changed(std::string state) {
   ESP_LOGI(TAG, "%s speaker_muted_changed to %s", this->entity_id_.c_str(),
            state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   muted_ = strcmp(state.c_str(), "on") == 0;
   this->publish_state();
 }
@@ -318,6 +317,9 @@ void HomeAssistantBaseMediaPlayer::muted_changed(std::string state) {
 void HomeAssistantBaseMediaPlayer::shuffle_changed(std::string state) {
   ESP_LOGI(TAG, "%s speaker_muted_changed to %s", this->entity_id_.c_str(),
            state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   shuffle_ = strcmp(state.c_str(), "on") == 0;
   this->publish_state();
 }
@@ -325,12 +327,18 @@ void HomeAssistantBaseMediaPlayer::shuffle_changed(std::string state) {
 void HomeAssistantBaseMediaPlayer::volume_changed(std::string state) {
   ESP_LOGI(TAG, "%s volume_changed to %s", this->entity_id_.c_str(),
            state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   volume = parse_number<float>(state).value_or(-1.0f);
 }
 
 void HomeAssistantBaseMediaPlayer::media_duration_changed(std::string state) {
   ESP_LOGI(TAG, "%s media_duration_changed to %s", this->entity_id_.c_str(),
            state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   mediaDuration = atof(state.c_str());
   this->publish_state();
 }
@@ -338,6 +346,9 @@ void HomeAssistantBaseMediaPlayer::media_duration_changed(std::string state) {
 void HomeAssistantBaseMediaPlayer::media_position_changed(std::string state) {
   ESP_LOGI(TAG, "%s media_position_changed to %s", this->entity_id_.c_str(),
            state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   mediaPosition = atof(state.c_str());
   this->publish_state();
 }
@@ -345,6 +356,9 @@ void HomeAssistantBaseMediaPlayer::media_position_changed(std::string state) {
 void HomeAssistantBaseMediaPlayer::playlist_changed(std::string state) {
   ESP_LOGI(TAG, "%s playlist_changed to %s", this->entity_id_.c_str(),
            state.c_str());
+  if (!can_update_from_api()) {
+    return;
+  }
   playlist_title = state.c_str();
   this->publish_state();
 }
@@ -362,6 +376,7 @@ bool HomeAssistantBaseMediaPlayer::supports(
 
 void HomeAssistantBaseMediaPlayer::toggle_shuffle() {
   ESP_LOGI(TAG, "%s toggle shuffle", this->entity_id_.c_str());
+  ignore_api_updates_with_seconds(2);
   call_homeassistant_service("media_player.shuffle_set",
                              {
                                  {"entity_id", this->entity_id_},
@@ -371,6 +386,7 @@ void HomeAssistantBaseMediaPlayer::toggle_shuffle() {
 
 void HomeAssistantBaseMediaPlayer::toggle_mute() {
   ESP_LOGI(TAG, "%s toggle mute", this->entity_id_.c_str());
+  ignore_api_updates_with_seconds(2);
   call_homeassistant_service(
       "media_player.volume_mute",
       {
@@ -408,6 +424,7 @@ void HomeAssistantBaseMediaPlayer::decreaseVolume() {
 }
 
 void HomeAssistantBaseMediaPlayer::updateVolumeLevel() {
+  ignore_api_updates_with_seconds(2);
   std::string entityIds = this->entity_id_;
   if (is_muted()) {
     // unmute all speakers
