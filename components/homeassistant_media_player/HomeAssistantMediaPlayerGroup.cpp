@@ -15,24 +15,24 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
   new_media_player->index = media_players_.size();
   media_players_.push_back(new_media_player);
 
-  if (new_media_player->get_player_type() ==
-      homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-    HomeAssistantSpeakerMediaPlayer* sonos_speaker =
-        static_cast<HomeAssistantSpeakerMediaPlayer*>(new_media_player);
-    if (!sonos_active && sonos_speaker) {
-      sonos_active = true;
-      subscribe_homeassistant_state(
-          &HomeAssistantMediaPlayerGroup::sonos_favorites_changed,
-          "sensor.sonos_favorites", "items");
-    }
+  // if (new_media_player->get_player_type() ==
+  //     homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
+  //   HomeAssistantSpeakerMediaPlayer* sonos_speaker =
+  //       static_cast<HomeAssistantSpeakerMediaPlayer*>(new_media_player);
+  //   if (!sonos_active && sonos_speaker) {
+  //     sonos_active = true;
+  //     subscribe_homeassistant_state(
+  //         &HomeAssistantMediaPlayerGroup::sonos_favorites_changed,
+  //         "sensor.sonos_favorites", "items");
+  //   }
 
-    // if (!spotify_active && sonos_speaker) {
-    //   spotify_active = true;
-    //   subscribe_homeassistant_state(
-    //       &HomeAssistantMediaPlayerGroup::playlists_changed,
-    //       "sensor.playlists_sensor", "playlists");
-    // }
-  }
+  //   // if (!spotify_active && sonos_speaker) {
+  //   //   spotify_active = true;
+  //   //   subscribe_homeassistant_state(
+  //   //       &HomeAssistantMediaPlayerGroup::playlists_changed,
+  //   //       "sensor.playlists_sensor", "playlists");
+  //   // }
+  // }
 
   new_media_player->add_on_state_callback([this, new_media_player]() {
     this->state_updated(new_media_player->playerState);
@@ -534,18 +534,6 @@ void HomeAssistantMediaPlayerGroup::playSource(MediaPlayerSource source) {
     activeSpeaker->playlist_title = source.title_;
   }
   active_player_->playSource(source);
-}
-
-// should use same json and just set the source type
-void HomeAssistantMediaPlayerGroup::sonos_favorites_changed(std::string state) {
-  ESP_LOGI(TAG, "Sonos Favorites changes to %s", state.c_str());
-  auto sources = parseJsonObject(state);
-  for (auto& player : media_players_) {
-    if (player->get_player_type() == SpeakerRemotePlayerType) {
-      player->sources.assign(sources.begin(), sources.end());
-    }
-  }
-  sonosFavorites = sources;
 }
 
 void HomeAssistantMediaPlayerGroup::playlists_changed(std::string state) {
