@@ -21,6 +21,7 @@ external_components:
       homeThing,
       media_player_source,
       media_player_source_sonos,
+      media_player_source_spotify,
     ]
 
   # - type: sonos

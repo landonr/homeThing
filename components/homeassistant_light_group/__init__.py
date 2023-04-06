@@ -3,12 +3,14 @@ import esphome.config_validation as cv
 from esphome.components.homeassistant_light_group.light import HomeAssistantLight, HomeAssistantLightState
 from esphome.const import CONF_ID, CONF_ENTITY_ID, CONF_NAME
 from esphome.components import sensor
+from .. import homeassistant_component
 
 homeassistant_light_group_ns = cg.esphome_ns.namespace("homeassistant_light_group")
 
 CONF_LIGHTS = "lights"
 CONF_LIGHT = "light"
 
+AUTO_LOAD = ['homeassistant_component']
 DEPENDENCIES = ["api"]
 
 HOMEASSISTANT_LIGHT_SCHEMA = cv.Schema(

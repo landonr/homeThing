@@ -15,25 +15,6 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
   new_media_player->index = media_players_.size();
   media_players_.push_back(new_media_player);
 
-  // if (new_media_player->get_player_type() ==
-  //     homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-  //   HomeAssistantSpeakerMediaPlayer* sonos_speaker =
-  //       static_cast<HomeAssistantSpeakerMediaPlayer*>(new_media_player);
-  //   if (!sonos_active && sonos_speaker) {
-  //     sonos_active = true;
-  //     subscribe_homeassistant_state(
-  //         &HomeAssistantMediaPlayerGroup::sonos_favorites_changed,
-  //         "sensor.sonos_favorites", "items");
-  //   }
-
-  //   // if (!spotify_active && sonos_speaker) {
-  //   //   spotify_active = true;
-  //   //   subscribe_homeassistant_state(
-  //   //       &HomeAssistantMediaPlayerGroup::playlists_changed,
-  //   //       "sensor.playlists_sensor", "playlists");
-  //   // }
-  // }
-
   new_media_player->add_on_state_callback([this, new_media_player]() {
     this->state_updated(new_media_player->playerState);
   });
@@ -143,12 +124,6 @@ std::vector<std::string> HomeAssistantMediaPlayerGroup::groupNames() {
     output.push_back(speaker->get_name());
   }
   return output;
-}
-
-void HomeAssistantMediaPlayerGroup::stripUnicode(std::string* str) {
-  str->erase(remove_if(str->begin(), str->end(),
-                       [](char c) { return !(c >= 0 && c < 128); }),
-             str->end());
 }
 
 void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
@@ -525,26 +500,17 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
 }
 
 void HomeAssistantMediaPlayerGroup::playSource(
-    media_player_source::MediaPlayerSourceItem source) {
+    media_player_source::MediaPlayerSourceItem* source) {
   active_player_->clearSource();
-  playingNewSourceText = source.get_name();
+  playingNewSourceText = source->get_name();
   if (active_player_->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
     HomeAssistantSpeakerMediaPlayer* activeSpeaker =
         static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
-    activeSpeaker->playlist_title = source.get_name();
+    activeSpeaker->playlist_title = source->get_name();
   }
   active_player_->playSource(source);
 }
 
-// void HomeAssistantMediaPlayerGroup::playlists_changed(std::string state) {
-//   stripUnicode(&state);
-//   ESP_LOGI(TAG, "Spotify playlists changes to %s", state.c_str());
-//   auto sources = parseJsonDictionary(state, "name", "uri");
-//   for (auto& player : media_players_) {
-//     player->sources.assign(sources.begin(), sources.end());
-//   }
-//   spotifyPlaylists = sources;
-// }
 }  // namespace homeassistant_media_player
 }  // namespace esphome

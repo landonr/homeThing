@@ -7,10 +7,11 @@ media_player_source_ns = cg.esphome_ns.namespace("media_player_source")
 MediaPlayerSourceBase = media_player_source_ns.class_("MediaPlayerSourceBase", cg.Component)
 
 CONF_SONOS = "sonos"
-CONF_TV = "tv"
+CONF_SPOTIFY = "spotify"
 CONF_SOURCES = "sources"
 
 SonosSourceComponent = cg.esphome_ns.namespace("media_player_source_sonos").class_("SonosSourceComponent", cg.Component)
+SpotifySourceComponent = cg.esphome_ns.namespace("media_player_source_spotify").class_("SpotifySourceComponent", cg.Component)
 SOURCE_REFERENCE_SCHEMA = cv.typed_schema(
     {
         CONF_SONOS: cv.Schema(
@@ -18,9 +19,9 @@ SOURCE_REFERENCE_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.use_id(SonosSourceComponent),
             }
         ),
-        CONF_TV: cv.Schema(
+        CONF_SPOTIFY: cv.Schema(
             {
-                cv.GenerateID(CONF_ID): cv.use_id(SonosSourceComponent),
+                cv.GenerateID(CONF_ID): cv.use_id(SpotifySourceComponent),
             }
         ),
     }

@@ -1,5 +1,8 @@
 media_player_source_sonos:
-  id: hi
+  id: sonos
+
+media_player_source_spotify:
+  id: spotty
 
 media_player:
   - platform: homeassistant_media_player
@@ -8,8 +11,10 @@ media_player:
     id: media_player_beam
     type: speaker
     sources:
-      - id: hi
+      - id: sonos
         type: sonos
+      - id: spotty
+        type: spotify
   - platform: homeassistant_media_player
     name: Kitchen
     entity_id: "media_player.kitchen"

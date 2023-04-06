@@ -55,7 +55,6 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   //            std::vector<SpeakerSetup> newSpeakerSetups);
   void register_media_player(HomeAssistantBaseMediaPlayer* new_media_player);
   std::vector<std::string> groupNames();
-  void stripUnicode(std::string* str);
   void increaseSpeakerVolume();
   void decreaseSpeakerVolume();
   bool mediaShuffling();
@@ -77,7 +76,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   activePlayerSources();
   void syncActivePlayer(RemotePlayerState state);
 
-  void playSource(media_player_source::MediaPlayerSourceItem source);
+  void playSource(media_player_source::MediaPlayerSourceItem* source);
   float get_setup_priority() const override { return setup_priority::LATE; }
   void set_active_player_source_index(int active_player_source_index) {
     active_player_source_index_ = active_player_source_index;

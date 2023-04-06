@@ -5,7 +5,7 @@
 namespace esphome {
 namespace media_player_source_sonos {
 
-static const char* const TAG = "sonos.source.component";
+static const char* const TAG = "media.player.source.sonos";
 
 void SonosSourceComponent::setup() {
   subscribe_homeassistant_state(&SonosSourceComponent::sonos_favorites_changed,

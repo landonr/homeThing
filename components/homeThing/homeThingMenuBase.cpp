@@ -111,21 +111,20 @@ bool HomeThingMenuBase::selectMenu() {
       activeMenuState = nowPlayingMenu;
       break;
     case sourcesMenu: {
-      auto sourceTitleState =
-          std::static_pointer_cast<MenuTitleSource>(activeMenuTitle);
-      if (sourceTitleState) {
+      auto baseTitleState =
+          std::static_pointer_cast<MenuTitleBase>(activeMenuTitle);
+      if (baseTitleState->titleType == SourceMenuTitleType) {
+        auto sourceTitleState =
+            std::static_pointer_cast<MenuTitleSource>(activeMenuTitle);
         idleMenu(true);
-        media_player_group_->playSource(*sourceTitleState->media_source_);
+        media_player_group_->playSource(sourceTitleState->media_source_);
         circle_menu_->set_active_menu(playingNewSourceMenu,
                                       media_player_group_->active_player_);
         update_display();
       } else {
-        auto sourceItemTitleState =
-            std::static_pointer_cast<MenuTitleBase>(activeMenuTitle);
-        if (sourceItemTitleState) {
-          media_player_group_->set_active_player_source_index(menuIndex);
-          update_display();
-        }
+        media_player_group_->set_active_player_source_index(menuIndex);
+        menuIndex = 0;
+        update_display();
       }
       break;
     }
@@ -286,8 +285,9 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
         auto sourceTitles = activePlayerSourceTitles(sources);
         return {sourceTitles.begin(), sourceTitles.end()};
       } else if (sources.size() > 0) {
-        auto sourceTitles =
-            activePlayerSourceItemTitles(sources[0]->get_sources());
+        auto sourceTitles = activePlayerSourceItemTitles(
+            sources[media_player_group_->get_active_player_source_index()]
+                ->get_sources());
         return {sourceTitles.begin(), sourceTitles.end()};
       }
     }

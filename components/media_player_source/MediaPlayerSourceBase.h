@@ -48,8 +48,8 @@ class MediaPlayerSourceItem {
   }
 
  protected:
-  std::string name_;
-  std::string media_content_id_;
+  std::string name_ = "no";
+  std::string media_content_id_ = "no";
   MediaPlayerSourceType media_type_;
 };
 

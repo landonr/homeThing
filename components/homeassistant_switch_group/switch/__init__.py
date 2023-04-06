@@ -5,7 +5,7 @@ from esphome.const import CONF_ATTRIBUTE, CONF_ENTITY_ID, CONF_ID, CONF_NAME, CO
 
 homeassistant_switch_ns = cg.esphome_ns.namespace("homeassistant_switch")
 
-AUTO_LOAD = ['switch']
+AUTO_LOAD = ['switch', 'homeassistant_component']
 
 HomeAssistantSwitch = homeassistant_switch_ns.class_("HomeAssistantSwitch", switch.Switch, cg.Component)
 
@@ -17,7 +17,7 @@ CONFIG_SCHEMA = switch.SWITCH_SCHEMA.extend(
         cv.Optional(CONF_ATTRIBUTE): cv.string,
         cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
     }
-).extend(cv.COMPONENT_SCHEMA)
+).extend(homeassistant_component.COMPONENT_CONFIG_SCHEMA)
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])

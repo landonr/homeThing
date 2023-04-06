@@ -178,8 +178,10 @@ class HomeThingMenuBase : public PollingComponent {
       ESP_LOGD(TAG, "reset_menu: reset animation %d", activeMenuState);
       animation_->resetAnimation();
     }
-    if (media_player_group_)
+    if (media_player_group_) {
       media_player_group_->newSpeakerGroupParent = NULL;
+      media_player_group_->set_active_player_source_index(-1);
+    }
   }
   void turn_on_backlight();
 
