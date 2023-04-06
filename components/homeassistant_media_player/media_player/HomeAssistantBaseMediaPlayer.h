@@ -8,6 +8,7 @@
 #include "MediaPlayerSource.h"
 #include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 #include "esphome/components/media_player/media_player.h"
+#include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -150,11 +151,13 @@ class HomeAssistantBaseMediaPlayer
   std::string mediaArtist = "";
   RemotePlayerMediaSource mediaSource = NoRemotePlayerMediaSource;
   RemotePlayerState playerState = NoRemotePlayerState;
-  std::vector<std::shared_ptr<MediaPlayerSource>> sources;
+
+  void register_source(media_player_source::MediaPlayerSourceBase* new_source);
+  std::vector<media_player_source::MediaPlayerSourceBase*> sources;
   int index;
   virtual RemotePlayerType get_player_type() { return player_type_; }
   void setup() override;
-  void playSource(MediaPlayerSource source);
+  void playSource(media_player_source::MediaPlayerSourceItem source);
   void playPause();
   void nextTrack();
   std::string mediaTitleString();
@@ -222,8 +225,8 @@ class HomeAssistantBaseMediaPlayer
  private:
   RemotePlayerType player_type_;
 
-  void selectSource(MediaPlayerSource source);
-  void playMedia(MediaPlayerSource source);
+  void selectSource(media_player_source::MediaPlayerSourceItem source);
+  void playMedia(media_player_source::MediaPlayerSourceItem source);
 
   // subscriptions
   void subscribe_player_state();

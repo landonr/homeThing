@@ -20,11 +20,9 @@ external_components:
       homeassistant_service_group,
       homeThing,
       media_player_source,
-      sonos_source_component,
+      media_player_source_sonos,
     ]
 
-sonos_source_component:
-  id: hi
   # - type: sonos
     # entity_id: ok
 

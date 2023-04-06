@@ -6,7 +6,7 @@
 #include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 
 namespace esphome {
-namespace sonos_source_component {
+namespace media_player_source_sonos {
 
 class SonosSourceComponent : public media_player_source::MediaPlayerSourceBase,
                              public api::CustomAPIDevice {
@@ -19,5 +19,5 @@ class SonosSourceComponent : public media_player_source::MediaPlayerSourceBase,
   parseJsonObject(std::string state);
 };
 
-}  // namespace sonos_source_component
+}  // namespace media_player_source_sonos
 }  // namespace esphome

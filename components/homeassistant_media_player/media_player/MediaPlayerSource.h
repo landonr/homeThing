@@ -34,39 +34,5 @@ static std::string playerSourceStateString(
   return "";
 }
 
-enum RemotePlayerSourceType {
-  MusicRemotePlayerSourceType,
-  FavoriteItemIDRemotePlayerSourceType,
-  SourceRemotePlayerSourceType,
-  PlaylistRemotePlayerSourceType
-};
-
-class MediaPlayerSource {
- public:
-  MediaPlayerSource(RemotePlayerSourceType new_media_content_type,
-                    std::string new_title, std::string new_media_content_id)
-      : media_content_type_(new_media_content_type),
-        title_(new_title),
-        media_content_id_(new_media_content_id) {}
-
-  RemotePlayerSourceType media_content_type_;
-  std::string title_;
-  std::string media_content_id_;
-
-  std::string sourceTypeString() {
-    switch (media_content_type_) {
-      case MusicRemotePlayerSourceType:
-        return "music";
-      case FavoriteItemIDRemotePlayerSourceType:
-        return "favorite_item_id";
-      case SourceRemotePlayerSourceType:
-        return "source";
-      case PlaylistRemotePlayerSourceType:
-        return "playlist";
-    }
-    return "";
-  }
-};
-
 }  // namespace homeassistant_media_player
 }  // namespace esphome

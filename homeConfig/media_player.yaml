@@ -1,9 +1,15 @@
+media_player_source_sonos:
+  id: hi
+
 media_player:
   - platform: homeassistant_media_player
     name: Beam
     entity_id: "media_player.beam"
     id: media_player_beam
     type: speaker
+    sources:
+      - id: hi
+        type: sonos
   - platform: homeassistant_media_player
     name: Kitchen
     entity_id: "media_player.kitchen"
@@ -22,7 +28,7 @@ media_player:
     id: media_player_spotify
     type: speaker
   - platform: homeassistant_media_player
-    name: Tower
+    name: PC
     entity_id: "media_player.tower"
     id: media_player_tower
     type: speaker
@@ -31,4 +37,3 @@ media_player:
     entity_id: "media_player.kodi_desktop"
     id: media_player_kodi
     type: kodi
-    

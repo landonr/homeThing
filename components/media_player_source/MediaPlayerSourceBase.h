@@ -8,28 +8,49 @@
 namespace esphome {
 namespace media_player_source {
 
+enum MediaPlayerSourceType {
+  MusicRemotePlayerSourceType,
+  FavoriteItemIDRemotePlayerSourceType,
+  SourceRemotePlayerSourceType,
+  PlaylistRemotePlayerSourceType
+};
+
 class MediaPlayerSourceItem {
  public:
   MediaPlayerSourceItem(std::string new_name, std::string new_media_content_id,
-                        std::string new_media_type)
+                        MediaPlayerSourceType new_media_type)
       : name_(new_name),
         media_content_id_(new_media_content_id),
         media_type_(new_media_type) {}
   std::string get_name() { return name_; }
   std::string get_media_content_id() { return media_content_id_; }
-  std::string get_media_type() { return media_type_; }
+  MediaPlayerSourceType get_media_type() { return media_type_; }
   void set_name(const std::string& name) { name_ = name; }
   void set_media_content_id(const std::string& media_content_id) {
     media_content_id_ = media_content_id;
   }
-  void set_media_type(const std::string& media_type) {
+  void set_media_type(const MediaPlayerSourceType& media_type) {
     media_type_ = media_type;
+  }
+
+  std::string sourceTypeString() {
+    switch (media_type_) {
+      case MusicRemotePlayerSourceType:
+        return "music";
+      case FavoriteItemIDRemotePlayerSourceType:
+        return "favorite_item_id";
+      case SourceRemotePlayerSourceType:
+        return "source";
+      case PlaylistRemotePlayerSourceType:
+        return "playlist";
+    }
+    return "";
   }
 
  protected:
   std::string name_;
   std::string media_content_id_;
-  std::string media_type_;
+  MediaPlayerSourceType media_type_;
 };
 
 class MediaPlayerSourceBase : public Component, public EntityBase {

@@ -278,12 +278,11 @@ class MenuTitleLight : public MenuTitleToggle {
 
 class MenuTitleSource : public MenuTitleBase {
  public:
-  homeassistant_media_player::MediaPlayerSource* media_source_;
+  media_player_source::MediaPlayerSourceItem* media_source_;
 
-  MenuTitleSource(
-      std::string new_name, std::string newEntityId,
-      MenuTitleRightIcon newRightIconState,
-      homeassistant_media_player::MediaPlayerSource* new_media_source)
+  MenuTitleSource(std::string new_name, std::string newEntityId,
+                  MenuTitleRightIcon newRightIconState,
+                  media_player_source::MediaPlayerSourceItem* new_media_source)
       : MenuTitleBase{new_name, newEntityId, newRightIconState,
                       SourceMenuTitleType},
         media_source_(new_media_source) {}
@@ -312,13 +311,25 @@ static std::vector<MenuTitlePlayer*> mediaPlayersTitleString(
   return out;
 }
 
-static std::vector<std::shared_ptr<MenuTitleSource>> activePlayerSourceTitles(
-    std::vector<std::shared_ptr<homeassistant_media_player::MediaPlayerSource>>
-        sources) {
-  std::vector<std::shared_ptr<MenuTitleSource>> out;
+static std::vector<std::shared_ptr<MenuTitleBase>> activePlayerSourceTitles(
+    std::vector<media_player_source::MediaPlayerSourceBase*> sources) {
+  std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (auto& source : sources) {
+    auto new_menu_title = std::make_shared<MenuTitleBase>(
+        source->get_name(), "", NoMenuTitleRightIcon);
+    out.push_back(new_menu_title);
+  }
+  return out;
+}
+
+static std::vector<std::shared_ptr<MenuTitleSource>>
+activePlayerSourceItemTitles(
+    std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
+        sourceItems) {
+  std::vector<std::shared_ptr<MenuTitleSource>> out;
+  for (auto& sourceItem : sourceItems) {
     auto new_menu_title = std::make_shared<MenuTitleSource>(
-        source->title_, "", NoMenuTitleRightIcon, source.get());
+        sourceItem->get_name(), "", NoMenuTitleRightIcon, sourceItem.get());
     out.push_back(new_menu_title);
   }
   return out;

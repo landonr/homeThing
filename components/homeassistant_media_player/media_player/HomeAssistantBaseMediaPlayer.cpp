@@ -16,17 +16,26 @@ void HomeAssistantBaseMediaPlayer::setup() {
   subscribe_media_artist();
 }
 
-void HomeAssistantBaseMediaPlayer::playSource(MediaPlayerSource source) {
-  ESP_LOGI(TAG, "Player play source %s %s %s %d", this->entity_id_.c_str(),
-           source.media_content_id_.c_str(), source.sourceTypeString().c_str(),
-           source.media_content_type_);
-  switch (source.media_content_type_) {
-    case MusicRemotePlayerSourceType:
-    case FavoriteItemIDRemotePlayerSourceType:
-    case PlaylistRemotePlayerSourceType:
+void HomeAssistantBaseMediaPlayer::register_source(
+    media_player_source::MediaPlayerSourceBase* new_source) {
+  sources.push_back(new_source);
+
+  // new_media_player->add_on_state_callback([this, new_media_player]() {
+  //   this->state_updated(new_media_player->playerState);
+  // });
+}
+
+void HomeAssistantBaseMediaPlayer::playSource(media_player_source::MediaPlayerSourceItem source) {
+  ESP_LOGI(TAG, "playSource: %s %s %s %d", this->entity_id_.c_str(),
+           source.get_media_content_id().c_str(), source.sourceTypeString().c_str(),
+           source.get_media_type());
+  switch (source.get_media_type()) {
+    case media_player_source::MusicRemotePlayerSourceType:
+    case media_player_source::FavoriteItemIDRemotePlayerSourceType:
+    case media_player_source::PlaylistRemotePlayerSourceType:
       playMedia(source);
       break;
-    case SourceRemotePlayerSourceType:
+    case media_player_source::SourceRemotePlayerSourceType:
       selectSource(source);
       break;
   }
@@ -83,24 +92,26 @@ void HomeAssistantBaseMediaPlayer::clearMedia() {
   playlist_title = "";
 }
 
-void HomeAssistantBaseMediaPlayer::selectSource(MediaPlayerSource source) {
-  ESP_LOGI(TAG, "%s select source %s", this->entity_id_.c_str(),
-           source.media_content_id_.c_str());
+void HomeAssistantBaseMediaPlayer::selectSource(media_player_source::MediaPlayerSourceItem source) {
+  ESP_LOGI(TAG, "selectSource: %s %s %s %d", this->entity_id_.c_str(),
+           source.get_media_content_id().c_str(), source.sourceTypeString().c_str(),
+           source.get_media_type());
   call_homeassistant_service("media_player.select_source",
                              {
                                  {"entity_id", entity_id_},
-                                 {"source", source.media_content_id_.c_str()},
+                                 {"source", source.get_media_content_id().c_str()},
                              });
 }
 
-void HomeAssistantBaseMediaPlayer::playMedia(MediaPlayerSource source) {
-  ESP_LOGI(TAG, "playMedia: %s - %s %s", this->entity_id_.c_str(),
-           source.title_.c_str(), source.media_content_id_.c_str());
+void HomeAssistantBaseMediaPlayer::playMedia(media_player_source::MediaPlayerSourceItem source) {
+  ESP_LOGI(TAG, "playMedia: %s %s %s %d", this->entity_id_.c_str(),
+           source.get_media_content_id().c_str(), source.sourceTypeString().c_str(),
+           source.get_media_type());
   call_homeassistant_service(
       "media_player.play_media",
       {
           {"entity_id", this->entity_id_},
-          {"media_content_id", source.media_content_id_.c_str()},
+          {"media_content_id", source.get_media_content_id().c_str()},
           {"media_content_type", source.sourceTypeString().c_str()},
       });
 }

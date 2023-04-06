@@ -3,7 +3,7 @@
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace sonos_source_component {
+namespace media_player_source_sonos {
 
 static const char* const TAG = "sonos.source.component";
 
@@ -30,7 +30,8 @@ SonosSourceComponent::parseJsonObject(std::string state) {
     ESP_LOGD("group", "new JSON key value %s %s", key.c_str(), value.c_str());
     auto newsource =
         std::make_shared<media_player_source::MediaPlayerSourceItem>(
-            value, key, "favorite");
+            value, key,
+            media_player_source::FavoriteItemIDRemotePlayerSourceType);
     sources.push_back(newsource);
   }
   return sources;
@@ -41,5 +42,5 @@ void SonosSourceComponent::sonos_favorites_changed(std::string state) {
   auto sources = parseJsonObject(state);
   sources_ = sources;
 }
-}  // namespace sonos_source_component
+}  // namespace media_player_source_sonos
 }  // namespace esphome

@@ -45,13 +45,35 @@ void HomeAssistantTVMediaPlayer::subscribe_sources() {
                                 "source_list", this->entity_id_);
 }
 
+// static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonArray(
+//     std::string state, std::string entityId) {
+//   StaticJsonDocument<3072> doc;
+//   DeserializationError err = deserializeJson(doc, state);
+//   std::vector<std::shared_ptr<MediaPlayerSource>> sources;
+//   if (err) {
+//     ESP_LOGE("JSON", "deserializeJson() failed: ");
+//     ESP_LOGE("JSON", err.c_str());
+//     return sources;
+//   }
+//   JsonArray array = doc.as<JsonArray>();
+//   for (JsonVariant v : array) {
+//     std::string sourceName = v.as<std::string>();
+//     ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(),
+//              entityId.c_str());
+//     auto newsource = std::make_shared<MediaPlayerSource>(
+//         SourceRemotePlayerSourceType, sourceName, entityId);
+//     sources.push_back(newsource);
+//   }
+//   return sources;
+// }
+
 void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
-  ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
-  if (!can_update_from_api()) {
-    return;
-  }
-  auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
-  sources.assign(newSources.begin(), newSources.end());
+  // ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
+  // if (!can_update_from_api()) {
+  //   return;
+  // }
+  // auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
+  // sources.assign(newSources.begin(), newSources.end());
 }
 
 void HomeAssistantTVMediaPlayer::tvRemoteCommand(

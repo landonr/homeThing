@@ -465,7 +465,7 @@ void HomeAssistantMediaPlayerGroup::call_feature(
   }
 }
 
-std::vector<std::shared_ptr<MediaPlayerSource>>
+std::vector<media_player_source::MediaPlayerSourceBase*>
 HomeAssistantMediaPlayerGroup::activePlayerSources() {
   return active_player_->sources;
 }
@@ -524,26 +524,27 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
   publish_state(0);
 }
 
-void HomeAssistantMediaPlayerGroup::playSource(MediaPlayerSource source) {
+void HomeAssistantMediaPlayerGroup::playSource(
+    media_player_source::MediaPlayerSourceItem source) {
   active_player_->clearSource();
-  playingNewSourceText = source.title_;
+  playingNewSourceText = source.get_name();
   if (active_player_->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
     HomeAssistantSpeakerMediaPlayer* activeSpeaker =
         static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
-    activeSpeaker->playlist_title = source.title_;
+    activeSpeaker->playlist_title = source.get_name();
   }
   active_player_->playSource(source);
 }
 
-void HomeAssistantMediaPlayerGroup::playlists_changed(std::string state) {
-  stripUnicode(&state);
-  ESP_LOGI(TAG, "Spotify playlists changes to %s", state.c_str());
-  auto sources = parseJsonDictionary(state, "name", "uri");
-  for (auto& player : media_players_) {
-    player->sources.assign(sources.begin(), sources.end());
-  }
-  spotifyPlaylists = sources;
-}
+// void HomeAssistantMediaPlayerGroup::playlists_changed(std::string state) {
+//   stripUnicode(&state);
+//   ESP_LOGI(TAG, "Spotify playlists changes to %s", state.c_str());
+//   auto sources = parseJsonDictionary(state, "name", "uri");
+//   for (auto& player : media_players_) {
+//     player->sources.assign(sources.begin(), sources.end());
+//   }
+//   spotifyPlaylists = sources;
+// }
 }  // namespace homeassistant_media_player
 }  // namespace esphome

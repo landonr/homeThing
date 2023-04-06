@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 #include "esphome/components/sensor/sensor.h"
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
 #include "media_player/HomeAssistantSpeakerMediaPlayer.h"
@@ -72,22 +73,23 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   std::string mediaSubtitleString();
   void sendActivePlayerRemoteCommand(MediaPlayerTVRemoteCommand command);
   void call_feature(MediaPlayerSupportedFeature feature);
-  std::vector<std::shared_ptr<MediaPlayerSource>> activePlayerSources();
+  std::vector<media_player_source::MediaPlayerSourceBase*>
+  activePlayerSources();
   void syncActivePlayer(RemotePlayerState state);
 
-  void playSource(MediaPlayerSource source);
+  void playSource(media_player_source::MediaPlayerSourceItem source);
   float get_setup_priority() const override { return setup_priority::LATE; }
+  void set_active_player_source_index(int active_player_source_index) {
+    active_player_source_index_ = active_player_source_index;
+  }
+  int get_active_player_source_index() { return active_player_source_index_; }
 
  private:
-  std::vector<std::shared_ptr<MediaPlayerSource>> sonosFavorites;
-  std::vector<std::shared_ptr<MediaPlayerSource>> spotifyPlaylists;
-
-  void sonos_favorites_changed(std::string state);
   void state_updated(RemotePlayerState state);
-  void playlists_changed(std::string state);
   bool sync_active_player = false;
-  bool sonos_active = false;
-  bool spotify_active = false;
+  int active_player_source_index_ = -1;
+  // bool sonos_active = false;
+  // bool spotify_active = false;
 };
 
 }  // namespace homeassistant_media_player
