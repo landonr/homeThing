@@ -13,6 +13,8 @@ void HomeAssistantTVMediaPlayer::setup() {
 
 void HomeAssistantTVMediaPlayer::subscribe_source() {
   ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
+  device_sources = new media_player_source::MediaPlayerSourceInternal();
+  register_source(device_sources);
   subscribe_homeassistant_state(
       &HomeAssistantTVMediaPlayer::player_source_changed, this->entity_id_,
       "source");
@@ -45,34 +47,13 @@ void HomeAssistantTVMediaPlayer::subscribe_sources() {
                                 this->entity_id_, "source_list");
 }
 
-// static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonArray(
-//     std::string state, std::string entityId) {
-//   StaticJsonDocument<3072> doc;
-//   DeserializationError err = deserializeJson(doc, state);
-//   std::vector<std::shared_ptr<MediaPlayerSource>> sources;
-//   if (err) {
-//     ESP_LOGE("JSON", "deserializeJson() failed: ");
-//     ESP_LOGE("JSON", err.c_str());
-//     return sources;
-//   }
-//   JsonArray array = doc.as<JsonArray>();
-//   for (JsonVariant v : array) {
-//     std::string sourceName = v.as<std::string>();
-//     ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str(),
-//              entityId.c_str());
-//     auto newsource = std::make_shared<MediaPlayerSource>(
-//         SourceRemotePlayerSourceType, sourceName, entityId);
-//     sources.push_back(newsource);
-//   }
-//   return sources;
-// }
-
 void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
   ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
   // if (!can_update_from_api()) {
   //   return;
   // }
-  // auto newSources = parseJsonArray(replaceAll(state, "\\xa0", " "), "source");
+  auto newSources = device_sources->parseJsonArray(replaceAll(state, "\\xa0", " "));
+  device_sources->set_sources(newSources);
   // sources.assign(newSources.begin(), newSources.end());
 }
 

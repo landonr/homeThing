@@ -8,15 +8,12 @@
 namespace esphome {
 namespace media_player_source_sonos {
 
-class SonosSourceComponent : public media_player_source::MediaPlayerSourceBase,
-                             public api::CustomAPIDevice {
+class SonosSourceComponent : public media_player_source::MediaPlayerSourceAPI {
  public:
   void setup() override;
 
  private:
   void sonos_favorites_changed(std::string state);
-  std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
-  parseJsonObject(std::string state);
 };
 
 }  // namespace media_player_source_sonos

@@ -53,18 +53,46 @@ class MediaPlayerSourceItem {
   MediaPlayerSourceType media_type_;
 };
 
-class MediaPlayerSourceBase : public Component, public EntityBase {
+class MediaPlayerSourceBase : public EntityBase {
  public:
-  void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
-  std::string get_entity_id() { return entity_id_; }
-  float get_setup_priority() const override { return setup_priority::LATE; }
+  // void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
+  // std::string get_entity_id() { return entity_id_; }
   std::vector<std::shared_ptr<MediaPlayerSourceItem>> get_sources() {
     return sources_;
   }
 
+  std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
+  parseJsonArray(std::string state);
+
+  std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
+  parseJsonDictionary(std::string state);
+
+  std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
+  parseJsonObject(std::string state, std::string nameKey, std::string valueKey);
+
+ protected:
+  // std::string entity_id_;
+  std::vector<std::shared_ptr<MediaPlayerSourceItem>> sources_{nullptr};
+};
+
+class MediaPlayerSourceAPI : public MediaPlayerSourceBase,
+                             public Component,
+                             public api::CustomAPIDevice {
+ public:
+  void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
+  std::string get_entity_id() { return entity_id_; }
+  float get_setup_priority() const override { return setup_priority::LATE; }
+
  protected:
   std::string entity_id_;
-  std::vector<std::shared_ptr<MediaPlayerSourceItem>> sources_{nullptr};
+};
+
+class MediaPlayerSourceInternal : public MediaPlayerSourceBase {
+ public:
+  void set_sources(
+      const std::vector<std::shared_ptr<MediaPlayerSourceItem>>& sources) {
+    sources_ = sources;
+  }
 };
 
 }  // namespace media_player_source

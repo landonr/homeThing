@@ -32,9 +32,6 @@ media_player:
     type: roku
     soundbar:
       speaker: media_player_beam
-    sources:
-      - id: spotty
-        type: spotify
   - platform: homeassistant_media_player
     name: Spotify
     entity_id: "media_player.spotify_landorghini"
