@@ -280,15 +280,22 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return menuTypesToTitles(rootMenuTitles());
     case sourcesMenu: {
       auto sources = media_player_group_->activePlayerSources();
-      if (media_player_group_->get_active_player_source_index() == -1 &&
-          sources.size() > 1) {
+      auto index = media_player_group_->get_active_player_source_index();
+      if (index == -1 && sources.size() > 1) {
         auto sourceTitles = activePlayerSourceTitles(sources);
         return {sourceTitles.begin(), sourceTitles.end()};
-      } else if (sources.size() > 0) {
-        auto sourceTitles = activePlayerSourceItemTitles(
-            sources[media_player_group_->get_active_player_source_index()]
-                ->get_sources());
+      } else if (index == -1 && sources.size() == 1) {
+        auto playerSources = sources[0]->get_sources();
+        auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};
+      } else if (sources.size() > 1) {
+        ESP_LOGW(TAG, "activeMenu: tv menu is bad? %d, %d", index,
+                 sources.size());
+        auto playerSources = sources[index]->get_sources();
+        auto sourceTitles = activePlayerSourceItemTitles(playerSources);
+        return {sourceTitles.begin(), sourceTitles.end()};
+      } else {
+        return {};
       }
     }
     case mediaPlayersMenu: {
