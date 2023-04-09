@@ -86,6 +86,7 @@ async def to_code(config):
         if CONF_SPEAKER in config[CONF_SOUNDBAR]:
             soundbar = await cg.get_variable(config[CONF_SOUNDBAR][CONF_SPEAKER])
             cg.add(var.set_soundbar(soundbar))
+            cg.add(soundbar.set_tv(var))
 
     
 

@@ -179,7 +179,6 @@ class HomeAssistantBaseMediaPlayer
                  [](std::shared_ptr<MediaPlayerSupportedFeature> i) {
                    switch (*(i.get())) {
                      case SHUFFLE_SET:
-                     case VOLUME_MUTE:
                      case GROUPING:
                      case REPEAT_SET:
                      case TURN_ON:

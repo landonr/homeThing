@@ -41,15 +41,17 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
         player->get_name().c_str(), i, max_index, player->playerState,
         homeassistant_media_player::supported_feature_string(feature).c_str());
     if (feature == homeassistant_media_player::TURN_ON &&
-        player->playerState != homeassistant_media_player::RemotePlayerState::
-                                   PowerOffRemotePlayerState) {
+        player->playerState > homeassistant_media_player::RemotePlayerState::
+                                  PowerOffRemotePlayerState) {
       i_offset++;
+      max_index++;
       continue;
     } else if (feature == homeassistant_media_player::TURN_OFF &&
-               player->playerState ==
+               player->playerState <=
                    homeassistant_media_player::RemotePlayerState::
                        PowerOffRemotePlayerState) {
       i_offset++;
+      max_index++;
       continue;
     }
     auto newItem = CircleOptionMenuItem();

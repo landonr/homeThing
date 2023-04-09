@@ -62,36 +62,59 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
         homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
       HomeAssistantSpeakerMediaPlayer* speaker =
           static_cast<HomeAssistantSpeakerMediaPlayer*>(media_player);
-      if (speaker->playerState == NoRemotePlayerState) {
+      if (speaker && speaker->playerState == NoRemotePlayerState) {
         ESP_LOGD(TAG, "findActivePlayer: didnt load player %s",
                  media_player->get_entity_id().c_str());
+        // try again later
         return;
-      } else if (speaker->tv != NULL &&
-                 speaker->mediaSource == TVRemotePlayerMediaSource &&
-                 newActivePlayer->playerState < speaker->tv->playerState) {
-        newActivePlayer = speaker->tv;
-      } else if (newActivePlayer != NULL) {
+      } else if (speaker->mediaSource == TVRemotePlayerMediaSource &&
+                 speaker->tv) {
+        if (!newActivePlayer ||
+            (newActivePlayer &&
+             newActivePlayer->playerState < speaker->tv->playerState)) {
+          // set player to speaker's soundbar
+          newActivePlayer = speaker->tv;
+        }
+      } else if (newActivePlayer) {
         if (newActivePlayer->playerState < speaker->playerState &&
-            speaker->mediaSource != TVRemotePlayerMediaSource) {
+            speaker->mediaSource != TVRemotePlayerMediaSource &&
+            !(newActivePlayer->get_player_type() ==
+                  homeassistant_media_player::RemotePlayerType::
+                      TVRemotePlayerType &&
+              newActivePlayer->playerState > PowerOffRemotePlayerState)) {
+          // set player only if active player isn't a TV that's turned on
+          ESP_LOGD(TAG, "findActivePlayer: set player %s %d %d",
+                   media_player->get_entity_id().c_str(),
+                   newActivePlayer->playerState, speaker->playerState);
           newActivePlayer = speaker;
         }
       } else {
+        ESP_LOGD(TAG, "findActivePlayer: set player %s",
+                 media_player->get_entity_id().c_str());
+        // set default active player
         newActivePlayer = speaker;
       }
       tempLoadedPlayers++;
-      ESP_LOGD(TAG, "findActivePlayer: loaded player %s",
+      ESP_LOGI(TAG, "findActivePlayer: loaded player %s",
                media_player->get_entity_id().c_str());
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     } else {
       HomeAssistantTVMediaPlayer* tv =
           static_cast<HomeAssistantTVMediaPlayer*>(media_player);
       if (tv->playerState == NoRemotePlayerState) {
+        // try again later
         return;
-      } else if (newActivePlayer != NULL) {
+      } else if (newActivePlayer) {
         if (newActivePlayer->playerState < tv->playerState) {
+          ESP_LOGD(TAG, "findActivePlayer: set player %s",
+                   media_player->get_entity_id().c_str());
+          // set player to tv because it's state is greater
           newActivePlayer = tv;
         }
       } else {
+        ESP_LOGI(TAG, "findActivePlayer: set player %s",
+                 media_player->get_entity_id().c_str());
+        // set player to tv because it's default
         newActivePlayer = tv;
       }
       tempLoadedPlayers++;
@@ -100,7 +123,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
       loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
     }
   }
-  if (newActivePlayer != NULL) {
+  if (newActivePlayer) {
     ESP_LOGI(TAG, "setting active player %s",
              newActivePlayer->get_entity_id().c_str());
     setActivePlayer(newActivePlayer);
