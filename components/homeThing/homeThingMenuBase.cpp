@@ -338,11 +338,13 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 
 void HomeThingMenuBase::selectNowPlayingMenu() {
   if (menu_titles.size() <= 0 && menuIndex < menu_titles.size()) {
+    ESP_LOGI(TAG, "selectNowPlayingMenu: select menud %d", menuIndex);
     return;
   }
   auto menu_name =
       getNowPlayingMenuStates(media_player_group_->active_player_)[menuIndex]
           ->entity_id_;
+  ESP_LOGI(TAG, "selectNowPlayingMenu: select menu %s", menu_name.c_str());
   if (menu_name == "play") {
     media_player_group_->active_player_->playPause();
   } else if (menu_name == "volume_up") {
@@ -402,8 +404,13 @@ bool HomeThingMenuBase::button_press_now_playing_option_continue(
     auto feature = circle_menu_->tap_option_menu(
         position, media_player_group_->get_active_player());
     if (feature) {
-      ESP_LOGD(TAG, "buttonPressSelect: option menu selected %d", *feature);
+      ESP_LOGI(TAG, "buttonPressSelect: option menu selected %d", *feature);
       switch (*feature) {
+        case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
+          circle_menu_->clear_active_menu();
+          topMenu();
+          update_display();
+          return false;
         case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
           menuIndex = 0;
           activeMenuState = groupMenu;

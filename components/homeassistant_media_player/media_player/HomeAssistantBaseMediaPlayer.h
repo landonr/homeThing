@@ -9,6 +9,7 @@
 #include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 #include "esphome/components/media_player/media_player.h"
 #include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -209,6 +210,20 @@ class HomeAssistantBaseMediaPlayer
   std::string playlist_title = "";
   std::vector<std::string> groupMembers;
 
+  virtual void subscribe_source() {
+    ESP_LOGI("homeassistant.media_player_base", "subscribe_source: %s",
+             this->entity_id_.c_str());
+  }
+  virtual void subscribe_sources() {
+    ESP_LOGI("homeassistant.media_player_base", "subscribe_sources: %s",
+             this->entity_id_.c_str());
+  }
+  virtual void sources_changed(std::string state) {
+    ESP_LOGI("homeassistant.media_player_base", "sources_changed: %s",
+             this->entity_id_.c_str());
+  }
+  void media_title_changed(std::string state);
+
  protected:
   bool muted_ = false;
   bool shuffle_ = false;
@@ -216,9 +231,6 @@ class HomeAssistantBaseMediaPlayer
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
       supported_features_ = {};
 
-  virtual void subscribe_source() {}
-  virtual void subscribe_sources() {}
-  virtual void sources_changed(std::string state) {}
   virtual void group_members_changed(std::string state) {}
   virtual void subscribe_media_artist();
 
@@ -242,7 +254,6 @@ class HomeAssistantBaseMediaPlayer
   // changes
   void playerState_changed(std::string state);
   void player_supported_features_changed(std::string state);
-  void media_title_changed(std::string state);
   void muted_changed(std::string state);
   void shuffle_changed(std::string state);
   void volume_changed(std::string state);
