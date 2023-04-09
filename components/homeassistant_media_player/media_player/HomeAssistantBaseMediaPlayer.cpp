@@ -1,5 +1,4 @@
 #include "HomeAssistantBaseMediaPlayer.h"
-#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -25,10 +24,11 @@ void HomeAssistantBaseMediaPlayer::register_source(
   // });
 }
 
-void HomeAssistantBaseMediaPlayer::playSource(media_player_source::MediaPlayerSourceItem* source) {
+void HomeAssistantBaseMediaPlayer::playSource(
+    media_player_source::MediaPlayerSourceItem* source) {
   ESP_LOGI(TAG, "playSource: %s %s %s %d", this->entity_id_.c_str(),
-           source->get_media_content_id().c_str(), source->sourceTypeString().c_str(),
-           source->get_media_type());
+           source->get_media_content_id().c_str(),
+           source->sourceTypeString().c_str(), source->get_media_type());
   switch (source->get_media_type()) {
     case media_player_source::MusicRemotePlayerSourceType:
     case media_player_source::FavoriteItemIDRemotePlayerSourceType:
@@ -92,21 +92,24 @@ void HomeAssistantBaseMediaPlayer::clearMedia() {
   playlist_title = "";
 }
 
-void HomeAssistantBaseMediaPlayer::selectSource(media_player_source::MediaPlayerSourceItem* source) {
+void HomeAssistantBaseMediaPlayer::selectSource(
+    media_player_source::MediaPlayerSourceItem* source) {
   ESP_LOGI(TAG, "selectSource: %s %s %s %d", this->entity_id_.c_str(),
-           source->get_media_content_id().c_str(), source->sourceTypeString().c_str(),
-           source->get_media_type());
-  call_homeassistant_service("media_player.select_source",
-                             {
-                                 {"entity_id", entity_id_},
-                                 {"source", source->get_media_content_id().c_str()},
-                             });
+           source->get_media_content_id().c_str(),
+           source->sourceTypeString().c_str(), source->get_media_type());
+  call_homeassistant_service(
+      "media_player.select_source",
+      {
+          {"entity_id", entity_id_},
+          {"source", source->get_media_content_id().c_str()},
+      });
 }
 
-void HomeAssistantBaseMediaPlayer::playMedia(media_player_source::MediaPlayerSourceItem* source) {
+void HomeAssistantBaseMediaPlayer::playMedia(
+    media_player_source::MediaPlayerSourceItem* source) {
   ESP_LOGI(TAG, "playMedia: %s %s %s %d", this->entity_id_.c_str(),
-           source->get_media_content_id().c_str(), source->sourceTypeString().c_str(),
-           source->get_media_type());
+           source->get_media_content_id().c_str(),
+           source->sourceTypeString().c_str(), source->get_media_type());
   call_homeassistant_service(
       "media_player.play_media",
       {
@@ -365,7 +368,7 @@ void HomeAssistantBaseMediaPlayer::media_duration_changed(std::string state) {
 }
 
 void HomeAssistantBaseMediaPlayer::media_position_changed(std::string state) {
-  ESP_LOGI(TAG, "%s media_position_changed to %s", this->entity_id_.c_str(),
+  ESP_LOGD(TAG, "%s media_position_changed to %s", this->entity_id_.c_str(),
            state.c_str());
   if (!can_update_from_api()) {
     return;

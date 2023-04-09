@@ -20,6 +20,11 @@ media_player:
     entity_id: "media_player.kitchen"
     id: media_player_kitchen
     type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+      - id: spotty
+        type: spotify
   - platform: homeassistant_media_player
     name: TV
     entity_id: "media_player.55_tcl_roku_tv"
@@ -27,11 +32,17 @@ media_player:
     type: roku
     soundbar:
       speaker: media_player_beam
+    sources:
+      - id: spotty
+        type: spotify
   - platform: homeassistant_media_player
     name: Spotify
     entity_id: "media_player.spotify_landorghini"
     id: media_player_spotify
     type: speaker
+    sources:
+      - id: spotty
+        type: spotify
   - platform: homeassistant_media_player
     name: PC
     entity_id: "media_player.tower"

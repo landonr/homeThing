@@ -14,8 +14,8 @@ void HomeAssistantTVMediaPlayer::setup() {
 void HomeAssistantTVMediaPlayer::subscribe_source() {
   ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantTVMediaPlayer::player_source_changed, "source",
-      this->entity_id_);
+      &HomeAssistantTVMediaPlayer::player_source_changed, this->entity_id_,
+      "source");
 }
 
 void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
@@ -42,7 +42,7 @@ void HomeAssistantTVMediaPlayer::player_source_changed(std::string state) {
 void HomeAssistantTVMediaPlayer::subscribe_sources() {
   ESP_LOGI(TAG, "subscribe_sources: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(&HomeAssistantTVMediaPlayer::sources_changed,
-                                "source_list", this->entity_id_);
+                                this->entity_id_, "source_list");
 }
 
 // static std::vector<std::shared_ptr<MediaPlayerSource>> parseJsonArray(
@@ -68,7 +68,7 @@ void HomeAssistantTVMediaPlayer::subscribe_sources() {
 // }
 
 void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
-  // ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
+  ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
   // if (!can_update_from_api()) {
   //   return;
   // }

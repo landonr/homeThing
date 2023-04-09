@@ -70,3 +70,17 @@ homeassistant_service_group:
             service: button.press
             data:
               entity_id: "button.desk_position_nudge_down"
+    - text: "color lights"
+      command:
+        - homeassistant.service:
+            service: script.colors
+    - text: "hell lights"
+      command:
+        - homeassistant.service:
+            service: scene.turn_on
+            data:
+              entity_id: "scene.hell"
+    - text: "lights off"
+      command:
+        - homeassistant.service:
+            service: script.off_script

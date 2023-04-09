@@ -15,20 +15,26 @@ void HomeAssistantLight::subscribe_states() {
   subscribe_homeassistant_state(&HomeAssistantLight::state_changed,
                                 this->entity_id_);
   subscribe_homeassistant_state(&HomeAssistantLight::min_mireds_changed,
-                                "min_mireds", this->entity_id_);
+                                this->entity_id_, "min_mireds");
+  ;
   subscribe_homeassistant_state(&HomeAssistantLight::max_mireds_changed,
-                                "max_mireds", this->entity_id_);
+                                this->entity_id_, "max_mireds");
+  ;
   subscribe_homeassistant_state(&HomeAssistantLight::brightness_changed,
-                                "brightness", this->entity_id_);
+                                this->entity_id_, "brightness");
+  ;
   subscribe_homeassistant_state(&HomeAssistantLight::color_temp_changed,
-                                "color_temp", this->entity_id_);
-  subscribe_homeassistant_state(&HomeAssistantLight::color_changed, "hs_color",
-                                this->entity_id_);
+                                this->entity_id_, "color_temp");
+  ;
+  subscribe_homeassistant_state(&HomeAssistantLight::color_changed,
+                                this->entity_id_, "hs_color");
   subscribe_homeassistant_state(&HomeAssistantLight::color_mode_changed,
-                                "color_mode", this->entity_id_);
+                                this->entity_id_, "color_mode");
+  ;
   subscribe_homeassistant_state(
-      &HomeAssistantLight::supported_color_modes_changed,
-      "supported_color_modes", this->entity_id_);
+      &HomeAssistantLight::supported_color_modes_changed, this->entity_id_,
+      "supported_color_modes");
+  ;
 }
 
 void HomeAssistantLight::setup() {

@@ -22,15 +22,15 @@ void HomeAssistantTVKodiMediaPlayer::setup() {
 void HomeAssistantTVKodiMediaPlayer::subscribe_source() {
   ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantTVMediaPlayer::player_source_changed, "media_content_type",
-      this->entity_id_);
+      &HomeAssistantTVMediaPlayer::player_source_changed, this->entity_id_,
+      "media_content_type");
 }
 
 void HomeAssistantTVKodiMediaPlayer::subscribe_media_artist() {
   ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantTVMediaPlayer::media_artist_changed, "media_series_title",
-      this->entity_id_);
+      &HomeAssistantTVMediaPlayer::media_artist_changed, this->entity_id_,
+      "media_series_title");
 }
 
 std::string HomeAssistantTVKodiMediaPlayer::stringForRemoteCommand(

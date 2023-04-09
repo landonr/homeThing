@@ -14,11 +14,11 @@ void HomeAssistantSpeakerMediaPlayer::setup() {
 void HomeAssistantSpeakerMediaPlayer::subscribe_source() {
   ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
-      &HomeAssistantSpeakerMediaPlayer::media_album_changed, "media_album_name",
-      this->entity_id_);
+      &HomeAssistantSpeakerMediaPlayer::media_album_changed, this->entity_id_,
+      "media_album_name");
   subscribe_homeassistant_state(
       &HomeAssistantSpeakerMediaPlayer::media_content_id_changed,
-      "media_content_id", this->entity_id_);
+      this->entity_id_, "media_content_id");
 }
 
 void HomeAssistantSpeakerMediaPlayer::ungroup() {
