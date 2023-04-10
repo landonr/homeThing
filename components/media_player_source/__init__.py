@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.const import CONF_ENTITY_ID, CONF_ID, CONF_NAME
+from esphome.const import CONF_ENTITY_ID, CONF_ID, CONF_NAME, CONF_CUSTOM
 
 media_player_source_ns = cg.esphome_ns.namespace("media_player_source")
 
@@ -10,6 +10,7 @@ CONF_SONOS = "sonos"
 CONF_SPOTIFY = "spotify"
 CONF_SOURCES = "sources"
 
+CustomSourceComponent = cg.esphome_ns.namespace("media_player_source_custom").class_("CustomSourceComponent", cg.Component)
 SonosSourceComponent = cg.esphome_ns.namespace("media_player_source_sonos").class_("SonosSourceComponent", cg.Component)
 SpotifySourceComponent = cg.esphome_ns.namespace("media_player_source_spotify").class_("SpotifySourceComponent", cg.Component)
 SOURCE_REFERENCE_SCHEMA = cv.typed_schema(
@@ -22,6 +23,11 @@ SOURCE_REFERENCE_SCHEMA = cv.typed_schema(
         CONF_SPOTIFY: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(SpotifySourceComponent),
+            }
+        ),
+        CONF_CUSTOM: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(CustomSourceComponent),
             }
         ),
     }
@@ -42,6 +48,3 @@ def new_source_base(config):
     if CONF_NAME in config:
         cg.add(var.set_name(config[CONF_NAME]))
     return var
-# async def to_code(config):
-#     var = cg.new_Pvariable(config[CONF_ID])
-#     await cg.register_component(var, config)

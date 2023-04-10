@@ -4,6 +4,20 @@ media_player_source_sonos:
 media_player_source_spotify:
   id: spotty
 
+media_player_source_custom:
+  - id: fav_playlists
+    name: playlists
+    sources:
+      name: idk
+      media_id: spotify:playlist:2uzbATYxs9V8YQi5lf89WG
+      media_type: playlist
+  - id: youtube_videos
+    name: youtube videos
+    sources:
+      - name: cat video
+        media_id: 8NWHnWbpxmc
+        media_type: source
+
 media_player:
   - platform: homeassistant_media_player
     name: Beam
@@ -15,6 +29,8 @@ media_player:
         type: sonos
       - id: spotty
         type: spotify
+      - id: fav_playlists
+        type: custom
   - platform: homeassistant_media_player
     name: Kitchen
     entity_id: "media_player.kitchen"
@@ -32,6 +48,9 @@ media_player:
     type: roku
     soundbar:
       speaker: media_player_beam
+    sources:
+      - id: youtube_videos
+        type: custom
   - platform: homeassistant_media_player
     name: Spotify
     entity_id: "media_player.spotify_landorghini"

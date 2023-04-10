@@ -22,10 +22,8 @@ external_components:
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,
+      media_player_source_custom
     ]
-
-  # - type: sonos
-    # entity_id: ok
 
 packages:
   device_base: !include common/device_base.yaml

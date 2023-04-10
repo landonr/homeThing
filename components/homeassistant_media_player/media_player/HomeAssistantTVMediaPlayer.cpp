@@ -14,6 +14,7 @@ void HomeAssistantTVMediaPlayer::setup() {
 void HomeAssistantTVMediaPlayer::subscribe_source() {
   ESP_LOGI(TAG, "subscribe_source: %s", this->entity_id_.c_str());
   device_sources = new media_player_source::MediaPlayerSourceInternal();
+  device_sources->set_name("Inputs");
   register_source(device_sources);
   subscribe_homeassistant_state(
       &HomeAssistantTVMediaPlayer::player_source_changed, this->entity_id_,

@@ -289,8 +289,6 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
         auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};
       } else if (sources.size() > 1) {
-        ESP_LOGW(TAG, "activeMenu: tv menu is bad? %d, %d", index,
-                 sources.size());
         auto playerSources = sources[index]->get_sources();
         auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};

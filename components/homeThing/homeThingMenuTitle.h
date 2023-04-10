@@ -326,6 +326,10 @@ static std::vector<std::shared_ptr<MenuTitleSource>>
 activePlayerSourceItemTitles(
     std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
         sourceItems) {
+  if (sourceItems.size() == 0) {
+    ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
+    return {};
+  }
   std::vector<std::shared_ptr<MenuTitleSource>> out;
   for (auto& sourceItem : sourceItems) {
     auto new_menu_title = std::make_shared<MenuTitleSource>(

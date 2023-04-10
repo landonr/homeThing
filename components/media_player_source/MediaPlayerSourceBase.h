@@ -72,7 +72,7 @@ class MediaPlayerSourceBase : public EntityBase {
 
  protected:
   // std::string entity_id_;
-  std::vector<std::shared_ptr<MediaPlayerSourceItem>> sources_{nullptr};
+  std::vector<std::shared_ptr<MediaPlayerSourceItem>> sources_ = {};
 };
 
 class MediaPlayerSourceAPI : public MediaPlayerSourceBase,
