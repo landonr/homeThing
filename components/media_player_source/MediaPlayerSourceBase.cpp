@@ -20,7 +20,7 @@ MediaPlayerSourceBase::parseJsonArray(std::string state) {
   JsonArray array = doc.as<JsonArray>();
   for (JsonVariant v : array) {
     std::string sourceName = v.as<std::string>();
-    ESP_LOGI("JSON", "new JSON array value %s %s", sourceName.c_str());
+    ESP_LOGD("JSON", "new JSON array value %s %s", sourceName.c_str());
     auto newsource =
         std::make_shared<media_player_source::MediaPlayerSourceItem>(
             sourceName, sourceName,
