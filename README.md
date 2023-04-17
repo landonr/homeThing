@@ -183,7 +183,6 @@ If you are interested in their awesome fabrication services please check them ou
 
 3D prototyping,&nbsp;PCB design and assembly, as well as CNC metal fabrication.&nbsp; Costs are reasonable and the quality is as good as it gets.&nbsp; Thank you PCBWay for sponsoring us and other fun projects!<br><br>
 
-<hr>
-### [cargo](https://cargo.site) sponsors our website!
+### [cargo](https://cargo.site/ "cargo.site") sponsors our website!
 
 They make it super easy to keep things pretty and up to date! It’s honestly so much easier than managing our own site, highly recommended!
