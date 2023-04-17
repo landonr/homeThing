@@ -171,3 +171,19 @@ Supports many different hardware configurations:
 - set state from service
 	- change player
 	- dark mode
+
+<hr>
+
+# Sponsorship
+
+<img src="https://camo.githubusercontent.com/3fab6e1d2bd2504dd94cfc2927b151aee553c106eef66ef09e49bdcd4c1013dc/68747470733a2f2f63646e2e6861636b616461792e696f2f696d616765732f3838313032313637333238353832393239312e706e67" data-caption="PCBWay Logo" data-no-zoom="">
+
+### [PCBWay](https://pcbway.com/ "PCBWay") sponsors 3D Printing and PCB assembly costs on this project during the prototyping phase! 
+If you are interested in their awesome fabrication services please check them out.&nbsp; They offer 
+
+3D prototyping,&nbsp;PCB design and assembly, as well as CNC metal fabrication.&nbsp; Costs are reasonable and the quality is as good as it gets.&nbsp; Thank you PCBWay for sponsoring us and other fun projects!<br><br>
+
+<hr>
+### [cargo](https://cargo.site) sponsors our website!
+
+They make it super easy to keep things pretty and up to date! It’s honestly so much easier than managing our own site, highly recommended!
