@@ -164,21 +164,6 @@ bool HomeThingMenuDisplay::draw_menu_screen(
     case nowPlayingMenu:
       now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
       break;
-    // case groupMenu: {
-    //   if (media_player_group_->newSpeakerGroupParent != NULL) {
-    //     auto playerSwitches =
-    //         groupTitleSwitches(media_player_group_->media_players_,
-    //                            media_player_group_->newSpeakerGroupParent);
-    //     animating = draw_menu_titles(
-    //         {playerSwitches.begin(), playerSwitches.end()}, menuIndex);
-    //     break;
-    //   }
-    //   auto playerStrings =
-    //       groupTitleString(media_player_group_->media_players_);
-    //   animating = draw_menu_titles({playerStrings.begin(), playerStrings.end()},
-    //                                menuIndex);
-    //   break;
-    // }
     default:
       animating = draw_menu_titles(active_menu, menuIndex);
       break;

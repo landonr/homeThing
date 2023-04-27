@@ -24,8 +24,6 @@ enum MediaPlayerTVRemoteCommand {
 
 class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
  public:
-  HomeAssistantBaseMediaPlayer* speaker;
-
   void setup() override;
 
   media_player::MediaPlayerTraits get_traits() {
@@ -39,9 +37,6 @@ class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void decreaseVolume() override;
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
-  void set_soundbar(HomeAssistantBaseMediaPlayer* new_sound_bar) {
-    speaker = new_sound_bar;
-  }
   void player_source_changed(std::string state);
 
  protected:

@@ -15,9 +15,8 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
   new_media_player->index = media_players_.size();
   media_players_.push_back(new_media_player);
 
-  new_media_player->add_on_state_callback([this, new_media_player]() {
-    this->state_updated(new_media_player->playerState);
-  });
+  new_media_player->add_on_state_callback(
+      [this, new_media_player]() { this->state_updated(new_media_player); });
 }
 
 bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
@@ -161,9 +160,10 @@ void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
     HomeAssistantTVMediaPlayer* activeTV =
         static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
-      if (activeTV->speaker != NULL) {
+      if (activeTV->get_parent_media_player() != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
-            static_cast<HomeAssistantSpeakerMediaPlayer*>(activeTV->speaker);
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(
+                activeTV->get_parent_media_player());
         tvSpeaker->increaseVolume();
       } else {
         activeTV->increaseVolume();
@@ -184,9 +184,10 @@ void HomeAssistantMediaPlayerGroup::decreaseSpeakerVolume() {
     HomeAssistantTVMediaPlayer* activeTV =
         static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
-      if (activeTV->speaker != NULL) {
+      if (activeTV->get_parent_media_player() != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
-            static_cast<HomeAssistantSpeakerMediaPlayer*>(activeTV->speaker);
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(
+                activeTV->get_parent_media_player());
         tvSpeaker->decreaseVolume();
       } else {
         activeTV->decreaseVolume();
@@ -254,9 +255,10 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
     HomeAssistantTVMediaPlayer* activeTV =
         static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
-      if (activeTV->speaker != NULL) {
+      if (activeTV->get_parent_media_player() != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
-            static_cast<HomeAssistantSpeakerMediaPlayer*>(activeTV->speaker);
+            static_cast<HomeAssistantSpeakerMediaPlayer*>(
+                activeTV->get_parent_media_player());
         if (tvSpeaker->volume != -1) {
           double volume = tvSpeaker->volume * 100;
           return volume;
@@ -479,9 +481,44 @@ void HomeAssistantMediaPlayerGroup::syncActivePlayer(RemotePlayerState state) {
   findActivePlayer(true);
 }
 
-void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
-  ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
+void HomeAssistantMediaPlayerGroup::state_updated(
+    HomeAssistantBaseMediaPlayer* player) {
+  ESP_LOGI(TAG, "state update callback %d %d", active_player_ == NULL,
            sync_active_player);
+
+  bool playerGrouped = player->groupMembers.size() > 1;
+  bool parentSet = player->get_parent_media_player() != NULL;
+  bool setParent = !parentSet && playerGrouped;
+  bool unsetParent = parentSet && !playerGrouped;
+  bool entityIsParent = parentSet && player->groupMembers.size() > 0 &&
+                        player->get_parent_media_player()->get_entity_id() ==
+                            player->groupMembers[0];
+  bool playerParentNotSynced = (setParent || unsetParent) && !entityIsParent;
+  ESP_LOGD(TAG,
+           "trying group parent: set parent %d, unset parent %d, entity is "
+           "parent %d",
+           setParent, unsetParent, entityIsParent);
+  if (playerParentNotSynced) {
+    ESP_LOGD(TAG, "setting group parent: %s, %d",
+             player->get_entity_id().c_str(), player->groupMembers.size());
+    for (auto& media_player : media_players_) {
+      if (media_player->get_entity_id() == player->get_entity_id()) {
+        continue;
+      } else if (player->groupMembers.size() > 0 &&
+                 media_player->get_entity_id() == player->groupMembers[0]) {
+        player->set_parent_media_player(media_player);
+        ESP_LOGD(TAG, "set group parent: %s, %s",
+                 player->get_entity_id().c_str(),
+                 media_player->get_entity_id().c_str());
+        break;
+      } else if (player->groupMembers.size() <= 1) {
+        player->set_parent_media_player(NULL);
+        ESP_LOGD(TAG, "unset group parent: %s, %s",
+                 player->get_entity_id().c_str(),
+                 media_player->get_entity_id().c_str());
+      }
+    }
+  }
   if (active_player_ != NULL) {
     return;
   } else if (!sync_active_player) {
@@ -489,6 +526,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(RemotePlayerState state) {
     return;
   }
 
+  auto state = player->playerState;
   ESP_LOGD(TAG,
            "Trying to sync active player, state: %d activePlayerNull: %d, "
            "sync_active_player: %d",

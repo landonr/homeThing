@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 #include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
@@ -295,14 +296,82 @@ static std::vector<MenuTitlePlayer*> mediaPlayersTitleString(
         homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
         media_players) {
   std::vector<MenuTitlePlayer*> out;
+
+  std::map<
+      homeassistant_media_player::HomeAssistantBaseMediaPlayer*,
+      std::vector<homeassistant_media_player::HomeAssistantBaseMediaPlayer*>>
+      tree;
+
   for (const auto media_player : media_players) {
-    if (media_player->mediaSource !=
-        homeassistant_media_player::RemotePlayerMediaSource::
-            TVRemotePlayerMediaSource) {
-      out.push_back(new MenuTitlePlayer(
-          media_player->get_name(), media_player->get_entity_id(),
-          NoMenuTitleLeftIcon, NoMenuTitleRightIcon, media_player));
+    auto parent = media_player->get_parent_media_player();
+    ESP_LOGD(
+        MENU_TITLE_TAG,
+        "mediaPlayersTitleString: player %s parent set %d group members %d",
+        media_player->get_entity_id().c_str(), parent != NULL,
+        media_player->groupMembers.size());
+    if (parent != NULL) {
+      // ignore parent if its a soundbar because the tv is the root parent
+      if (parent->mediaSource ==
+              homeassistant_media_player::RemotePlayerMediaSource::
+                  TVRemotePlayerMediaSource &&
+          parent->get_parent_media_player() != NULL) {
+        auto grand_parent = parent->get_parent_media_player();
+        // grand parent is tv, parent is soundbar, mediaplayer is grouped speaker
+        if (tree.find(grand_parent) == tree.end()) {
+          ESP_LOGD(MENU_TITLE_TAG,
+                   "mediaPlayersTitleString: adding grandparent1 %s player %s",
+                   grand_parent->get_entity_id().c_str(),
+                   media_player->get_entity_id().c_str());
+          tree[grand_parent] = {media_player};
+        } else {
+          ESP_LOGD(MENU_TITLE_TAG,
+                   "mediaPlayersTitleString: adding grandparent2 %s player %s",
+                   grand_parent->get_entity_id().c_str(),
+                   media_player->get_entity_id().c_str());
+          tree[grand_parent].push_back(media_player);
+        }
+      } else if (tree.find(parent) == tree.end()) {
+        // dont add soundbar to tv if it's not playing
+        if (parent->get_player_type() ==
+                homeassistant_media_player::RemotePlayerType::
+                    TVRemotePlayerType &&
+            media_player->mediaSource !=
+                homeassistant_media_player::RemotePlayerMediaSource::
+                    TVRemotePlayerMediaSource) {
+          ESP_LOGD(MENU_TITLE_TAG,
+                   "mediaPlayersTitleString: adding player %s no parent",
+                   parent->get_entity_id().c_str(),
+                   media_player->get_entity_id().c_str());
+          tree[media_player] = {};
+        } else {
+          ESP_LOGD(MENU_TITLE_TAG,
+                   "mediaPlayersTitleString: adding parent2 %s player %s",
+                   parent->get_entity_id().c_str(),
+                   media_player->get_entity_id().c_str());
+          tree[parent] = {media_player};
+        }
+      } else {
+        ESP_LOGD(MENU_TITLE_TAG,
+                 "mediaPlayersTitleString: adding parent3 %s player %s",
+                 parent->get_entity_id().c_str(),
+                 media_player->get_entity_id().c_str());
+        tree[parent].push_back(media_player);
+      }
     } else {
+      if (tree.find(media_player) == tree.end()) {
+        ESP_LOGD(MENU_TITLE_TAG, "mediaPlayersTitleString: player set %s",
+                 media_player->get_entity_id().c_str());
+        tree[media_player] = {};
+      }
+    }
+  }
+  ESP_LOGD(MENU_TITLE_TAG, "mediaPlayersTitleString: ------");
+  for (auto tree_item : tree) {
+    auto parent = tree_item.first;
+    out.push_back(
+        new MenuTitlePlayer(parent->get_name(), parent->get_entity_id(),
+                            NoMenuTitleLeftIcon, NoMenuTitleRightIcon, parent));
+    for (const auto media_player : tree_item.second) {
       out.push_back(new MenuTitlePlayer(
           media_player->get_name(), media_player->get_entity_id(),
           GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon, media_player));

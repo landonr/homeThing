@@ -18,11 +18,16 @@ homeassistant_light_group:
     - id: light_rgb_lights
     - id: light_living_room_lights
     - id: light_desk_lamp
+    - id: light_kitchen_lights
+    - id: light_bathroom_lights
+    - id: light_bedroom_lights
 
 homeassistant_media_player:
   id: media_group_component
   media_players:
     - id: media_player_beam
+      type: speaker
+    - id: media_player_office
       type: speaker
     - id: media_player_tv
       type: roku

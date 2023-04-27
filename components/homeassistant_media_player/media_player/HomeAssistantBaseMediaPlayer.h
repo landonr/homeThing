@@ -153,6 +153,15 @@ class HomeAssistantBaseMediaPlayer
   RemotePlayerMediaSource mediaSource = NoRemotePlayerMediaSource;
   RemotePlayerState playerState = NoRemotePlayerState;
 
+  virtual HomeAssistantBaseMediaPlayer* get_parent_media_player() {
+    return parent_media_player_;
+  }
+
+  void set_parent_media_player(
+      HomeAssistantBaseMediaPlayer* parent_media_player) {
+    parent_media_player_ = parent_media_player;
+  }
+
   void register_source(media_player_source::MediaPlayerSourceBase* new_source);
   std::vector<media_player_source::MediaPlayerSourceBase*> sources;
   int index;
@@ -230,14 +239,18 @@ class HomeAssistantBaseMediaPlayer
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
       supported_features_ = {};
 
-  virtual void group_members_changed(std::string state) {}
+  virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();
 
  private:
   RemotePlayerType player_type_;
+  HomeAssistantBaseMediaPlayer* parent_media_player_;
 
   void selectSource(media_player_source::MediaPlayerSourceItem* source);
   void playMedia(media_player_source::MediaPlayerSourceItem* source);
+  void tokenize(std::string const& str, std::string delim,
+                std::vector<std::string>* out);
+  std::string filter(std::string str);
 
   // subscriptions
   void subscribe_player_state();

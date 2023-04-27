@@ -42,6 +42,16 @@ media_player:
       - id: spotty
         type: spotify
   - platform: homeassistant_media_player
+    name: Bathroom
+    entity_id: "media_player.office"
+    id: media_player_office
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+      - id: spotty
+        type: spotify
+  - platform: homeassistant_media_player
     name: TV
     entity_id: "media_player.55_tcl_roku_tv"
     id: media_player_tv

@@ -75,7 +75,6 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   std::vector<media_player_source::MediaPlayerSourceBase*>
   activePlayerSources();
   void syncActivePlayer(RemotePlayerState state);
-
   void playSource(media_player_source::MediaPlayerSourceItem* source);
   float get_setup_priority() const override { return setup_priority::LATE; }
   void set_active_player_source_index(int active_player_source_index) {
@@ -84,7 +83,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   int get_active_player_source_index() { return active_player_source_index_; }
 
  private:
-  void state_updated(RemotePlayerState state);
+  void state_updated(HomeAssistantBaseMediaPlayer* player);
   bool sync_active_player = false;
   int active_player_source_index_ = -1;
   // bool sonos_active = false;
