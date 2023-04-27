@@ -1,7 +1,7 @@
 text_sensor:
   - platform: homeassistant
     entity_id: "sensor.vancouver_forecast"
-    name: ""
+    name: "Weather"
     id: sensor_weather
   - platform: homeassistant
     entity_id: "sensor.accuweather_realfeel_temperature"
