@@ -33,6 +33,10 @@ external_components:
      homeassistant_media_player,
      homeassistant_service_group,
      homeThing,
+     media_player_source,
+     media_player_source_sonos,
+     media_player_source_spotify,
+     media_player_source_custom
    ]
 
 
