@@ -388,8 +388,8 @@ void HomeAssistantBaseMediaPlayer::playlist_changed(std::string state) {
 }
 
 void HomeAssistantBaseMediaPlayer::tokenize(std::string const& str,
-                                               std::string delim,
-                                               std::vector<std::string>* out) {
+                                            std::string delim,
+                                            std::vector<std::string>* out) {
   size_t start;
   size_t end = 0;
 
