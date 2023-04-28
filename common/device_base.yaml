@@ -1,0 +1,15 @@
+http_request:
+  useragent: esphome/device
+  timeout: 10s
+
+time:
+  - platform: homeassistant
+    id: esptime
+    on_time_sync:
+      then:
+        component.update: my_display
+
+binary_sensor:
+  - platform: status
+    id: api_connected
+    internal: true

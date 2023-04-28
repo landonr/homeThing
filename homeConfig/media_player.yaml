@@ -1,0 +1,81 @@
+media_player_source_sonos:
+  id: sonos
+
+media_player_source_spotify:
+  id: spotty
+
+media_player_source_custom:
+  - id: fav_playlists
+    name: playlists
+    sources:
+      name: idk
+      media_id: spotify:playlist:2uzbATYxs9V8YQi5lf89WG
+      media_type: playlist
+  - id: youtube_videos
+    name: youtube videos
+    sources:
+      - name: cat video
+        media_id: 8NWHnWbpxmc
+        media_type: source
+
+media_player:
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+      - id: spotty
+        type: spotify
+      - id: fav_playlists
+        type: custom
+  - platform: homeassistant_media_player
+    name: Kitchen
+    entity_id: "media_player.kitchen"
+    id: media_player_kitchen
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+      - id: spotty
+        type: spotify
+  - platform: homeassistant_media_player
+    name: Bathroom
+    entity_id: "media_player.office"
+    id: media_player_office
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+      - id: spotty
+        type: spotify
+  - platform: homeassistant_media_player
+    name: TV
+    entity_id: "media_player.55_tcl_roku_tv"
+    id: media_player_tv
+    type: roku
+    soundbar:
+      speaker: media_player_beam
+    sources:
+      - id: youtube_videos
+        type: custom
+  - platform: homeassistant_media_player
+    name: Spotify
+    entity_id: "media_player.spotify_landorghini"
+    id: media_player_spotify
+    type: speaker
+    sources:
+      - id: spotty
+        type: spotify
+  - platform: homeassistant_media_player
+    name: PC
+    entity_id: "media_player.tower"
+    id: media_player_tower
+    type: speaker
+  - platform: homeassistant_media_player
+    name: Kodi
+    entity_id: "media_player.kodi_desktop"
+    id: media_player_kodi
+    type: kodi

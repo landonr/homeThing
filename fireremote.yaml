@@ -2,67 +2,53 @@ esphome:
   name: fireremote
   platform: ESP32
   board: m5stack-fire
-  includes:
-    - esphomeRemote/MenuGlobals.h
-    - esphomeRemote/MenuTitle.h
-    - esphomeRemote/FriendlyNameEntity.h
-    - esphomeRemote/TextHelpers.h
-    - esphomeRemote/esphomeRemotePlayer.h
-    - esphomeRemote/esphomeRemoteService.h
-    - esphomeRemote/esphomeRemoteLight.h
-    - esphomeRemote/esphomeRemoteSwitch.h
-    - esphomeRemote/esphomeRemoteSensor.h
-    - esphomeRemote/DisplayUpdateInterface.h
-    - esphomeRemote/esphomeRemote.h
-    - esphomeRemote/esphomeRemoteNowPlayingMenu.h
-    - esphomeRemote/esphomeRemote3Button.h
-    - esphomeRemote/esphomeRemoteFireLight.h
-    - esphomeRemote/esphomeRemoteCommon.h
-
-substitutions:
-  boot_name: '"Fire Remote <3"'
-  boot_logo_size: "48"
-  friendly_name: "M5Fire Remote"
-  wifi_ssid: !secret wifi_ssid
-  wifi_password: !secret wifi_password
-  wifi_fallback_password: !secret wifi_fallback_password
-  large_font_size: "24"
-  medium_font_size: "20"
-  small_font_size: "18"
-  icon_size: "24"
-  icon_size_large: "28"
-  header_height: "24"
-  margin_size: "8"
-  slider_margin_size: "6"
-  scroll_bar_width: "8"
-  bottom_bar_margin: "8"
-  now_playing_max_lines: "5"
-  draw_now_playing_menu: "true"
-  draw_battery_level: "true"
-  draw_volume_level: "false"
-  draw_shuffle_disabled: "false"
-  draw_header_time: "true"
-  color_accent_primary_red: 86%
-  color_accent_primary_green: 10%
-  color_accent_primary_blue: 20%
-  display_timeout: "16"
-  sleep_after: "7200"
-  menu_rollover_on: "false"
-  sync_active_player: "true"
-  dec_brightness_step: "10"
-  inc_brightness_step: "10"
-  dec_color_temperature_step: "10"
-  inc_color_temperature_step: "10"
-  dark_mode: "true"
-  keep_states_in_sync: "false"
-
-<<: !include esphomeRemote/sharedRemoteConfig.yaml
 
 external_components:
   - source:
       type: git
       url: https://github.com/ssieb/custom_components
     components: [ ip5306 ]
+  - source:
+    #   type: git
+    #   url: https://github.com/landonr/homeThing
+    #   ref: lando/codeCleanup
+    # refresh: 0s
+      type: local
+      path: components
+    components: [ 
+      homeassistant_component, 
+      homeassistant_switch_group, 
+      homeassistant_sensor_group,
+      homeassistant_light_group,
+      homeassistant_media_player,
+      homeassistant_service_group,
+      homeThing,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+
+packages:
+  device_base: !include common/device_base.yaml
+  setup: !include homeConfig/device_setup.yaml
+  home_media_player: !include homeConfig/media_player.yaml
+  home_text_sensor: !include homeConfig/text_sensor.yaml
+  home_light: !include homeConfig/light.yaml
+  home_switch: !include homeConfig/switch.yaml
+  menu_group: !include homeConfig/menu_group.yaml
+  fonts: !include common/fonts.yaml
+  icon_fonts: !include common/icon_fonts.yaml
+
+substitutions:
+  friendly_name: "homeThingFireRemote"
+  large_heavy_font_size: "24"
+  large_font_size: "24"
+  medium_font_size: "20"
+  small_font_size: "18"
+  home_thing_logo_size: "64"
+  material_font_large_size: "28"
+  material_font_small_size: "24"
 
 i2c:
   sda: 21
@@ -72,16 +58,17 @@ i2c:
 ip5306:
   battery_level:
     name: ${friendly_name} Battery Percent
-    id: batteryPercent
+    id: battery_percent
     on_value :
       then:
         - lambda: |-
-            if(id(batteryPercent).state > previousBatteryLevel && !charging) {
-                charging = true;
-            } else if(id(batteryPercent).state <= previousBatteryLevel && charging) {
-                charging = false;
-            }
-            previousBatteryLevel = id(batteryPercent).state;
+            ESP_LOGD("TEST", "Battery Percent");
+            // if(id(battery_percent).state > previousBatteryLevel && !charging) {
+            //     charging = true;
+            // } else if(id(battery_percent).state <= previousBatteryLevel && charging) {
+            //     charging = false;
+            // }
+            // previousBatteryLevel = id(battery_percent).state;
   charger_connected:
     internal: true
     id: connected
@@ -89,17 +76,17 @@ ip5306:
       then:
         - lambda: |-
             ESP_LOGD("TEST", "charging");
-            if (charging == false) {
-              charging = true;
-            }
+            // if (charging == false) {
+            //   charging = true;
+            // }
         
     on_release:
       then:
         - lambda: |-
             ESP_LOGD("TEST", "not charging");
-            if (charging == true) {
-              charging = false;
-            }
+            // if (charging == true) {
+            //   charging = false;
+            // }
   charge_full:
     id: full
     internal: true
@@ -111,7 +98,7 @@ ip5306:
         - lambda: ESP_LOGD("TEST", "still charging");
 
 deep_sleep:
-  id: deep_sleep_fire
+  id: deep_sleep_
   wakeup_pin: 39
   wakeup_pin_mode: INVERT_WAKEUP
 
@@ -124,7 +111,7 @@ binary_sensor:
     on_click:
       then:
         - lambda: |-
-            buttonPressLeft();
+            id(homeThingMenu)->rotaryScrollCounterClockwise(0);
   - platform: gpio
     id: M5_BtnB
     pin:
@@ -133,7 +120,7 @@ binary_sensor:
     on_click:
       then:
         - lambda: |-
-            buttonPressSelect();
+           id(homeThingMenu)->buttonPressSelect();
   - platform: gpio
     id: M5_BtnC
     pin:
@@ -142,7 +129,7 @@ binary_sensor:
     on_click:
       then:
         - lambda: |-
-            buttonPressRight();
+            id(homeThingMenu)->rotaryScrollClockwise(0);
 
 # We can still control the backlight independently
 switch:
@@ -153,15 +140,19 @@ switch:
     on_turn_on:
       then:
         - deep_sleep.enter:
-            id: deep_sleep_fire
-  - platform: gpio
+            id: deep_sleep_
+
+output:
+  - platform: ledc
     pin: 32
-    name: ${friendly_name} Backlight
-    id: backlight
-    restore_mode: ALWAYS_ON
-    internal: true
+    id: gpio_32_backlight_pwm
 
 light:
+  - platform: monochromatic
+    output: gpio_32_backlight_pwm
+    name: "Display Backlight"
+    id: backlight
+    restore_mode: ALWAYS_ON
   - platform: fastled_clockless
     chipset: SK6812
     pin: GPIO15
@@ -182,22 +173,60 @@ spi:
   mosi_pin: 23
   miso_pin: 19
 
+homeThing:
+  id: homeThingMenu
+  settings:
+    mode: 3_button
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  battery:
+    battery_percent: battery_percent
+    charging: connected
+  media_player_group: media_group_component
+  light_group: light_group_component
+  service_group: service_group_component
+  sensor_group: sensor_group_component
+  switch_group: switch_group_component
+  display: my_display
+  on_redraw:
+    then:
+      component.update: my_display
+  display_state:
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_heavy_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small
+    font_logo: home_thing_logo
+    header_height: 24
+    margin_size: 8
+    slider_margin_size: 6
+    scroll_bar_width: 8
+    bottom_bar_margin: 8
+    now_playing_max_lines: 5
+    draw_now_playing_bottom_menu: true
+    draw_battery_level: true
+    dark_mode: true
+    draw_volume_level: false
+    draw_shuffle_disabled: false
+    draw_header_time: true
+
 display:
-  - platform: ili9341
+  - platform: ili9xxx
     model: M5STACK
     cs_pin: 14
     dc_pin: 27
-    led_pin: 32  ### see note below ###
     reset_pin: 33
     id: my_display
     update_interval: 3600s 
     lambda: |-
-      manageLight();
-      if (idleTime < 0) {
-        ESP_LOGD("drawing menu", "turning on");
-        id(backlight).turn_on();
-        idleTime = 0;
-      }
-      drawMenu();
+      // manageLight();
+      // if (idleTime < 0) {
+      //   ESP_LOGD("drawing menu", "turning on");
+      //   id(backlight).turn_on();
+      //   idleTime = 0;
+      // }
+      id(homeThingMenu)->draw_menu_screen();
       return;
       

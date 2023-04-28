@@ -1,4 +1,4 @@
-name: ESPHome Builder
+name: homeThing Builder
 on:
   workflow_dispatch:
   push:
@@ -16,17 +16,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        devices: [ 'tdisplayremote', 'fireremote', 'tdisplayt4', 'm5stickc' ]
+        devices: [ 'tdisplayremote', 'fireremote', 'tdisplayt4', 'm5stickc', 'm5stickcplus', 'homething-lilygo', 'example-homeThing' ]
     steps:
       - uses: actions/checkout@v2
-      - uses: DoozyX/clang-format-lint-action@v0.14
+      - uses: DoozyX/clang-format-lint-action@v0.15
         with:
-          source: 'esphomeRemote'
+          source: '.'
           extensions: 'h,cpp'
-          clangFormatVersion: 14
+          style: file
+          exclude: './components/homeThing/version.h'
+          clangFormatVersion: 15
       - name: Create file
         run: |
           echo "d2lmaV9ic3NpZDogIjFDOjg3OjJDOjcwOkMyOkMyIgp3aWZpX3NzaWQ6ICJzc2lkIgp3aWZpX3Bhc3N3b3JkOiAid2lmaXBhc3MiCndpZmlfZmFsbGJhY2tfcGFzc3dvcmQ6ICJ3aWZpZmFsbGJhY2twYXNzIgphcGlfZW5jcnlwdGlvbjogImFwaWVuY3J5cHRpb24iCm90YV9lbmNyeXB0aW9uOiAib3RhZW5jcnlwdGlvbiIK" | base64 --decode > secrets.yaml
+          echo "d2lmaV9ic3NpZDogIjFDOjg3OjJDOjcwOkMyOkMyIgp3aWZpX3NzaWQ6ICJzc2lkIgp3aWZpX3Bhc3N3b3JkOiAid2lmaXBhc3MiCndpZmlfZmFsbGJhY2tfcGFzc3dvcmQ6ICJ3aWZpZmFsbGJhY2twYXNzIgphcGlfZW5jcnlwdGlvbjogImFwaWVuY3J5cHRpb24iCm90YV9lbmNyeXB0aW9uOiAib3RhZW5jcnlwdGlvbiIK" | base64 --decode > homeConfig/secrets.yaml
       - uses: esphome/build-action@v1.1.0
         with:
           yaml_file: ${{ matrix.devices }}.yaml

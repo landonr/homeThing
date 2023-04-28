@@ -1,0 +1,11 @@
+output:
+  - platform: ledc
+    pin: GPIO4
+    id: gpio4
+
+light:
+  - platform: monochromatic
+    output: gpio4
+    name: "${friendly_name} Backlight"
+    id: backlight
+    restore_mode: ALWAYS_ON 
