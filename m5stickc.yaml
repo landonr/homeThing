@@ -13,31 +13,33 @@ i2c:
     scan: true
 
 external_components:
- - source:
-     type: git
-     url: https://gitlab.com/geiseri/esphome_extras.git
-   refresh: 0s
-   components: [axp192]
- - source:
-   #   type: git
-   #   url: https://github.com/landonr/homeThing
-   #   ref: lando/codeCleanup
-   # refresh: 0s
-     type: local
-     path: components
-   components: [ 
-    homeassistant_component, 
-     homeassistant_switch_group, 
-     homeassistant_sensor_group,
-     homeassistant_light_group,
-     homeassistant_media_player,
-     homeassistant_service_group,
-     homeThing,
-     media_player_source,
-     media_player_source_sonos,
-     media_player_source_spotify,
-     media_player_source_custom
-   ]
+  - source:
+    #   type: git
+    #   url: https://github.com/landonr/homeThing
+    #   ref: main
+    # refresh: 0s
+      type: local
+      path: components
+    components: [homeThing]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+      # type: local
+      # path: ../local_components/components
+    components: [
+      homeassistant_component, 
+      homeassistant_switch_group, 
+      homeassistant_sensor_group,
+      homeassistant_light_group,
+      homeassistant_media_player,
+      homeassistant_service_group,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
 
 
 packages:
