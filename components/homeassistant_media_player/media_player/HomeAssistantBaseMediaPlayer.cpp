@@ -451,7 +451,6 @@ bool HomeAssistantBaseMediaPlayer::supports(
 
 void HomeAssistantBaseMediaPlayer::toggle_shuffle() {
   ESP_LOGI(TAG, "%s toggle shuffle", this->entity_id_.c_str());
-  ignore_api_updates_with_seconds(2);
   call_homeassistant_service("media_player.shuffle_set",
                              {
                                  {"entity_id", this->entity_id_},
