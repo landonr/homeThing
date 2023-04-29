@@ -5,6 +5,10 @@ esphome:
 
 external_components:
   - source:
+      type: git
+      url: https://github.com/ssieb/custom_components
+    components: [ ip5306 ]
+  - source:
     #   type: git
     #   url: https://github.com/landonr/homeThing
     #   ref: main
@@ -62,43 +66,12 @@ ip5306:
   battery_level:
     name: ${friendly_name} Battery Percent
     id: battery_percent
-    on_value :
-      then:
-        - lambda: |-
-            ESP_LOGD("TEST", "Battery Percent");
-            // if(id(battery_percent).state > previousBatteryLevel && !charging) {
-            //     charging = true;
-            // } else if(id(battery_percent).state <= previousBatteryLevel && charging) {
-            //     charging = false;
-            // }
-            // previousBatteryLevel = id(battery_percent).state;
   charger_connected:
     internal: true
     id: connected
-    on_press:
-      then:
-        - lambda: |-
-            ESP_LOGD("TEST", "charging");
-            // if (charging == false) {
-            //   charging = true;
-            // }
-        
-    on_release:
-      then:
-        - lambda: |-
-            ESP_LOGD("TEST", "not charging");
-            // if (charging == true) {
-            //   charging = false;
-            // }
   charge_full:
     id: full
     internal: true
-    on_press:
-      then:
-        - lambda: ESP_LOGD("TEST", "fully charged");
-    on_release:
-      then:
-        - lambda: ESP_LOGD("TEST", "still charging");
 
 deep_sleep:
   id: deep_sleep_
@@ -153,7 +126,7 @@ output:
 light:
   - platform: monochromatic
     output: gpio_32_backlight_pwm
-    name: "Display Backlight"
+    name: ${friendly_name} Backlight
     id: backlight
     restore_mode: ALWAYS_ON
   - platform: fastled_clockless
@@ -162,7 +135,7 @@ light:
     num_leds: 10
     rgb_order: GRB
     id: side_light
-    name: ${friendly_name} Remote Light"
+    name: ${friendly_name} Remote Light
     restore_mode: ALWAYS_OFF
     default_transition_length: 0s
     effects:
@@ -224,12 +197,5 @@ display:
     id: my_display
     update_interval: 3600s 
     lambda: |-
-      // manageLight();
-      // if (idleTime < 0) {
-      //   ESP_LOGD("drawing menu", "turning on");
-      //   id(backlight).turn_on();
-      //   idleTime = 0;
-      // }
       id(homeThingMenu)->draw_menu_screen();
       return;
-      
