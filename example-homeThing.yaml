@@ -144,7 +144,7 @@ display:
 packages:
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: lando/codeCleanup # optional
+    ref: main
     files: [
       common/device_base.yaml, 
       common/ipod/lilygo_tdisplay_ipod_backlight.yaml,
@@ -162,7 +162,11 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: lando/codeCleanup
+    refresh: 0s
+    components: [homeThing]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
     refresh: 0s
     components: [ 
       homeassistant_component,
@@ -171,7 +175,6 @@ external_components:
       homeassistant_light_group,
       homeassistant_media_player,
       homeassistant_service_group,
-      homeThing,
       media_player_source,
       media_player_source_sonos
     ]
