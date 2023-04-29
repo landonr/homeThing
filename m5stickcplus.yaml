@@ -8,6 +8,11 @@ esp32:
 
 external_components:
   - source:
+      type: git
+      url: https://gitlab.com/geiseri/esphome_extras.git
+    refresh: 0s
+    components: [axp192]
+  - source:
     #   type: git
     #   url: https://github.com/landonr/homeThing
     #   ref: main
