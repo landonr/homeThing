@@ -114,9 +114,9 @@ Supports many different hardware configurations:
 ### 1. Lilygo T-Display with Scrollwheel ⚙️
 #### T-Display with scrollwheel has the same controls as an ipod
 
-|Lilygo T-Display Controls|
-|--|
-|<img src="docs/tdisplayOverlay.jpg" width="525"/>|
+|Lilygo T-Display Controls|Lilygo wiring|
+|--|--|
+|<img src="docs/tdisplayOverlay.jpg" width="525"/>|<img src="docs/wiring-png.png" width="525"/>|
 
 - Scroll to navigate in list menus and for volume on Now Playing Menu
 - Charges with usb-c
