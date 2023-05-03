@@ -18,6 +18,22 @@ Supports many different hardware configurations:
 - Lilygo T-Display T4 (no additional hardware, scrollwheel coming soon)
 - Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
 
+#### Uses custom external components https://github.com/landonr/esphome-components
+* Home assistant media player
+	* Speakers
+		* Sonos
+		* Spotify
+	* Screens
+		* Roku
+		* Kodi
+		* Samsung
+* Light control, switch control
+* Custom media sources
+	* Spotify recent playlists
+	* Sonos favorites
+	* Custom playlists
+	* Custom YouTube video lists
+
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
  - [Discord](https://discord.gg/BX6ZtGKHTy) - support / chat with the community and the team
@@ -98,9 +114,9 @@ Supports many different hardware configurations:
 ### 1. Lilygo T-Display with Scrollwheel ⚙️
 #### T-Display with scrollwheel has the same controls as an ipod
 
-|Lilygo T-Display Controls|
-|--|
-|<img src="docs/tdisplayOverlay.jpg" width="525"/>|
+|Lilygo T-Display Controls|Lilygo wiring|
+|--|--|
+|<img src="docs/tdisplayOverlay.jpg" width="525"/>|<img src="docs/wiring-png.png" width="525"/>|
 
 - Scroll to navigate in list menus and for volume on Now Playing Menu
 - Charges with usb-c
