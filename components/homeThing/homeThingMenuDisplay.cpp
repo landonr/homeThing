@@ -66,7 +66,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
     if (i + sliderExtra > scrollTop + maxItems()) {
       break;
     }
-    ESP_LOGD(TAG, "draw_menu_titles: %s", menuTitles[i]->get_name().c_str());
+    ESP_LOGI(TAG, "draw_menu_titles: %s", menuTitles[i]->get_name().c_str());
     switch (menuTitles[i]->titleType) {
       case BaseMenuTitleType:
       case SourceMenuTitleType:
