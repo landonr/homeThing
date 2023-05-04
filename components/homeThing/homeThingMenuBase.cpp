@@ -317,7 +317,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case switchesMenu:
       return switchTitleSwitches(switch_group_->switches);
     case nowPlayingMenu:
-      return getNowPlayingMenuStates(media_player_group_->active_player_);
+      return speakerNowPlayingMenuStates(media_player_group_->active_player_);
     case groupMenu: {
       if (media_player_group_->newSpeakerGroupParent != NULL) {
         return groupTitleSwitches(media_player_group_->media_players_,
@@ -339,9 +339,9 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     ESP_LOGI(TAG, "selectNowPlayingMenu: select menud %d", menuIndex);
     return;
   }
-  auto menu_name =
-      getNowPlayingMenuStates(media_player_group_->active_player_)[menuIndex]
-          ->entity_id_;
+  auto menu_name = speakerNowPlayingMenuStates(
+                       media_player_group_->active_player_)[menuIndex]
+                       ->entity_id_;
   homeassistant_media_player::MediaPlayerSupportedFeature menu_item =
       homeassistant_media_player::supported_feature_item_map[menu_name];
 
@@ -397,6 +397,7 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     case homeassistant_media_player::MediaPlayerSupportedFeature::BROWSE_MEDIA:
       break;
     case homeassistant_media_player::MediaPlayerSupportedFeature::REPEAT_SET:
+      media_player_group_->toggle_repeat();
       break;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menuIndex = 0;

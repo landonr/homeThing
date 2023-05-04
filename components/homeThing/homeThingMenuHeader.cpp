@@ -156,6 +156,45 @@ int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
   return oldXPos;
 }
 
+int HomeThingMenuHeader::drawRepeat(int oldXPos, int yPosOffset) {
+  if (!media_player_group_ || media_player_group_->active_player_ == NULL) {
+    return oldXPos;
+  }
+  auto active_player = media_player_group_->active_player_;
+  if (active_player->get_player_type() ==
+          homeassistant_media_player::RemotePlayerType::TVRemotePlayerType ||
+      !active_player->supports(homeassistant_media_player::
+                                   MediaPlayerSupportedFeature::REPEAT_SET) ||
+      active_player->playerState ==
+          homeassistant_media_player::RemotePlayerState::
+              StoppedRemotePlayerState) {
+    return oldXPos;
+  }
+  int xPos = oldXPos - display_state_->get_icon_size() +
+             display_state_->get_margin_size() / 2;
+  int yPos = getHeaderTextYPos(yPosOffset);
+  switch (media_player_group_->get_repeat_mode()) {
+    case homeassistant_media_player::MediaPlayerRepeatMode::ALL:
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_font_material_small(),
+          display_state_->get_color_palette()->get_accent_primary(), "󰑖");
+      break;
+    case homeassistant_media_player::MediaPlayerRepeatMode::ONE:
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_font_material_small(),
+          display_state_->get_color_palette()->get_accent_primary(), "󰑘");
+      break;
+    case homeassistant_media_player::MediaPlayerRepeatMode::OFF:
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_font_material_small(),
+          display_state_->get_color_palette()->get_accent_primary(), "󰑗");
+      break;
+    default:
+      return oldXPos;
+  }
+  return xPos - display_state_->get_margin_size() / 2;
+}
+
 int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
   if (!display_state_->get_draw_header_time() || !esp_time_->now().is_valid()) {
     return oldXPos;
@@ -242,8 +281,10 @@ void HomeThingMenuHeader::drawHeader(int yPosOffset,
   int xPos =
       display_buffer_->get_width() - display_state_->get_margin_size() / 2;
   drawHeaderVolumeLevel(
-      drawHeaderTime(drawShuffle(drawBattery(xPos, yPosOffset), yPosOffset),
-                     yPosOffset),
+      drawHeaderTime(
+          drawShuffle(drawRepeat(drawBattery(xPos, yPosOffset), yPosOffset),
+                      yPosOffset),
+          yPosOffset),
       yPosOffset);
 }
 }  // namespace homething_menu_base
