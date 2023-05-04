@@ -77,6 +77,8 @@ class HomeThingMenuDisplayState {
   void set_draw_shuffle_disabled(bool draw_shuffle_disabled) {
     draw_shuffle_disabled_ = draw_shuffle_disabled;
   }
+  bool get_draw_repeat() { return draw_repeat_; }
+  void set_draw_repeat(bool draw_repeat) { draw_repeat_ = draw_repeat; }
   bool get_draw_header_time() { return draw_header_time_; }
   void set_draw_header_time(bool draw_header_time) {
     draw_header_time_ = draw_header_time;
@@ -130,6 +132,7 @@ class HomeThingMenuDisplayState {
   int now_playing_max_lines_;
   float font_size_width_ratio_;
   bool draw_shuffle_disabled_;
+  bool draw_repeat_;
   bool draw_header_time_;
   bool draw_battery_level_;
   bool dark_mode_;

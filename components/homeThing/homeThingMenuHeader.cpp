@@ -157,7 +157,8 @@ int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawRepeat(int oldXPos, int yPosOffset) {
-  if (!media_player_group_ || media_player_group_->active_player_ == NULL) {
+  if (!display_state_->get_draw_repeat() || !media_player_group_ ||
+      media_player_group_->active_player_ == NULL) {
     return oldXPos;
   }
   auto active_player = media_player_group_->active_player_;
