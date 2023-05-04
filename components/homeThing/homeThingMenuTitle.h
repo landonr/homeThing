@@ -685,51 +685,37 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
           : "Play";
 
   std::vector<std::shared_ptr<MenuTitleBase>> out;
-  auto supported_features = player->get_features();
+  auto menu_feature =
+      homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME;
+  out.push_back(std::make_shared<MenuTitleBase>(
+      homeassistant_media_player::supported_feature_string(menu_feature),
+      homeassistant_media_player::supported_feature_string_map[menu_feature],
+      NoMenuTitleRightIcon));
+  auto supported_features = player->get_option_menu_features();
   for (auto iter = supported_features.begin(); iter != supported_features.end();
        ++iter) {
+    homeassistant_media_player::MediaPlayerSupportedFeature item =
+        *(iter->get());
+    auto entity_id =
+        homeassistant_media_player::supported_feature_string_map[item];
     switch (*(iter->get())) {
       case homeassistant_media_player::MediaPlayerSupportedFeature::
           SHUFFLE_SET: {
         std::string shuffle_string =
             player->is_shuffling() ? "Shuffling" : "Shuffle";
-        out.push_back(std::make_shared<MenuTitleBase>(shuffle_string, "shuffle",
+        out.push_back(std::make_shared<MenuTitleBase>(shuffle_string, entity_id,
                                                       NoMenuTitleRightIcon));
         break;
       }
       default:
+        auto title = homeassistant_media_player::supported_feature_string(
+            *(iter->get()));
+        out.push_back(std::make_shared<MenuTitleBase>(title, entity_id,
+                                                      NoMenuTitleRightIcon));
         break;
     }
   }
   return out;
-  // return {
-  //     std::make_shared<MenuTitleBase>(playString, "play", NoMenuTitleRightIcon),
-  //     std::make_shared<MenuTitleBase>("Vl Up", "volume_up",
-  //                                     NoMenuTitleRightIcon),
-  //     std::make_shared<MenuTitleBase>("Vl Down", "volume_down",
-  //                                     NoMenuTitleRightIcon),
-  //     std::make_shared<MenuTitleBase>("Next", "next", NoMenuTitleRightIcon),
-
-  //     std::make_shared<MenuTitleBase>("Group", "group", NoMenuTitleRightIcon),
-  //     std::make_shared<MenuTitleBase>("Menu", "menu", NoMenuTitleRightIcon),
-  // };
-}
-
-static std::vector<std::shared_ptr<MenuTitleBase>> TVNowPlayingMenuStates() {
-  // return {pauseNowPlayingMenuState,      volumeUpNowPlayingMenuState,
-  //         volumeDownNowPlayingMenuState, backNowPlayingMenuState,
-  //         TVPowerNowPlayingMenuState,    homeNowPlayingMenuState,
-  //         menuNowPlayingMenuState};
-  return {};
-}
-
-static std::vector<std::shared_ptr<MenuTitleBase>> getNowPlayingMenuStates(
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
-  if (player->get_player_type() ==
-      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    return TVNowPlayingMenuStates();
-  }
-  return speakerNowPlayingMenuStates(player);
 }
 
 }  // namespace homething_menu_base

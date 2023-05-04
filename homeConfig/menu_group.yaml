@@ -43,6 +43,12 @@ homeassistant_media_player:
 homeassistant_service_group:
   id: service_group_component
   commands:
+    - text: "Feed monster"
+      command:
+        - homeassistant.service:
+            service: button.press
+            data:
+              entity_id: "button.catfeeder_d1_feed_single"
     - text: "desk down"
       command:
         - lambda: |-

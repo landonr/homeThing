@@ -79,6 +79,7 @@ CONF_BOOT_LOGO_SIZE = "boot_logo_size"
 CONF_NOW_PLAYING_MAX_LINES = "now_playing_max_lines"
 CONF_FONT_SIZE_WIDTH_RATIO = "font_size_width_ratio"
 CONF_DRAW_SHUFFLE_DISABLED = "draw_shuffle_disabled"
+CONF_DRAW_REPEAT = "draw_repeat"
 CONF_DRAW_HEADER_TIME = "draw_header_time"
 CONF_DRAW_BATTERY_LEVEL = "draw_battery_level"
 CONF_DARK_MODE = "dark_mode"
@@ -189,6 +190,7 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
         cv.Optional(CONF_NOW_PLAYING_MAX_LINES, default=5): cv.int_,
         cv.Optional(CONF_FONT_SIZE_WIDTH_RATIO, default=0.6): cv.float_,
         cv.Optional(CONF_DRAW_SHUFFLE_DISABLED, default=False): cv.boolean,
+        cv.Optional(CONF_DRAW_REPEAT, default=True): cv.boolean,
         cv.Optional(CONF_DRAW_HEADER_TIME, default=True): cv.boolean,
         cv.Optional(CONF_DRAW_BATTERY_LEVEL, default=False): cv.boolean,
         cv.Optional(CONF_DARK_MODE, default=True): cv.boolean,
@@ -281,6 +283,7 @@ DISPLAY_STATE_TYPES = [
     CONF_NOW_PLAYING_MAX_LINES,
     CONF_FONT_SIZE_WIDTH_RATIO,
     CONF_DRAW_SHUFFLE_DISABLED,
+    CONF_DRAW_REPEAT,
     CONF_DRAW_HEADER_TIME,
     CONF_DRAW_BATTERY_LEVEL,
     CONF_DARK_MODE,

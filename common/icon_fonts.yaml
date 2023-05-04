@@ -30,6 +30,9 @@ font:
       '󰋜', # mdi-home
       '󰌵', # mdi-lightbulb
       '󰌶', # mdi-lightbulb-outline
+      '󰑗', # mdi-repeat-off
+      '󰑘', # mdi-repeat-once
+      '󰑖', # mdi-repeat
     ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_small
@@ -51,4 +54,7 @@ font:
       '󰋜', # mdi-home
       '󰌵', # mdi-lightbulb
       '󰌶', # mdi-lightbulb-outline
+      '󰑗', # mdi-repeat-off
+      '󰑘', # mdi-repeat-once
+      '󰑖', # mdi-repeat
     ]

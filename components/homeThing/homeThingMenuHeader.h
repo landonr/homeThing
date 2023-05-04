@@ -60,6 +60,7 @@ class HomeThingMenuHeader {
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);
   int drawHeaderTime(int oldXPos, int yPosOffset);
   int drawShuffle(int oldXPos, int yPosOffset);
+  int drawRepeat(int oldXPos, int yPosOffset);
   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
