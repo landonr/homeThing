@@ -44,8 +44,9 @@ sensor:
             id: battery_percent
             state: !lambda 'return (id(batteryVoltage).state * 118) - 162;'
   - platform: template
-    name: "${friendly_name} Battery Percent"
+    name: "${friendly_name} Battery Percent Internal"
     id: battery_percent
+    internal: true
     unit_of_measurement: '%'
     on_value_range:
       below: 2
@@ -53,6 +54,13 @@ sensor:
         lambda: |-
           ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(battery_percent).state);
           id(sleep_toggle).turn_on();
+  - platform: template
+    name: "${friendly_name} Battery Percent"
+    id: battery_percent_public
+    unit_of_measurement: '%'
+    update_interval: 1s
+    lambda: |-
+      return id(battery_percent).state;
 
 binary_sensor:
   - platform: template

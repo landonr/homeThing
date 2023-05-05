@@ -23,8 +23,9 @@ class HomeThingMenuNowPlaying {
         display_state_(new_display_state),
         text_helpers_(new_text_helpers) {}
   PositionCoordinate get_coordinate(double radius, double angle);
-  void drawNowPlaying(int menuIndex, HomeThingOptionMenu* option_menu,
-                      std::vector<std::shared_ptr<MenuTitleBase>> active_menu);
+  void drawNowPlaying(
+      int menuIndex, HomeThingOptionMenu* option_menu,
+      const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu);
 
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
@@ -46,7 +47,8 @@ class HomeThingMenuNowPlaying {
   bool drawOptionMenuAndStop(const HomeThingOptionMenu* option_menu);
   std::string stringForNowPlayingMenuState(NowPlayingMenuState state);
   void drawNowPlayingSelectMenu(
-      std::vector<std::shared_ptr<MenuTitleBase>> menu_titles, int menu_index);
+      const std::vector<std::shared_ptr<MenuTitleBase>>* menu_titles,
+      int menu_index);
   std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
                                              display::TextAlign alignment,
                                              std::string text);

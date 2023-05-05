@@ -39,9 +39,10 @@ class HomeThingMenuDisplay {
         header_(header),
         boot_(boot) {}
   void setup();
-  bool draw_menu_screen(MenuStates* activeMenuState,
-                        std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
-                        const int menuIndex, HomeThingOptionMenu* option_menu);
+  bool draw_menu_screen(
+      MenuStates* activeMenuState,
+      const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
+      const int menuIndex, HomeThingOptionMenu* option_menu);
   void updateDisplay(bool force);
   void skipBootSequence(const MenuStates activeMenuState);
 
@@ -66,19 +67,19 @@ class HomeThingMenuDisplay {
       int characterCount, int yPos,
       const homeassistant_media_player::RemotePlayerState& titleState,
       bool selected);
-  bool draw_menu_titles(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
-                        const int menuIndex);
+  bool draw_menu_titles(
+      const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
+      const int menuIndex);
   bool draw_menu_title(int menuState, int i, std::string title, int yPos,
                        bool buttonSpace);
   void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
   void scrollMenuPosition(int menuIndex);
   int maxItems();
-  void drawLeftTitleIcon(std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
+  void drawLeftTitleIcon(int menuTitleSize,
                          std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
                          int menuState, int yPos);
-  void drawRightTitleIcon(
-      std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i,
-      int menuState, int yPos);
+  void drawRightTitleIcon(int menuTitleSize, MenuTitleRightIcon iconState,
+                          int i, int menuState, int yPos);
 
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};

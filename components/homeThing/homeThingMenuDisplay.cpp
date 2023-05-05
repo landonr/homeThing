@@ -52,39 +52,48 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
 }
 
 bool HomeThingMenuDisplay::draw_menu_titles(
-    std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int menuIndex) {
-  if (menuTitles.size() == 0 || menuTitles.size() < menuIndex) {
+    const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
+    int menuIndex) {
+  if (menuTitles->size() == 0 || menuTitles->size() < menuIndex) {
     return false;
   }
   scrollMenuPosition(menuIndex);
   int menuState = menuIndex;
-  auto activeMenuTitle = menuTitles[menuIndex];
+  auto activeMenuTitle = (*menuTitles)[menuIndex];
   int yPos = display_state_->get_header_height();
   int sliderExtra = 0;  // fake menu items as the slider uses two rows
   bool animating = false;
-  for (int i = scrollTop; i < menuTitles.size(); i++) {
+  auto menuTitlesSize = menuTitles->size();
+  for (int i = scrollTop; i < menuTitles->size(); i++) {
     if (i + sliderExtra > scrollTop + maxItems()) {
       break;
     }
-    ESP_LOGI(TAG, "draw_menu_titles: %s", menuTitles[i]->get_name().c_str());
-    switch (menuTitles[i]->titleType) {
+    auto rightIconState = (*menuTitles)[i]->rightIconState;
+    auto titleName = (*menuTitles)[i]->get_name();
+    ESP_LOGD(TAG, "draw_menu_titles: %s", titleName.c_str());
+    switch ((*menuTitles)[i]->titleType) {
       case BaseMenuTitleType:
+        animating =
+            draw_menu_title(menuState, i, titleName, yPos, false) || animating;
+        drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState, yPos);
+        yPos += display_state_->get_font_medium()->get_baseline() +
+                display_state_->get_margin_size();
+        break;
       case SourceMenuTitleType:
-        animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
-                                    yPos, false) ||
-                    animating;
-        drawRightTitleIcon(menuTitles, i, menuState, yPos);
+        animating =
+            draw_menu_title(menuState, i, titleName, yPos, false) || animating;
         yPos += display_state_->get_font_medium()->get_baseline() +
                 display_state_->get_margin_size();
         break;
       case LightMenuTitleType: {
         auto lightTitle =
-            std::static_pointer_cast<MenuTitleLight>(menuTitles[i]);
+            std::static_pointer_cast<MenuTitleLight>((*menuTitles)[i]);
         if (lightTitle != NULL) {
-          animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
-                                      yPos, lightTitle->indentLine());
-          drawLeftTitleIcon(menuTitles, lightTitle, i, menuState, yPos);
-          drawRightTitleIcon(menuTitles, i, menuState, yPos);
+          animating = draw_menu_title(menuState, i, titleName, yPos,
+                                      lightTitle->indentLine());
+          drawLeftTitleIcon(menuTitlesSize, lightTitle, i, menuState, yPos);
+          drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
+                             yPos);
           yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
@@ -92,12 +101,13 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
       case ToggleMenuTitleType: {
         auto toggleTitle =
-            std::static_pointer_cast<MenuTitleToggle>(menuTitles[i]);
+            std::static_pointer_cast<MenuTitleToggle>((*menuTitles)[i]);
         if (toggleTitle != NULL) {
-          animating = draw_menu_title(menuState, i, menuTitles[i]->get_name(),
-                                      yPos, toggleTitle->indentLine());
-          drawLeftTitleIcon(menuTitles, toggleTitle, i, menuState, yPos);
-          drawRightTitleIcon(menuTitles, i, menuState, yPos);
+          animating = draw_menu_title(menuState, i, titleName, yPos,
+                                      toggleTitle->indentLine());
+          drawLeftTitleIcon(menuTitlesSize, toggleTitle, i, menuState, yPos);
+          drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
+                             yPos);
           yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
@@ -105,7 +115,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
       case SliderMenuTitleType: {
         bool lightDetailSelected = light_group_->lightDetailSelected;
-        auto item = std::static_pointer_cast<MenuTitleSlider>(menuTitles[i]);
+        auto item = std::static_pointer_cast<MenuTitleSlider>((*menuTitles)[i]);
         SliderSelectionState sliderState =
             menuState == i && lightDetailSelected ? SliderSelectionStateActive
             : menuState == i                      ? SliderSelectionStateHover
@@ -120,16 +130,17 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
       case PlayerMenuTitleType: {
         auto playerTitle =
-            std::static_pointer_cast<MenuTitlePlayer>(menuTitles[i]);
+            std::static_pointer_cast<MenuTitlePlayer>((*menuTitles)[i]);
         if (playerTitle != NULL) {
-          draw_menu_title(menuState, i, menuTitles[i]->get_name(), yPos,
+          draw_menu_title(menuState, i, titleName, yPos,
                           playerTitle->indentLine());
           int length = playerTitle->get_name().length() +
                        (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->media_player_->playerState,
                          menuState == i);
-          drawLeftTitleIcon(menuTitles, playerTitle, i, menuState, yPos);
-          drawRightTitleIcon(menuTitles, i, menuState, yPos);
+          drawLeftTitleIcon(menuTitlesSize, playerTitle, i, menuState, yPos);
+          drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
+                             yPos);
           yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
@@ -137,14 +148,13 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
     }
   }
-  drawScrollBar(menuTitles.size(), display_state_->get_header_height(),
-                menuIndex);
+  drawScrollBar(menuTitlesSize, display_state_->get_header_height(), menuIndex);
   return animating;
 }
 
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState,
-    std::vector<std::shared_ptr<MenuTitleBase>> active_menu,
+    const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
     const int menuIndex, HomeThingOptionMenu* option_menu) {
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
@@ -215,9 +225,8 @@ int HomeThingMenuDisplay::maxItems() {
 }
 
 void HomeThingMenuDisplay::drawLeftTitleIcon(
-    std::vector<std::shared_ptr<MenuTitleBase>> menuTitles,
-    std::shared_ptr<MenuTitleToggle> toggleTitle, int i, int menuState,
-    int yPos) {
+    int menuTitleSize, std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
+    int menuState, int yPos) {
   switch (toggleTitle->leftIconState) {
     case NoMenuTitleLeftIcon:
       break;
@@ -242,27 +251,27 @@ void HomeThingMenuDisplay::drawLeftTitleIcon(
       break;
     case GroupedMenuTitleLeftIcon:
       bool extend = false;
-      if (i < menuTitles.size() - 1) {
-        auto nextToggleTitle =
-            std::static_pointer_cast<MenuTitleToggle>(menuTitles[i + 1]);
-        if (nextToggleTitle != NULL) {
-          extend = nextToggleTitle->leftIconState == GroupedMenuTitleLeftIcon;
-        }
-      }
+      // if (i < menuTitleSize - 1) {
+      //   auto nextToggleTitle =
+      //       std::static_pointer_cast<MenuTitleToggle>(menuTitles[i + 1]);
+      //   if (nextToggleTitle != NULL) {
+      //     extend = nextToggleTitle->leftIconState == GroupedMenuTitleLeftIcon;
+      //   }
+      // }
       refactor_->drawGroupedBar(yPos, extend);
       break;
   }
 }
 
-void HomeThingMenuDisplay::drawRightTitleIcon(
-    std::vector<std::shared_ptr<MenuTitleBase>> menuTitles, int i,
-    int menuState, int yPos) {
-  switch (menuTitles[i]->rightIconState) {
+void HomeThingMenuDisplay::drawRightTitleIcon(int menuTitleSize,
+                                              MenuTitleRightIcon iconState,
+                                              int i, int menuState, int yPos) {
+  switch (iconState) {
     case NoMenuTitleRightIcon:
       break;
     case ArrowMenuTitleRightIcon:
       if (menuState == i) {
-        refactor_->drawArrow(yPos, menuTitles.size(), maxItems());
+        refactor_->drawArrow(yPos, menuTitleSize, maxItems());
       }
       break;
   }

@@ -173,6 +173,7 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
+    reload_menu_items_ = true;
     circle_menu_->clear_active_menu();
     if (activeMenuState != bootMenu) {
       ESP_LOGD(TAG, "reset_menu: reset animation %d", activeMenuState);
@@ -193,6 +194,7 @@ class HomeThingMenuBase : public PollingComponent {
   CallbackManager<void()> on_redraw_callbacks_{};
   const char* const TAG = "homething.menu.base";
   bool menu_drawing_ = false;
+  bool reload_menu_items_ = false;
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};
 };  // namespace homething_menu_base

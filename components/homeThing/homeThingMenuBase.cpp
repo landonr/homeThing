@@ -21,6 +21,7 @@ void HomeThingMenuBase::setup() {
       switch (activeMenuState) {
         case lightsMenu:
         case lightsDetailMenu:
+          reload_menu_items_ = true;
           this->update_display();
         default:
           break;
@@ -47,6 +48,7 @@ void HomeThingMenuBase::setup() {
     this->switch_group_->add_on_state_callback([this](float state) {
       switch (activeMenuState) {
         case switchesMenu:
+          reload_menu_items_ = true;
           this->update_display();
         default:
           break;
@@ -58,6 +60,7 @@ void HomeThingMenuBase::setup() {
     this->sensor_group_->add_on_state_callback([this](float state) {
       switch (activeMenuState) {
         case sensorsMenu:
+          reload_menu_items_ = true;
           this->update_display();
         default:
           break;
@@ -74,11 +77,18 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   if (!menu_drawing_) {
     menu_drawing_ = true;
-    menu_titles = activeMenu();
-    ESP_LOGI(TAG, "drawMenu:%d %s #%d", menuIndex,
+    if (reload_menu_items_ || menu_titles.size() == 0) {
+      ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
+               menuTitleForType(activeMenuState)->get_name().c_str(),
+               menu_titles.size());
+      menu_titles.clear();
+      menu_titles = activeMenu();
+      reload_menu_items_ = false;
+    }
+    ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
              menuTitleForType(activeMenuState)->get_name().c_str(),
              menu_titles.size());
-    if (menu_display_->draw_menu_screen(&activeMenuState, menu_titles,
+    if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
                                         menuIndex,
                                         circle_menu_->get_active_menu())) {
       this->animation_->tickAnimation();
@@ -89,6 +99,7 @@ void HomeThingMenuBase::draw_menu_screen() {
     menu_drawing_ = false;
   }
 }
+
 void HomeThingMenuBase::topMenu() {
   if (activeMenuState == bootMenu) {
     return;
@@ -477,6 +488,7 @@ bool HomeThingMenuBase::button_press_now_playing_option_continue(
 void HomeThingMenuBase::buttonPressSelect() {
   if (!button_press_and_continue())
     return;
+  reload_menu_items_ = true;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (activeMenuState) {
       case lightsDetailMenu:
@@ -864,25 +876,6 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
                                       media_player_group_->active_player_);
       }
       update_display();
-      // switch (media_player_group_->active_player_->get_player_type()) {
-      //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-      //     if (option_menu_ == tvOptionMenu) {
-      //       option_menu_ = noOptionMenu;
-      //     } else {
-      //       option_menu_ = tvOptionMenu;
-      //     }
-      //     update_display();
-      //     break;
-      //   case homeassistant_media_player::RemotePlayerType::
-      //       SpeakerRemotePlayerType:
-      //     if (option_menu_ == speakerOptionMenu) {
-      //       option_menu_ = noOptionMenu;
-      //     } else {
-      //       option_menu_ = speakerOptionMenu;
-      //     }
-      //     update_display();
-      //     break;
-      // }
       break;
     default:
       break;

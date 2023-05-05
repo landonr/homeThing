@@ -69,10 +69,12 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
 }
 
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
-    std::vector<std::shared_ptr<MenuTitleBase>> menu_titles, int menu_index) {
+    const std::vector<std::shared_ptr<MenuTitleBase>>* menu_titles,
+    int menu_index) {
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
              display_state_->get_font_large()->get_baseline();
-  if (menu_titles.size() < 1 || menu_index >= menu_titles.size()) {
+  auto menuTitlesSize = menu_titles->size();
+  if (menuTitlesSize < 1 || menu_index >= menuTitlesSize) {
     return;
   }
   display_buffer_->printf(
@@ -80,20 +82,20 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
       display_state_->get_font_large(),
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_CENTER,
-      menu_titles[menu_index]->get_name().c_str());
-  if (menu_index + 1 < menu_titles.size()) {
+      (*menu_titles)[menu_index]->get_name().c_str());
+  if (menu_index + 1 < menuTitlesSize) {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.85, yPos,
         display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER,
-        menu_titles[menu_index + 1]->get_name().c_str());
+        (*menu_titles)[menu_index + 1]->get_name().c_str());
   } else {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.85, yPos,
         display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_CENTER, menu_titles[0]->get_name().c_str());
+        display::TextAlign::TOP_CENTER, (*menu_titles)[0]->get_name().c_str());
   }
   if (menu_index - 1 >= 0) {
     display_buffer_->printf(
@@ -101,24 +103,24 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
         display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER,
-        menu_titles[menu_index - 1]->get_name().c_str());
+        (*menu_titles)[menu_index - 1]->get_name().c_str());
   } else {
     display_buffer_->printf(
         display_buffer_->get_width() * 0.15, yPos,
         display_state_->get_font_small(),
         text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
         display::TextAlign::TOP_CENTER,
-        menu_titles[menu_titles.size() - 1]->get_name().c_str());
+        (*menu_titles)[menuTitlesSize - 1]->get_name().c_str());
   }
 }
 
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
-    std::vector<std::shared_ptr<MenuTitleBase>> active_menu) {
+    const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu) {
   if (option_menu && drawOptionMenuAndStop(option_menu)) {
     return;
   }
-  if (active_menu.size() > 0 &&
+  if (active_menu->size() > 0 &&
       display_state_->get_draw_now_playing_bottom_menu()) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }

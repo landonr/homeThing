@@ -401,8 +401,11 @@ activePlayerSourceItemTitles(
   }
   std::vector<std::shared_ptr<MenuTitleSource>> out;
   for (auto& sourceItem : sourceItems) {
+    auto name = sourceItem->get_name();
+    ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
+             name.c_str());
     auto new_menu_title = std::make_shared<MenuTitleSource>(
-        sourceItem->get_name(), "", NoMenuTitleRightIcon, sourceItem.get());
+        name, "", NoMenuTitleRightIcon, sourceItem.get());
     out.push_back(new_menu_title);
   }
   return out;
