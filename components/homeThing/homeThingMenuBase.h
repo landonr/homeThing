@@ -93,6 +93,8 @@ class HomeThingMenuBase : public PollingComponent {
   void idleMenu(bool force);
 
   // controls
+  bool select_media_player_feature(
+      homeassistant_media_player::MediaPlayerSupportedFeature* feature);
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
   void rotaryScrollClockwise(int rotary);
