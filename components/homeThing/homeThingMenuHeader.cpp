@@ -125,7 +125,7 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 
 int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
   if (!media_player_group_ || media_player_group_->active_player_ == NULL ||
-      display_state_->get_draw_shuffle_disabled()) {
+      display_state_->get_draw_shuffle() == DisplayIconEnabledState::OFF) {
     return oldXPos;
   }
   auto active_player = media_player_group_->active_player_;
@@ -144,7 +144,8 @@ int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
       display_buffer_->printf(
           xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_palette()->get_accent_primary(), "󰒝");
-    } else if (display_state_->get_draw_shuffle_disabled()) {
+    } else if (display_state_->get_draw_shuffle() ==
+               DisplayIconEnabledState::ALWAYS) {
       display_buffer_->printf(
           xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_palette()->get_accent_primary(), "󰒞");
@@ -157,8 +158,8 @@ int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawRepeat(int oldXPos, int yPosOffset) {
-  if (!display_state_->get_draw_repeat() || !media_player_group_ ||
-      media_player_group_->active_player_ == NULL) {
+  if (display_state_->get_draw_repeat() == DisplayIconEnabledState::OFF ||
+      !media_player_group_ || media_player_group_->active_player_ == NULL) {
     return oldXPos;
   }
   auto active_player = media_player_group_->active_player_;
@@ -186,6 +187,10 @@ int HomeThingMenuHeader::drawRepeat(int oldXPos, int yPosOffset) {
           display_state_->get_color_palette()->get_accent_primary(), "󰑘");
       break;
     case homeassistant_media_player::MediaPlayerRepeatMode::OFF:
+      if (display_state_->get_draw_repeat() !=
+          DisplayIconEnabledState::ALWAYS) {
+        return oldXPos;
+      }
       display_buffer_->printf(
           xPos, yPos, display_state_->get_font_material_small(),
           display_state_->get_color_palette()->get_accent_primary(), "󰑗");

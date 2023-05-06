@@ -7,6 +7,8 @@
 namespace esphome {
 namespace homething_menu_base {
 
+enum DisplayIconEnabledState { OFF = 1, ON = 2, ALWAYS = 3 };
+
 class HomeThingMenuDisplayState {
  public:
   display::Font* get_font_small() { return font_small_; }
@@ -73,12 +75,14 @@ class HomeThingMenuDisplayState {
   void set_font_size_width_ratio(float font_size_width_ratio) {
     font_size_width_ratio_ = font_size_width_ratio;
   }
-  bool get_draw_shuffle_disabled() { return draw_shuffle_disabled_; }
-  void set_draw_shuffle_disabled(bool draw_shuffle_disabled) {
-    draw_shuffle_disabled_ = draw_shuffle_disabled;
+  DisplayIconEnabledState get_draw_shuffle() { return draw_shuffle_; }
+  void set_draw_shuffle(DisplayIconEnabledState draw_shuffle) {
+    draw_shuffle_ = draw_shuffle;
   }
-  bool get_draw_repeat() { return draw_repeat_; }
-  void set_draw_repeat(bool draw_repeat) { draw_repeat_ = draw_repeat; }
+  DisplayIconEnabledState get_draw_repeat() { return draw_repeat_; }
+  void set_draw_repeat(DisplayIconEnabledState draw_repeat) {
+    draw_repeat_ = draw_repeat;
+  }
   bool get_draw_header_time() { return draw_header_time_; }
   void set_draw_header_time(bool draw_header_time) {
     draw_header_time_ = draw_header_time;
@@ -131,8 +135,8 @@ class HomeThingMenuDisplayState {
   int boot_logo_size_;
   int now_playing_max_lines_;
   float font_size_width_ratio_;
-  bool draw_shuffle_disabled_;
-  bool draw_repeat_;
+  DisplayIconEnabledState draw_shuffle_;
+  DisplayIconEnabledState draw_repeat_;
   bool draw_header_time_;
   bool draw_battery_level_;
   bool dark_mode_;

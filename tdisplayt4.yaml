@@ -186,7 +186,6 @@ homeThing:
     draw_now_playing_bottom_menu: true
     dark_mode: true
     draw_volume_level: false
-    draw_shuffle_disabled: false
     draw_header_time: true
 
 display:
