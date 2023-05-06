@@ -400,16 +400,16 @@ bool HomeThingMenuBase::select_media_player_feature(
   switch (*feature) {
     case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
       topMenu();
-      return false;
+      return true;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menuIndex = 0;
       activeMenuState = groupMenu;
-      return false;
+      return true;
     default:
       media_player_group_->call_feature(*feature);
       break;
   }
-  return true;
+  return false;
 }
 
 bool HomeThingMenuBase::button_press_now_playing_option_continue(
