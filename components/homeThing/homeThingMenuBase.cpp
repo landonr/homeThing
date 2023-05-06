@@ -359,75 +359,18 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
   ESP_LOGI(TAG, "selectNowPlayingMenu: select menu # %d, named: %s, item %d",
            menuIndex, menu_name.c_str(), menu_item);
   switch (menu_item) {
-    case homeassistant_media_player::MediaPlayerSupportedFeature::PAUSE:
-      media_player_group_->active_player_->playPause();
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::SEEK:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_MUTE:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::
-        PREVIOUS_TRACK:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::NEXT_TRACK:
-      media_player_group_->active_player_->nextTrack();
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::TURN_ON:
-      media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::POWER);
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::TURN_OFF:
-      media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::POWER);
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::PLAY_MEDIA:
-      break;
     case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_STEP:
-      media_player_group_->decreaseSpeakerVolume();
       circle_menu_->set_active_menu(volumeOptionMenu,
                                     media_player_group_->active_player_);
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::SELECT_SOURCE:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::STOP:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::
-        CLEAR_PLAYLIST:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::PLAY:
-      media_player_group_->active_player_->playPause();
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::SHUFFLE_SET:
-      media_player_group_->toggle_shuffle();
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::
-        SELECT_SOUND_MODE:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::BROWSE_MEDIA:
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::REPEAT_SET:
-      media_player_group_->toggle_repeat();
       break;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menuIndex = 0;
       activeMenuState = groupMenu;
       break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::TV_BACK:
-      media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::BACK);
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::TV_HOME:
-      media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::HOME);
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
-      topMenu();
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::REMOTE_MODE:
+    default:
       break;
   }
+  select_media_player_feature(&menu_item);
   update_display();
 }
 
@@ -452,34 +395,43 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
   return false;
 }
 
+bool HomeThingMenuBase::select_media_player_feature(
+    homeassistant_media_player::MediaPlayerSupportedFeature* feature) {
+  switch (*feature) {
+    case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
+      topMenu();
+      return true;
+    case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
+      menuIndex = 0;
+      activeMenuState = groupMenu;
+      return true;
+    default:
+      media_player_group_->call_feature(*feature);
+      break;
+  }
+  return false;
+}
+
 bool HomeThingMenuBase::button_press_now_playing_option_continue(
     CircleOptionMenuPosition position) {
   if (circle_menu_->get_active_menu()) {
     auto feature = circle_menu_->tap_option_menu(
         position, media_player_group_->get_active_player());
     if (feature) {
-      ESP_LOGI(TAG, "buttonPressSelect: option menu selected %d", *feature);
-      switch (*feature) {
-        case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
-          circle_menu_->clear_active_menu();
-          topMenu();
-          update_display();
-          return false;
-        case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
-          menuIndex = 0;
-          activeMenuState = groupMenu;
-          update_display();
-          return false;
-        default:
-          media_player_group_->call_feature(*feature);
-          break;
-      }
-      // media_player_group_->sendActivePlayerRemoteCommand("power");
+      ESP_LOGI(
+          TAG,
+          "button_press_now_playing_option_continue: option menu selected %d",
+          *feature);
       circle_menu_->clear_active_menu();
+      if (!select_media_player_feature(feature)) {
+        return false;
+      }
       update_display();
       return false;
     }
-    ESP_LOGW(TAG, "buttonPressSelect: option menu NOT selected");
+    ESP_LOGW(
+        TAG,
+        "button_press_now_playing_option_continue: option menu NOT selected");
     return false;
   }
   return true;

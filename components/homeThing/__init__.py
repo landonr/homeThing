@@ -61,6 +61,9 @@ CONF_SLEEP_AFTER = "sleep_after"
 CONF_BACKLIGHT = "backlight"
 
 # display state
+CONF_OFF = "off"
+CONF_ON = "on"
+CONF_ALWAYS = "always"
 CONF_FONT_SMALL = "font_small"
 CONF_FONT_MEDIUM = "font_medium"
 CONF_FONT_LARGE = "font_large"
@@ -78,7 +81,7 @@ CONF_SCROLL_BAR_WIDTH = "scroll_bar_width"
 CONF_BOOT_LOGO_SIZE = "boot_logo_size"
 CONF_NOW_PLAYING_MAX_LINES = "now_playing_max_lines"
 CONF_FONT_SIZE_WIDTH_RATIO = "font_size_width_ratio"
-CONF_DRAW_SHUFFLE_DISABLED = "draw_shuffle_disabled"
+CONF_DRAW_SHUFFLE = "draw_shuffle"
 CONF_DRAW_REPEAT = "draw_repeat"
 CONF_DRAW_HEADER_TIME = "draw_header_time"
 CONF_DRAW_BATTERY_LEVEL = "draw_battery_level"
@@ -170,6 +173,14 @@ COLOR_SCHEMA = cv.Schema(
     cv.has_at_least_one_key()
 )
 
+DisplayIconEnabledState = homething_menu_base_ns.enum("DisplayIconEnabledState")
+
+DISPLAY_ICON_MODES = {
+    CONF_OFF: DisplayIconEnabledState.OFF,
+    CONF_ON: DisplayIconEnabledState.ON,
+    CONF_ALWAYS: DisplayIconEnabledState.ALWAYS,
+}
+
 DISPLAY_STATE_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuDisplayState),
@@ -189,8 +200,8 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
         cv.Optional(CONF_BOOT_LOGO_SIZE, default=48): cv.int_,
         cv.Optional(CONF_NOW_PLAYING_MAX_LINES, default=5): cv.int_,
         cv.Optional(CONF_FONT_SIZE_WIDTH_RATIO, default=0.6): cv.float_,
-        cv.Optional(CONF_DRAW_SHUFFLE_DISABLED, default=False): cv.boolean,
-        cv.Optional(CONF_DRAW_REPEAT, default=True): cv.boolean,
+        cv.Optional(CONF_DRAW_SHUFFLE, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
+        cv.Optional(CONF_DRAW_REPEAT, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
         cv.Optional(CONF_DRAW_HEADER_TIME, default=True): cv.boolean,
         cv.Optional(CONF_DRAW_BATTERY_LEVEL, default=False): cv.boolean,
         cv.Optional(CONF_DARK_MODE, default=True): cv.boolean,
@@ -282,7 +293,7 @@ DISPLAY_STATE_TYPES = [
     CONF_BOOT_LOGO_SIZE,
     CONF_NOW_PLAYING_MAX_LINES,
     CONF_FONT_SIZE_WIDTH_RATIO,
-    CONF_DRAW_SHUFFLE_DISABLED,
+    CONF_DRAW_SHUFFLE,
     CONF_DRAW_REPEAT,
     CONF_DRAW_HEADER_TIME,
     CONF_DRAW_BATTERY_LEVEL,

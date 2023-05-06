@@ -185,7 +185,6 @@ homeThing:
     draw_battery_level: true
     dark_mode: true
     draw_volume_level: false
-    draw_shuffle_disabled: false
     draw_header_time: true
 
 display:
