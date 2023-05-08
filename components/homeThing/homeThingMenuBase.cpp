@@ -77,17 +77,17 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   if (!menu_drawing_) {
     menu_drawing_ = true;
-    if (reload_menu_items_ || menu_titles.size() == 0) {
+    auto title_name = menuTitleForType(activeMenuState)->get_name();
+    if (reload_menu_items_ ||
+        (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
       ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
-               menuTitleForType(activeMenuState)->get_name().c_str(),
-               menu_titles.size());
+               title_name.c_str(), menu_titles.size());
       menu_titles.clear();
       menu_titles = activeMenu();
       reload_menu_items_ = false;
     }
     ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
-             menuTitleForType(activeMenuState)->get_name().c_str(),
-             menu_titles.size());
+             title_name.c_str(), menu_titles.size());
     if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
                                         menuIndex,
                                         circle_menu_->get_active_menu())) {
@@ -286,6 +286,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     activeMenuState = rootMenu;
     topMenu();
   }
+  ESP_LOGI(TAG, "activeMenu: finished boot");
   switch (activeMenuState) {
     case rootMenu:
       return menuTypesToTitles(rootMenuTitles());
