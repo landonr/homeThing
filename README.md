@@ -161,9 +161,8 @@ Supports many different hardware configurations:
 ## todo
 - playlist queue count
 - sonos night sound / speech boost
-- repeat/all/single/off
 - graphs
-- media album art
+- media album art (needs https://github.com/esphome/esphome/pull/4710)
 - weather screen
 - home / room screen
 	- temp display
@@ -174,12 +173,9 @@ Supports many different hardware configurations:
 	- sliders
 - settings menu
 - esphome custom components
-	- display menu code
 	- rotary and button control code
 	- tdisplay battery / charging
-- case
 - grid ui
-- circuit diagram for tdisplay
 - add sensors for player state
 	- current screen
 	- active player
@@ -187,7 +183,6 @@ Supports many different hardware configurations:
 - set state from service
 	- change player
 	- dark mode
-
 <hr>
 
 # Sponsorship
