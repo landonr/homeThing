@@ -1,80 +1,171 @@
-<h1 align = "center">ESPHome Remote: Getting Started 🌈</h1>
+<h1 align = "center">homeThing: Getting Started 🌈</h1>
 
-# Introduction
-#### ESPHome Remote supports the following features:
-
-- controls Sonos speakers
-	-   play, pause, next, prev, volume, shuffle, mute
-	-   manage group
-	-   change source
-- controls Roku tv
-	- up, down, left, right, select, volume
-	- change source
-- Smart home stuff
-	- runs scenes and scripts
-	- view Home Assistant Sensors
-    - Lights:
-        - toggle lights on and off 
-        - adjust light brightness (if light supports it)
-        - adjust color temperature (if light supports it)
-- more
-	- display sleeps after 16s, powers off after 2h (configure through substitutions)
-
-# What You Need
+### Required
 -  Hardware (pick one):
-	- TTGo T-Display
-	- TTGo T-Display T4
+	- LilyGo T-Display
+	- LilyGo T-Display T4
+	- LilyGo T-Display S3
 	- M5Stack Fire
 	- M5Stick C
+	- Generic ESP32 + [Supported display](https://esphome.io/components/display/index.html#see-also "Supported display")
 - Software:
-	- [ESPHome](https://esphome.io/)
-	- [Home Assistant](https://www.home-assistant.io/)
+	- [ESPHome](https://esphome.io/) (required)
+	- [Home Assistant](https://www.home-assistant.io/) (required for now, MQTT support is coming soon)
 	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup) 
 
 # Install guide
-1. Copy project into your ESPHome folder
-2. Find the yaml for your device
-	1. TTGo T-Display: tdisplayremote.yaml
-	2. TTGo T-Display T4: tdisplayt4.yaml
-	3. M5Stack Fire: fireremote.yaml
-	4. M5Stick C: m5stickc.yaml
-3. The basic configuration is done through substitions
-	1. font_size: Make sure the font sizes match the font sizes set above
-	2. font_size_width_ratio: The width:height ratio of the font used
-	3. header_height: Customize the header height
-	4. margin_size: Customize the margin
-	5. bottom_bar_margin: Distance the media duration bar is from the bottom
-	6. scroll_bar_width: Customize the width of the scrollbar
-	7. icon_size: Size of icons used to calculate UI
-	8. now_playing_max_lines: Max lines displayed on Now Playing Screen
-	9. draw_now_playing_menu: Show navigation menu on Now Playing screen
-	10. boot_device_name: Customize the name displayed on boot
-	11. display_timeout: Turn off display [s]
-	12. sleep_after: Enter deep sleep [s]
-	13. menu_rollover_on: Let the menu selection rollover when reaching the beginning / end
-	14. sync_active_player: Auto switch active player if current active player goes idle
-	15. dark_mode: Use black background. Performance is better in dark mode because filling the screen white is slow
-- More configuration can be done in esphome/sharedRemoteConfig.yaml
-	1. Customize **Colors**
-	2. Customize **Fonts**
-		- If you edit the font size you have to update both the font size and the corresponding font_size in Globals
-	3. Customize **Globals**
+1. [Install](#1-install-esphome-on-your-hardware "Install")
+2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
+3. [Setup Home](#3-setup-your-home-config "Setup Home")
+4. [Setup Menu](#4-set-up-the-menu-groups "Setup Menu")
+5. [Setup homeThing](#5-set-up-the-homething-menu "Setup homeThing")
+6. [Upload](#6-install-on-your-device "Upload")
+7. [Connect](#7-add-the-device-to-home-assistant "Connect")
+8. **Done!**
 
-4. Update the **Custom Components** in the esphomeRemote/sharedRemoteConfig.yaml to match your config, if you have difficulties looks at the [examples](sharedRemoteConfig-examples.md).
-	1. Every component is optional. If you don't want to include the component then remove it
-	2. Set your speaker media players under speaker_group_component
-		1. If you have a supported TV then update it otherwise remove the TV line
-		2. If you have a soundbar attached to the TV, include it in the setup otherwise leave it as NULL
-	2. Update your Scenes and Scripts under scene_group_component
-	3. Update your Light switches under light_group_component
-	4. Update your Home Assistant sensors under sensor_group_component
-5. Install the firmware to your device
-6. Add the device to Home Assistant
-7. Done! 🎉
+### 1. Install ESPHome on your hardware
+### 2. Include the homeThing components in your yaml
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/landonr/homeThing
+      ref: main
+    components: [homeThing]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    components: [
+      homeassistant_component, // required for all components
+      homeassistant_switch_group, // only include if you use switches
+      homeassistant_sensor_group, // only include if you use text sensors in menu
+      homeassistant_light_group, // only include if you use lights
+      homeassistant_media_player, // only include if you use media players
+      homeassistant_service_group, // only include if you want to call services/scripts
+      media_player_source, // required for all media player sources
+      media_player_source_sonos, // loads sonos favorites into a list
+      media_player_source_spotify, // loads spotify playlists from Spotcast sensor into a list
+      media_player_source_custom // define custom source lists
+    ]
+```
+### 3. Setup your home config
+- detailed information is here https://github.com/landonr/esphome-components
+- example
 
-# Spotcast setup
-### Required for Spotify playlists to show up in Sources menu 
-1. Install Spotcast through HACS https://github.com/fondberg/spotcast
-2. Set up the Spotcast sensor https://github.com/fondberg/spotcast#use-the-sensor
-3. Once the sensor is set up in Home Assistant, reboot your device
-4. Done. Sources should include Spotify playlists!
+```yaml
+switch:
+    - platform: homeassistant_switch_group
+      entity_id: "switch.oven_fan"
+      name: "Oven Fan"
+      id: oven_fan_switch
+
+text_sensor:
+  - platform: homeassistant
+    entity_id: "sensor.vancouver_forecast"
+    name: "Weather"
+    id: sensor_weather
+
+light:
+  - platform: homeassistant_light_group
+    id: light_office_lamp
+    entity_id: light.office_lamp
+    name: Office Lamp
+
+# sonos favorite source
+media_player_source_sonos:
+  id: sonos
+
+media_player:
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+  - platform: homeassistant_media_player
+    name: TV
+    entity_id: "media_player.55_tcl_roku_tv"
+    id: media_player_tv
+    type: roku
+    soundbar:
+      speaker: media_player_beam
+```
+### 4. Set up the menu groups
+```yaml
+# switch menu - replace with your IDs
+homeassistant_switch_group:
+  # defined above with switches
+  id: switch_group_component
+  switches:
+    - id: oven_fan_switch
+
+# sensor menu - replace with your IDs
+homeassistant_sensor_group:
+  id: sensor_group_component
+  sensors:
+    - id: sensor_weather
+
+# light menu - replace with your IDs
+homeassistant_light_group:
+  id: light_group_component
+  lights:
+    - id: light_office_lamp
+
+# media player menu - replace with your IDs
+homeassistant_media_player:
+  id: media_group_component
+  media_players:
+    - id: media_player_beam
+      type: speaker
+    - id: media_player_tv
+      type: roku
+
+# service menu - replace with your IDs
+homeassistant_service_group:
+  id: service_group_component
+  commands:
+    - text: "desk nudge up"
+      command:
+        - homeassistant.service:
+            service: button.press
+            data:
+              entity_id: "button.desk_position_nudge_up"
+```
+### 5. Set up the homeThing menu
+```yaml
+# homeThing config
+# you only need one menu _group
+homeThing:
+  id: homeThingMenu
+  sleep_switch: sleep_toggle #optional
+  backlight: backlight #optional
+  battery: #optional
+    battery_percent: battery_percent
+    charging: charging
+   # need atleast 1 group_component
+  media_player_group: media_group_component
+  light_group: light_group_component
+  service_group: service_group_component
+  sensor_group: sensor_group_component
+  switch_group: switch_group_component
+  display: my_display # required
+  on_redraw: # required
+    then:
+      component.update: my_display
+  display_state:
+    draw_battery_level: true # only needed if you have a battery
+    # probably leave these alone
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_heavy_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small
+    font_logo: home_thing_logo
+```
+### 6. Install on your device
+### 7. Add the device to Home Assistant
+### 8. Done! 🎉
