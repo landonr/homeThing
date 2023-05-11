@@ -1,3 +1,18 @@
+logger:
+  level: INFO
+
+ota:
+
+api:
+  id: homeassistant_api_id
+  services:
+    - service: goto_screen
+      variables:
+        screen_name: string
+      then:
+      - lambda: |-
+          id(homeThingMenu)->goToScreenFromString(screen_name);
+
 http_request:
   useragent: esphome/device
   timeout: 10s

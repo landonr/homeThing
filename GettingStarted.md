@@ -19,12 +19,14 @@
 # Install guide
 1. [Install](#1-install-esphome-on-your-hardware "Install")
 2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
-3. [Setup Home](#3-setup-your-home-config "Setup Home")
-4. [Setup Menu](#4-set-up-the-menu-groups "Setup Menu")
-5. [Setup homeThing](#5-set-up-the-homething-menu "Setup homeThing")
-6. [Upload](#6-install-on-your-device "Upload")
-7. [Connect](#7-add-the-device-to-home-assistant "Connect")
-8. **Done!**
+3. [Setup Device](#3-setup-device "Setup Device")
+4. [Setup Home](#4-setup-your-home-config "Setup Home")
+5. [Setup Menu](#5-set-up-the-menu-groups "Setup Menu")
+6. [Setup homeThing](#6-set-up-the-homething-menu "Setup homeThing")
+7. [Download Fonts](#7-download-fonts "Download Fonts")
+7. [Upload](#7-install-on-your-device "Upload")
+8. [Connect](#8-add-the-device-to-home-assistant "Connect")
+9. **Done!**
 
 ### 1. Install ESPHome on your hardware
 [ESPHome install guide](https://esphome.io/guides/getting_started_hassio.html)
@@ -36,25 +38,46 @@ external_components:
       type: git
       url: https://github.com/landonr/homeThing
       ref: main
-    components: [homeThing]
+    components: [homeThing] # homething menu
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
       ref: main
     components: [
-      homeassistant_component, // required for all components
-      homeassistant_switch_group, // only include if you use switches
-      homeassistant_sensor_group, // only include if you use text sensors in menu
-      homeassistant_light_group, // only include if you use lights
-      homeassistant_media_player, // only include if you use media players
-      homeassistant_service_group, // only include if you want to call services/scripts
-      media_player_source, // required for all media player sources
-      media_player_source_sonos, // loads sonos favorites into a list
-      media_player_source_spotify, // loads spotify playlists from Spotcast sensor into a list
-      media_player_source_custom // define custom source lists
+      homeassistant_component, # base component to control home assistant entities. required for all
+      homeassistant_switch_group, # only include if you use switches in menu
+      homeassistant_sensor_group, # only include if you use text sensors in menu
+      homeassistant_light_group, # only include if you use lights in menu
+      homeassistant_media_player, # only include if you use media players in menu
+      homeassistant_service_group, # only include if you want to call services/scripts
+      media_player_source, # required for all media player sources
+      media_player_source_sonos, # loads sonos favorites into a list
+      media_player_source_spotify, # loads spotify playlists from Spotcast sensor into a list
+      media_player_source_custom # define custom source lists
     ]
 ```
-### 3. Setup your home config
+
+### 3. Setup Device
+these packages are for a Lilygo TDisplay with a rotary encoder and battery
+```yaml
+packages:
+  remote_package:
+    url: https://github.com/landonr/homeThing
+    ref: main
+    files: [
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
+      common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml, # used for button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for rotary controls
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml # material icons
+    ]
+    refresh: 0s
+```
+
+### 4. Setup your home config
 - detailed information is here https://github.com/landonr/esphome-components
 - example
 
@@ -98,7 +121,7 @@ media_player:
     soundbar:
       speaker: media_player_beam
 ```
-### 4. Set up the menu groups
+### 5. Set up the menu groups
 ```yaml
 # switch menu - replace with your IDs
 homeassistant_switch_group:
@@ -139,7 +162,8 @@ homeassistant_service_group:
             data:
               entity_id: "button.desk_position_nudge_up"
 ```
-### 5. Set up the homeThing menu
+
+### 6. Set up the homeThing menu
 ```yaml
 # homeThing config
 # you only need one menu _group
@@ -171,6 +195,22 @@ homeThing:
     font_material_small: material_font_small
     font_logo: home_thing_logo
 ```
-### 6. Install on your device
-### 7. Add the device to Home Assistant
-### 8. Done! 🎉
+
+### 7. Download Fonts
+This step needs improvement because the files need to be checked out manually. You can either
+1. run this on home assistant
+```
+curl -LJO https://github.com/landonr/homeThing/archive/refs/heads/main.zip && \
+unzip -j main.zip "homeThing-main/fonts/*" -d esphome/fonts/ && \
+rm main.zip
+```
+
+2. or download the fonts from here https://github.com/landonr/homeThing/tree/main/fonts
+and copy to **esphome/fonts**. You can do this by uploading to the folder using the **File Editor** add-on
+### 8. Install on your device
+### 9. Add the device to Home Assistant
+### 10. **Done! 🎉**
+
+---
+
+# If you have any trouble with set up, please make an [issue](https://github.com/landonr/homeThing/issues)

@@ -6,6 +6,15 @@ esp32:
   framework:
     type: arduino
 
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  id: wifi_id
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret wifi_fallback_password
+
 external_components:
   - source:
     #   type: git
@@ -37,7 +46,6 @@ external_components:
 
 packages:
   device_base: !include common/device_base.yaml
-  setup: !include homeConfig/device_setup.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml

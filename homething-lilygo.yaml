@@ -3,6 +3,15 @@ esphome:
   platform: ESP32
   board: featheresp32
 
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  id: wifi_id
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret wifi_fallback_password
+
 external_components:
   - source:
     #   type: git
@@ -39,7 +48,6 @@ packages:
   ipod_control_binary_sensor: !include common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
   ipod_control_rotary: !include common/ipod/lilygo_tdisplay_ipod_rotary.yaml
   ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
-  setup: !include homeConfig/device_setup.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
