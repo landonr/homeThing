@@ -19,11 +19,12 @@
 # Install guide
 1. [Install](#1-install-esphome-on-your-hardware "Install")
 2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
-3. [Setup Home](#3-setup-your-home-config "Setup Home")
-4. [Setup Menu](#4-set-up-the-menu-groups "Setup Menu")
-5. [Setup homeThing](#5-set-up-the-homething-menu "Setup homeThing")
-6. [Upload](#6-install-on-your-device "Upload")
-7. [Connect](#7-add-the-device-to-home-assistant "Connect")
+3. [Setup Device](#3-setup-device "Setup Device")
+3. [Setup Home](#4-setup-your-home-config "Setup Home")
+4. [Setup Menu](#5-set-up-the-menu-groups "Setup Menu")
+5. [Setup homeThing](#6-set-up-the-homething-menu "Setup homeThing")
+6. [Upload](#7-install-on-your-device "Upload")
+7. [Connect](#8-add-the-device-to-home-assistant "Connect")
 8. **Done!**
 
 ### 1. Install ESPHome on your hardware
@@ -36,17 +37,17 @@ external_components:
       type: git
       url: https://github.com/landonr/homeThing
       ref: main
-    components: [homeThing]
+    components: [homeThing] # homething menu
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
       ref: main
     components: [
-      homeassistant_component, # required for all components
-      homeassistant_switch_group, # only include if you use switches
+      homeassistant_component, # base component to control home assistant entities. required for all
+      homeassistant_switch_group, # only include if you use switches in menu
       homeassistant_sensor_group, # only include if you use text sensors in menu
-      homeassistant_light_group, # only include if you use lights
-      homeassistant_media_player, # only include if you use media players
+      homeassistant_light_group, # only include if you use lights in menu
+      homeassistant_media_player, # only include if you use media players in menu
       homeassistant_service_group, # only include if you want to call services/scripts
       media_player_source, # required for all media player sources
       media_player_source_sonos, # loads sonos favorites into a list
@@ -55,7 +56,7 @@ external_components:
     ]
 ```
 
-### 3. Setup device controls, sensors and services
+### 3. Setup Device
 these packages are for a Lilygo TDisplay with a rotary encoder and battery
 ```yaml
 packages:
@@ -75,7 +76,7 @@ packages:
     refresh: 0s
 ```
 
-### 3. Setup your home config
+### 4. Setup your home config
 - detailed information is here https://github.com/landonr/esphome-components
 - example
 
@@ -119,7 +120,7 @@ media_player:
     soundbar:
       speaker: media_player_beam
 ```
-### 4. Set up the menu groups
+### 5. Set up the menu groups
 ```yaml
 # switch menu - replace with your IDs
 homeassistant_switch_group:
@@ -160,7 +161,7 @@ homeassistant_service_group:
             data:
               entity_id: "button.desk_position_nudge_up"
 ```
-### 5. Set up the homeThing menu
+### 6. Set up the homeThing menu
 ```yaml
 # homeThing config
 # you only need one menu _group
@@ -192,6 +193,6 @@ homeThing:
     font_material_small: material_font_small
     font_logo: home_thing_logo
 ```
-### 6. Install on your device
-### 7. Add the device to Home Assistant
-### 8. Done! 🎉
+### 7. Install on your device
+### 8. Add the device to Home Assistant
+### 9. Done! 🎉
