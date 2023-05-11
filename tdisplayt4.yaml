@@ -6,6 +6,15 @@ esp32:
   framework:
     type: arduino
 
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  id: wifi_id
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret wifi_fallback_password
+
 external_components:
   - source:
     #   type: git
