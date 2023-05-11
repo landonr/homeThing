@@ -27,6 +27,8 @@
 8. **Done!**
 
 ### 1. Install ESPHome on your hardware
+[ESPHome install guide](https://esphome.io/guides/getting_started_hassio.html)
+
 ### 2. Include the homeThing components in your yaml
 ```yaml
 external_components:
