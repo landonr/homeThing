@@ -146,14 +146,14 @@ packages:
     url: https://github.com/landonr/homeThing
     ref: main
     files: [
-      common/device_base.yaml, 
-      common/ipod/lilygo_tdisplay_ipod_backlight.yaml,
-      common/ipod/lilygo_tdisplay_ipod_battery.yaml,
-      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml,
-      common/ipod/lilygo_tdisplay_ipod_rotary.yaml,
-      common/ipod/lilygo_tdisplay_ipod_sleep.yaml,
-      common/fonts.yaml,
-      common/icon_fonts.yaml
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
+      common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml, # used for button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for rotary controls
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml # material icons
     ]
     refresh: 0s
     
@@ -169,20 +169,17 @@ external_components:
       url: https://github.com/landonr/esphome-components
     refresh: 0s
     components: [ 
-      homeassistant_component,
-      homeassistant_switch_group, 
-      homeassistant_sensor_group,
-      homeassistant_light_group,
-      homeassistant_media_player,
-      homeassistant_service_group,
-      media_player_source,
-      media_player_source_sonos
+      homeassistant_component, # required for all components
+      homeassistant_switch_group, # only include if you use switches
+      homeassistant_sensor_group, # only include if you use text sensors in menu
+      homeassistant_light_group, # only include if you use lights
+      homeassistant_media_player, # only include if you use media players
+      homeassistant_service_group, # only include if you want to call services/scripts
+      media_player_source, # required for all media player sources
+      media_player_source_sonos, # loads sonos favorites into a list
     ]
 
 # don't need to modify past here
-logger:
-  level: INFO
-
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
@@ -191,15 +188,3 @@ wifi:
   ap:
     ssid: "${friendly_name} Fallback"
     password: !secret wifi_fallback_password
-
-ota:
-
-api:
-  id: homeassistant_api_id
-  services:
-    - service: goto_screen
-      variables:
-        screen_name: string
-      then:
-      - lambda: |-
-          id(homeThingMenu)->goToScreenFromString(screen_name);

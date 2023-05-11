@@ -42,18 +42,39 @@ external_components:
       url: https://github.com/landonr/esphome-components
       ref: main
     components: [
-      homeassistant_component, // required for all components
-      homeassistant_switch_group, // only include if you use switches
-      homeassistant_sensor_group, // only include if you use text sensors in menu
-      homeassistant_light_group, // only include if you use lights
-      homeassistant_media_player, // only include if you use media players
-      homeassistant_service_group, // only include if you want to call services/scripts
-      media_player_source, // required for all media player sources
-      media_player_source_sonos, // loads sonos favorites into a list
-      media_player_source_spotify, // loads spotify playlists from Spotcast sensor into a list
-      media_player_source_custom // define custom source lists
+      homeassistant_component, # required for all components
+      homeassistant_switch_group, # only include if you use switches
+      homeassistant_sensor_group, # only include if you use text sensors in menu
+      homeassistant_light_group, # only include if you use lights
+      homeassistant_media_player, # only include if you use media players
+      homeassistant_service_group, # only include if you want to call services/scripts
+      media_player_source, # required for all media player sources
+      media_player_source_sonos, # loads sonos favorites into a list
+      media_player_source_spotify, # loads spotify playlists from Spotcast sensor into a list
+      media_player_source_custom # define custom source lists
     ]
 ```
+
+### 3. Setup device controls, sensors and services
+these packages are for a Lilygo TDisplay with a rotary encoder and battery
+```yaml
+packages:
+  remote_package:
+    url: https://github.com/landonr/homeThing
+    ref: main
+    files: [
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
+      common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml, # used for button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for rotary controls
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml # material icons
+    ]
+    refresh: 0s
+```
+
 ### 3. Setup your home config
 - detailed information is here https://github.com/landonr/esphome-components
 - example
