@@ -1,5 +1,8 @@
 <h1 align = "center">homeThing: Getting Started 🌈</h1>
 
+<h2 align = "center">
+<a href="https://github.com/landonr/homeThing/blob/main/example-homeThing.yaml">see a Full Example Config here</a></h2>
+
 ### Required
 -  Hardware (pick one):
 	- LilyGo T-Display
