@@ -1,5 +1,47 @@
 # Yaml options for homeThing
 
+example of a customized yaml
+```yaml
+
+homeThing:
+  id: homeThingMenu
+  settings:
+    mode: 3_button
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  battery:
+    battery_percent: battery_percent
+    charging: connected
+  media_player_group: media_group_component
+  light_group: light_group_component
+  service_group: service_group_component
+  sensor_group: sensor_group_component
+  switch_group: switch_group_component
+  display: my_display
+  on_redraw:
+    then:
+      component.update: my_display
+  display_state:
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_heavy_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small
+    font_logo: home_thing_logo
+    header_height: 24
+    margin_size: 8
+    slider_margin_size: 6
+    scroll_bar_width: 8
+    bottom_bar_margin: 8
+    now_playing_max_lines: 5
+    draw_now_playing_bottom_menu: true
+    draw_battery_level: true
+    dark_mode: true
+    draw_volume_level: false
+    draw_header_time: true
+```
+
 ## Display State
 ### Required
 - font_small # id of the small font
