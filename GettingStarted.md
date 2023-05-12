@@ -164,6 +164,9 @@ homeassistant_service_group:
 ```
 
 ### 6. Set up the homeThing menu
+
+full config documentation [here](MenuOptions.md)
+
 ```yaml
 # homeThing config
 # you only need one menu _group
