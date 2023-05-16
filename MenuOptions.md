@@ -92,3 +92,4 @@ homeThing:
 - display_timeout # seconds until screen fades out. default 16
 - sleep_after # seconds until device sleeps. default 3600
 - menu_rollover_on # menu rolls back to top if you scroll past to bottom
+- lock_after # seconds until device locks. default 0 (no lock)

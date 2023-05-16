@@ -18,6 +18,8 @@ class HomeThingMenuSettings {
   }
   int get_sleep_after() { return sleep_after_; }
   void set_sleep_after(int sleep_after) { sleep_after_ = sleep_after; }
+  int get_lock_after() { return lock_after_; }
+  void set_lock_after(int lock_after) { lock_after_ = lock_after; }
 
   switch_::Switch* get_sleep_switch() { return sleep_switch_; }
   void set_sleep_switch(switch_::Switch* sleep_switch) {
@@ -33,6 +35,7 @@ class HomeThingMenuSettings {
   int sleep_after_;
   bool menu_rollover_;
   switch_::Switch* sleep_switch_;
+  int lock_after_;
 };
 
 }  // namespace homething_menu_base

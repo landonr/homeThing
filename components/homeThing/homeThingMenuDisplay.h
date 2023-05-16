@@ -39,6 +39,7 @@ class HomeThingMenuDisplay {
         header_(header),
         boot_(boot) {}
   void setup();
+  void draw_lock_screen(int unlock_presses);
   bool draw_menu_screen(
       MenuStates* activeMenuState,
       const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
