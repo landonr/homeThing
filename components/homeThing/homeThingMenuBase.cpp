@@ -99,7 +99,7 @@ void HomeThingMenuBase::draw_menu_screen() {
     if (device_locked_ && idleTime < 3) {
       menu_display_->draw_lock_screen(unlock_presses_);
     } else {
-      ESP_LOGI(TAG,
+      ESP_LOGD(TAG,
                "draw_menu_screen: unlocked, not drawing - time: %d locked: %d",
                idleTime, device_locked_);
     }
@@ -955,8 +955,11 @@ void HomeThingMenuBase::fade_out_display() {
 }
 
 void HomeThingMenuBase::lockDevice() {
-  ESP_LOGI(TAG, "lockDevice: locking device");
-  device_locked_ = true;
+  if (!device_locked_) {
+    ESP_LOGI(TAG, "lockDevice: locking device");
+    device_locked_ = true;
+    unlock_presses_ = 0;
+  }
 }
 
 void HomeThingMenuBase::idleTick() {
@@ -968,6 +971,10 @@ void HomeThingMenuBase::idleTick() {
     idleTime++;
     return;
   }
+  if (menu_settings_->get_lock_after() != 0 &&
+      idleTime >= menu_settings_->get_lock_after()) {
+    lockDevice();
+  }
   if (idleTime == 2) {
     unlock_presses_ = 0;
   } else if (idleTime == 3) {
@@ -975,7 +982,6 @@ void HomeThingMenuBase::idleTick() {
     update_display();
   } else if (idleTime == menu_settings_->get_display_timeout() - 4) {
     fade_out_display();
-    lockDevice();
   } else if (idleTime == menu_settings_->get_display_timeout()) {
     if (media_player_group_ != NULL &&
         media_player_group_->playerSearchFinished) {
