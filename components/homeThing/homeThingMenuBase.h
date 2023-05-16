@@ -126,7 +126,9 @@ class HomeThingMenuBase : public PollingComponent {
     if (activeMenuState != bootMenu) {
       if (device_locked_) {
         ESP_LOGI(TAG, "button_press_and_continue: locked");
-        return idleTime >= 10;
+        idleTime = 0;
+        update_display();
+        return false;
       } else {
         ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
                  activeMenuState);
