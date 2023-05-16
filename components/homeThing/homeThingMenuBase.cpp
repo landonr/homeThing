@@ -71,7 +71,7 @@ void HomeThingMenuBase::setup() {
 
 void HomeThingMenuBase::draw_menu_screen() {
   if (display_can_sleep()) {
-    ESP_LOGD(TAG, "not drawing");
+    ESP_LOGI(TAG, "draw_menu_screen: not drawing");
     sleep_display();
     return;
   }
@@ -95,6 +95,13 @@ void HomeThingMenuBase::draw_menu_screen() {
       this->animation_->animating = true;
     } else {
       this->animation_->animating = false;
+    }
+    if (device_locked_ && idleTime < 3) {
+      menu_display_->draw_lock_screen(unlock_presses_);
+    } else {
+      ESP_LOGI(TAG,
+               "draw_menu_screen: unlocked, not drawing - time: %d locked: %d",
+               idleTime, device_locked_);
     }
     menu_drawing_ = false;
   }
@@ -284,6 +291,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       activeMenuState == bootMenu) {
     ESP_LOGI(TAG, "finished boot");
     activeMenuState = rootMenu;
+    idleTime = 0;
     topMenu();
   }
   ESP_LOGI(TAG, "activeMenu: finished boot");
@@ -817,9 +825,26 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
   }
 }
 
+bool HomeThingMenuBase::buttonPressUnlock() {
+  if (device_locked_) {
+    unlock_presses_++;
+    if (unlock_presses_ >= 2) {
+      device_locked_ = false;
+      unlock_presses_ = 0;
+    }
+    idleTime = 0;
+    update_display();
+    return true;
+  }
+  return false;
+}
+
 void HomeThingMenuBase::buttonPressScreenLeft() {
-  if (!button_press_and_continue())
+  if (buttonPressUnlock()) {
     return;
+  } else if (!button_press_and_continue()) {
+    return;
+  }
   switch (activeMenuState) {
     case nowPlayingMenu:
       if (circle_menu_->get_active_menu()) {
@@ -914,19 +939,24 @@ void HomeThingMenuBase::sleep_display() {
     call.set_transition_length(500);
     call.perform();
   } else {
-    ESP_LOGD(TAG, "turn_on_backlight: NOT turning off display %d, %d",
-             backlight_, backlight_->remote_values.is_on());
+    ESP_LOGD(TAG, "sleep_display: NOT turning off display %d, %d", backlight_,
+             backlight_->remote_values.is_on());
   }
 }
 
 void HomeThingMenuBase::fade_out_display() {
   if (backlight_ && backlight_->remote_values.is_on()) {
-    ESP_LOGI(TAG, "remote_values: fading out display");
+    ESP_LOGI(TAG, "fade_out_display: fading out display");
     auto call = backlight_->turn_on();
     call.set_brightness(0.3);
     call.set_transition_length(500);
     call.perform();
   }
+}
+
+void HomeThingMenuBase::lockDevice() {
+  ESP_LOGI(TAG, "lockDevice: locking device");
+  device_locked_ = true;
 }
 
 void HomeThingMenuBase::idleTick() {
@@ -938,11 +968,14 @@ void HomeThingMenuBase::idleTick() {
     idleTime++;
     return;
   }
-  if (idleTime == 3) {
+  if (idleTime == 2) {
+    unlock_presses_ = 0;
+  } else if (idleTime == 3) {
     circle_menu_->clear_active_menu();
     update_display();
   } else if (idleTime == menu_settings_->get_display_timeout() - 4) {
     fade_out_display();
+    lockDevice();
   } else if (idleTime == menu_settings_->get_display_timeout()) {
     if (media_player_group_ != NULL &&
         media_player_group_->playerSearchFinished) {

@@ -51,6 +51,29 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
   return animating;
 }
 
+void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
+  double yPos = display_buffer_->get_height() / 2;
+  double xPos = display_buffer_->get_width() / 2;
+  double box_size_height = display_buffer_->get_height() * 0.6;
+  double box_size_width = display_buffer_->get_width() * 0.8;
+  auto text_font = display_state_->get_font_large();
+  auto number_font = display_state_->get_font_large_heavy();
+  auto background_color =
+      display_state_->get_color_palette()->get_accent_primary();
+  auto text_color =
+      text_helpers_->primaryTextColor(display_state_->get_dark_mode());
+  display_buffer_->filled_rectangle(xPos - box_size_width / 2,
+                                    yPos - box_size_height / 2, box_size_width,
+                                    box_size_height, background_color);
+  display_buffer_->printf(xPos, yPos - text_font->get_baseline(), text_font,
+                          text_color, display::TextAlign::CENTER, "Locked,");
+  display_buffer_->printf(xPos, yPos, text_font, text_color,
+                          display::TextAlign::CENTER, "Press Option");
+  display_buffer_->printf(xPos, yPos + text_font->get_baseline(), number_font,
+                          text_color, display::TextAlign::CENTER, "%d/2",
+                          unlock_presses);
+}
+
 bool HomeThingMenuDisplay::draw_menu_titles(
     const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
     int menuIndex) {

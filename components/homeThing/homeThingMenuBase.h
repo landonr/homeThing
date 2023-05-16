@@ -88,6 +88,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool selectMenuHold();
   bool selectRootMenu();
   std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType);
+  void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();
   void idleMenu(bool force);
@@ -105,6 +106,7 @@ class HomeThingMenuBase : public PollingComponent {
   void buttonPressRight();
   void buttonPressSelect();
   void buttonPressSelectHold();
+  bool buttonPressUnlock();
   void buttonReleaseScreenLeft();
   void buttonPressScreenLeft();
   void buttonPressScreenRight();
@@ -122,10 +124,15 @@ class HomeThingMenuBase : public PollingComponent {
       return false;
     }
     if (activeMenuState != bootMenu) {
-      ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
-               activeMenuState);
-      animation_->resetAnimation();
-      return true;
+      if (device_locked_) {
+        ESP_LOGI(TAG, "button_press_and_continue: locked");
+        return idleTime >= 10;
+      } else {
+        ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
+                 activeMenuState);
+        animation_->resetAnimation();
+        return true;
+      }
     } else {
       return false;
     }
@@ -199,6 +206,8 @@ class HomeThingMenuBase : public PollingComponent {
   bool reload_menu_items_ = false;
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};
+  bool device_locked_ = false;
+  int unlock_presses_ = 0;
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger
