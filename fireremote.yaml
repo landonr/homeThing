@@ -2,6 +2,16 @@ esphome:
   name: fireremote
   platform: ESP32
   board: m5stack-fire
+  on_boot:
+    priority: 600.0
+    then:
+      - delay: 45s
+      - if:
+          condition:
+            not:
+              - wifi.connected:
+          then:
+            - switch.turn_on: sleep_toggle
 
 wifi:
   ssid: !secret wifi_ssid

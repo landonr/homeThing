@@ -3,6 +3,16 @@ esphome:
   name: "homething-lilygo"
   platform: ESP32
   board: featheresp32
+  on_boot:
+    priority: 600.0
+    then:
+      - delay: 45s
+      - if:
+          condition:
+            not:
+              - wifi.connected:
+          then:
+            - switch.turn_on: sleep_toggle
 
 # modify: device setup
 substitutions:
