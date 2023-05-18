@@ -20,6 +20,12 @@ enum BootMenuState {
   BOOT_MENU_STATE_COMPLETE
 };
 
+enum BootMenuSkipState {
+  BOOT_MENU_SKIP_STATE_NONE,
+  BOOT_MENU_SKIP_STATE_SLEEP,
+  BOOT_MENU_SKIP_STATE_MENU
+};
+
 struct HomeThingMenuAnimationConfig {
   int delay_time;
   int animation_length;
@@ -48,7 +54,7 @@ class HomeThingMenuBoot {
         display_state_(new_display_state),
         header_(new_header) {}
   bool drawBootSequence(const MenuStates activeMenuState);
-  void skipBootSequence(const MenuStates activeMenuState);
+  BootMenuSkipState bootSequenceCanSkip(const MenuStates activeMenuState);
   void set_api_connected(binary_sensor::BinarySensor* api_connected) {
     api_connected_ = api_connected;
   }
@@ -65,8 +71,6 @@ class HomeThingMenuBoot {
   }
 
  private:
-  bool bootSequenceCanSkip(const MenuStates activeMenuState);
-  bool bootSequenceCanSleep(const MenuStates activeMenuState);
   void drawBootSequenceLoadingBar(int yPosOffset, float progress);
   void drawBootSequenceSkipTitle(int xPos, int imageYPos,
                                  const MenuStates activeMenuState);
@@ -90,6 +94,7 @@ class HomeThingMenuBoot {
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =
       HomeThingMenuBootAnimationConfig();
+  bool boot_animation_complete_ = false;
 };
 
 }  // namespace homething_menu_base

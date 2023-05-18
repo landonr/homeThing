@@ -119,6 +119,7 @@ class HomeThingMenuBase : public PollingComponent {
   }
 
  private:
+  bool skipBootPressed();
   bool button_press_and_continue() {
     if (buttonPressWakeUpDisplay()) {
       return false;
@@ -210,6 +211,7 @@ class HomeThingMenuBase : public PollingComponent {
   binary_sensor::BinarySensor* charging_{nullptr};
   bool device_locked_ = false;
   int unlock_presses_ = 0;
+  void finish_boot();
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger

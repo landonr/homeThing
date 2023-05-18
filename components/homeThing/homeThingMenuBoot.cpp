@@ -1,15 +1,11 @@
 #include "homeThingMenuBoot.h"
 #include <algorithm>
+#include <string>
 #include "esphome/components/network/util.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
 namespace homething_menu_base {
-bool HomeThingMenuBoot::bootSequenceCanSleep(const MenuStates activeMenuState) {
-  return activeMenuState == bootMenu &&
-         get_boot_menu_state() < BOOT_MENU_STATE_API;
-}
-
 int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
     int xPos, int yPos, const MenuStates activeMenuState) {
   std::string bootTitle = "homeThing";
@@ -17,8 +13,9 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
   int delayTime = 6;
   int animationStartTime = delayTime;
   int animationLength = animationStartTime + loopLimit + delayTime * 2;
-  int showSleepLength = animationLength + delayTime * 2;
   const int animationTick = animation_->animationTick->state;
+
+  ESP_LOGD(TAG, "tick %d total %d", animationTick, animationLength);
   if (animationTick > animationStartTime && animationTick < animationLength) {
     int currentAnimationTick = animationTick - animationStartTime;
     int activeCharacter = currentAnimationTick;
@@ -49,20 +46,8 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
             display::TextAlign::TOP_LEFT, "%c", bootTitle[i]);
       }
     }
-  } else if (animationTick >= animationLength) {
-    if (animationTick >= showSleepLength &&
-        bootSequenceCanSleep(activeMenuState)) {
-      yPos = display_state_->getBottomBarYPosition(
-                 false, display_buffer_->get_height()) -
-             display_state_->get_margin_size() / 2 -
-             display_state_->get_font_small()->get_baseline();
-      display_buffer_->printf(
-          xPos, yPos, display_state_->get_font_small(),
-          display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "sleep >");
-    }
   }
-  return showSleepLength;
+  return animationLength;
 }
 
 int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
@@ -166,33 +151,46 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
   return totalDuration;
 }
 
-bool HomeThingMenuBoot::bootSequenceCanSkip(const MenuStates activeMenuState) {
-  return activeMenuState == bootMenu && media_player_group_ != NULL &&
-         media_player_group_->loadedPlayers > 0;
+BootMenuSkipState HomeThingMenuBoot::bootSequenceCanSkip(
+    const MenuStates activeMenuState) {
+  bool canSkip = activeMenuState == bootMenu && media_player_group_ != NULL &&
+                 media_player_group_->loadedPlayers > 0;
+  bool finishedBootAnimation = animation_->animationTick->state >=
+                               animation_config_.total_animation_length();
+  if (finishedBootAnimation)
+    boot_animation_complete_ = true;
+  if (canSkip) {
+    return BOOT_MENU_SKIP_STATE_MENU;
+  } else if (get_boot_menu_state() < BOOT_MENU_STATE_API &&
+             finishedBootAnimation) {
+    return BOOT_MENU_SKIP_STATE_SLEEP;
+  }
+  return BOOT_MENU_SKIP_STATE_NONE;
 }
 
 void HomeThingMenuBoot::drawBootSequenceSkipTitle(
     int xPos, int imageYPos, const MenuStates activeMenuState) {
-  if (bootSequenceCanSkip(activeMenuState)) {
-    int yPos = display_state_->getBottomBarYPosition(
-                   false, display_buffer_->get_height()) -
-               display_state_->get_margin_size() / 2 -
-               display_state_->get_font_small()->get_baseline();
-    display_buffer_->printf(
-        xPos, yPos, display_state_->get_font_small(),
-        display_state_->get_color_palette()->get_accent_primary(),
-        display::TextAlign::TOP_CENTER, "skip >");
+  auto skip_state = bootSequenceCanSkip(activeMenuState);
+  int yPos = display_state_->getBottomBarYPosition(
+                 false, display_buffer_->get_height()) -
+             display_state_->get_margin_size() / 2 -
+             display_state_->get_font_small()->get_baseline();
+  switch (skip_state) {
+    case BOOT_MENU_SKIP_STATE_MENU: {
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_font_small(),
+          display_state_->get_color_palette()->get_accent_primary(),
+          display::TextAlign::TOP_CENTER, "skip >");
+      break;
+    };
+    case BOOT_MENU_SKIP_STATE_SLEEP: {
+      display_buffer_->printf(
+          xPos, yPos, display_state_->get_font_small(),
+          display_state_->get_color_palette()->get_accent_primary(),
+          display::TextAlign::TOP_CENTER, "sleep >");
+      break;
+    };
   }
-}
-
-void HomeThingMenuBoot::skipBootSequence(const MenuStates activeMenuState) {
-  if (!bootSequenceCanSkip(activeMenuState)) {
-    if (bootSequenceCanSleep(activeMenuState)) {
-      // sleep_switch_->turn_on();
-    }
-    return;
-  }
-  media_player_group_->selectFirstActivePlayer();
 }
 
 int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
@@ -259,7 +257,7 @@ bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
       max(maxAnimationDuration,
           drawBootSequenceTitle(xPos, imageYPos, activeMenuState));
   const int animationTick = animation_->animationTick->state;
-  if (animationTick < maxAnimationDuration) {
+  if (animationTick <= maxAnimationDuration) {
     return true;
   } else {
     return get_boot_menu_state() == BOOT_MENU_STATE_COMPLETE;
@@ -268,21 +266,31 @@ bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
 }
 
 BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
-  if (api_connected_->has_state() && api_connected_->state) {
+  const int animationTick = animation_->animationTick->state;
+  ESP_LOGD(TAG, "tick %d total %d", animationTick,
+           animation_config_.total_animation_length());
+  bool api = api_connected_->has_state() && api_connected_->state &&
+             network::is_connected();
+  bool draw_animation = animation_->animationTick->state <
+                            animation_config_.total_animation_length() &&
+                        !boot_animation_complete_;
+  if (!api && draw_animation) {
+    return BOOT_MENU_STATE_START;
+  } else if (!network::is_connected()) {
+    return BOOT_MENU_STATE_NETWORK;
+  } else if (!api) {
+    return BOOT_MENU_STATE_API;
+  } else {
     if (media_player_group_) {
       int totalPlayers = media_player_group_->totalPlayers();
       int loadedPlayers = media_player_group_->loadedPlayers;
+      ESP_LOGD(TAG, "totalPlayers %d loadedPlayers %d", totalPlayers,
+               loadedPlayers);
       return totalPlayers == loadedPlayers ? BOOT_MENU_STATE_COMPLETE
                                            : BOOT_MENU_STATE_PLAYERS;
     }
+    ESP_LOGD(TAG, "boot complete");
     return BOOT_MENU_STATE_COMPLETE;
-  } else if (network::is_connected()) {
-    return BOOT_MENU_STATE_API;
-  } else if (animation_->animationTick->state <
-             animation_config_.total_animation_length()) {
-    return BOOT_MENU_STATE_START;
-  } else {
-    return BOOT_MENU_STATE_NETWORK;
   }
 }
 }  // namespace homething_menu_base

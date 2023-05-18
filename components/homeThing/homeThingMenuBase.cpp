@@ -286,13 +286,17 @@ HomeThingMenuBase::menuTypesToTitles(std::vector<MenuStates> menu) {
   return out;
 }
 
+void HomeThingMenuBase::finish_boot() {
+  ESP_LOGI(TAG, "finished boot");
+  activeMenuState = rootMenu;
+  idleTime = 0;
+  topMenu();
+}
+
 std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
   if (media_player_group_ && media_player_group_->playerSearchFinished &&
       activeMenuState == bootMenu) {
-    ESP_LOGI(TAG, "finished boot");
-    activeMenuState = rootMenu;
-    idleTime = 0;
-    topMenu();
+    finish_boot();
   }
   ESP_LOGI(TAG, "activeMenu: finished boot");
   switch (activeMenuState) {
@@ -768,13 +772,37 @@ void HomeThingMenuBase::buttonPressLeft() {
   }
 }
 
+bool HomeThingMenuBase::skipBootPressed() {
+  switch (activeMenuState) {
+    case bootMenu: {
+      switch (menu_display_->boot_->bootSequenceCanSkip(activeMenuState)) {
+        case BOOT_MENU_SKIP_STATE_SLEEP:
+          ESP_LOGI(TAG, "skipBootPressed: sleep");
+          sleep_switch_->turn_on();
+          return true;
+        case BOOT_MENU_SKIP_STATE_MENU:
+          ESP_LOGI(TAG, "skipBootPressed: menu");
+          media_player_group_->selectFirstActivePlayer();
+          finish_boot();
+          return true;
+        case BOOT_MENU_SKIP_STATE_NONE:
+          ESP_LOGI(TAG, "skipBootPressed: none");
+          break;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  return false;
+}
+
 void HomeThingMenuBase::buttonPressRight() {
+  if (skipBootPressed())
+    return;
   if (!button_press_and_continue())
     return;
   switch (activeMenuState) {
-    case bootMenu:
-      menu_display_->skipBootSequence(activeMenuState);
-      break;
     case nowPlayingMenu:
       // if (option_menu_ == tvOptionMenu) {
       if (!button_press_now_playing_option_continue(

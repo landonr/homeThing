@@ -179,17 +179,19 @@ bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState,
     const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
     const int menuIndex, HomeThingOptionMenu* option_menu) {
+  bool boot_complete = boot_->boot_complete();
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
   }
-  if (!boot_->boot_complete() && *activeMenuState == bootMenu) {
+  if (!boot_complete && *activeMenuState == bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
-  } else if (*activeMenuState == bootMenu && boot_->boot_complete()) {
+  } else if (boot_complete && *activeMenuState == bootMenu) {
     ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
     return true;
-  } else if (!boot_->boot_complete() && *activeMenuState != bootMenu) {
-    ESP_LOGW(TAG, "boot not complete but ");
+  } else if (!boot_complete && *activeMenuState != bootMenu) {
+    ESP_LOGW(TAG, "boot not complete but we got to the menu %d state %d",
+             boot_complete, *activeMenuState);
   }
 
   bool animating = false;
@@ -298,10 +300,6 @@ void HomeThingMenuDisplay::drawRightTitleIcon(int menuTitleSize,
       }
       break;
   }
-}
-
-void HomeThingMenuDisplay::skipBootSequence(const MenuStates activeMenuState) {
-  boot_->skipBootSequence(activeMenuState);
 }
 
 // private

@@ -45,7 +45,6 @@ class HomeThingMenuDisplay {
       const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
       const int menuIndex, HomeThingOptionMenu* option_menu);
   void updateDisplay(bool force);
-  void skipBootSequence(const MenuStates activeMenuState);
 
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;
@@ -61,6 +60,7 @@ class HomeThingMenuDisplay {
       homeassistant_light_group::HomeAssistantLightGroup* light_group) {
     light_group_ = light_group;
   }
+  HomeThingMenuBoot* boot_{nullptr};
 
  private:
   int scrollTop = 0;
@@ -87,7 +87,6 @@ class HomeThingMenuDisplay {
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-  HomeThingMenuBoot* boot_{nullptr};
   HomeThingMenuNowPlaying* now_playing_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
