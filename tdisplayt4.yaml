@@ -1,15 +1,5 @@
 esphome:
   name: tdisplayt4
-  on_boot:
-    priority: 600.0
-    then:
-      - delay: 45s
-      - if:
-          condition:
-            not:
-              - wifi.connected:
-          then:
-            - switch.turn_on: sleep_toggle
 
 esp32:
   board: esp32dev
