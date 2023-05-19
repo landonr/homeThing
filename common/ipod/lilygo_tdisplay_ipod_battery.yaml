@@ -49,7 +49,7 @@ sensor:
     internal: true
     unit_of_measurement: '%'
     on_value_range:
-      below: 2
+      below: 7
       then:
         lambda: |-
           ESP_LOGE("SLEEP", "Low Power Supply %.3fV! Sleeping to protect battery", id(battery_percent).state);

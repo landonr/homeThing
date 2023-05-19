@@ -4,7 +4,7 @@
 
 namespace esphome {
 namespace homething_menu_base {
-static const std::string COMPONENTS_HOMETHING_VERSION = "lando/sleep-when-no-network/237-2023-05-18";
+static const std::string COMPONENTS_HOMETHING_VERSION = "main/237-2023-05-19";
 }
 }  // namespace esphome
 #endif  // COMPONENTS_HOMETHING_VERSION_H_

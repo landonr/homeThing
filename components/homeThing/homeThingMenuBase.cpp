@@ -287,7 +287,7 @@ HomeThingMenuBase::menuTypesToTitles(std::vector<MenuStates> menu) {
 }
 
 void HomeThingMenuBase::finish_boot() {
-  ESP_LOGI(TAG, "finished boot");
+  ESP_LOGI(TAG, "finish_boot: finished boot");
   activeMenuState = rootMenu;
   idleTime = 0;
   topMenu();
@@ -460,6 +460,7 @@ void HomeThingMenuBase::buttonPressSelect() {
         if (light_group_->lightDetailSelected) {
           // deselect light if selected and stay in lightsDetailMenu
           light_group_->lightDetailSelected = false;
+          reload_menu_items_ = true;
           update_display();
           return;
         }
@@ -488,6 +489,7 @@ void HomeThingMenuBase::buttonPressSelect() {
         if (light_group_->lightDetailSelected) {
           // deselect ligh if selected and stay in lightsDetailMenu
           light_group_->lightDetailSelected = false;
+          reload_menu_items_ = true;
           update_display();
           return;
         }
@@ -518,6 +520,7 @@ void HomeThingMenuBase::buttonPressSelectHold() {
     return;
   }
   if (selectMenuHold()) {
+    reload_menu_items_ = true;
     update_display();
   }
 }
@@ -682,11 +685,13 @@ void HomeThingMenuBase::buttonPressUp() {
       if (light_group_->lightDetailSelected) {
         // deselect light if selected and stay in lightsDetailMenu
         light_group_->lightDetailSelected = false;
+        reload_menu_items_ = true;
         update_display();
         return;
       } else {
         // if no light is selected go back to lightsMenu
         activeMenuState = lightsMenu;
+        reload_menu_items_ = true;
         update_display();
         return;
       }
