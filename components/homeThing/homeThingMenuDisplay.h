@@ -73,6 +73,9 @@ class HomeThingMenuDisplay {
           media_player_group) {
     media_player_group_ = media_player_group;
   }
+  void set_now_playing(HomeThingMenuNowPlaying* now_playing) {
+    now_playing_ = now_playing;
+  }
 #endif
 
 #ifdef USE_LIGHT_GROUP
@@ -85,13 +88,6 @@ class HomeThingMenuDisplay {
 
  private:
   int scrollTop = 0;
-#ifdef USE_MEDIA_PLAYER_GROUP
-  void drawTitleImage(
-      int characterCount, int yPos,
-      const homeassistant_media_player::RemotePlayerState& titleState,
-      bool selected);
-  HomeThingMenuNowPlaying* now_playing_{nullptr};
-#endif
   bool draw_menu_titles(
       const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
       const int menuIndex);
@@ -114,6 +110,11 @@ class HomeThingMenuDisplay {
   HomeThingMenuRefactor* refactor_{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP
+  void drawTitleImage(
+      int characterCount, int yPos,
+      const homeassistant_media_player::RemotePlayerState& titleState,
+      bool selected);
+  HomeThingMenuNowPlaying* now_playing_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
 #endif

@@ -1,5 +1,5 @@
-
 #pragma once
+
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include <algorithm>
 #include <memory>

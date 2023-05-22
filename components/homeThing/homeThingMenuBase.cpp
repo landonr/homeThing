@@ -97,18 +97,16 @@ void HomeThingMenuBase::draw_menu_screen() {
     ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
              title_name.c_str(), menu_titles.size());
 #ifdef USE_MEDIA_PLAYER_GROUP
-    HomeThingOptionMenu active_option_menu =
-        circle_menu_->get_active_menu()
+    if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
+                                        menuIndex,
+                                        circle_menu_->get_active_menu())) {
 #else
-    HomeThingOptionMenu active_option_menu = HomeThingOptionMenu(noOptionMenu);
+    if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
+                                        menuIndex, nullptr)) {
 #endif
-            if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
-                                                menuIndex,
-                                                &active_option_menu)) {
       this->animation_->tickAnimation();
       this->animation_->animating = true;
-    }
-    else {
+    } else {
       this->animation_->animating = false;
     }
     if (device_locked_ && idleTime < 3) {

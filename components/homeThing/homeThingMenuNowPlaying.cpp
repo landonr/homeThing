@@ -1,6 +1,9 @@
-#include "homeThingMenuNowPlaying.h"
-#include "esphome/core/log.h"
 #ifdef USE_MEDIA_PLAYER_GROUP
+#include "homeThingMenuNowPlaying.h"
+#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
+#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -117,10 +120,11 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
     const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu) {
-  if (option_menu && drawOptionMenuAndStop(option_menu)) {
+  if (option_menu && drawOptionMenuAndStop(option_menu) ||
+      display_state_ == nullptr) {
     return;
   }
-  if (active_menu->size() > 0 &&
+  if (active_menu && active_menu->size() > 0 &&
       display_state_->get_draw_now_playing_bottom_menu()) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }
