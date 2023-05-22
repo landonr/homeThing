@@ -1,4 +1,5 @@
 #include "homeThingMenuNowPlayingOptionMenu.h"
+#ifdef USE_MEDIA_PLAYER_GROUP
 
 namespace esphome {
 namespace homething_menu_base {
@@ -79,3 +80,4 @@ HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
 
 }  // namespace homething_menu_base
 }  // namespace esphome
+#endif

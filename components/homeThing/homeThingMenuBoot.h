@@ -7,7 +7,10 @@
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#endif
+#include "esphome/components/binary_sensor/binary_sensor.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -64,11 +67,13 @@ class HomeThingMenuBoot {
   bool boot_complete() {
     return get_boot_menu_state() == BOOT_MENU_STATE_COMPLETE;
   }
+#ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group) {
     media_player_group_ = media_player_group;
   }
+#endif
 
  private:
   void drawBootSequenceLoadingBar(int yPosOffset, float progress);
@@ -88,8 +93,10 @@ class HomeThingMenuBoot {
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
+#ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
+#endif
   binary_sensor::BinarySensor* api_connected_{nullptr};
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =

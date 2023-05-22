@@ -19,7 +19,6 @@ HomeThingMenuDisplayState = homething_menu_base_ns.class_("HomeThingMenuDisplayS
 HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
-HomeThingMenuNowPlaying = homething_menu_base_ns.class_("HomeThingMenuNowPlaying")
 HomeThingColorPalette = homething_menu_base_ns.class_("HomeThingColorPalette")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
@@ -32,7 +31,6 @@ CONF_MENU_DISPLAY = "menu_display"
 CONF_DISPLAY_STATE = "display_state"
 CONF_TEXT_HELPERS = "text_helpers"
 CONF_REFACTOR = "refactor_me"
-CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
@@ -113,7 +111,6 @@ MENU_DISPLAY_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(HomeThingMenuDisplay),
         cv.GenerateID(CONF_TEXT_HELPERS): cv.declare_id(HomeThingMenuTextHelpers),
         cv.GenerateID(CONF_REFACTOR): cv.declare_id(HomeThingMenuRefactor),
-        cv.GenerateID(CONF_NOW_PLAYING): cv.declare_id(HomeThingMenuNowPlaying),
         cv.GenerateID(CONF_HEADER): cv.declare_id(HomeThingMenuHeader),
     }
 )
@@ -343,9 +340,6 @@ async def battery_to_code(config, var):
     if CONF_BATTERY in config:
         await ids_to_code(config[CONF_BATTERY], var, BATTERY_IDS)
 
-NOW_PLAYING_IDS = [
-    CONF_MEDIA_PLAYERS
-]
 MENU_HEADER_IDS = [
     CONF_MEDIA_PLAYERS, CONF_LIGHTS
 ]
@@ -359,15 +353,13 @@ async def menu_display_to_code(config, display_buffer):
     display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
     text_helpers = await text_helpers_to_code(menu_display_conf[CONF_TEXT_HELPERS], display_buffer, display_state)
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
-    now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
-    await ids_to_code(config, now_playing, NOW_PLAYING_IDS)
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
     await ids_to_code(config, menu_header, MENU_HEADER_IDS)
     await battery_to_code(config, menu_header)
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, now_playing, menu_header, menu_boot)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, menu_header, menu_boot)
     await ids_to_code(config, menu_display, MENU_DISPLAY_IDS)
     return menu_display
 

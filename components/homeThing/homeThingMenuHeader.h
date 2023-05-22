@@ -4,15 +4,18 @@
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
-#include "esphome/components/homeThing/homeThingOptionMenu.h"
 
 #ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
+
+#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/sensor/sensor.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -66,14 +69,17 @@ class HomeThingMenuHeader {
   void drawHeaderTitleWithString(std::string title, int xPos,
                                  int yPosOffset = 0);
   void drawHeaderTitle(int yPosOffset, const MenuStates activeMenuState);
-  int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
   int getHeaderTextYPos(int yPosOffset);
   int drawBattery(int oldXPos, int yPosOffset);
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);
   int drawHeaderTime(int oldXPos, int yPosOffset);
+
+#ifdef USE_MEDIA_PLAYER_GROUP
+  int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
   int drawShuffle(int oldXPos, int yPosOffset);
   int drawRepeat(int oldXPos, int yPosOffset);
   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
+#endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*

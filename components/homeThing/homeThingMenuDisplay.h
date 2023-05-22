@@ -8,7 +8,6 @@
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeThing/homeThingMenuRefactor.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
@@ -19,6 +18,7 @@
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
@@ -34,6 +34,8 @@
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #endif
 
+#include "esphome/components/light/light_output.h"
+#include "esphome/components/light/light_state.h"
 #include "esphome/core/component.h"
 
 namespace esphome {
@@ -45,13 +47,11 @@ class HomeThingMenuDisplay {
                        HomeThingMenuDisplayState* display_state,
                        HomeThingMenuTextHelpers* text_helpers,
                        HomeThingMenuRefactor* refactor,
-                       HomeThingMenuNowPlaying* now_playing,
                        HomeThingMenuHeader* header, HomeThingMenuBoot* boot)
       : display_buffer_(display_buffer),
         display_state_(display_state),
         text_helpers_(text_helpers),
         refactor_(refactor),
-        now_playing_(now_playing),
         header_(header),
         boot_(boot) {}
   void setup();
@@ -85,10 +85,13 @@ class HomeThingMenuDisplay {
 
  private:
   int scrollTop = 0;
+#ifdef USE_MEDIA_PLAYER_GROUP
   void drawTitleImage(
       int characterCount, int yPos,
       const homeassistant_media_player::RemotePlayerState& titleState,
       bool selected);
+  HomeThingMenuNowPlaying* now_playing_{nullptr};
+#endif
   bool draw_menu_titles(
       const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
       const int menuIndex);
@@ -108,7 +111,6 @@ class HomeThingMenuDisplay {
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-  HomeThingMenuNowPlaying* now_playing_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP

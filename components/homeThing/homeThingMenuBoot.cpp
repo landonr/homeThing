@@ -96,6 +96,7 @@ float HomeThingMenuBoot::bootSequenceLoadingProgress() {
     case BOOT_MENU_STATE_API:
       return 0.2;
     case BOOT_MENU_STATE_PLAYERS:
+#ifdef USE_MEDIA_PLAYER_GROUP
       if (media_player_group_ != NULL) {
         float totalPlayers =
             static_cast<float>(media_player_group_->totalPlayers());
@@ -104,6 +105,7 @@ float HomeThingMenuBoot::bootSequenceLoadingProgress() {
         float progress = 0.7 * (loadedPlayers / totalPlayers);
         return 0.3 + progress;
       }
+#endif
       return 0.3;
     case BOOT_MENU_STATE_COMPLETE:
       return 1;
@@ -153,8 +155,12 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
 
 BootMenuSkipState HomeThingMenuBoot::bootSequenceCanSkip(
     const MenuStates activeMenuState) {
+#ifdef USE_MEDIA_PLAYER_GROUP
   bool canSkip = activeMenuState == bootMenu && media_player_group_ != NULL &&
                  media_player_group_->loadedPlayers > 0;
+#else
+  bool canSkip = true;
+#endif
   bool finishedBootAnimation = animation_->animationTick->state >=
                                animation_config_.total_animation_length();
   if (finishedBootAnimation)
@@ -207,6 +213,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
       break;
     case BOOT_MENU_STATE_PLAYERS:
     case BOOT_MENU_STATE_COMPLETE: {
+#ifdef USE_MEDIA_PLAYER_GROUP
       if (media_player_group_ && media_player_group_->totalPlayers() > 0) {
         int totalPlayers = media_player_group_->totalPlayers();
         int loadedPlayers = media_player_group_->loadedPlayers;
@@ -221,6 +228,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
             display_state_->get_color_palette()->get_accent_primary(),
             display::TextAlign::TOP_CENTER, "api connected!");
       }
+#endif
       break;
     }
     case BOOT_MENU_STATE_NETWORK:
@@ -239,9 +247,12 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
 }
 
 bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
+
+#ifdef USE_MEDIA_PLAYER_GROUP
   if (media_player_group_) {
     media_player_group_->findActivePlayer();
   }
+#endif
 
   int imageYPos = display_state_->get_header_height() +
                   display_state_->get_margin_size() * 2;
@@ -281,6 +292,8 @@ BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
   } else if (!api) {
     return BOOT_MENU_STATE_API;
   } else {
+
+#ifdef USE_MEDIA_PLAYER_GROUP
     if (media_player_group_) {
       int totalPlayers = media_player_group_->totalPlayers();
       int loadedPlayers = media_player_group_->loadedPlayers;
@@ -289,6 +302,7 @@ BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
       return totalPlayers == loadedPlayers ? BOOT_MENU_STATE_COMPLETE
                                            : BOOT_MENU_STATE_PLAYERS;
     }
+#endif
     ESP_LOGD(TAG, "boot complete");
     return BOOT_MENU_STATE_COMPLETE;
   }
