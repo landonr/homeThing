@@ -100,10 +100,11 @@ void HomeThingMenuBase::draw_menu_screen() {
     HomeThingOptionMenu active_option_menu =
         circle_menu_->get_active_menu()
 #else
-    HomeThingOptionMenu active_option_menu = noOptionMenu;
+    HomeThingOptionMenu active_option_menu = HomeThingOptionMenu(noOptionMenu);
 #endif
             if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
-                                                menuIndex, option_menu)) {
+                                                menuIndex,
+                                                &active_option_menu)) {
       this->animation_->tickAnimation();
       this->animation_->animating = true;
     }
