@@ -576,7 +576,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
 
 #endif  // switch
 
-// service
+#ifdef USE_SERVICE_GROUP  // service
 
 static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
     const std::vector<
@@ -591,6 +591,8 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
   }
   return out;
 }
+
+#endif  // service
 
 // light
 #ifdef USE_LIGHT_GROUP

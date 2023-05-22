@@ -59,9 +59,12 @@ class HomeThingMenuBase : public PollingComponent {
     sleep_switch_ = sleep_switch;
   }
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
+
+#ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
     return service_group_;
   }
+#endif
 
 #ifdef USE_SERVICE_GROUP
   void set_service_group(

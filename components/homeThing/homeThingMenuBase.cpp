@@ -181,11 +181,13 @@ bool HomeThingMenuBase::selectMenu() {
       }
       break;
     }
+#ifdef USE_SERVICE_GROUP
     case scenesMenu:
       if (service_group_->select_service(menuIndex)) {
         topMenu();
       }
       break;
+#endif
     case switchesMenu:
 #ifdef USE_SWITCH_GROUP
       if (switch_group_->selectSwitch(menuIndex)) {
@@ -227,9 +229,11 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
   if (media_player_group_) {
     out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
   }
+#ifdef USE_SERVICE_GROUP
   if (service_group_) {
     out.push_back(scenesMenu);
   }
+#endif
 #ifdef USE_SENSOR_GROUP
   if (sensor_group_) {
     out.push_back(sensorsMenu);
@@ -350,7 +354,10 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return {mediaPlayersTitles.begin(), mediaPlayersTitles.end()};
     }
     case scenesMenu:
+#ifdef USE_SERVICE_GROUP
       return sceneTitleStrings(service_group_->services);
+#endif
+      break;
     case sensorsMenu:
 #ifdef USE_SENSOR_GROUP
       return sensorTitles(sensor_group_->sensors);
