@@ -2,10 +2,25 @@
 #include <string>
 #include <unordered_map>
 #include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
+#ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#endif
+
+#ifdef USE_SENSOR_GROUP
+#include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
+#endif
+
+#ifdef USE_SERVICE_GROUP
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
+#endif
+
+#ifdef USE_SWITCH_GROUP
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
+#endif
 #include "esphome/core/color.h"
 #include "version.h"
 
@@ -574,6 +589,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
 }
 
 // light
+#ifdef USE_LIGHT_GROUP
 
 static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches(
     const std::vector<homeassistant_light::HomeAssistantLightState*>& lights) {
@@ -644,6 +660,8 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
   }
   return out;
 }
+
+#endif  // light
 
 // sensor
 

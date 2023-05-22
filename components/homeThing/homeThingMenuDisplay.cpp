@@ -137,6 +137,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         break;
       }
       case SliderMenuTitleType: {
+#ifdef USE_LIGHT_GROUP
         bool lightDetailSelected = light_group_->lightDetailSelected;
         auto item = std::static_pointer_cast<MenuTitleSlider>((*menuTitles)[i]);
         SliderSelectionState sliderState =
@@ -149,6 +150,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         yPos += (display_state_->get_font_medium()->get_baseline() +
                  display_state_->get_margin_size()) *
                 2;
+#endif
         break;
       }
       case PlayerMenuTitleType: {

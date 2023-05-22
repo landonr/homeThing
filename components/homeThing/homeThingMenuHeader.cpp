@@ -99,6 +99,7 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       drawHeaderTitleWithString("Lights", xPos);
       break;
     case lightsDetailMenu: {
+#ifdef USE_LIGHT_GROUP
       if (light_group_->getActiveLight() != NULL) {
         auto activeLight = light_group_->getActiveLight();
         auto headerMenuTitle = activeLight->get_name();
@@ -108,6 +109,7 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       } else {
         drawHeaderTitleWithString("LightDetail", xPos);
       }
+#endif
       break;
     }
     case switchesMenu:

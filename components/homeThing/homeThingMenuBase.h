@@ -15,11 +15,27 @@
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+
+#ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#endif
+
+#ifdef USE_SENSOR_GROUP
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
+#endif
+
+#ifdef USE_SERVICE_GROUP
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
+#endif
+
+#ifdef USE_SWITCH_GROUP
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
+#endif
+
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 
@@ -47,10 +63,14 @@ class HomeThingMenuBase : public PollingComponent {
     return service_group_;
   }
 
+#ifdef USE_SERVICE_GROUP
   void set_service_group(
       homeassistant_service_group::HomeAssistantServiceGroup* service_group) {
     service_group_ = service_group;
   }
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group() {
     return media_player_group_;
@@ -60,6 +80,9 @@ class HomeThingMenuBase : public PollingComponent {
           media_player_group) {
     media_player_group_ = media_player_group;
   }
+#endif
+
+#ifdef USE_LIGHT_GROUP
   homeassistant_light_group::HomeAssistantLightGroup* get_light_group() {
     return light_group_;
   }
@@ -67,6 +90,9 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_light_group::HomeAssistantLightGroup* light_group) {
     light_group_ = light_group;
   }
+#endif
+
+#ifdef USE_SWITCH_GROUP
   homeassistant_switch_group::HomeAssistantSwitchGroup* get_switch_group() {
     return switch_group_;
   }
@@ -74,6 +100,9 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group) {
     switch_group_ = switch_group;
   }
+#endif
+
+#ifdef USE_SENSOR_GROUP
   homeassistant_sensor_group::HomeAssistantSensorGroup* get_sensor_group() {
     return sensor_group_;
   }
@@ -81,6 +110,7 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group) {
     sensor_group_ = sensor_group;
   }
+#endif
 
   void draw_menu_screen();
   void topMenu();
@@ -170,13 +200,29 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
+
+#ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_{
       nullptr};
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
+#endif
+
+#ifdef USE_LIGHT_GROUP
   homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
+#endif
+
+#ifdef USE_SWITCH_GROUP
   homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_{nullptr};
+#endif
+
+#ifdef USE_SENSOR_GROUP
   homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_{nullptr};
+#endif
+
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();

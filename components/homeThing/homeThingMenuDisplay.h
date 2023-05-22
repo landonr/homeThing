@@ -13,11 +13,27 @@
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+
+#ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#endif
+
+#ifdef USE_SENSOR_GROUP
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
+#endif
+
+#ifdef USE_SERVICE_GROUP
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
+#endif
+
+#ifdef USE_SWITCH_GROUP
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
+#endif
+
 #include "esphome/core/component.h"
 
 namespace esphome {
@@ -51,15 +67,20 @@ class HomeThingMenuDisplay {
     boot_->set_animation(animation);
   }
 
+#ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group) {
     media_player_group_ = media_player_group;
   }
+#endif
+
+#ifdef USE_LIGHT_GROUP
   void set_light_group(
       homeassistant_light_group::HomeAssistantLightGroup* light_group) {
     light_group_ = light_group;
   }
+#endif
   HomeThingMenuBoot* boot_{nullptr};
 
  private:
@@ -89,9 +110,15 @@ class HomeThingMenuDisplay {
   HomeThingMenuHeader* header_{nullptr};
   HomeThingMenuNowPlaying* now_playing_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
+
+#ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
+#endif
+
+#ifdef USE_LIGHT_GROUP
   homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
+#endif
   const char* const TAG = "homething.menu.display";
 };
 
