@@ -48,6 +48,7 @@ void HomeThingMenuBase::setup() {
   }
 #endif
 
+#ifdef USE_SWITCH_GROUP
   if (this->switch_group_) {
     this->switch_group_->add_on_state_callback([this](float state) {
       switch (activeMenuState) {
@@ -59,7 +60,9 @@ void HomeThingMenuBase::setup() {
       }
     });
   }
+#endif
 
+#ifdef USE_SENSOR_GROUP
   if (this->sensor_group_) {
     this->sensor_group_->add_on_state_callback([this](float state) {
       switch (activeMenuState) {
@@ -71,6 +74,7 @@ void HomeThingMenuBase::setup() {
       }
     });
   }
+#endif
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
@@ -183,9 +187,11 @@ bool HomeThingMenuBase::selectMenu() {
       }
       break;
     case switchesMenu:
+#ifdef USE_SWITCH_GROUP
       if (switch_group_->selectSwitch(menuIndex)) {
         topMenu();
       }
+#endif
       break;
     default:
       ESP_LOGW(TAG, "menu state is bad but its an enum");
@@ -232,9 +238,13 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
     out.push_back(lightsMenu);
   }
 #endif
+
+#ifdef USE_SWITCH_GROUP
   if (switch_group_) {
     out.push_back(switchesMenu);
   }
+#endif
+
   out.push_back(sleepMenu);
   out.push_back(aboutMenu);
   return out;
@@ -345,7 +355,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #ifdef USE_LIGHT_GROUP
       return lightTitleSwitches(light_group_->lights);
 #endif
-      return {};
+      break;
     case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
       if (light_group_->getActiveLight() != NULL) {
@@ -356,7 +366,10 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
       break;
     case switchesMenu:
+#ifdef USE_SWITCH_GROUP
       return switchTitleSwitches(switch_group_->switches);
+#endif
+      break;
     case nowPlayingMenu:
       return speakerNowPlayingMenuStates(media_player_group_->active_player_);
     case groupMenu: {
@@ -367,12 +380,13 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return groupTitleString(media_player_group_->media_players_);
     }
     case bootMenu:
-      return {};
+      break;
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
-      return {};
+      break;
   }
+  return {};
 }
 
 void HomeThingMenuBase::selectNowPlayingMenu() {

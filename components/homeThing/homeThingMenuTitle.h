@@ -558,6 +558,7 @@ static MenuTitlePlayer headerMediaPlayerTitle(
 
 // switch
 
+#ifdef USE_SWITCH_GROUP
 static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
     const std::vector<homeassistant_switch::HomeAssistantSwitch*>& switches) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
@@ -571,6 +572,8 @@ static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
   }
   return out;
 }
+
+#endif  // switch
 
 // service
 
