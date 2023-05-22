@@ -113,7 +113,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       case LightMenuTitleType: {
 #ifdef USE_LIGHT_GROUP
         auto lightTitle =
-            c std::static_pointer_cast<MenuTitleLight>((*menuTitles)[i]);
+            std::static_pointer_cast<MenuTitleLight>((*menuTitles)[i]);
         if (lightTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
                                       lightTitle->indentLine());

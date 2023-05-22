@@ -254,6 +254,18 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
 // light
 #ifdef USE_LIGHT_GROUP
 
+class MenuTitleLight : public MenuTitleToggle {
+ public:
+  Color lightColor;
+
+  MenuTitleLight(std::string new_name, std::string newEntityId,
+                 MenuTitleLeftIcon newLeftIconState,
+                 MenuTitleRightIcon newRightIconState, Color newLightColor)
+      : MenuTitleToggle{new_name, newEntityId, newLeftIconState,
+                        newRightIconState, LightMenuTitleType},
+        lightColor(newLightColor) {}
+};
+
 static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches(
     const std::vector<homeassistant_light::HomeAssistantLightState*>& lights) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
@@ -323,18 +335,6 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
   }
   return out;
 }
-
-class MenuTitleLight : public MenuTitleToggle {
- public:
-  Color lightColor;
-
-  MenuTitleLight(std::string new_name, std::string newEntityId,
-                 MenuTitleLeftIcon newLeftIconState,
-                 MenuTitleRightIcon newRightIconState, Color newLightColor)
-      : MenuTitleToggle{new_name, newEntityId, newLeftIconState,
-                        newRightIconState, LightMenuTitleType},
-        lightColor(newLightColor) {}
-};
 
 #endif  // light
 
