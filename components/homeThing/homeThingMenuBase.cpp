@@ -230,9 +230,11 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
   if (service_group_) {
     out.push_back(scenesMenu);
   }
+#ifdef USE_SENSOR_GROUP
   if (sensor_group_) {
     out.push_back(sensorsMenu);
   }
+#endif
 #ifdef USE_LIGHT_GROUP
   if (light_group_) {
     out.push_back(lightsMenu);
@@ -350,7 +352,10 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     case scenesMenu:
       return sceneTitleStrings(service_group_->services);
     case sensorsMenu:
+#ifdef USE_SENSOR_GROUP
       return sensorTitles(sensor_group_->sensors);
+#endif
+      break;
     case lightsMenu:
 #ifdef USE_LIGHT_GROUP
       return lightTitleSwitches(light_group_->lights);

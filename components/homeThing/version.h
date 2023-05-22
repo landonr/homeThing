@@ -4,7 +4,7 @@
 
 namespace esphome {
 namespace homething_menu_base {
-static const std::string COMPONENTS_HOMETHING_VERSION = "lando/optional-components/239-2023-05-21";
+static const std::string COMPONENTS_HOMETHING_VERSION = "lando/optional-components/240-2023-05-21";
 }
 }  // namespace esphome
 #endif  // COMPONENTS_HOMETHING_VERSION_H_

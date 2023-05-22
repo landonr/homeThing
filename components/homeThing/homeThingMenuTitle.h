@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
+
 #ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #endif
@@ -11,6 +11,7 @@
 #endif
 
 #ifdef USE_SENSOR_GROUP
+#include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
 #endif
 
@@ -666,7 +667,7 @@ static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
 
 #endif  // light
 
-// sensor
+#ifdef USE_SENSOR_GROUP  // sensor
 
 static std::vector<std::shared_ptr<MenuTitleBase>> sensorTitles(
     const std::vector<esphome::homeassistant::HomeassistantTextSensor*>&
@@ -684,6 +685,8 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sensorTitles(
   }
   return out;
 }
+
+#endif  // sensor
 
 // now playing bottom menu
 
