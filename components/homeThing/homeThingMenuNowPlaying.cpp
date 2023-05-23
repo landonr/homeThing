@@ -1,5 +1,8 @@
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include "homeThingMenuNowPlaying.h"
-#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
+#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
@@ -117,10 +120,11 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
     const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu) {
-  if (option_menu && drawOptionMenuAndStop(option_menu)) {
+  if (option_menu && drawOptionMenuAndStop(option_menu) ||
+      display_state_ == nullptr) {
     return;
   }
-  if (active_menu->size() > 0 &&
+  if (active_menu && active_menu->size() > 0 &&
       display_state_->get_draw_now_playing_bottom_menu()) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }
@@ -426,3 +430,4 @@ int HomeThingMenuNowPlaying::drawTextWrapped(
 }
 }  // namespace homething_menu_base
 }  // namespace esphome
+#endif

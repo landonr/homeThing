@@ -103,12 +103,15 @@ bool HomeThingMenuDisplay::draw_menu_titles(
                 display_state_->get_margin_size();
         break;
       case SourceMenuTitleType:
+#ifdef USE_MEDIA_PLAYER_GROUP
         animating =
             draw_menu_title(menuState, i, titleName, yPos, false) || animating;
         yPos += display_state_->get_font_medium()->get_baseline() +
                 display_state_->get_margin_size();
+#endif
         break;
       case LightMenuTitleType: {
+#ifdef USE_LIGHT_GROUP
         auto lightTitle =
             std::static_pointer_cast<MenuTitleLight>((*menuTitles)[i]);
         if (lightTitle != NULL) {
@@ -120,6 +123,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
+#endif
         break;
       }
       case ToggleMenuTitleType: {
@@ -137,6 +141,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         break;
       }
       case SliderMenuTitleType: {
+#ifdef USE_LIGHT_GROUP
         bool lightDetailSelected = light_group_->lightDetailSelected;
         auto item = std::static_pointer_cast<MenuTitleSlider>((*menuTitles)[i]);
         SliderSelectionState sliderState =
@@ -149,9 +154,11 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         yPos += (display_state_->get_font_medium()->get_baseline() +
                  display_state_->get_margin_size()) *
                 2;
+#endif
         break;
       }
       case PlayerMenuTitleType: {
+#ifdef USE_MEDIA_PLAYER_GROUP
         auto playerTitle =
             std::static_pointer_cast<MenuTitlePlayer>((*menuTitles)[i]);
         if (playerTitle != NULL) {
@@ -167,6 +174,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           yPos += display_state_->get_font_medium()->get_baseline() +
                   display_state_->get_margin_size();
         }
+#endif
         break;
       }
     }
@@ -197,7 +205,9 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   bool animating = false;
   switch (*activeMenuState) {
     case nowPlayingMenu:
+#ifdef USE_MEDIA_PLAYER_GROUP
       now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
+#endif
       break;
     default:
       animating = draw_menu_titles(active_menu, menuIndex);
@@ -258,6 +268,7 @@ void HomeThingMenuDisplay::drawLeftTitleIcon(
     case OffMenuTitleLeftIcon:
     case OnMenuTitleLeftIcon:
       if (toggleTitle->titleType == LightMenuTitleType) {
+#ifdef USE_LIGHT_GROUP
         auto lightToggleTitle =
             std::static_pointer_cast<MenuTitleLight>(toggleTitle);
         if (lightToggleTitle != NULL) {
@@ -269,6 +280,7 @@ void HomeThingMenuDisplay::drawLeftTitleIcon(
               lightToggleTitle->leftIconState == OnMenuTitleLeftIcon, yPos,
               lightColor, menuState == i);
         }
+#endif
       } else {
         refactor_->drawSwitch(toggleTitle->leftIconState == OnMenuTitleLeftIcon,
                               yPos);
@@ -303,6 +315,7 @@ void HomeThingMenuDisplay::drawRightTitleIcon(int menuTitleSize,
 }
 
 // private
+#ifdef USE_MEDIA_PLAYER_GROUP
 void HomeThingMenuDisplay::drawTitleImage(
     int characterCount, int yPos,
     const homeassistant_media_player::RemotePlayerState& titleState,
@@ -342,6 +355,7 @@ void HomeThingMenuDisplay::drawTitleImage(
       break;
   }
 }
+#endif
 
 void HomeThingMenuDisplay::updateDisplay(bool force) {
   // displayUpdate->updateDisplay(force);

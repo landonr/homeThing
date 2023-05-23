@@ -1,3 +1,4 @@
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include "homeThingMenuNowPlayingOptionMenu.h"
 
 namespace esphome {
@@ -76,6 +77,7 @@ HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
   }
   return nullptr;
 }
-
 }  // namespace homething_menu_base
 }  // namespace esphome
+
+#endif

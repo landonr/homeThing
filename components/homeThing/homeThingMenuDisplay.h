@@ -8,16 +8,34 @@
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeThing/homeThingMenuRefactor.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+
+#ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#endif
+
+#ifdef USE_SENSOR_GROUP
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
+#endif
+
+#ifdef USE_SERVICE_GROUP
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
+#endif
+
+#ifdef USE_SWITCH_GROUP
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
+#endif
+
+#include "esphome/components/light/light_output.h"
+#include "esphome/components/light/light_state.h"
 #include "esphome/core/component.h"
 
 namespace esphome {
@@ -29,13 +47,11 @@ class HomeThingMenuDisplay {
                        HomeThingMenuDisplayState* display_state,
                        HomeThingMenuTextHelpers* text_helpers,
                        HomeThingMenuRefactor* refactor,
-                       HomeThingMenuNowPlaying* now_playing,
                        HomeThingMenuHeader* header, HomeThingMenuBoot* boot)
       : display_buffer_(display_buffer),
         display_state_(display_state),
         text_helpers_(text_helpers),
         refactor_(refactor),
-        now_playing_(now_playing),
         header_(header),
         boot_(boot) {}
   void setup();
@@ -51,23 +67,27 @@ class HomeThingMenuDisplay {
     boot_->set_animation(animation);
   }
 
+#ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group) {
     media_player_group_ = media_player_group;
   }
+  void set_now_playing(HomeThingMenuNowPlaying* now_playing) {
+    now_playing_ = now_playing;
+  }
+#endif
+
+#ifdef USE_LIGHT_GROUP
   void set_light_group(
       homeassistant_light_group::HomeAssistantLightGroup* light_group) {
     light_group_ = light_group;
   }
+#endif
   HomeThingMenuBoot* boot_{nullptr};
 
  private:
   int scrollTop = 0;
-  void drawTitleImage(
-      int characterCount, int yPos,
-      const homeassistant_media_player::RemotePlayerState& titleState,
-      bool selected);
   bool draw_menu_titles(
       const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
       const int menuIndex);
@@ -87,11 +107,21 @@ class HomeThingMenuDisplay {
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-  HomeThingMenuNowPlaying* now_playing_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
+
+#ifdef USE_MEDIA_PLAYER_GROUP
+  void drawTitleImage(
+      int characterCount, int yPos,
+      const homeassistant_media_player::RemotePlayerState& titleState,
+      bool selected);
+  HomeThingMenuNowPlaying* now_playing_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
+#endif
+
+#ifdef USE_LIGHT_GROUP
   homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
+#endif
   const char* const TAG = "homething.menu.display";
 };
 

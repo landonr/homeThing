@@ -1,5 +1,6 @@
-
 #pragma once
+
+#ifdef USE_MEDIA_PLAYER_GROUP
 
 #include <algorithm>
 #include <memory>
@@ -11,7 +12,6 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
-
 namespace esphome {
 namespace homething_menu_base {
 class HomeThingMenuNowPlaying {
@@ -72,3 +72,4 @@ class HomeThingMenuNowPlaying {
 };
 }  // namespace homething_menu_base
 }  // namespace esphome
+#endif

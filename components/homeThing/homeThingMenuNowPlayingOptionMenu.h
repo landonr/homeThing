@@ -1,6 +1,6 @@
-
 #pragma once
 
+#ifdef USE_MEDIA_PLAYER_GROUP
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -35,3 +35,5 @@ class HomeThingMenuNowPlayingOptionMenu {
 };
 }  // namespace homething_menu_base
 }  // namespace esphome
+
+#endif

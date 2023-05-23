@@ -27,6 +27,69 @@ int HomeThingMenuHeader::drawHeaderIcon(std::string title, int xPos,
          display_state_->get_margin_size() / 2;
 }
 
+void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
+                                          const MenuStates activeMenuState) {
+  int xPos = 2;
+  switch (activeMenuState) {
+    case rootMenu:
+    case backlightMenu:
+    case sleepMenu:
+    case nowPlayingMenu: {
+#ifdef USE_MEDIA_PLAYER_GROUP
+      if (media_player_group_ && media_player_group_->active_player_) {
+        auto headerMenuTitle =
+            headerMediaPlayerTitle(media_player_group_->active_player_);
+        xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
+        drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
+      } else {
+        drawHeaderTitleWithString("Remote", xPos);
+      }
+#endif
+      break;
+    }
+    case sourcesMenu:
+      drawHeaderTitleWithString("Sources", xPos);
+      break;
+    case groupMenu:
+      drawHeaderTitleWithString("Group Speakers", xPos);
+      break;
+    case mediaPlayersMenu:
+      drawHeaderTitleWithString("Media Players", xPos);
+      break;
+    case scenesMenu:
+      drawHeaderTitleWithString("Scenes/Actions", xPos);
+      break;
+    case lightsMenu:
+      drawHeaderTitleWithString("Lights", xPos);
+      break;
+    case lightsDetailMenu: {
+#ifdef USE_LIGHT_GROUP
+      if (light_group_->getActiveLight() != NULL) {
+        auto activeLight = light_group_->getActiveLight();
+        auto headerMenuTitle = activeLight->get_name();
+        int newXPos = drawHeaderIcon(activeLight->icon(), xPos,
+                                     activeLight->rgbLightColor());
+        drawHeaderTitleWithString(headerMenuTitle, newXPos + 1);
+      } else {
+        drawHeaderTitleWithString("LightDetail", xPos);
+      }
+#endif
+      break;
+    }
+    case switchesMenu:
+      drawHeaderTitleWithString("Switches", xPos);
+      break;
+    case sensorsMenu:
+      drawHeaderTitleWithString("Sensors", xPos);
+      break;
+    case bootMenu:
+      drawHeaderTitleWithString(display_state_->get_boot_device_name(), xPos,
+                                yPosOffset);
+      break;
+  }
+}
+
+#ifdef USE_MEDIA_PLAYER_GROUP
 int HomeThingMenuHeader::drawPlayPauseIcon(int oldXPos,
                                            MenuTitlePlayer menuTitle) {
   int yPos = getHeaderTextYPos(0);
@@ -63,64 +126,6 @@ int HomeThingMenuHeader::drawPlayPauseIcon(int oldXPos,
   }
   return xPos + display_state_->get_icon_size() +
          display_state_->get_margin_size() / 2;
-}
-
-void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
-                                          const MenuStates activeMenuState) {
-  int xPos = 2;
-  switch (activeMenuState) {
-    case rootMenu:
-    case backlightMenu:
-    case sleepMenu:
-    case nowPlayingMenu: {
-      if (media_player_group_ && media_player_group_->active_player_) {
-        auto headerMenuTitle =
-            headerMediaPlayerTitle(media_player_group_->active_player_);
-        xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-        drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
-      } else {
-        drawHeaderTitleWithString("Remote", xPos);
-      }
-      break;
-    }
-    case sourcesMenu:
-      drawHeaderTitleWithString("Sources", xPos);
-      break;
-    case groupMenu:
-      drawHeaderTitleWithString("Group Speakers", xPos);
-      break;
-    case mediaPlayersMenu:
-      drawHeaderTitleWithString("Media Players", xPos);
-      break;
-    case scenesMenu:
-      drawHeaderTitleWithString("Scenes/Actions", xPos);
-      break;
-    case lightsMenu:
-      drawHeaderTitleWithString("Lights", xPos);
-      break;
-    case lightsDetailMenu: {
-      if (light_group_->getActiveLight() != NULL) {
-        auto activeLight = light_group_->getActiveLight();
-        auto headerMenuTitle = activeLight->get_name();
-        int newXPos = drawHeaderIcon(activeLight->icon(), xPos,
-                                     activeLight->rgbLightColor());
-        drawHeaderTitleWithString(headerMenuTitle, newXPos + 1);
-      } else {
-        drawHeaderTitleWithString("LightDetail", xPos);
-      }
-      break;
-    }
-    case switchesMenu:
-      drawHeaderTitleWithString("Switches", xPos);
-      break;
-    case sensorsMenu:
-      drawHeaderTitleWithString("Sensors", xPos);
-      break;
-    case bootMenu:
-      drawHeaderTitleWithString(display_state_->get_boot_device_name(), xPos,
-                                yPosOffset);
-      break;
-  }
 }
 
 int HomeThingMenuHeader::drawShuffle(int oldXPos, int yPosOffset) {
@@ -201,6 +206,25 @@ int HomeThingMenuHeader::drawRepeat(int oldXPos, int yPosOffset) {
   return xPos - display_state_->get_margin_size() / 2;
 }
 
+int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
+  if (media_player_group_ == nullptr ||
+      media_player_group_->active_player_ == nullptr) {
+    return oldXPos;
+  }
+  if (!display_state_->get_draw_volume_level()) {
+    return oldXPos;
+  }
+  int xPos = oldXPos - display_state_->get_margin_size() / 2;
+  int yPos = getHeaderTextYPos(yPosOffset);
+  display_buffer_->printf(
+      xPos, yPos, display_state_->get_font_small(),
+      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
+      display::TextAlign::TOP_RIGHT, "%.0f%%",
+      media_player_group_->getVolumeLevel());
+  return xPos;
+}
+#endif
+
 int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
   if (!display_state_->get_draw_header_time() || !esp_time_->now().is_valid()) {
     return oldXPos;
@@ -259,24 +283,6 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
   return xPos - display_state_->get_margin_size();
 }
 
-int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
-  if (media_player_group_ == nullptr ||
-      media_player_group_->active_player_ == nullptr) {
-    return oldXPos;
-  }
-  if (!display_state_->get_draw_volume_level()) {
-    return oldXPos;
-  }
-  int xPos = oldXPos - display_state_->get_margin_size() / 2;
-  int yPos = getHeaderTextYPos(yPosOffset);
-  display_buffer_->printf(
-      xPos, yPos, display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      display::TextAlign::TOP_RIGHT, "%.0f%%",
-      media_player_group_->getVolumeLevel());
-  return xPos;
-}
-
 void HomeThingMenuHeader::drawHeader(int yPosOffset,
                                      const MenuStates activeMenuState) {
   display_buffer_->rectangle(
@@ -286,12 +292,15 @@ void HomeThingMenuHeader::drawHeader(int yPosOffset,
   drawHeaderTitle(yPosOffset, activeMenuState);
   int xPos =
       display_buffer_->get_width() - display_state_->get_margin_size() / 2;
-  drawHeaderVolumeLevel(
-      drawHeaderTime(
-          drawShuffle(drawRepeat(drawBattery(xPos, yPosOffset), yPosOffset),
-                      yPosOffset),
-          yPosOffset),
-      yPosOffset);
+  xPos = drawBattery(xPos, yPosOffset);
+#ifdef USE_MEDIA_PLAYER_GROUP
+  xPos = drawRepeat(xPos, yPosOffset);
+  xPos = drawShuffle(xPos, yPosOffset);
+#endif
+  xPos = drawHeaderTime(xPos, yPosOffset);
+#ifdef USE_MEDIA_PLAYER_GROUP
+  xPos = drawHeaderVolumeLevel(xPos, yPosOffset);
+#endif
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

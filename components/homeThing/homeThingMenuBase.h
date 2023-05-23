@@ -10,16 +10,32 @@
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
-#include "esphome/components/homeThing/homeThingOptionMenu.h"
+
+#ifdef USE_LIGHT_GROUP
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
+#include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
+#include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#endif
+
+#ifdef USE_SENSOR_GROUP
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
+#endif
+
+#ifdef USE_SERVICE_GROUP
 #include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
+#endif
+
+#ifdef USE_SWITCH_GROUP
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
+#endif
+
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 
@@ -43,14 +59,21 @@ class HomeThingMenuBase : public PollingComponent {
     sleep_switch_ = sleep_switch;
   }
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
+
+#ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
     return service_group_;
   }
+#endif
 
+#ifdef USE_SERVICE_GROUP
   void set_service_group(
       homeassistant_service_group::HomeAssistantServiceGroup* service_group) {
     service_group_ = service_group;
   }
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group() {
     return media_player_group_;
@@ -60,6 +83,9 @@ class HomeThingMenuBase : public PollingComponent {
           media_player_group) {
     media_player_group_ = media_player_group;
   }
+#endif
+
+#ifdef USE_LIGHT_GROUP
   homeassistant_light_group::HomeAssistantLightGroup* get_light_group() {
     return light_group_;
   }
@@ -67,6 +93,9 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_light_group::HomeAssistantLightGroup* light_group) {
     light_group_ = light_group;
   }
+#endif
+
+#ifdef USE_SWITCH_GROUP
   homeassistant_switch_group::HomeAssistantSwitchGroup* get_switch_group() {
     return switch_group_;
   }
@@ -74,6 +103,9 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group) {
     switch_group_ = switch_group;
   }
+#endif
+
+#ifdef USE_SENSOR_GROUP
   homeassistant_sensor_group::HomeAssistantSensorGroup* get_sensor_group() {
     return sensor_group_;
   }
@@ -81,6 +113,7 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group) {
     sensor_group_ = sensor_group;
   }
+#endif
 
   void draw_menu_screen();
   void topMenu();
@@ -94,10 +127,12 @@ class HomeThingMenuBase : public PollingComponent {
   void idleMenu(bool force);
 
   // controls
+#ifdef USE_MEDIA_PLAYER_GROUP
   bool select_media_player_feature(
       homeassistant_media_player::MediaPlayerSupportedFeature* feature);
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
+#endif
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
   void buttonPressUp();
@@ -165,36 +200,56 @@ class HomeThingMenuBase : public PollingComponent {
   switch_::Switch* sleep_switch_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
-  HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
-      new HomeThingMenuNowPlayingOptionMenu();
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
+
+#ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_{
       nullptr};
+#endif
+
+#ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
+  void selectNowPlayingMenu();
+  HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
+      new HomeThingMenuNowPlayingOptionMenu();
+#endif
+
+#ifdef USE_LIGHT_GROUP
   homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
+#endif
+
+#ifdef USE_SWITCH_GROUP
   homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_{nullptr};
+#endif
+
+#ifdef USE_SENSOR_GROUP
   homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_{nullptr};
+#endif
+
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();
   std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
-  void selectNowPlayingMenu();
   std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
     reload_menu_items_ = true;
+#ifdef USE_MEDIA_PLAYER_GROUP
     circle_menu_->clear_active_menu();
+#endif
     if (activeMenuState != bootMenu) {
       ESP_LOGD(TAG, "reset_menu: reset animation %d", activeMenuState);
       animation_->resetAnimation();
     }
+#ifdef USE_MEDIA_PLAYER_GROUP
     if (media_player_group_) {
       media_player_group_->newSpeakerGroupParent = NULL;
       media_player_group_->set_active_player_source_index(-1);
     }
+#endif
   }
   void turn_on_backlight();
 
