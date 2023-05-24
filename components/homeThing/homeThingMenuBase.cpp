@@ -599,6 +599,48 @@ void HomeThingMenuBase::buttonPressSelectHold() {
   }
 }
 
+#ifdef USE_LIGHT_GROUP
+bool HomeThingMenuBase::sliderScrollBack() {
+  if (light_group_->lightDetailSelected && menuIndex == 0 &&
+      light_group_->getActiveLight() != NULL) {
+    light_group_->decBrightness();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->decTemperature();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->decColor();
+    debounceUpdateDisplay();
+    return true;
+  }
+  return false;
+}
+
+bool HomeThingMenuBase::sliderScrollForward() {
+  if (light_group_->lightDetailSelected && menuIndex == 0 &&
+      light_group_->getActiveLight() != NULL) {
+    light_group_->incBrightness();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->incTemperature();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->incColor();
+    debounceUpdateDisplay();
+    return true;
+  }
+  return false;
+}
+#endif
+
 void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   if (!button_press_and_continue())
     return;
@@ -615,22 +657,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
         return;
       case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
-        if (light_group_->lightDetailSelected && menuIndex == 0 &&
-            light_group_->getActiveLight() != NULL) {
-          light_group_->decBrightness();
-          debounceUpdateDisplay();
+        if (sliderScrollBack())
           return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->decTemperature();
-          debounceUpdateDisplay();
-          return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->decColor();
-          debounceUpdateDisplay();
-          return;
-        }
 #endif
       default:
         break;
@@ -643,18 +671,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   } else {
 // 3 button
 #ifdef USE_LIGHT_GROUP
-    if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
-        light_group_->lightDetailSelected) {
-      if (menuIndex == 1) {
-        light_group_->incBrightness();
-      } else if (menuIndex == 2) {
-        light_group_->incTemperature();
-      } else {
-        selectMenu();
-      }
-      debounceUpdateDisplay();
+    if (sliderScrollBack())
       return;
-    }
 #endif
 
     if (menuIndex > 0) {
@@ -686,24 +704,9 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
         return;
       case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
-        if (light_group_->lightDetailSelected && menuIndex == 0 &&
-            light_group_->getActiveLight() != NULL) {
-          light_group_->incBrightness();
-          debounceUpdateDisplay();
+        if (sliderScrollForward())
           return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->incTemperature();
-          debounceUpdateDisplay();
-          return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->incColor();
-          debounceUpdateDisplay();
-          return;
-        }
 #endif
-        return;
       default:
         break;
     }
@@ -716,18 +719,8 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
   } else {
 // 3 button
 #ifdef USE_LIGHT_GROUP
-    if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
-        light_group_->lightDetailSelected) {
-      if (menuIndex == 1) {
-        light_group_->decBrightness();
-      } else if (menuIndex == 2) {
-        light_group_->decTemperature();
-      } else {
-        selectMenu();
-      }
-      debounceUpdateDisplay();
+    if (sliderScrollForward())
       return;
-    }
 #endif
 
     if (menuIndex < menu_titles.size() - 1) {
