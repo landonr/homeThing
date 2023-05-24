@@ -703,6 +703,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 }
 
 void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
+  if (menu_settings_->get_mode() == MENU_MODE_3_BUTTON && skipBootPressed())
+    return;
   if (!button_press_and_continue())
     return;
   rotary_ = rotary;
@@ -731,7 +733,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
       menuIndex = 0;
     }
   } else {
-// 3 button
+    // 3 button
 #ifdef USE_LIGHT_GROUP
     if (sliderScrollForward())
       return;
