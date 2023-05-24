@@ -1,10 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-
-#ifdef USE_LIGHT_GROUP
-#include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
-#endif
+#include "esphome/core/color.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
@@ -22,7 +19,6 @@
 #ifdef USE_SWITCH_GROUP
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #endif
-#include "esphome/core/color.h"
 #include "esphome/core/log.h"
 #include "version.h"
 
@@ -250,93 +246,6 @@ static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
 }
 
 #endif  // service
-
-// light
-#ifdef USE_LIGHT_GROUP
-
-class MenuTitleLight : public MenuTitleToggle {
- public:
-  Color lightColor;
-
-  MenuTitleLight(std::string new_name, std::string newEntityId,
-                 MenuTitleLeftIcon newLeftIconState,
-                 MenuTitleRightIcon newRightIconState, Color newLightColor)
-      : MenuTitleToggle{new_name, newEntityId, newLeftIconState,
-                        newRightIconState, LightMenuTitleType},
-        lightColor(newLightColor) {}
-};
-
-static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleSwitches(
-    const std::vector<homeassistant_light::HomeAssistantLightState*>& lights) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& light : lights) {
-    auto output = static_cast<homeassistant_light::HomeAssistantLight*>(
-        light->get_output());
-    ESP_LOGD(MENU_TITLE_TAG, "state %d (%s)", output->get_state(),
-             light->get_name().c_str());
-    MenuTitleLeftIcon state =
-        output->get_state() ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-    MenuTitleRightIcon rightIcon = output->supportsBrightness()
-                                       ? ArrowMenuTitleRightIcon
-                                       : NoMenuTitleRightIcon;
-    out.push_back(std::make_shared<MenuTitleLight>(
-        light->get_name(), "", state, rightIcon, output->rgbLightColor()));
-  }
-  return out;
-}
-
-static std::shared_ptr<MenuTitleSlider> makeSlider(
-    std::string title, std::string unit, std::string entity_id_, int min,
-    int max, int value, int displayUnitMin, int displayUnitMax) {
-  int displayValue = value;
-  float oldRange = max - min;
-  float valueMinusMin = value - min;
-  if (value > 0) {
-    float displayNewRange = displayUnitMax - displayUnitMin;
-    displayValue =
-        static_cast<float>(((valueMinusMin * displayNewRange) / oldRange)) +
-        displayUnitMin;
-  }
-
-  // float newMin = display_state_->get_slider_margin_size();
-  float newMin = 8;
-  // float newRange = displayWidth - 4 * newMin;
-  float newRange = 100;
-  int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
-  return std::make_shared<MenuTitleSlider>(title.c_str(), entity_id_,
-                                           NoMenuTitleRightIcon, value,
-                                           displayValue, unit, min, max);
-}
-
-static std::vector<std::shared_ptr<MenuTitleBase>> lightTitleItems(
-    homeassistant_light::HomeAssistantLight* light) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  if (light->supportsBrightness()) {
-    auto is_on = light->get_light_state_()->remote_values.is_on();
-    int brightness =
-        !is_on ? 0
-               : static_cast<int>(
-                     light->get_light_state_()->remote_values.get_brightness() *
-                     255);
-    out.push_back(makeSlider("Brightness", "%%", light->get_entity_id(), 0,
-                             MAX_BRIGHTNESS, brightness, 0, 100));
-  }
-  if (light->supportsColorTemperature()) {
-    auto max_mireds = light->get_traits().get_max_mireds();
-    auto min_mireds = light->get_traits().get_min_mireds();
-    out.push_back(makeSlider(
-        "Temperature", "K", light->get_entity_id(), min_mireds, max_mireds,
-        light->get_light_state_()->remote_values.get_color_temperature(),
-        1000000 / min_mireds, 1000000 / max_mireds));
-  }
-  if (light->supportsColor()) {
-    out.push_back(makeSlider("Color", "", light->get_entity_id(), 0, 360,
-                             light->get_hsv_color(), 0, 360));
-  }
-  return out;
-}
-
-#endif  // light
 
 #ifdef USE_SENSOR_GROUP  // sensor
 

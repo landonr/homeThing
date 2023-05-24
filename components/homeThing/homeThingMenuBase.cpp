@@ -617,17 +617,17 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 #ifdef USE_LIGHT_GROUP
         if (light_group_->lightDetailSelected && menuIndex == 0 &&
             light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->decBrightness();
+          light_group_->decBrightness();
           debounceUpdateDisplay();
           return;
         } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
                    light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->decTemperature();
+          light_group_->decTemperature();
           debounceUpdateDisplay();
           return;
         } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
                    light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->decColor();
+          light_group_->decColor();
           debounceUpdateDisplay();
           return;
         }
@@ -646,9 +646,9 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
     if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
         light_group_->lightDetailSelected) {
       if (menuIndex == 1) {
-        light_group_->getActiveLight()->incBrightness();
+        light_group_->incBrightness();
       } else if (menuIndex == 2) {
-        light_group_->getActiveLight()->incTemperature();
+        light_group_->incTemperature();
       } else {
         selectMenu();
       }
@@ -688,17 +688,17 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
 #ifdef USE_LIGHT_GROUP
         if (light_group_->lightDetailSelected && menuIndex == 0 &&
             light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->incBrightness();
+          light_group_->incBrightness();
           debounceUpdateDisplay();
           return;
         } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
                    light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->incTemperature();
+          light_group_->incTemperature();
           debounceUpdateDisplay();
           return;
         } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
                    light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->incColor();
+          light_group_->incColor();
           debounceUpdateDisplay();
           return;
         }
@@ -719,9 +719,9 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
     if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
         light_group_->lightDetailSelected) {
       if (menuIndex == 1) {
-        light_group_->getActiveLight()->decBrightness();
+        light_group_->decBrightness();
       } else if (menuIndex == 2) {
-        light_group_->getActiveLight()->decTemperature();
+        light_group_->decTemperature();
       } else {
         selectMenu();
       }
