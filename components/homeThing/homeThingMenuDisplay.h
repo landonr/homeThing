@@ -14,6 +14,7 @@
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 
 #ifdef USE_LIGHT_GROUP
+#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #endif
 

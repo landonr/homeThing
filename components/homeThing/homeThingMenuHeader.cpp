@@ -1,4 +1,7 @@
 #include "homeThingMenuHeader.h"
+#ifdef USE_LIGHT_GROUP
+#include "esphome/components/homeassistant_light_group/LightExtensions.h"
+#endif
 
 namespace esphome {
 namespace homething_menu_base {
@@ -67,8 +70,8 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       if (light_group_->getActiveLight() != NULL) {
         auto activeLight = light_group_->getActiveLight();
         auto headerMenuTitle = activeLight->get_name();
-        int newXPos = drawHeaderIcon(activeLight->icon(), xPos,
-                                     activeLight->rgbLightColor());
+        int newXPos =
+            drawHeaderIcon(icon(activeLight), xPos, rgbLightColor(activeLight));
         drawHeaderTitleWithString(headerMenuTitle, newXPos + 1);
       } else {
         drawHeaderTitleWithString("LightDetail", xPos);

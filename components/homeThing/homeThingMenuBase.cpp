@@ -599,6 +599,61 @@ void HomeThingMenuBase::buttonPressSelectHold() {
   }
 }
 
+#ifdef USE_LIGHT_GROUP
+bool HomeThingMenuBase::sliderScrollBack() {
+  if (light_group_->lightDetailSelected && menuIndex == 0 &&
+      light_group_->getActiveLight() != NULL) {
+    light_group_->decBrightness();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->decTemperature();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->decColor();
+    debounceUpdateDisplay();
+    return true;
+  }
+  return false;
+}
+
+bool HomeThingMenuBase::sliderScrollForward() {
+  if (light_group_->lightDetailSelected && menuIndex == 0 &&
+      light_group_->getActiveLight() != NULL) {
+    light_group_->incBrightness();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->incTemperature();
+    debounceUpdateDisplay();
+    return true;
+  } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
+             light_group_->getActiveLight() != NULL) {
+    light_group_->incColor();
+    debounceUpdateDisplay();
+    return true;
+  }
+  return false;
+}
+#endif
+
+bool HomeThingMenuBase::upMenu() {
+#ifdef USE_LIGHT_GROUP
+  if (light_group_ && activeMenuState == lightsDetailMenu) {
+    activeMenuState = lightsMenu;
+    light_group_->clearActiveLight();
+    reload_menu_items_ = true;
+    update_display();
+    return true;
+  }
+#endif
+  return false;
+}
+
 void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   if (!button_press_and_continue())
     return;
@@ -615,22 +670,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
         return;
       case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
-        if (light_group_->lightDetailSelected && menuIndex == 0 &&
-            light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->decBrightness();
-          debounceUpdateDisplay();
+        if (sliderScrollBack())
           return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->decTemperature();
-          debounceUpdateDisplay();
-          return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->decColor();
-          debounceUpdateDisplay();
-          return;
-        }
 #endif
       default:
         break;
@@ -643,18 +684,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   } else {
 // 3 button
 #ifdef USE_LIGHT_GROUP
-    if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
-        light_group_->lightDetailSelected) {
-      if (menuIndex == 1) {
-        light_group_->getActiveLight()->incBrightness();
-      } else if (menuIndex == 2) {
-        light_group_->getActiveLight()->incTemperature();
-      } else {
-        selectMenu();
-      }
-      debounceUpdateDisplay();
+    if (sliderScrollBack())
       return;
-    }
 #endif
 
     if (menuIndex > 0) {
@@ -662,7 +693,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
     } else if (activeMenuState == nowPlayingMenu) {
       menuIndex = menu_titles.size() - 1;
     } else if (activeMenuState == lightsDetailMenu && menuIndex == 0) {
-      activeMenuState = lightsMenu;
+      if (upMenu())
+        return;
     } else {
       topMenu();
     }
@@ -671,6 +703,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 }
 
 void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
+  if (menu_settings_->get_mode() == MENU_MODE_3_BUTTON && skipBootPressed())
+    return;
   if (!button_press_and_continue())
     return;
   rotary_ = rotary;
@@ -686,24 +720,9 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
         return;
       case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
-        if (light_group_->lightDetailSelected && menuIndex == 0 &&
-            light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->incBrightness();
-          debounceUpdateDisplay();
+        if (sliderScrollForward())
           return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 1 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->incTemperature();
-          debounceUpdateDisplay();
-          return;
-        } else if (light_group_->lightDetailSelected && menuIndex == 2 &&
-                   light_group_->getActiveLight() != NULL) {
-          light_group_->getActiveLight()->incColor();
-          debounceUpdateDisplay();
-          return;
-        }
 #endif
-        return;
       default:
         break;
     }
@@ -714,20 +733,10 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
       menuIndex = 0;
     }
   } else {
-// 3 button
+    // 3 button
 #ifdef USE_LIGHT_GROUP
-    if (activeMenuState == lightsDetailMenu && menuIndex > 0 &&
-        light_group_->lightDetailSelected) {
-      if (menuIndex == 1) {
-        light_group_->getActiveLight()->decBrightness();
-      } else if (menuIndex == 2) {
-        light_group_->getActiveLight()->decTemperature();
-      } else {
-        selectMenu();
-      }
-      debounceUpdateDisplay();
+    if (sliderScrollForward())
       return;
-    }
 #endif
 
     if (menuIndex < menu_titles.size() - 1) {
@@ -782,13 +791,10 @@ void HomeThingMenuBase::buttonPressUp() {
         reload_menu_items_ = true;
         update_display();
         return;
-      } else {
-        // if no light is selected go back to lightsMenu
-        activeMenuState = lightsMenu;
-        reload_menu_items_ = true;
-        update_display();
-        return;
       }
+      // if no light is selected go back to lightsMenu
+      if (upMenu())
+        return;
 #endif
       break;
     default:

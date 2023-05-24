@@ -133,6 +133,9 @@ class HomeThingMenuBase : public PollingComponent {
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
 #endif
+  bool sliderScrollBack();
+  bool sliderScrollForward();
+  bool upMenu();
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
   void buttonPressUp();
