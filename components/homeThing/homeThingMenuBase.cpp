@@ -641,6 +641,19 @@ bool HomeThingMenuBase::sliderScrollForward() {
 }
 #endif
 
+bool HomeThingMenuBase::upMenu() {
+#ifdef USE_LIGHT_GROUP
+  if (light_group_ && activeMenuState == lightsDetailMenu) {
+    activeMenuState = lightsMenu;
+    light_group_->clearActiveLight();
+    reload_menu_items_ = true;
+    update_display();
+    return true;
+  }
+#endif
+  return false;
+}
+
 void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   if (!button_press_and_continue())
     return;
@@ -680,7 +693,8 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
     } else if (activeMenuState == nowPlayingMenu) {
       menuIndex = menu_titles.size() - 1;
     } else if (activeMenuState == lightsDetailMenu && menuIndex == 0) {
-      activeMenuState = lightsMenu;
+      if (upMenu())
+        return;
     } else {
       topMenu();
     }
@@ -775,13 +789,10 @@ void HomeThingMenuBase::buttonPressUp() {
         reload_menu_items_ = true;
         update_display();
         return;
-      } else {
-        // if no light is selected go back to lightsMenu
-        activeMenuState = lightsMenu;
-        reload_menu_items_ = true;
-        update_display();
-        return;
       }
+      // if no light is selected go back to lightsMenu
+      if (upMenu())
+        return;
 #endif
       break;
     default:

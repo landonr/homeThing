@@ -135,6 +135,7 @@ class HomeThingMenuBase : public PollingComponent {
 #endif
   bool sliderScrollBack();
   bool sliderScrollForward();
+  bool upMenu();
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
   void buttonPressUp();
