@@ -28,6 +28,11 @@ wifi:
 external_components:
   - source:
       type: git
+      url: https://github.com/esphome/esphome
+      ref: dev
+    components: [adc, i2s_audio, microphone]
+  - source:
+      type: git
       url: https://gitlab.com/geiseri/esphome_extras.git
     refresh: 0s
     components: [axp192]
@@ -40,12 +45,12 @@ external_components:
       path: components
     components: [homeThing]
   - source:
-      type: git
-      url: https://github.com/landonr/esphome-components
-      ref: main
-    refresh: 0s
-      # type: local
-      # path: ../local_components/components
+    #   type: git
+    #   url: https://github.com/landonr/esphome-components
+    #   ref: main
+    # refresh: 0s
+      type: local
+      path: ../local_components/components
     components: [
       homeassistant_component, 
       homeassistant_switch_group, 
@@ -56,7 +61,8 @@ external_components:
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,
-      media_player_source_custom
+      media_player_source_custom,
+      MiniEncoderC
     ]
 
 
@@ -78,14 +84,43 @@ i2c:
      sda: GPIO21
      scl: GPIO22
      scan: true
+   - id: bus_b
+     sda: GPIO0
+     scl: GPIO26
+     scan: true
 
 axp192:
   id: axp
+  i2c_id: bus_a
   address: 0x34
   update_interval: 60s
   charge_voltage: 4150mV
   dcdc1_voltage: 3300mv
   dcdc3_voltage: 1.5V
+
+MiniEncoderC:
+  id: encoder
+  i2c_id: bus_b
+  # address: 0x42
+  button:
+    name: Rotary Button
+    id: rotary_button
+    on_press:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressSelect();
+  encoder:
+    name: Rotary Encoder
+    id: rotary
+    encoder_filter: 2
+    on_clockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+    on_anticlockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
 
 sensor:
     # AXP192 power management - must be present to initialize TFT power on
@@ -93,6 +128,7 @@ sensor:
     axp192_id: axp
     id: batteryPercent
     type: battery_power
+    name: "${friendly_name} Battery Percent"
 
 # internal LED
 light:
@@ -103,10 +139,9 @@ light:
     internal: True
   - platform: monochromatic
     output: axp_ldo3
-    restore_mode: ALWAYS_ON
-    name: "Backlight"
+    name: "${friendly_name} Backlight"
     id: backlight
-    internal: True
+    restore_mode: ALWAYS_ON 
 
 output:
   - platform: ledc
@@ -152,13 +187,15 @@ binary_sensor:
     name: Button B
     on_press:
       then:
-        lambda: |-
+        # - voice_assistant.start:
+        - lambda: |-
             id(homeThingMenu)->buttonPressSelect();
             auto call = id(led1).turn_on();
             call.set_transition_length(0);
             call.perform();
     on_release:
       then:
+        # - voice_assistant.stop:
         - light.turn_off: led1
 
 deep_sleep:
@@ -173,8 +210,8 @@ switch:
     name: LDO3
     internal: true
   - platform: template
+    name: "${friendly_name} Sleep Toggle"
     id: sleep_toggle
-    internal: true
     optimistic: true
     on_turn_on:
       then:
@@ -191,11 +228,13 @@ spi:
 
 homeThing:
   id: homeThingMenu
+  settings:
+    mode: 3_button
+  sleep_switch: sleep_toggle
+  backlight: backlight
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
-  sensor_group: sensor_group_component
-  switch_group: switch_group_component
   display: my_display
   on_redraw:
     then:
@@ -217,7 +256,7 @@ display:
     cs_pin: GPIO5
     dc_pin: GPIO23
     reset_pin: GPIO18
-    rotation: 0
+    rotation: 90
     update_interval: 3600s
     lambda: |-
       // if (idleTime < 0) {
@@ -228,3 +267,16 @@ display:
 
       id(homeThingMenu)->draw_menu_screen();
       return;
+
+i2s_audio:
+  id: bus_i2s
+  i2s_lrclk_pin: G26
+  i2s_bclk_pin: G0
+microphone:
+  - platform: i2s_audio
+    i2s_din_pin: GPIO34
+    i2s_audio_id: bus_i2s
+    adc_type: external
+    pdm: true
+    id: mic
+# voice_assistant:
