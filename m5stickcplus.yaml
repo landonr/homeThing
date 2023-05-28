@@ -70,7 +70,7 @@ packages:
   device_base: !include common/device_base.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
-  home_light: !include homeConfig/light.yaml
+  # home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
   menu_group: !include homeConfig/menu_group.yaml
   fonts: !include common/fonts.yaml
@@ -99,18 +99,21 @@ axp192:
   dcdc3_voltage: 1.5V
 
 MiniEncoderC:
-  id: encoder
+  id: encoder_base
   i2c_id: bus_b
   # address: 0x42
   button:
     name: Rotary Button
     id: rotary_button
+    internal: True
+    internal: True
     on_press:
       then:
         - lambda: |-
             id(homeThingMenu)->buttonPressSelect();
-  encoder:
+    name: "${friendly_name} Rotary Encoder"
     name: Rotary Encoder
+    internal: True
     id: rotary
     encoder_filter: 3
     on_clockwise:
@@ -132,6 +135,11 @@ sensor:
 
 # internal LED
 light:
+  - platform: MiniEncoderC
+    name: "${friendly_name} Encoder Light"
+    id: encoder_light
+    i2c_id: bus_b
+    internal: False
   - platform: monochromatic
     output:  builtin_led
     name: Led
@@ -226,6 +234,12 @@ spi:
   clk_pin: GPIO13
   mosi_pin: GPIO15
 
+
+homeassistant_light_group:
+  id: stick_light_group_component
+  lights:
+    - id: encoder_light
+
 homeThing:
   id: homeThingMenu
   settings:
@@ -233,7 +247,7 @@ homeThing:
   sleep_switch: sleep_toggle
   backlight: backlight
   media_player_group: media_group_component
-  light_group: light_group_component
+  light_group: stick_light_group_component
   service_group: service_group_component
   display: my_display
   on_redraw:
