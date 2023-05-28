@@ -70,7 +70,7 @@ packages:
   device_base: !include common/device_base.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
-  # home_light: !include homeConfig/light.yaml
+  home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
   menu_group: !include homeConfig/menu_group.yaml
   fonts: !include common/fonts.yaml
@@ -233,12 +233,6 @@ spi:
   clk_pin: GPIO13
   mosi_pin: GPIO15
 
-
-homeassistant_light_group:
-  id: stick_light_group_component
-  lights:
-    - id: encoder_light
-
 homeThing:
   id: homeThingMenu
   settings:
@@ -246,7 +240,7 @@ homeThing:
   sleep_switch: sleep_toggle
   backlight: backlight
   media_player_group: media_group_component
-  light_group: stick_light_group_component
+  light_group: light_group_component
   service_group: service_group_component
   display: my_display
   on_redraw:
