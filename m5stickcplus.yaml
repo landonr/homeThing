@@ -45,12 +45,12 @@ external_components:
       path: components
     components: [homeThing]
   - source:
-    #   type: git
-    #   url: https://github.com/landonr/esphome-components
-    #   ref: main
-    # refresh: 0s
-      type: local
-      path: ../local_components/components
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+      # type: local
+      # path: ../local_components/components
     components: [
       homeassistant_component, 
       homeassistant_switch_group, 
@@ -112,7 +112,7 @@ MiniEncoderC:
   encoder:
     name: Rotary Encoder
     id: rotary
-    encoder_filter: 2
+    encoder_filter: 3
     on_clockwise:
       - lambda: |-
           id(homeThingMenu)->buttonPressWakeUpDisplay();
@@ -256,7 +256,7 @@ display:
     cs_pin: GPIO5
     dc_pin: GPIO23
     reset_pin: GPIO18
-    rotation: 90
+    rotation: 0
     update_interval: 3600s
     lambda: |-
       // if (idleTime < 0) {
