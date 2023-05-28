@@ -45,12 +45,12 @@ external_components:
       path: components
     components: [homeThing]
   - source:
-      type: git
-      url: https://github.com/landonr/esphome-components
-      ref: main
-    refresh: 0s
-      # type: local
-      # path: ../local_components/components
+    #   type: git
+    #   url: https://github.com/landonr/esphome-components
+    #   ref: main
+    # refresh: 0s
+      type: local
+      path: ../local_components/components
     components: [
       homeassistant_component, 
       homeassistant_switch_group, 
@@ -103,18 +103,17 @@ MiniEncoderC:
   i2c_id: bus_b
   # address: 0x42
   button:
-    name: Rotary Button
+    name: "${friendly_name} Rotary Button"
     id: rotary_button
-    internal: True
     internal: True
     on_press:
       then:
         - lambda: |-
             id(homeThingMenu)->buttonPressSelect();
+  encoder:
     name: "${friendly_name} Rotary Encoder"
-    name: Rotary Encoder
-    internal: True
     id: rotary
+    internal: True
     encoder_filter: 3
     on_clockwise:
       - lambda: |-
@@ -282,15 +281,15 @@ display:
       id(homeThingMenu)->draw_menu_screen();
       return;
 
-i2s_audio:
-  id: bus_i2s
-  i2s_lrclk_pin: G26
-  i2s_bclk_pin: G0
-microphone:
-  - platform: i2s_audio
-    i2s_din_pin: GPIO34
-    i2s_audio_id: bus_i2s
-    adc_type: external
-    pdm: true
-    id: mic
+# i2s_audio:
+#   id: bus_i2s
+#   i2s_lrclk_pin: G26
+#   i2s_bclk_pin: G0
+# microphone:
+#   - platform: i2s_audio
+#     i2s_din_pin: GPIO34
+#     i2s_audio_id: bus_i2s
+#     adc_type: external
+#     pdm: true
+#     id: mic
 # voice_assistant:

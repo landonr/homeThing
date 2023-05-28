@@ -25,20 +25,15 @@ wifi:
 external_components:
   - source:
       type: git
-      url: https://github.com/esphome/esphome
-      ref: dev
-    components: [adc, i2s_audio, microphone, voice_assistant, media_player]
-  - source:
-      type: git
       url: https://github.com/ssieb/custom_components
     components: [ ip5306 ]
   - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: main
-    refresh: 0s
-      # type: local
-      # path: components
+    #   type: git
+    #   url: https://github.com/landonr/homeThing
+    #   ref: main
+    # refresh: 0s
+      type: local
+      path: components
     components: [homeThing]
   - source:
       type: git
@@ -62,13 +57,13 @@ external_components:
 
 packages:
   device_base: !include common/device_base.yaml
-  # home_media_player: !include homeConfig/media_player.yaml
+  home_media_player: !include homeConfig/media_player.yaml
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
   menu_group: !include homeConfig/menu_group.yaml
-  # fonts: !include common/fonts.yaml
-  # icon_fonts: !include common/icon_fonts.yaml
+  fonts: !include common/fonts.yaml
+  icon_fonts: !include common/icon_fonts.yaml
 
 substitutions:
   friendly_name: "homeThingFireRemote"
@@ -102,47 +97,33 @@ deep_sleep:
   wakeup_pin_mode: INVERT_WAKEUP
 
 binary_sensor:
-  # - platform: gpio
-  #   id: M5_BtnA
-  #   pin:
-  #     number: 39
-  #     inverted: true
-  #   on_click:
-  #     then:
-  #       - lambda: |-
-  #           id(homeThingMenu)->rotaryScrollCounterClockwise(0);
-  # - platform: gpio
-  #   id: M5_BtnB
-  #   pin:
-  #     number: 38
-  #     inverted: true
-  #   on_click:
-  #     min_length: 5ms
-  #     max_length: 350ms
-  #     then:
-  #     - lambda: |-
-  #         id(homeThingMenu)->buttonPressSelect();
-  #   on_multi_click:
-  #   - timing:
-  #       - ON for at least 0.5s
-  #     then:
-  #     - lambda: |-
-  #         id(homeThingMenu)->buttonPressSelectHold();
+  - platform: gpio
+    id: M5_BtnA
+    pin:
+      number: 39
+      inverted: true
+    on_click:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->rotaryScrollCounterClockwise(0);
+  - platform: gpio
+    id: M5_BtnB
+    pin:
+      number: 38
+      inverted: true
+    on_click:
+      then:
+        - lambda: |-
+           id(homeThingMenu)->buttonPressSelect();
   - platform: gpio
     id: M5_BtnC
     pin:
       number: 37
       inverted: true
-    on_press:
-      # - microphone.capture:
-      - voice_assistant.start:
-    on_release:
-      - voice_assistant.stop:
-      # - microphone.stop_capture:
-    # on_click:
-    #   then:
-    #     - lambda: |-
-    #         id(homeThingMenu)->rotaryScrollClockwise(0);
+    on_click:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->rotaryScrollClockwise(0);
 
 # We can still control the backlight independently
 switch:
@@ -166,12 +147,11 @@ light:
     name: ${friendly_name} Backlight
     id: backlight
     restore_mode: ALWAYS_ON
-
-  - platform: neopixelbus
-    type: GRB
-    variant: 800KBPS
+  - platform: fastled_clockless
+    chipset: SK6812
     pin: GPIO15
     num_leds: 10
+    rgb_order: GRB
     id: side_light
     name: ${friendly_name} Remote Light
     restore_mode: ALWAYS_OFF
@@ -182,104 +162,57 @@ light:
           speed: 20
           width: 15
 
-homeassistant_light_group:
-  id: fire_light_group_component
-  lights:
-    - id: light_rgb_lights
-    - id: side_light
-
 spi:
   clk_pin: 18
   mosi_pin: 23
   miso_pin: 19
 
-# homeThing:
-#   id: homeThingMenu
-#   settings:
-#     mode: 3_button
-#   sleep_switch: sleep_toggle
-#   backlight: backlight
-#   battery:
-#     battery_percent: battery_percent
-#     charging: connected
-#   # media_player_group: media_group_component
-#   light_group: fire_light_group_component
-#   # service_group: service_group_component
-#   # sensor_group: sensor_group_component
-#   # switch_group: switch_group_component
-#   display: my_display
-#   on_redraw:
-#     then:
-#       component.update: my_display
-#   display_state:
-#     font_small: small_font
-#     font_medium: medium_font
-#     font_large: large_font
-#     font_large_heavy: large_heavy_font
-#     font_material_large: material_font_large
-#     font_material_small: material_font_small
-#     font_logo: home_thing_logo
-#     header_height: 24
-#     margin_size: 8
-#     slider_margin_size: 6
-#     scroll_bar_width: 8
-#     bottom_bar_margin: 8
-#     now_playing_max_lines: 5
-#     draw_now_playing_bottom_menu: true
-#     draw_battery_level: true
-#     dark_mode: true
-#     draw_volume_level: false
-#     draw_header_time: true
+homeThing:
+  id: homeThingMenu
+  settings:
+    mode: 3_button
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  battery:
+    battery_percent: battery_percent
+    charging: connected
+  media_player_group: media_group_component
+  light_group: light_group_component
+  service_group: service_group_component
+  sensor_group: sensor_group_component
+  switch_group: switch_group_component
+  display: my_display
+  on_redraw:
+    then:
+      component.update: my_display
+  display_state:
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_heavy_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small
+    font_logo: home_thing_logo
+    header_height: 24
+    margin_size: 8
+    slider_margin_size: 6
+    scroll_bar_width: 8
+    bottom_bar_margin: 8
+    now_playing_max_lines: 5
+    draw_now_playing_bottom_menu: true
+    draw_battery_level: true
+    dark_mode: true
+    draw_volume_level: false
+    draw_header_time: true
 
-# display:
-#   - platform: ili9xxx
-#     model: M5STACK
-#     cs_pin: 14
-#     dc_pin: 27
-#     reset_pin: 33
-#     id: my_display
-#     update_interval: 3600s 
-#     lambda: |-
-#       id(homeThingMenu)->draw_menu_screen();
-#       return;
-
-i2s_audio:
-  i2s_lrclk_pin: GPIO0
-  i2s_bclk_pin: GPIO12
-
-media_player:
-  - platform: i2s_audio
-    id: media_out
-    name: ${friendly_name} Media Player
-    # dac_type: external
-    # i2s_dout_pin: GPIO25
-    # mode: stereo
-    dac_type: internal
-    mode: right
-
-# speaker:
-#   - platform: i2s_audio
-#     id: speak
-    # dac_type: external
-    # i2s_dout_pin: GPIO25
-    # mode: stereo
-    # dac_type: internal
-    # mode: right
-
-microphone:
-  - platform: i2s_audio
-    id: mic
-    # adc_type: external
-    # i2s_din_pin: GPIO34
-    # pdm: true
-    adc_type: internal
-    adc_pin: GPIO34
-    # on_data:
-    #   - lambda: |-
-    #       id(speak).play(x.data(), x.size());
-    #       ESP_LOGI("main", "Received %d bytes", x.size());
-
-voice_assistant:
-  microphone: mic
-  # speaker: speak
-  
+display:
+  - platform: ili9xxx
+    model: M5STACK
+    cs_pin: 14
+    dc_pin: 27
+    reset_pin: 33
+    id: my_display
+    update_interval: 3600s 
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
