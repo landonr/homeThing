@@ -27,6 +27,7 @@ Supports many different hardware configurations:
 		* Roku
 		* Kodi
 		* Samsung
+		* Android TV
 * Light control, switch control
 * Custom media sources
 	* Spotify recent playlists
