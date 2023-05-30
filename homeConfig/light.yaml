@@ -23,3 +23,13 @@ light:
     id: light_bedroom_lights
     entity_id: light.bedroom_lights
     name: Bedroom
+
+homeassistant_light_group:
+  id: light_group_component
+  lights:
+    - id: light_rgb_lights
+    - id: light_living_room_lights
+    - id: light_desk_lamp
+    - id: light_kitchen_lights
+    - id: light_bathroom_lights
+    - id: light_bedroom_lights

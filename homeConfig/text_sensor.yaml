@@ -19,3 +19,12 @@ text_sensor:
     entity_id: "sensor.particulate_matter_2_5um_concentration"
     name: "Kitchen Air"
     id: sensor_kitchen_air
+
+homeassistant_sensor_group:
+  id: sensor_group_component
+  sensors:
+    - id: sensor_weather
+    - id: sensor_temperature
+    - id: sensor_washing_machine
+    - id: sensor_plant_moisture
+    - id: sensor_kitchen_air
