@@ -206,10 +206,10 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
   int maxAnimationDuration = 0;
   switch (get_boot_menu_state()) {
     case BOOT_MENU_STATE_API:
-      display_buffer_->printf(
+      text_helpers_->drawTextWrapped(
           xPos, yPos, display_state_->get_font_large_heavy(),
           display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "api connecting...");
+          display::TextAlign::TOP_CENTER, "api connecting...", 4);
       break;
     case BOOT_MENU_STATE_PLAYERS:
     case BOOT_MENU_STATE_COMPLETE: {
@@ -217,25 +217,27 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
       if (media_player_group_ && media_player_group_->totalPlayers() > 0) {
         int totalPlayers = media_player_group_->totalPlayers();
         int loadedPlayers = media_player_group_->loadedPlayers;
-        display_buffer_->printf(
+        auto playersLoadedString = to_string(loadedPlayers) + "/" +
+                                   to_string(totalPlayers) +
+                                   " media players loaded";
+        text_helpers_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, "%d/%d players loaded",
-            loadedPlayers, totalPlayers);
+            display::TextAlign::TOP_CENTER, playersLoadedString, 5);
       } else {
-        display_buffer_->printf(
+        text_helpers_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, "api connected!");
+            display::TextAlign::TOP_CENTER, "api connected!", 4);
       }
 #endif
       break;
     }
     case BOOT_MENU_STATE_NETWORK:
-      display_buffer_->printf(
+      text_helpers_->drawTextWrapped(
           xPos, yPos, display_state_->get_font_large_heavy(),
           display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "wifi connecting...");
+          display::TextAlign::TOP_CENTER, "wifi connecting...", 4);
       break;
     case BOOT_MENU_STATE_START:
       maxAnimationDuration =

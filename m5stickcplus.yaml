@@ -1,5 +1,5 @@
 esphome:
-  name: m5stickc
+  name: m5stickcplus
   on_boot:
     priority: 600.0
     then:
@@ -239,6 +239,7 @@ homeThing:
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
+  switch_group: switch_group_component
   display: my_display
   on_redraw:
     then:
