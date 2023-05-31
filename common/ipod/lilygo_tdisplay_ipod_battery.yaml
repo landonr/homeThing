@@ -58,7 +58,7 @@ sensor:
     name: "${friendly_name} Battery Percent"
     id: battery_percent_public
     unit_of_measurement: '%'
-    update_interval: 1s
+    update_interval: 10s
     lambda: |-
       return id(battery_percent).state;
 

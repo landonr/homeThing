@@ -214,14 +214,14 @@ class MenuTitleSlider : public MenuTitleBase {
 
 #ifdef USE_SWITCH_GROUP
 static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
-    const std::vector<homeassistant_switch::HomeAssistantSwitch*>& switches) {
+    const std::vector<switch_::Switch*>& switches) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
   for (const auto switchObject : switches) {
     ESP_LOGD(MENU_TITLE_TAG, "switch state %d", switchObject->state);
     MenuTitleLeftIcon state =
         switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
     out.push_back(std::make_shared<MenuTitleToggle>(
-        switchObject->get_name(), switchObject->get_entity_id(), state,
+        switchObject->get_name(), switchObject->get_object_id(), state,
         NoMenuTitleRightIcon));
   }
   return out;

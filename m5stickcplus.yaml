@@ -1,5 +1,5 @@
 esphome:
-  name: m5stickc
+  name: m5stickcplus
   on_boot:
     priority: 600.0
     then:
@@ -26,6 +26,11 @@ wifi:
     password: !secret wifi_fallback_password
 
 external_components:
+  - source:
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: dev
+    components: [adc, i2s_audio, microphone]
   - source:
       type: git
       url: https://gitlab.com/geiseri/esphome_extras.git
@@ -56,7 +61,8 @@ external_components:
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,
-      media_player_source_custom
+      media_player_source_custom,
+      MiniEncoderC
     ]
 
 
@@ -66,7 +72,7 @@ packages:
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
-  menu_group: !include homeConfig/menu_group.yaml
+  menu_group: !include homeConfig/services.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 
@@ -78,24 +84,61 @@ i2c:
      sda: GPIO21
      scl: GPIO22
      scan: true
+   - id: bus_b
+     sda: GPIO0
+     scl: GPIO26
+     scan: true
 
 axp192:
   id: axp
+  i2c_id: bus_a
   address: 0x34
   update_interval: 60s
   charge_voltage: 4150mV
   dcdc1_voltage: 3300mv
   dcdc3_voltage: 1.5V
 
+MiniEncoderC:
+  id: encoder_base
+  i2c_id: bus_b
+  # address: 0x42
+  button:
+    name: "${friendly_name} Rotary Button"
+    id: rotary_button
+    internal: True
+    on_press:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressSelect();
+  encoder:
+    name: "${friendly_name} Rotary Encoder"
+    id: rotary
+    internal: True
+    encoder_filter: 3
+    on_clockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+    on_anticlockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
+
 sensor:
     # AXP192 power management - must be present to initialize TFT power on
   - platform: axp192
     axp192_id: axp
-    id: batteryPercent
+    id: battery_percent
     type: battery_power
+    name: "${friendly_name} Battery Percent"
 
 # internal LED
 light:
+  - platform: MiniEncoderC
+    name: "${friendly_name} Encoder Light"
+    id: encoder_light
+    i2c_id: bus_b
+    internal: False
   - platform: monochromatic
     output:  builtin_led
     name: Led
@@ -103,10 +146,9 @@ light:
     internal: True
   - platform: monochromatic
     output: axp_ldo3
-    restore_mode: ALWAYS_ON
-    name: "Backlight"
+    name: "${friendly_name} Backlight"
     id: backlight
-    internal: True
+    restore_mode: ALWAYS_ON 
 
 output:
   - platform: ledc
@@ -124,11 +166,6 @@ binary_sensor:
     type: charge_indicate
     id: axp_charger
     name: "Charger"
-    on_state:
-      then:
-        lambda: |-
-          // charging = x;
-          int i = 0;
   - platform: gpio
     pin:
       number: GPIO37
@@ -144,7 +181,6 @@ binary_sensor:
     on_release:
       then:
         - light.turn_off: led1
-        
   - platform: gpio
     pin:
       number: GPIO39
@@ -152,13 +188,15 @@ binary_sensor:
     name: Button B
     on_press:
       then:
-        lambda: |-
+        # - voice_assistant.start:
+        - lambda: |-
             id(homeThingMenu)->buttonPressSelect();
             auto call = id(led1).turn_on();
             call.set_transition_length(0);
             call.perform();
     on_release:
       then:
+        # - voice_assistant.stop:
         - light.turn_off: led1
 
 deep_sleep:
@@ -173,8 +211,8 @@ switch:
     name: LDO3
     internal: true
   - platform: template
+    name: "${friendly_name} Sleep Toggle"
     id: sleep_toggle
-    internal: true
     optimistic: true
     on_turn_on:
       then:
@@ -191,10 +229,16 @@ spi:
 
 homeThing:
   id: homeThingMenu
+  settings:
+    mode: 3_button
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  # battery:
+  #   battery_percent: battery_percent
+  #   charging: axp_charger
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
-  sensor_group: sensor_group_component
   switch_group: switch_group_component
   display: my_display
   on_redraw:
@@ -220,11 +264,18 @@ display:
     rotation: 0
     update_interval: 3600s
     lambda: |-
-      // if (idleTime < 0) {
-      //   ESP_LOGD("drawing menu", "turning on");
-      //   id(backlight).turn_on();
-      //   idleTime = 0;
-      // }
-
       id(homeThingMenu)->draw_menu_screen();
       return;
+
+# i2s_audio:
+#   id: bus_i2s
+#   i2s_lrclk_pin: G26
+#   i2s_bclk_pin: G0
+# microphone:
+#   - platform: i2s_audio
+#     i2s_din_pin: GPIO34
+#     i2s_audio_id: bus_i2s
+#     adc_type: external
+#     pdm: true
+#     id: mic
+# voice_assistant:

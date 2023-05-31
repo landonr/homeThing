@@ -329,8 +329,8 @@ MENU_BOOT_IDS = [
     CONF_MEDIA_PLAYERS
 ]
 
-async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
-    menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header)
+async def menu_boot_to_code(config, display_buffer, display_state, menu_header, text_helpers):
+    menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header, text_helpers)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
     return menu_boot
 
@@ -362,7 +362,7 @@ async def menu_display_to_code(config, display_buffer):
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
     await ids_to_code(config, menu_header, MENU_HEADER_IDS)
     await battery_to_code(config, menu_header)
-    menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header)
+    menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header, text_helpers)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
     menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, menu_header, menu_boot)

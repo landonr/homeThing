@@ -212,7 +212,9 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
         display::TextAlign::TOP_CENTER, *mediaArtistWrappedText, maxLines);
   }
   delete mediaArtistWrappedText;
-  if (mediaTitleWrappedText->size() > 0) {
+  if (mediaTitleWrappedText->size() > 0 &&
+      media_player_group_->mediaTitleString() !=
+          media_player_group_->mediaSubtitleString()) {
     yPos = yPos + display_state_->get_margin_size();
     drawTextWrapped(
         display_buffer_->get_width() / 2, yPos,

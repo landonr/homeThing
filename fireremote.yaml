@@ -61,7 +61,7 @@ packages:
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
-  menu_group: !include homeConfig/menu_group.yaml
+  menu_group: !include homeConfig/services.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 

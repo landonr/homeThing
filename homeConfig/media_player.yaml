@@ -79,3 +79,21 @@ media_player:
     entity_id: "media_player.kodi_desktop"
     id: media_player_kodi
     type: kodi
+
+homeassistant_media_player:
+  id: media_group_component
+  media_players:
+    - id: media_player_beam
+      type: speaker
+    - id: media_player_office
+      type: speaker
+    - id: media_player_tv
+      type: roku
+    - id: media_player_kitchen
+      type: speaker
+    - id: media_player_spotify
+      type: speaker
+    - id: media_player_tower
+      type: speaker
+    - id: media_player_kodi
+      type: kodi

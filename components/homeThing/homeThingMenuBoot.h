@@ -7,6 +7,7 @@
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
+#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
@@ -52,10 +53,12 @@ class HomeThingMenuBoot {
  public:
   HomeThingMenuBoot(display::DisplayBuffer* new_display_buffer,
                     HomeThingMenuDisplayState* new_display_state,
-                    HomeThingMenuHeader* new_header)
+                    HomeThingMenuHeader* new_header,
+                    HomeThingMenuTextHelpers* new_text_helpers)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        header_(new_header) {}
+        header_(new_header),
+        text_helpers_(new_text_helpers) {}
   bool drawBootSequence(const MenuStates activeMenuState);
   BootMenuSkipState bootSequenceCanSkip(const MenuStates activeMenuState);
   void set_api_connected(binary_sensor::BinarySensor* api_connected) {
@@ -93,6 +96,7 @@ class HomeThingMenuBoot {
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
+  HomeThingMenuTextHelpers* text_helpers_{nullptr};
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
