@@ -76,6 +76,14 @@ color:
     green_int: 45
     blue_int: 209
 
+script:
+  - id: feed_cat
+    then:
+      - homeassistant.service:
+          service: button.press
+          data:
+            entity_id: "button.catfeeder_node_feed_single"
+
 homeThing:
   id: homeThingMenu
   settings:
@@ -88,8 +96,8 @@ homeThing:
   media_player_group: media_group_component
   light_group: light_group_component
   service_group: service_group_component
-  sensor_group: sensor_group_component
-  switch_group: switch_group_component
+  # sensor_group: sensor_group_component
+  # switch_group: switch_group_component
   display: my_display
   on_redraw:
     then:
@@ -113,6 +121,15 @@ homeThing:
     text_sensors:
       - id: sensor_kitchen_air
       - id: sensor_temperature
+    commands:
+      - name: "desk nudge up"
+        command:
+          - lambda: |-
+              ESP_LOGI("homeassistant_service_group", "nudge up");
+          - homeassistant.service:
+              service: button.press
+              data:
+                entity_id: "button.desk_position_nudge_up"
 
 spi:
   clk_pin: GPIO18

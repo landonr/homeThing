@@ -3,12 +3,33 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/text_sensor/text_sensor.h"
+#include "esphome/components/script/script.h"
 #include "version.h"
 
 namespace esphome {
 namespace homething_menu_base {
 
 static const char* const MENU_TITLE_SCREEN_TAG = "homething.menutitle.screen";
+
+class MenuCommand : public EntityBase {
+ public:
+  void on_command() { this->on_command_callbacks_.call(); }
+  void add_on_command_callback(std::function<void()>&& callback) {
+    this->on_command_callbacks_.add(std::move(callback));
+  }
+  
+  std::string get_name() const {
+    return name_;
+  }
+  
+  void set_name(std::string val) {
+    this->name_ = val;
+  }
+
+ private:
+  CallbackManager<void()> on_command_callbacks_{};
+  std::string name_;
+};
 
 class HomeThingMenuScreen : public Component {
  public:
@@ -25,6 +46,10 @@ class HomeThingMenuScreen : public Component {
     text_sensors.push_back(new_text_sensor);
     // new_text_sensor->add_on_state_callback(
     //     [this, new_text_sensor](std::string state) { this->publish_state(0); });
+  }
+
+  void register_command(MenuCommand* new_command) {
+    menu_commands_.push_back(new_command);
   }
 
   std::vector<std::shared_ptr<MenuTitleBase>> menu_titles() {
@@ -56,6 +81,17 @@ class HomeThingMenuScreen : public Component {
           switchObject->get_name(), switchObject->get_object_id(), state,
           NoMenuTitleRightIcon));
     }
+
+    for (auto& command : menu_commands_) {
+      if (command->get_name() != "") {
+        out.push_back(std::make_shared<MenuTitleBase>(
+            command->get_name(), "",
+            NoMenuTitleRightIcon));
+      } else {
+        out.push_back(std::make_shared<MenuTitleBase>(command->get_object_id(), "",
+                                                      NoMenuTitleRightIcon));
+      }
+    }
     return out;
   }
 
@@ -81,6 +117,13 @@ class HomeThingMenuScreen : public Component {
       switchObject->toggle();
       return true;
     }
+    index -= switches.size();
+    if (index < menu_commands_.size()) {
+      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
+      auto command = menu_commands_[index];
+      command->on_command();
+      return true;
+    }
     return false;
   }
 
@@ -88,6 +131,7 @@ class HomeThingMenuScreen : public Component {
   std::string name_;
   std::vector<switch_::Switch*> switches;
   std::vector<text_sensor::TextSensor*> text_sensors;
+  std::vector<MenuCommand*> menu_commands_;
 };
 }  // namespace homething_menu_base
 }  // namespace esphome
