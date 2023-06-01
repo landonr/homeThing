@@ -208,6 +208,11 @@ bool HomeThingMenuBase::selectMenu() {
       }
 #endif
       break;
+    case settingsMenu:
+      if (menu_screen_->select_menu(menuIndex)) {
+        update_display();
+      }
+      break;
     default:
       ESP_LOGW(TAG, "menu state is bad but its an enum");
       return false;
@@ -266,8 +271,7 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
   }
 #endif
 
-  out.push_back(sleepMenu);
-  out.push_back(aboutMenu);
+  out.push_back(settingsMenu);
   return out;
 }
 
@@ -293,15 +297,18 @@ bool HomeThingMenuBase::selectRootMenu() {
     case scenesMenu:
       activeMenuState = scenesMenu;
       break;
-    case backlightMenu:
-      topMenu();
-      sleep_display();
-      return false;
-    case sleepMenu:
-      sleep_switch_->turn_on();
-      return false;
+    // case backlightMenu:
+    //   topMenu();
+    //   sleep_display();
+    //   return false;
+    // case sleepMenu:
+    //   sleep_switch_->turn_on();
+    //   return false;
     case sensorsMenu:
       activeMenuState = sensorsMenu;
+      break;
+    case settingsMenu:
+      activeMenuState = settingsMenu;
       break;
     case lightsDetailMenu:
     case groupMenu:
@@ -419,6 +426,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     }
     case bootMenu:
       break;
+    case settingsMenu:
+      return menu_screen_->menu_titles();
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menuTitleForType(activeMenuState)->get_name().c_str());
@@ -1016,8 +1025,7 @@ void HomeThingMenuBase::buttonPressScreenRight() {
 #endif
   switch (activeMenuState) {
     case rootMenu:
-    case backlightMenu:
-    case sleepMenu:
+    case settingsMenu:
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       media_player_group_->selectNextMediaPlayer();
@@ -1202,10 +1210,6 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
     activeMenuState = nowPlayingMenu;
   } else if (screenName == "sources") {
     activeMenuState = sourcesMenu;
-  } else if (screenName == "backlight") {
-    activeMenuState = backlightMenu;
-  } else if (screenName == "sleep") {
-    activeMenuState = sleepMenu;
   } else if (screenName == "mediaPlayers") {
     activeMenuState = mediaPlayersMenu;
   } else if (screenName == "lights") {

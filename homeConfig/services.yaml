@@ -6,7 +6,7 @@ homeassistant_service_group:
         - homeassistant.service:
             service: button.press
             data:
-              entity_id: "button.catfeeder_d1_feed_single"
+              entity_id: "button.catfeeder_node_feed_single"
     - text: "desk down"
       command:
         - lambda: |-

@@ -10,6 +10,7 @@
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
+#include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
@@ -45,8 +46,11 @@ namespace homething_menu_base {
 class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(HomeThingMenuSettings* menu_settings,
-                    HomeThingMenuDisplay* menu_display)
-      : menu_settings_(menu_settings), menu_display_(menu_display) {}
+                    HomeThingMenuDisplay* menu_display,
+                    HomeThingMenuScreen* menu_screen)
+      : menu_settings_(menu_settings),
+        menu_display_(menu_display),
+        menu_screen_(menu_screen) {}
   void setup();
 
   void set_charging(binary_sensor::BinarySensor* charging) {
@@ -206,6 +210,7 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
+  HomeThingMenuScreen* menu_screen_{nullptr};
 
 #ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_{

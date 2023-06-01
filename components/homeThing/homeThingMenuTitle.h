@@ -39,9 +39,7 @@ enum MenuStates {
   switchesMenu,
   nowPlayingMenu,
   sensorsMenu,
-  backlightMenu,
-  sleepMenu,
-  aboutMenu
+  settingsMenu
 };
 
 enum MenuTitleLeftIcon {
@@ -59,10 +57,6 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Now Playing";
     case sourcesMenu:
       return "Sources";
-    case backlightMenu:
-      return "Backlight";
-    case sleepMenu:
-      return "Sleep";
     case mediaPlayersMenu:
       return "Media Players";
     case lightsMenu:
@@ -81,8 +75,8 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Sensors";
     case bootMenu:
       return "Boot";
-    case aboutMenu:
-      return COMPONENTS_HOMETHING_VERSION;
+    case settingsMenu:
+      return "Settings";
   }
   return "";
 }
@@ -93,10 +87,6 @@ static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
       return ArrowMenuTitleRightIcon;
     case sourcesMenu:
       return ArrowMenuTitleRightIcon;
-    case backlightMenu:
-      return NoMenuTitleRightIcon;
-    case sleepMenu:
-      return NoMenuTitleRightIcon;
     case mediaPlayersMenu:
       return ArrowMenuTitleRightIcon;
     case lightsMenu:
