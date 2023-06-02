@@ -46,11 +46,9 @@ namespace homething_menu_base {
 class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(HomeThingMenuSettings* menu_settings,
-                    HomeThingMenuDisplay* menu_display,
-                    HomeThingMenuScreen* menu_screen)
+                    HomeThingMenuDisplay* menu_display)
       : menu_settings_(menu_settings),
-        menu_display_(menu_display),
-        menu_screen_(menu_screen) {}
+        menu_display_(menu_display) {}
   void setup();
 
   void set_charging(binary_sensor::BinarySensor* charging) {
@@ -63,6 +61,11 @@ class HomeThingMenuBase : public PollingComponent {
     sleep_switch_ = sleep_switch;
   }
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
+
+  void register_screen(HomeThingMenuScreen* new_screen) {
+    new_screen->set_index(menu_screens_.size());
+    menu_screens_.push_back(new_screen);
+  }
 
 #ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
@@ -124,7 +127,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool selectMenu();
   bool selectMenuHold();
   bool selectRootMenu();
-  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType);
+  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType, int index);
   void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();
@@ -202,6 +205,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool display_can_sleep();
 
   int idleTime = -2;
+  int static_menu_titles = 0;
   MenuStates activeMenuState = bootMenu;
   light::LightState* backlight_{nullptr};
   switch_::Switch* sleep_switch_{nullptr};
@@ -210,7 +214,8 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
-  HomeThingMenuScreen* menu_screen_{nullptr};
+  std::vector<HomeThingMenuScreen*> menu_screens_;
+  HomeThingMenuScreen* active_menu_screen{nullptr};
 
 #ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_{

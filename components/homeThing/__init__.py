@@ -269,8 +269,8 @@ MENU_SCREEN_SCHEMA = cv.Schema(
             cv.Length(min=1),
         ),
     },
-    cv.has_at_least_one_key(CONF_SWITCHES,  CONF_TEXT_SENSORS)
-)
+    cv.has_at_least_one_key(CONF_SWITCHES,  CONF_TEXT_SENSORS, CONF_COMMANDS)
+).extend(cv.COMPONENT_SCHEMA)
 
 CONFIG_SCHEMA =  cv.All(
     cv.Schema(
@@ -430,8 +430,7 @@ async def menu_display_to_code(config, display_buffer):
     return menu_display
 
 async def menu_screen_to_code(config):
-    menu_screen = cg.new_Pvariable(config[CONF_ID])
-    cg.add(menu_screen.set_name(config[CONF_NAME]))
+    menu_screen = cg.new_Pvariable(config[CONF_ID], config[CONF_NAME])
 
     for conf in config.get(CONF_SWITCHES, []):
         new_switch = await cg.get_variable(conf[CONF_ID])
@@ -468,9 +467,12 @@ async def to_code(config):
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
 
-    menu_screen = await menu_screen_to_code(config[CONF_SCREENS][0])
-    menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display, menu_screen)
+    menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display)
     await cg.register_component(menu, config)
+
+    for conf in config.get(CONF_SCREENS, []):
+        menu_screen = await menu_screen_to_code(conf)
+        cg.add(menu.register_screen(menu_screen))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

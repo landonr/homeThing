@@ -114,22 +114,36 @@ homeThing:
     font_material_small: material_font_small
     font_logo: home_thing_logo
   screens:
-    name: settings
-    switches:
-      - id: "oven_fan_switch"
-      - id: "restart_switch"
-    text_sensors:
-      - id: sensor_kitchen_air
-      - id: sensor_temperature
-    commands:
-      - name: "desk nudge up"
-        command:
-          - lambda: |-
-              ESP_LOGI("homeassistant_service_group", "nudge up");
-          - homeassistant.service:
-              service: button.press
-              data:
-                entity_id: "button.desk_position_nudge_up"
+    - name: desk screen
+      commands:
+        - name: "desk nudge up"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_up"
+        - name: "desk nudge down"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_down"
+    - name: settings screen
+      switches:
+        - id: "oven_fan_switch"
+        - id: "restart_switch"
+      text_sensors:
+        - id: sensor_kitchen_air
+        - id: sensor_temperature
+      commands:
+        - name: "desk nudge up"
+          command:
+            - lambda: |-
+                ESP_LOGI("homeassistant_service_group", "nudge up");
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_up"
 
 spi:
   clk_pin: GPIO18

@@ -31,19 +31,23 @@ class MenuCommand : public EntityBase {
   std::string name_;
 };
 
-class HomeThingMenuScreen : public Component {
+class HomeThingMenuScreen {
  public:
+  HomeThingMenuScreen(std::string name)
+      : name_(name) {}
   void set_name(std::string name) { name_ = name; }
   std::string get_name() { return name_; }
+  void set_index(int index) { index_ = index; }
+  int get_index() { return index_; }
 
   void register_switch(switch_::Switch* new_switch) {
-    switches.push_back(new_switch);
+    switches_.push_back(new_switch);
     // new_switch->add_on_state_callback(
     //     [this, new_switch](bool state) { this->publish_state(0); });
   }
 
   void register_text_sensor(text_sensor::TextSensor* new_text_sensor) {
-    text_sensors.push_back(new_text_sensor);
+    text_sensors_.push_back(new_text_sensor);
     // new_text_sensor->add_on_state_callback(
     //     [this, new_text_sensor](std::string state) { this->publish_state(0); });
   }
@@ -60,7 +64,7 @@ class HomeThingMenuScreen : public Component {
     auto versionString = COMPONENTS_HOMETHING_VERSION;
     out.push_back(std::make_shared<MenuTitleBase>(versionString, "",
                                                   NoMenuTitleRightIcon));
-    for (const auto textSensor : text_sensors) {
+    for (const auto textSensor : text_sensors_) {
       ESP_LOGD(MENU_TITLE_SCREEN_TAG, "text sensor state %s",
                textSensor->state.c_str());
       if (textSensor->get_name() != "") {
@@ -73,7 +77,7 @@ class HomeThingMenuScreen : public Component {
       }
     }
 
-    for (const auto switchObject : switches) {
+    for (const auto switchObject : switches_) {
       ESP_LOGD(MENU_TITLE_SCREEN_TAG, "switch state %d", switchObject->state);
       MenuTitleLeftIcon state =
           switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
@@ -106,18 +110,18 @@ class HomeThingMenuScreen : public Component {
       return false;
     }
     index -= 1;
-    if (index < text_sensors.size()) {
+    if (index < text_sensors_.size()) {
       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
       return false;
     }
-    index -= text_sensors.size();
-    if (index < switches.size()) {
+    index -= text_sensors_.size();
+    if (index < switches_.size()) {
       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
-      auto switchObject = switches[index];
+      auto switchObject = switches_[index];
       switchObject->toggle();
       return true;
     }
-    index -= switches.size();
+    index -= switches_.size();
     if (index < menu_commands_.size()) {
       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
       auto command = menu_commands_[index];
@@ -128,9 +132,10 @@ class HomeThingMenuScreen : public Component {
   }
 
  private:
+  int index_;
   std::string name_;
-  std::vector<switch_::Switch*> switches;
-  std::vector<text_sensor::TextSensor*> text_sensors;
+  std::vector<switch_::Switch*> switches_;
+  std::vector<text_sensor::TextSensor*> text_sensors_;
   std::vector<MenuCommand*> menu_commands_;
 };
 }  // namespace homething_menu_base

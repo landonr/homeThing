@@ -40,6 +40,14 @@ then
         ttyUSBDevice=$i
         echo "USB="$ttyUSBDevice
     done
+elif compgen -G "/dev/cu.usbserial-*" > /dev/null;
+then
+    for i in /dev/cu.usbserial-* 
+    do
+        hasTTYUSB=1
+        ttyUSBDevice=$i
+        echo "USB="$ttyUSBDevice
+    done
 fi
 
 if [ "$hasTTYUSB" -eq 1 ]; then
