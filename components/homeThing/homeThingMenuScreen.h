@@ -8,6 +8,11 @@
 #ifdef SHOW_VERSION
 #include "version.h"
 #endif
+
+#ifdef USE_LIGHT_GROUP
+#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -59,6 +64,10 @@ class HomeThingMenuScreen {
     menu_commands_.push_back(new_command);
   }
 
+  void register_light(light::LightState* new_light) {
+    lights_.push_back(new_light);
+  }
+
   std::vector<std::shared_ptr<MenuTitleBase>> menu_titles() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     out.push_back(std::make_shared<MenuTitleBase>(this->get_name(), "",
@@ -103,6 +112,23 @@ class HomeThingMenuScreen {
                                                       NoMenuTitleRightIcon));
       }
     }
+
+  #ifdef USE_LIGHT_GROUP
+    for (auto& light : lights_) {
+      auto output = static_cast<light::LightOutput*>(light->get_output());
+      ESP_LOGD(MENU_TITLE_SCREEN_TAG, "state %d (%s)", light,
+              light->get_name().c_str());
+      MenuTitleLeftIcon state = light->remote_values.is_on()
+                                    ? OnMenuTitleLeftIcon
+                                    : OffMenuTitleLeftIcon;
+      MenuTitleRightIcon rightIcon = supportsBrightness(light)
+                                        ? ArrowMenuTitleRightIcon
+                                        : NoMenuTitleRightIcon;
+      out.push_back(std::make_shared<MenuTitleLight>(
+          light->get_name(), "", state, rightIcon, rgbLightColor(light)));
+    }
+  #endif
+
     return out;
   }
 
@@ -139,6 +165,15 @@ class HomeThingMenuScreen {
       command->on_command();
       return true;
     }
+    #ifdef USE_LIGHT_GROUP
+    index -= menu_commands_.size();
+    if (index < lights_.size()) {
+      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
+      auto light = lights_[index];
+      light->toggle().perform();
+      return true;
+    }
+    #endif
     return false;
   }
 
@@ -149,6 +184,10 @@ class HomeThingMenuScreen {
   std::vector<switch_::Switch*> switches_;
   std::vector<text_sensor::TextSensor*> text_sensors_;
   std::vector<MenuCommand*> menu_commands_;
+
+  #ifdef USE_LIGHT_GROUP
+  std::vector<light::LightState*> lights_;
+  #endif
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

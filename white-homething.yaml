@@ -118,6 +118,8 @@ homeThing:
       switches:
         - id: "oven_fan_switch"
         - id: "restart_switch"
+      lights:
+        - id: light_rgb_lights
     - name: settings screen
       show_version: True
       switches:
