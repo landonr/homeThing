@@ -115,28 +115,30 @@ homeThing:
     font_logo: home_thing_logo
   screens:
     - name: desk screen
-      switches:
-        - id: "oven_fan_switch"
-        - id: "restart_switch"
       lights:
-        - id: light_rgb_lights
-    - name: settings screen
-      show_version: True
-      switches:
-        - id: "oven_fan_switch"
-        - id: "restart_switch"
-      text_sensors:
-        - id: sensor_kitchen_air
-        - id: sensor_temperature
+        - id: light_desk_lamp
       commands:
         - name: "desk nudge up"
           command:
-            - lambda: |-
-                ESP_LOGI("homeassistant_service_group", "nudge up");
             - homeassistant.service:
                 service: button.press
                 data:
                   entity_id: "button.desk_position_nudge_up"
+        - name: "desk nudge down"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_down"
+    - name: settings screen
+      show_version: True
+      switches:
+        - id: "restart_switch"
+      text_sensors:
+        - id: wifi_ssid
+        - id: wifi_ip
+      sensors:
+        - id: wifi_signal_percent
 
 spi:
   clk_pin: GPIO18
@@ -154,3 +156,32 @@ display:
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: IP Address
+      internal: True
+      id: wifi_ip
+    ssid:
+      name: SSID
+      internal: True
+      id: wifi_ssid
+
+sensor:
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+    internal: True
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal %"
+    id: wifi_signal_percent
+    internal: True
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"

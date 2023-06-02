@@ -3,6 +3,7 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/text_sensor/text_sensor.h"
+#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/script/script.h"
 
 #ifdef SHOW_VERSION
@@ -64,9 +65,15 @@ class HomeThingMenuScreen {
     menu_commands_.push_back(new_command);
   }
 
+  void register_sensor(sensor::Sensor* new_sensor) {
+    sensors_.push_back(new_sensor);
+  }
+
+  #ifdef USE_LIGHT_GROUP
   void register_light(light::LightState* new_light) {
     lights_.push_back(new_light);
   }
+  #endif
 
   std::vector<std::shared_ptr<MenuTitleBase>> menu_titles() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
@@ -129,6 +136,18 @@ class HomeThingMenuScreen {
     }
   #endif
 
+    for (auto& sensor : sensors_) {
+      auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
+      if (sensor->get_name() != "") {
+        out.push_back(std::make_shared<MenuTitleBase>(
+            sensor->get_name() + ": " + state, "",
+            NoMenuTitleRightIcon));
+      } else {
+        out.push_back(std::make_shared<MenuTitleBase>(sensor->get_object_id() + ": " + state, "",
+                                                      NoMenuTitleRightIcon));
+      }
+    }
+
     return out;
   }
 
@@ -174,6 +193,11 @@ class HomeThingMenuScreen {
       return true;
     }
     #endif
+    index -= lights_.size();
+    if (index < sensors_.size()) {
+      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected sensor %d", index);
+      return true;
+    }
     return false;
   }
 
@@ -183,6 +207,7 @@ class HomeThingMenuScreen {
   std::string name_;
   std::vector<switch_::Switch*> switches_;
   std::vector<text_sensor::TextSensor*> text_sensors_;
+  std::vector<sensor::Sensor*> sensors_;
   std::vector<MenuCommand*> menu_commands_;
 
   #ifdef USE_LIGHT_GROUP

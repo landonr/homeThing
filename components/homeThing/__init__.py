@@ -42,7 +42,7 @@ CONF_HEADER = "header"
 CONF_MEDIA_PLAYERS = "media_player_group"
 CONF_LIGHT_GROUP = "light_group"
 CONF_SERVICE_GROUP = "service_group"
-CONF_SENSORS = "sensor_group"
+CONF_SENSOR_GROUP = "sensor_group"
 CONF_SWITCH_GROUP = "switch_group"
 CONF_ON_REDRAW = "on_redraw"
 CONF_SCREENS = "screens"
@@ -52,6 +52,7 @@ CONF_COMMANDS = "commands"
 CONF_COMMAND = "command"
 CONF_SHOW_VERSION = "show_version"
 CONF_LIGHTS = "lights"
+CONF_SENSORS = "sensors"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -279,8 +280,16 @@ MENU_SCREEN_SCHEMA = cv.Schema(
             ),
             cv.Length(min=1),
         ),
+        cv.Optional(CONF_SENSORS): cv.All(
+            cv.ensure_list(
+                cv.Schema({
+                    cv.GenerateID(CONF_ID): cv.use_id(sensor.Sensor)
+                }),
+            ),
+            cv.Length(min=1),
+        ),
     },
-    cv.has_at_least_one_key(CONF_SWITCHES,  CONF_TEXT_SENSORS, CONF_COMMANDS, CONF_LIGHTS)
+    cv.has_at_least_one_key(CONF_SWITCHES,  CONF_TEXT_SENSORS, CONF_COMMANDS, CONF_LIGHTS, CONF_SENSORS)
 ).extend(cv.COMPONENT_SCHEMA)
 
 CONFIG_SCHEMA =  cv.All(
@@ -299,7 +308,7 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_LIGHT_GROUP): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
             cv.Optional(CONF_SERVICE_GROUP): cv.use_id(homeassistant_light_group_ns.HomeAssistantServiceGroup),
             cv.Optional(CONF_SWITCH_GROUP): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
-            cv.Optional(CONF_SENSORS): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
+            cv.Optional(CONF_SENSOR_GROUP): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
             cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
                 {
@@ -467,15 +476,15 @@ async def menu_screen_to_code(config):
                 await automation.build_automation(trigger, [], command)
             cg.add(menu_screen.register_command(service))
 
-    if CONF_TEXT_SENSORS in config:
-        for conf in config.get(CONF_TEXT_SENSORS, []):
-            new_text_sensor = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_text_sensor(new_text_sensor))
-
     if CONF_LIGHTS in config:
         for conf in config.get(CONF_LIGHTS, []):
             new_light = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_light(new_light))
+
+    if CONF_SENSORS in config:
+        for conf in config.get(CONF_SENSORS, []):
+            new_sensor = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_sensor(new_sensor))
     return menu_screen
 
 MENU_IDS = [
