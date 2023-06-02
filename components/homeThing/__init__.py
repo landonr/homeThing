@@ -50,6 +50,7 @@ CONF_SWITCHES = "switches"
 CONF_TEXT_SENSORS = "text_sensors"
 CONF_COMMANDS = "commands"
 CONF_COMMAND = "command"
+CONF_SHOW_VERSION = "show_version"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -249,6 +250,7 @@ MENU_SCREEN_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuScreen),
         cv.Required(CONF_NAME): cv.string,
+        cv.Optional(CONF_SHOW_VERSION, default=False): cv.boolean,
         cv.Optional(CONF_SWITCHES): cv.All(
             cv.ensure_list(
                 cv.Schema({
@@ -432,23 +434,29 @@ async def menu_display_to_code(config, display_buffer):
 async def menu_screen_to_code(config):
     menu_screen = cg.new_Pvariable(config[CONF_ID], config[CONF_NAME])
 
-    for conf in config.get(CONF_SWITCHES, []):
-        new_switch = await cg.get_variable(conf[CONF_ID])
-        cg.add(menu_screen.register_switch(new_switch))
+    if CONF_SHOW_VERSION in config:
+        cg.add_define("SHOW_VERSION")
+        cg.add(menu_screen.set_show_version(config[CONF_SHOW_VERSION]))
+    
+    if CONF_SWITCHES in config:
+        for conf in config.get(CONF_SWITCHES, []):
+            new_switch = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_switch(new_switch))
 
-    for conf in config.get(CONF_TEXT_SENSORS, []):
-        new_text_sensor = await cg.get_variable(conf[CONF_ID])
-        cg.add(menu_screen.register_text_sensor(new_text_sensor))
+    if CONF_TEXT_SENSORS in config:
+        for conf in config.get(CONF_TEXT_SENSORS, []):
+            new_text_sensor = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_text_sensor(new_text_sensor))
 
-
-    for conf in config[CONF_COMMANDS]:
-        service = cg.new_Pvariable(conf[CONF_ID])
-        cg.add(service.set_name(conf[CONF_NAME]))
-        
-        for command in conf.get(CONF_COMMAND, []):
-            trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
-            await automation.build_automation(trigger, [], command)
-        cg.add(menu_screen.register_command(service))
+    if CONF_COMMANDS in config:
+        for conf in config[CONF_COMMANDS]:
+            service = cg.new_Pvariable(conf[CONF_ID])
+            cg.add(service.set_name(conf[CONF_NAME]))
+            
+            for command in conf.get(CONF_COMMAND, []):
+                trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
+                await automation.build_automation(trigger, [], command)
+            cg.add(menu_screen.register_command(service))
     return menu_screen
 
 MENU_IDS = [

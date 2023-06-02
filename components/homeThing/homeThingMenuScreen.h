@@ -4,8 +4,10 @@
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/script/script.h"
-#include "version.h"
 
+#ifdef SHOW_VERSION
+#include "version.h"
+#endif
 namespace esphome {
 namespace homething_menu_base {
 
@@ -39,6 +41,7 @@ class HomeThingMenuScreen {
   std::string get_name() { return name_; }
   void set_index(int index) { index_ = index; }
   int get_index() { return index_; }
+  void set_show_version(bool show_version) { show_version_ = show_version; }
 
   void register_switch(switch_::Switch* new_switch) {
     switches_.push_back(new_switch);
@@ -60,10 +63,14 @@ class HomeThingMenuScreen {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     out.push_back(std::make_shared<MenuTitleBase>(this->get_name(), "",
                                                   NoMenuTitleRightIcon));
-
-    auto versionString = COMPONENTS_HOMETHING_VERSION;
-    out.push_back(std::make_shared<MenuTitleBase>(versionString, "",
-                                                  NoMenuTitleRightIcon));
+    #ifdef SHOW_VERSION
+    if (show_version_) {
+      auto versionString = COMPONENTS_HOMETHING_VERSION;
+      out.push_back(std::make_shared<MenuTitleBase>(versionString, "",
+                                                    NoMenuTitleRightIcon));
+    }
+    #endif
+  
     for (const auto textSensor : text_sensors_) {
       ESP_LOGD(MENU_TITLE_SCREEN_TAG, "text sensor state %s",
                textSensor->state.c_str());
@@ -104,12 +111,16 @@ class HomeThingMenuScreen {
       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected name %d", index);
       return false;
     }
+    #ifdef SHOW_VERSION
     index -= 1;
-    if (index == 0) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected version %d", index);
-      return false;
+    if (show_version_) {
+      if (index == 0) {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected version %d", index);
+        return false;
+      }
+      index -= 1;
     }
-    index -= 1;
+    #endif
     if (index < text_sensors_.size()) {
       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
       return false;
@@ -133,6 +144,7 @@ class HomeThingMenuScreen {
 
  private:
   int index_;
+  bool show_version_ = false;
   std::string name_;
   std::vector<switch_::Switch*> switches_;
   std::vector<text_sensor::TextSensor*> text_sensors_;

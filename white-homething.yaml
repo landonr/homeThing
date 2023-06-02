@@ -63,7 +63,7 @@ packages:
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
-  menu_group: !include homeConfig/services.yaml
+  # menu_group: !include homeConfig/services.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 
@@ -95,7 +95,7 @@ homeThing:
     charging: charging
   media_player_group: media_group_component
   light_group: light_group_component
-  service_group: service_group_component
+  # service_group: service_group_component
   # sensor_group: sensor_group_component
   # switch_group: switch_group_component
   display: my_display
@@ -115,20 +115,11 @@ homeThing:
     font_logo: home_thing_logo
   screens:
     - name: desk screen
-      commands:
-        - name: "desk nudge up"
-          command:
-            - homeassistant.service:
-                service: button.press
-                data:
-                  entity_id: "button.desk_position_nudge_up"
-        - name: "desk nudge down"
-          command:
-            - homeassistant.service:
-                service: button.press
-                data:
-                  entity_id: "button.desk_position_nudge_down"
+      switches:
+        - id: "oven_fan_switch"
+        - id: "restart_switch"
     - name: settings screen
+      show_version: True
       switches:
         - id: "oven_fan_switch"
         - id: "restart_switch"
