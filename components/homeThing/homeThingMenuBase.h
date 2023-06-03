@@ -47,8 +47,7 @@ class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(HomeThingMenuSettings* menu_settings,
                     HomeThingMenuDisplay* menu_display)
-      : menu_settings_(menu_settings),
-        menu_display_(menu_display) {}
+      : menu_settings_(menu_settings), menu_display_(menu_display) {}
   void setup();
 
   void set_charging(binary_sensor::BinarySensor* charging) {
@@ -127,7 +126,8 @@ class HomeThingMenuBase : public PollingComponent {
   bool selectMenu();
   bool selectMenuHold();
   bool selectRootMenu();
-  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType, int index);
+  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType,
+                                                  int index);
   void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();

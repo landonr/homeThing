@@ -84,7 +84,7 @@ void HomeThingMenuBase::draw_menu_screen() {
     return;
   }
   if (!menu_drawing_) {
-    menu_drawing_ = true; 
+    menu_drawing_ = true;
     auto title_name = menu_state_title(activeMenuState).c_str();
     if (reload_menu_items_ ||
         (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
@@ -272,7 +272,7 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
 #endif
   static_menu_titles = out.size();
 
-  for (auto &menu_screen : menu_screens_) {
+  for (auto& menu_screen : menu_screens_) {
     out.push_back(settingsMenu);
   }
   return out;
@@ -329,10 +329,11 @@ bool HomeThingMenuBase::selectRootMenu() {
 std::shared_ptr<MenuTitleBase> HomeThingMenuBase::menuTitleForType(
     MenuStates stringType, int index) {
   if (stringType == settingsMenu && menu_screens_.size() > 0) {
-    HomeThingMenuScreen* menu_screen = menu_screens_[index - static_menu_titles];
+    HomeThingMenuScreen* menu_screen =
+        menu_screens_[index - static_menu_titles];
     std::string menu_name = menu_screen->get_name();
     return std::make_shared<MenuTitleBase>(menu_name, "",
-                                          ArrowMenuTitleRightIcon);
+                                           ArrowMenuTitleRightIcon);
   }
   return std::make_shared<MenuTitleBase>(menu_state_title(stringType), "",
                                          menu_state_right_icon(stringType));
