@@ -169,7 +169,7 @@ class HomeThingMenuBase : public PollingComponent {
     if (buttonPressWakeUpDisplay()) {
       return false;
     }
-    if (activeMenuState != bootMenu) {
+    if (menuTree.front() != bootMenu) {
       if (device_locked_) {
         ESP_LOGI(TAG, "button_press_and_continue: locked");
         idleTime = 0;
@@ -177,7 +177,7 @@ class HomeThingMenuBase : public PollingComponent {
         return false;
       } else {
         ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
-                 activeMenuState);
+                 menuTree.front());
         animation_->resetAnimation();
         return true;
       }
@@ -206,7 +206,7 @@ class HomeThingMenuBase : public PollingComponent {
 
   int idleTime = -2;
   int static_menu_titles = 0;
-  MenuStates activeMenuState = bootMenu;
+  std::vector<MenuStates> menuTree = {bootMenu};
   light::LightState* backlight_{nullptr};
   switch_::Switch* sleep_switch_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
@@ -254,8 +254,9 @@ class HomeThingMenuBase : public PollingComponent {
 #ifdef USE_MEDIA_PLAYER_GROUP
     circle_menu_->clear_active_menu();
 #endif
-    if (activeMenuState != bootMenu) {
-      ESP_LOGD(TAG, "reset_menu: reset animation %d", activeMenuState);
+    if (menuTree.front() != bootMenu) {
+      menuTree.assign(1, rootMenu);
+      ESP_LOGD(TAG, "reset_menu: reset animation %d", menuTree.front());
       animation_->resetAnimation();
     }
 #ifdef USE_MEDIA_PLAYER_GROUP

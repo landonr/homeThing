@@ -19,7 +19,7 @@ void HomeThingMenuBase::setup() {
 #ifdef USE_LIGHT_GROUP
   if (this->light_group_) {
     this->light_group_->add_on_state_callback([this](float state) {
-      switch (activeMenuState) {
+      switch (menuTree.back()) {
         case lightsMenu:
         case lightsDetailMenu:
           reload_menu_items_ = true;
@@ -34,7 +34,7 @@ void HomeThingMenuBase::setup() {
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (this->media_player_group_) {
     this->media_player_group_->add_on_state_callback([this](float state) {
-      switch (activeMenuState) {
+      switch (menuTree.back()) {
         case bootMenu:
         case rootMenu:
         case nowPlayingMenu:
@@ -51,7 +51,7 @@ void HomeThingMenuBase::setup() {
 #ifdef USE_SWITCH_GROUP
   if (this->switch_group_) {
     this->switch_group_->add_on_state_callback([this](float state) {
-      switch (activeMenuState) {
+      switch (menuTree.back()) {
         case switchesMenu:
           reload_menu_items_ = true;
           this->update_display();
@@ -65,7 +65,7 @@ void HomeThingMenuBase::setup() {
 #ifdef USE_SENSOR_GROUP
   if (this->sensor_group_) {
     this->sensor_group_->add_on_state_callback([this](float state) {
-      switch (activeMenuState) {
+      switch (menuTree.back()) {
         case sensorsMenu:
           reload_menu_items_ = true;
           this->update_display();
@@ -78,54 +78,59 @@ void HomeThingMenuBase::setup() {
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
+  auto activeMenuState = menuTree.back();
   if (display_can_sleep()) {
     ESP_LOGI(TAG, "draw_menu_screen: not drawing");
     sleep_display();
     return;
   }
-  if (!menu_drawing_) {
-    menu_drawing_ = true;
-    auto title_name = menu_state_title(activeMenuState).c_str();
-    if (reload_menu_items_ ||
-        (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
-      ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
-               title_name.c_str(), menu_titles.size());
-      menu_titles.clear();
-      menu_titles = activeMenu();
-      reload_menu_items_ = false;
-    }
-    ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
-             title_name.c_str(), menu_titles.size());
-#ifdef USE_MEDIA_PLAYER_GROUP
-    if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
-                                        menuIndex,
-                                        circle_menu_->get_active_menu())) {
-#else
-    if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
-                                        menuIndex, nullptr)) {
-#endif
-      this->animation_->tickAnimation();
-      this->animation_->animating = true;
-    } else {
-      this->animation_->animating = false;
-    }
-    if (device_locked_ && idleTime < 3) {
-      menu_display_->draw_lock_screen(unlock_presses_);
-    } else {
-      ESP_LOGD(TAG,
-               "draw_menu_screen: unlocked, not drawing - time: %d locked: %d",
-               idleTime, device_locked_);
-    }
-    menu_drawing_ = false;
+  if (menu_drawing_) {
+    return;
   }
+  if (menuTree.front() == bootMenu && menu_display_->boot_->boot_complete()) {
+    finish_boot();
+    return;
+  }
+  menu_drawing_ = true;
+  auto title_name = menu_state_title(activeMenuState).c_str();
+  if (reload_menu_items_ ||
+      (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
+    ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
+             title_name.c_str(), menu_titles.size());
+    menu_titles.clear();
+    menu_titles = activeMenu();
+    reload_menu_items_ = false;
+  }
+  ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
+           title_name.c_str(), menu_titles.size());
+#ifdef USE_MEDIA_PLAYER_GROUP
+  if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
+                                      circle_menu_->get_active_menu())) {
+#else
+  if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
+                                      nullptr)) {
+#endif
+    this->animation_->tickAnimation();
+    this->animation_->animating = true;
+  } else {
+    this->animation_->animating = false;
+  }
+  if (device_locked_ && idleTime < 3) {
+    menu_display_->draw_lock_screen(unlock_presses_);
+  } else {
+    ESP_LOGD(TAG,
+             "draw_menu_screen: unlocked, not drawing - time: %d locked: %d",
+             idleTime, device_locked_);
+  }
+  menu_drawing_ = false;
 }
 
 void HomeThingMenuBase::topMenu() {
-  if (activeMenuState == bootMenu) {
+  ESP_LOGI(TAG, "topMenu: active menu state %d", menuTree.back());
+  if (menuTree.back() == bootMenu) {
     return;
   }
-  ESP_LOGI(TAG, "topMenu: activeMenuState %d", activeMenuState);
-  activeMenuState = rootMenu;
+  menuTree.assign(1, rootMenu);
   reset_menu();
 }
 
@@ -135,12 +140,12 @@ void HomeThingMenuBase::update() {
 
 bool HomeThingMenuBase::selectMenu() {
   auto activeMenuTitle = menu_titles[menuIndex];
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case rootMenu:
       return selectRootMenu();
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      activeMenuState = nowPlayingMenu;
+      menuTree.push_back(nowPlayingMenu);
 #endif
       break;
     case sourcesMenu: {
@@ -222,8 +227,8 @@ bool HomeThingMenuBase::selectMenu() {
 
 bool HomeThingMenuBase::selectMenuHold() {
   int menuIndexForSource = menuIndex;
-  ESP_LOGI(TAG, "selectMenuHold: %d", menuIndex);
-  switch (activeMenuState) {
+  ESP_LOGD(TAG, "selectMenuHold: %d", menuIndex);
+  switch (menuTree.back()) {
     case lightsMenu: {
 #ifdef USE_LIGHT_GROUP
       auto selectedLight = light_group_->lights[menuIndexForSource];
@@ -232,28 +237,23 @@ bool HomeThingMenuBase::selectMenuHold() {
       }
       if (light_group_->selectLightDetailAtIndex(menuIndexForSource)) {
         menuIndex = 0;
-        activeMenuState = lightsDetailMenu;
+        menuTree.push_back(lightsDetailMenu);
       }
 #endif
       return true;
     }
     case settingsMenu: {
-      ESP_LOGI(TAG, "selectMenuHold: screens %d", menuIndex);
       if (active_menu_screen) {
         auto menu_item = active_menu_screen->get_menu_item(menuIndex);
         MenuItemType menu_item_type = std::get<0>(*menu_item);
-        ESP_LOGI(TAG, "selectMenuHold: type %d", menu_item_type);
         if (menu_item_type == MenuItemTypeLight) {
-          ESP_LOGI(TAG, "selectMenuHold: lighjt %d", menuIndex);
 #ifdef USE_LIGHT_GROUP
           auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
           if (light_group_->selectLightDetail(light)) {
             menuIndex = 0;
-            activeMenuState = lightsDetailMenu;
-            update_display();
+            menuTree.push_back(lightsDetailMenu);
             return true;
           }
-          ESP_LOGI(TAG, "selectMenuHold: das%d", menuIndex);
 #endif
         }
         break;
@@ -306,22 +306,22 @@ bool HomeThingMenuBase::selectRootMenu() {
   MenuStates currentMenu = rootMenuTitles()[menuIndex];
   switch (currentMenu) {
     case sourcesMenu:
-      activeMenuState = sourcesMenu;
+      menuTree.push_back(sourcesMenu);
       break;
     case nowPlayingMenu:
-      activeMenuState = nowPlayingMenu;
+      menuTree.push_back(nowPlayingMenu);
       break;
     case mediaPlayersMenu:
-      activeMenuState = mediaPlayersMenu;
+      menuTree.push_back(mediaPlayersMenu);
       break;
     case lightsMenu:
-      activeMenuState = lightsMenu;
+      menuTree.push_back(lightsMenu);
       break;
     case switchesMenu:
-      activeMenuState = switchesMenu;
+      menuTree.push_back(switchesMenu);
       break;
     case scenesMenu:
-      activeMenuState = scenesMenu;
+      menuTree.push_back(scenesMenu);
       break;
     // case backlightMenu:
     //   topMenu();
@@ -331,10 +331,10 @@ bool HomeThingMenuBase::selectRootMenu() {
     //   sleep_switch_->turn_on();
     //   return false;
     case sensorsMenu:
-      activeMenuState = sensorsMenu;
+      menuTree.push_back(sensorsMenu);
       break;
     case settingsMenu:
-      activeMenuState = settingsMenu;
+      menuTree.push_back(settingsMenu);
       active_menu_screen = menu_screens_[menuIndex - static_menu_titles];
       break;
     case lightsDetailMenu:
@@ -342,7 +342,7 @@ bool HomeThingMenuBase::selectRootMenu() {
     case rootMenu:
     case bootMenu:
       ESP_LOGD(TAG, "select_root_menu: selecting menu is bad %d %s", menuIndex,
-               menu_state_title(activeMenuState).c_str());
+               menu_state_title(menuTree.back()).c_str());
       menuIndex = 0;
       return false;
   }
@@ -374,8 +374,8 @@ HomeThingMenuBase::menuTypesToTitles(std::vector<MenuStates> menu) {
 }
 
 void HomeThingMenuBase::finish_boot() {
-  ESP_LOGI(TAG, "finish_boot: finished boot");
-  activeMenuState = rootMenu;
+  ESP_LOGI(TAG, "finish_boot: finished boot %d", menuTree.size());
+  menuTree.assign(1, rootMenu);
   idleTime = 0;
   topMenu();
 }
@@ -383,11 +383,11 @@ void HomeThingMenuBase::finish_boot() {
 std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (media_player_group_ && media_player_group_->playerSearchFinished &&
-      activeMenuState == bootMenu) {
+      menuTree.back() == bootMenu) {
     finish_boot();
   }
 #endif
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case rootMenu:
       return menuTypesToTitles(rootMenuTitles());
     case sourcesMenu: {
@@ -467,7 +467,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return active_menu_screen->menu_titles();
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
-               menu_state_title(activeMenuState).c_str());
+               menu_state_title(menuTree.back()).c_str());
       break;
   }
   return {};
@@ -515,7 +515,7 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
       break;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menuIndex = 0;
-      activeMenuState = groupMenu;
+      menuTree.push_back(groupMenu);
       break;
     default:
       break;
@@ -532,7 +532,7 @@ bool HomeThingMenuBase::select_media_player_feature(
       return true;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menuIndex = 0;
-      activeMenuState = groupMenu;
+      menuTree.push_back(groupMenu);
       return true;
     default:
       media_player_group_->call_feature(*feature);
@@ -573,7 +573,7 @@ void HomeThingMenuBase::buttonPressSelect() {
     return;
   reload_menu_items_ = true;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
-    switch (activeMenuState) {
+    switch (menuTree.back()) {
       case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
         if (light_group_->lightDetailSelected) {
@@ -606,7 +606,7 @@ void HomeThingMenuBase::buttonPressSelect() {
         break;
     }
   } else {
-    switch (activeMenuState) {
+    switch (menuTree.back()) {
       case lightsDetailMenu:
 #ifdef USE_LIGHT_GROUP
         if (light_group_->lightDetailSelected) {
@@ -636,7 +636,7 @@ void HomeThingMenuBase::buttonPressSelectHold() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
-  if (activeMenuState == bootMenu) {
+  if (menuTree.back() == bootMenu) {
     return;
   }
   if (selectMenuHold()) {
@@ -689,14 +689,17 @@ bool HomeThingMenuBase::sliderScrollForward() {
 
 bool HomeThingMenuBase::upMenu() {
 #ifdef USE_LIGHT_GROUP
-  if (light_group_ && activeMenuState == lightsDetailMenu) {
-    activeMenuState = lightsMenu;
+  if (light_group_ && menuTree.back() == lightsDetailMenu) {
     light_group_->clearActiveLight();
+  }
+#endif
+  if (menuTree.size() > 1) {
+    menuTree.pop_back();
+    menuIndex = 0;
     reload_menu_items_ = true;
     update_display();
     return true;
   }
-#endif
   return false;
 }
 
@@ -705,7 +708,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
     return;
   rotary_ = rotary;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
-    switch (activeMenuState) {
+    switch (menuTree.back()) {
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
         media_player_group_->decreaseSpeakerVolume();
@@ -736,9 +739,9 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 
     if (menuIndex > 0) {
       menuIndex--;
-    } else if (activeMenuState == nowPlayingMenu) {
+    } else if (menuTree.back() == nowPlayingMenu) {
       menuIndex = menu_titles.size() - 1;
-    } else if (activeMenuState == lightsDetailMenu && menuIndex == 0) {
+    } else if (menuTree.back() == lightsDetailMenu && menuIndex == 0) {
       if (upMenu())
         return;
     } else {
@@ -755,7 +758,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
     return;
   rotary_ = rotary;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
-    switch (activeMenuState) {
+    switch (menuTree.back()) {
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
         media_player_group_->increaseSpeakerVolume();
@@ -799,7 +802,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
 void HomeThingMenuBase::buttonPressUp() {
   if (!button_press_and_continue())
     return;
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       if (!button_press_now_playing_option_continue(
@@ -823,7 +826,7 @@ void HomeThingMenuBase::buttonPressUp() {
       if (media_player_group_->newSpeakerGroupParent != NULL) {
         media_player_group_->newSpeakerGroupParent = NULL;
       } else {
-        activeMenuState = nowPlayingMenu;
+        menuTree.push_back(nowPlayingMenu);
         circle_menu_->clear_active_menu();
       }
       update_display();
@@ -864,18 +867,13 @@ void HomeThingMenuBase::buttonPressUp() {
 void HomeThingMenuBase::buttonPressDown() {
   if (!button_press_and_continue())
     return;
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       // if (option_menu_ == tvOptionMenu) {
       if (!button_press_now_playing_option_continue(
               CircleOptionMenuPosition::BOTTOM))
         return;
-      //   option_menu_ = noOptionMenu;
-      //   media_player_group_->sendActivePlayerRemoteCommand("play");
-      //   update_display();
-      //   return;
-      // }
 
       switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
@@ -884,10 +882,6 @@ void HomeThingMenuBase::buttonPressDown() {
           return;
         case homeassistant_media_player::RemotePlayerType::
             SpeakerRemotePlayerType:
-          // if (option_menu_ == speakerOptionMenu) {
-          // activeMenuState = groupMenu;
-          // update_display();
-          // } else {
           media_player_group_->active_player_->playPause();
       }
 #endif
@@ -900,7 +894,7 @@ void HomeThingMenuBase::buttonPressDown() {
 void HomeThingMenuBase::buttonPressLeft() {
   if (!button_press_and_continue())
     return;
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       // if (option_menu_ == tvOptionMenu) {
@@ -931,9 +925,9 @@ void HomeThingMenuBase::buttonPressLeft() {
 }
 
 bool HomeThingMenuBase::skipBootPressed() {
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case bootMenu: {
-      switch (menu_display_->boot_->bootSequenceCanSkip(activeMenuState)) {
+      switch (menu_display_->boot_->bootSequenceCanSkip(menuTree.back())) {
         case BOOT_MENU_SKIP_STATE_SLEEP:
           ESP_LOGI(TAG, "skipBootPressed: sleep");
           sleep_switch_->turn_on();
@@ -962,7 +956,7 @@ void HomeThingMenuBase::buttonPressRight() {
     return;
   if (!button_press_and_continue())
     return;
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       // if (option_menu_ == tvOptionMenu) {
@@ -999,7 +993,7 @@ void HomeThingMenuBase::buttonPressRight() {
 void HomeThingMenuBase::buttonReleaseScreenLeft() {
   if (!button_press_and_continue())
     return;
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       switch (media_player_group_->active_player_->get_player_type()) {
@@ -1037,7 +1031,7 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
   } else if (!button_press_and_continue()) {
     return;
   }
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       if (circle_menu_->get_active_menu()) {
@@ -1060,7 +1054,7 @@ void HomeThingMenuBase::buttonPressScreenRight() {
 #ifdef USE_MEDIA_PLAYER_GROUP
   circle_menu_->clear_active_menu();
 #endif
-  switch (activeMenuState) {
+  switch (menuTree.back()) {
     case rootMenu:
     case settingsMenu:
     case nowPlayingMenu:
@@ -1161,7 +1155,7 @@ void HomeThingMenuBase::lockDevice() {
 
 void HomeThingMenuBase::idleTick() {
   ESP_LOGD(TAG, "idleTick: idle %d", idleTime);
-  if (activeMenuState == bootMenu) {
+  if (menuTree.back() == bootMenu) {
     if (display_can_sleep()) {
       sleep_display();
     }
@@ -1185,12 +1179,12 @@ void HomeThingMenuBase::idleTick() {
 #ifdef USE_MEDIA_PLAYER_GROUP
     if (media_player_group_ != NULL &&
         media_player_group_->playerSearchFinished) {
-      if (get_charging() && activeMenuState != bootMenu) {
+      if (get_charging() && menuTree.back() != bootMenu) {
         idleTime++;
         return;
       }
       ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
-      activeMenuState = rootMenu;
+      menuTree.assign(1, rootMenu);
       animation_->resetAnimation();
       idleMenu(false);
       menu_display_->updateDisplay(false);
@@ -1220,7 +1214,7 @@ void HomeThingMenuBase::idleTick() {
   if (media_player_group_ != NULL) {
     bool updatedMediaPositions = media_player_group_->updateMediaPosition();
     if (updatedMediaPositions) {
-      switch (activeMenuState) {
+      switch (menuTree.back()) {
         case nowPlayingMenu: {
           ESP_LOGD(TAG, "idleTick: update media positions %d",
                    display_can_sleep());
@@ -1244,27 +1238,27 @@ void HomeThingMenuBase::idleTick() {
 void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
   ESP_LOGI(TAG, "goToScreenFromString: %s", screenName.c_str());
   if (screenName == "nowPlaying") {
-    activeMenuState = nowPlayingMenu;
+    menuTree.push_back(nowPlayingMenu);
   } else if (screenName == "sources") {
-    activeMenuState = sourcesMenu;
+    menuTree.push_back(sourcesMenu);
   } else if (screenName == "mediaPlayers") {
-    activeMenuState = mediaPlayersMenu;
+    menuTree.push_back(mediaPlayersMenu);
   } else if (screenName == "lights") {
-    activeMenuState = lightsMenu;
+    menuTree.push_back(lightsMenu);
   } else if (screenName == "lightDetail") {
-    activeMenuState = lightsDetailMenu;
+    menuTree.push_back(lightsDetailMenu);
   } else if (screenName == "switches") {
-    activeMenuState = switchesMenu;
+    menuTree.push_back(switchesMenu);
   } else if (screenName == "scenes") {
-    activeMenuState = scenesMenu;
+    menuTree.push_back(scenesMenu);
   } else if (screenName == "home") {
-    activeMenuState = rootMenu;
+    menuTree.assign(1, rootMenu);
   } else if (screenName == "speakerGroup") {
-    activeMenuState = groupMenu;
+    menuTree.push_back(groupMenu);
   } else if (screenName == "sensors") {
-    activeMenuState = sensorsMenu;
+    menuTree.push_back(sensorsMenu);
   } else if (screenName == "boot") {
-    activeMenuState = bootMenu;
+    menuTree.push_back(bootMenu);
   }
   reset_menu();
   update_display();
@@ -1272,7 +1266,7 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
 
 void HomeThingMenuBase::idleMenu(bool force) {
   ESP_LOGI(TAG, "idleMenu %d", force);
-  if (activeMenuState == bootMenu) {
+  if (menuTree.back() == bootMenu) {
     return;
   }
   if (!get_charging() || force) {
@@ -1282,7 +1276,7 @@ void HomeThingMenuBase::idleMenu(bool force) {
 #endif
     reset_menu();
 #ifdef USE_MEDIA_PLAYER_GROUP
-    activeMenuState = nowPlayingMenu;
+    menuTree.push_back(nowPlayingMenu);
     if (media_player_group_)
       media_player_group_->newSpeakerGroupParent = NULL;
 #endif
