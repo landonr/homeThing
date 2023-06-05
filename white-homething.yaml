@@ -76,14 +76,6 @@ color:
     green_int: 45
     blue_int: 209
 
-script:
-  - id: feed_cat
-    then:
-      - homeassistant.service:
-          service: button.press
-          data:
-            entity_id: "button.catfeeder_node_feed_single"
-
 homeThing:
   id: homeThingMenu
   settings:

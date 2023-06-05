@@ -1,7 +1,6 @@
 #pragma once
 
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
-#include "esphome/components/script/script.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/switch/switch.h"
 #include "esphome/components/text_sensor/text_sensor.h"
@@ -239,34 +238,6 @@ class HomeThingMenuScreen {
       index -= 1;
     }
 #endif
-    //     if (index < text_sensors_.size()) {
-    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
-    //       return false;
-    //     }
-    //     index -= text_sensors_.size();
-    //     if (index < switches_.size()) {
-    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
-    //       return false;
-    //     }
-    //     index -= switches_.size();
-    //     if (index < menu_commands_.size()) {
-    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
-    //       auto command = menu_commands_[index];
-    //       command->on_command();
-    //       return true;
-    //     }
-    //     index -= menu_commands_.size();
-    // #ifdef USE_LIGHT_GROUP
-    //     if (index < lights_.size()) {
-    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
-    //       return false;
-    //     }
-    //     index -= lights_.size();
-    // #endif
-    //     if (index < sensors_.size()) {
-    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected sensor %d", index);
-    //       return false;
-    //     }
     return false;
   }
 
