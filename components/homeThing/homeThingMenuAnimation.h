@@ -1,4 +1,5 @@
 #pragma once
+
 #include "esphome/components/sensor/sensor.h"
 
 namespace esphome {
@@ -16,6 +17,7 @@ class HomeThingMenuAnimation {
   void updateMarqueePosition(int titleLength);
   // void marqueeTick(int titleLength);
   void activeTick();
+
   sensor::Sensor* animationTick;
   bool animating = true;  // boot sequence is animated
   void tickAnimation();

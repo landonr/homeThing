@@ -10,6 +10,7 @@
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
+#include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
@@ -55,10 +56,21 @@ class HomeThingMenuBase : public PollingComponent {
   void set_battery_percent(sensor::Sensor* battery_percent) {
     battery_percent_ = battery_percent;
   }
+
+#ifdef USE_SWITCH
   void set_sleep_switch(switch_::Switch* sleep_switch) {
     sleep_switch_ = sleep_switch;
   }
+#endif
+
+#ifdef USE_LIGHT
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
+#endif
+
+  void register_screen(HomeThingMenuScreen* new_screen) {
+    new_screen->set_index(menu_screens_.size());
+    menu_screens_.push_back(new_screen);
+  }
 
 #ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
@@ -120,7 +132,8 @@ class HomeThingMenuBase : public PollingComponent {
   bool selectMenu();
   bool selectMenuHold();
   bool selectRootMenu();
-  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType);
+  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType,
+                                                  int index);
   void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();
@@ -162,7 +175,7 @@ class HomeThingMenuBase : public PollingComponent {
     if (buttonPressWakeUpDisplay()) {
       return false;
     }
-    if (activeMenuState != bootMenu) {
+    if (menuTree.front() != bootMenu) {
       if (device_locked_) {
         ESP_LOGI(TAG, "button_press_and_continue: locked");
         idleTime = 0;
@@ -170,7 +183,7 @@ class HomeThingMenuBase : public PollingComponent {
         return false;
       } else {
         ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
-                 activeMenuState);
+                 menuTree.front());
         animation_->resetAnimation();
         return true;
       }
@@ -198,14 +211,22 @@ class HomeThingMenuBase : public PollingComponent {
   bool display_can_sleep();
 
   int idleTime = -2;
-  MenuStates activeMenuState = bootMenu;
+  int static_menu_titles = 0;
+  std::vector<MenuStates> menuTree = {bootMenu};
+#ifdef USE_LIGHT
   light::LightState* backlight_{nullptr};
+#endif
+
+#ifdef USE_SWITCH
   switch_::Switch* sleep_switch_{nullptr};
+#endif
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
+  std::vector<HomeThingMenuScreen*> menu_screens_;
+  HomeThingMenuScreen* active_menu_screen{nullptr};
 
 #ifdef USE_SERVICE_GROUP
   homeassistant_service_group::HomeAssistantServiceGroup* service_group_{
@@ -239,12 +260,14 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
+    active_menu_screen = nullptr;
     reload_menu_items_ = true;
 #ifdef USE_MEDIA_PLAYER_GROUP
     circle_menu_->clear_active_menu();
 #endif
-    if (activeMenuState != bootMenu) {
-      ESP_LOGD(TAG, "reset_menu: reset animation %d", activeMenuState);
+    if (menuTree.front() != bootMenu) {
+      menuTree.assign(1, rootMenu);
+      ESP_LOGD(TAG, "reset_menu: reset animation %d", menuTree.front());
       animation_->resetAnimation();
     }
 #ifdef USE_MEDIA_PLAYER_GROUP

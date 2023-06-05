@@ -35,8 +35,7 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
   int xPos = 2;
   switch (activeMenuState) {
     case rootMenu:
-    case backlightMenu:
-    case sleepMenu:
+    case settingsMenu:
     case nowPlayingMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
       if (media_player_group_ && media_player_group_->active_player_) {

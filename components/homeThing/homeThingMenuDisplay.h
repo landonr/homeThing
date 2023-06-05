@@ -35,8 +35,11 @@
 #include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #endif
 
+#ifdef USE_LIGHT
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
+#endif
+
 #include "esphome/core/component.h"
 
 namespace esphome {

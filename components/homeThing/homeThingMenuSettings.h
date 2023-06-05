@@ -1,7 +1,12 @@
 #pragma once
 
+#ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
+#endif
+
+#ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
+#endif
 
 namespace esphome {
 namespace homething_menu_base {
@@ -21,10 +26,12 @@ class HomeThingMenuSettings {
   int get_lock_after() { return lock_after_; }
   void set_lock_after(int lock_after) { lock_after_ = lock_after; }
 
+#ifdef USE_SWITCH
   switch_::Switch* get_sleep_switch() { return sleep_switch_; }
   void set_sleep_switch(switch_::Switch* sleep_switch) {
     sleep_switch_ = sleep_switch;
   }
+#endif
 
   bool get_menu_rollover() { return menu_rollover_; }
   void set_menu_rollover(bool menu_rollover) { menu_rollover_ = menu_rollover; }
@@ -34,7 +41,11 @@ class HomeThingMenuSettings {
   int display_timeout_;
   int sleep_after_;
   bool menu_rollover_;
+
+#ifdef USE_SWITCH
   switch_::Switch* sleep_switch_;
+#endif
+
   int lock_after_;
 };
 

@@ -69,16 +69,16 @@ media_player:
     sources:
       - id: spotty
         type: spotify
-  - platform: homeassistant_media_player
-    name: PC
-    entity_id: "media_player.tower"
-    id: media_player_tower
-    type: speaker
-  - platform: homeassistant_media_player
-    name: Kodi
-    entity_id: "media_player.kodi_desktop"
-    id: media_player_kodi
-    type: kodi
+  # - platform: homeassistant_media_player
+  #   name: PC
+  #   entity_id: "media_player.tower"
+  #   id: media_player_tower
+  #   type: speaker
+  # - platform: homeassistant_media_player
+  #   name: Kodi
+  #   entity_id: "media_player.kodi_desktop"
+  #   id: media_player_kodi
+  #   type: kodi
 
 homeassistant_media_player:
   id: media_group_component
@@ -93,7 +93,7 @@ homeassistant_media_player:
       type: speaker
     - id: media_player_spotify
       type: speaker
-    - id: media_player_tower
-      type: speaker
-    - id: media_player_kodi
-      type: kodi
+    # - id: media_player_tower
+    #   type: speaker
+    # - id: media_player_kodi
+    #   type: kodi

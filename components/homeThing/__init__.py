@@ -1,16 +1,19 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch, light
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN
+from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch, light, text_sensor, script
+from esphome.components.light import LightState
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
-from esphome.components.homeassistant_service_group import homeassistant_service_group_ns
+from esphome.components.homeassistant_service_group import homeassistant_service_group_ns, SERVICE_LIST_SCHEMA
 from esphome.components.homeassistant_sensor_group import homeassistant_sensor_group_ns
 from esphome.components.homeassistant_switch_group import homeassistant_switch_group_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
+HomeThingMenuScreen = homething_menu_base_ns.class_("HomeThingMenuScreen")
+MenuCommand = homething_menu_base_ns.class_("MenuCommand")
 HomeThingMenuBoot = homething_menu_base_ns.class_("HomeThingMenuBoot")
 HomeThingMenuSettings = homething_menu_base_ns.class_("HomeThingMenuSettings")
 HomeThingMenuAnimation = homething_menu_base_ns.class_("HomeThingMenuAnimation")
@@ -25,6 +28,7 @@ HomeThingColorPalette = homething_menu_base_ns.class_("HomeThingColorPalette")
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
+AUTO_LOAD = ["sensor"]
 DEPENDENCIES = ["wifi", "api"]
 
 CONF_DISPLAY = "display"
@@ -36,13 +40,25 @@ CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
-CONF_MENU_Display = "menu_display"
 CONF_MEDIA_PLAYERS = "media_player_group"
-CONF_LIGHTS = "light_group"
-CONF_SERVICES = "service_group"
-CONF_SENSORS = "sensor_group"
-CONF_SWITCHES = "switch_group"
+CONF_LIGHT_GROUP = "light_group"
+CONF_SERVICE_GROUP = "service_group"
+CONF_SENSOR_GROUP = "sensor_group"
+CONF_SWITCH_GROUP = "switch_group"
 CONF_ON_REDRAW = "on_redraw"
+CONF_SCREENS = "screens"
+CONF_SWITCHES = "switches"
+CONF_TEXT_SENSORS = "text_sensors"
+CONF_COMMANDS = "commands"
+CONF_COMMAND = "command"
+CONF_SHOW_VERSION = "show_version"
+CONF_LIGHTS = "lights"
+CONF_SENSORS = "sensors"
+CONF_SENSOR = "sensor"
+CONF_LIGHT = "light"
+CONF_TEXT_SENSOR = "text_sensor"
+CONF_SWITCH = "switch"
+CONF_ENTITIES = "entities"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -220,6 +236,62 @@ HEADER_SCHEMA = cv.Schema(
     }
 )
 
+ServiceCalledTrigger = homething_menu_base_ns.class_(
+    "ServiceCalledTrigger", automation.Trigger.template()
+)
+
+MENU_COMMAND_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_ID): cv.declare_id(MenuCommand),
+        cv.Required(CONF_COMMAND): automation.validate_automation(
+            {
+                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                    ServiceCalledTrigger
+                ),
+            }
+        ),
+        cv.Required(CONF_NAME): cv.string,
+    }
+)
+
+MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
+    {
+        CONF_SWITCH: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(switch.Switch),
+            }
+        ),
+        CONF_TEXT_SENSOR: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(text_sensor.TextSensor),
+            }
+        ),
+        CONF_COMMAND: MENU_COMMAND_SCHEMA,
+        CONF_LIGHT: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(LightState)
+            }
+        ),
+        CONF_SENSOR: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(sensor.Sensor)
+            }
+        ),
+    },
+    key=CONF_TYPE
+)
+
+MENU_SCREEN_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.declare_id(HomeThingMenuScreen),
+        cv.Required(CONF_NAME): cv.string,
+        cv.Optional(CONF_SHOW_VERSION, default=False): cv.boolean,
+        cv.Required(CONF_ENTITIES): cv.All(
+            cv.ensure_list(MENU_ENTITY_TYPED_SCHEMA), cv.Length(min=1)
+        ),
+    }
+).extend(cv.COMPONENT_SCHEMA)
+
 CONFIG_SCHEMA =  cv.All(
     cv.Schema(
         {
@@ -231,12 +303,12 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_BACKLIGHT): cv.use_id(light.LightState),
             cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
-            cv.Optional(CONF_MENU_Display, default={}): MENU_DISPLAY_SCHEMA,
+            cv.Optional(CONF_MENU_DISPLAY, default={}): MENU_DISPLAY_SCHEMA,
             cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
-            cv.Optional(CONF_LIGHTS): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
-            cv.Optional(CONF_SERVICES): cv.use_id(homeassistant_light_group_ns.HomeAssistantServiceGroup),
-            cv.Optional(CONF_SWITCHES): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
-            cv.Optional(CONF_SENSORS): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
+            cv.Optional(CONF_LIGHT_GROUP): cv.use_id(homeassistant_light_group_ns.HomeAssistantLightGroup),
+            cv.Optional(CONF_SERVICE_GROUP): cv.use_id(homeassistant_light_group_ns.HomeAssistantServiceGroup),
+            cv.Optional(CONF_SWITCH_GROUP): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
+            cv.Optional(CONF_SENSOR_GROUP): cv.use_id(homeassistant_light_group_ns.HomeAssistantSensorsGroup),
             cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
                 {
@@ -244,10 +316,13 @@ CONFIG_SCHEMA =  cv.All(
                         HomeThingDisplayMenuOnRedrawTrigger
                     )
                 }
-            )
+            ),
+            cv.Optional(CONF_SCREENS): cv.All(
+                cv.ensure_list(MENU_SCREEN_SCHEMA), cv.Length(min=1)
+            ),
         }
     ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS,  CONF_LIGHTS, CONF_SERVICES, CONF_SWITCHES, CONF_SENSORS)
+    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS,  CONF_LIGHT_GROUP, CONF_SERVICE_GROUP, CONF_SWITCH_GROUP, CONF_SENSORS)
 )
 
 async def ids_to_code(config, var, types):
@@ -347,10 +422,10 @@ NOW_PLAYING_IDS = [
     CONF_MEDIA_PLAYERS
 ]
 MENU_HEADER_IDS = [
-    CONF_MEDIA_PLAYERS, CONF_LIGHTS
+    CONF_MEDIA_PLAYERS, CONF_LIGHT_GROUP
 ]
 MENU_DISPLAY_IDS = [
-    CONF_MEDIA_PLAYERS, CONF_LIGHTS
+    CONF_MEDIA_PLAYERS, CONF_LIGHT_GROUP
 ]
 
 async def menu_display_to_code(config, display_buffer):
@@ -374,12 +449,47 @@ async def menu_display_to_code(config, display_buffer):
         cg.add(menu_display.set_now_playing(now_playing))
     return menu_display
 
+async def menu_screen_to_code(config):
+    menu_screen = cg.new_Pvariable(config[CONF_ID], config[CONF_NAME])
+
+    if CONF_SHOW_VERSION in config:
+        cg.add_define("SHOW_VERSION")
+        cg.add(menu_screen.set_show_version(config[CONF_SHOW_VERSION]))
+
+    switch_added = False
+    text_sensor_added = False
+    light_added = False
+    sensor_added = False
+    for conf in config.get(CONF_ENTITIES, []):
+        if conf[CONF_TYPE] == CONF_SWITCH:
+            new_switch = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_switch(new_switch))
+        elif conf[CONF_TYPE] == CONF_TEXT_SENSOR:
+            new_text_sensor = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_text_sensor(new_text_sensor))
+        elif conf[CONF_TYPE] == CONF_LIGHT:
+            new_light = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_light(new_light))
+        elif conf[CONF_TYPE] == CONF_COMMAND:
+            cg.add_build_flag("-DUSE_COMMAND")
+            service = cg.new_Pvariable(conf[CONF_ID])
+            cg.add(service.set_name(conf[CONF_NAME]))
+            
+            for command in conf.get(CONF_COMMAND, []):
+                trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
+                await automation.build_automation(trigger, [], command)
+            cg.add(menu_screen.register_command(service))
+        elif conf[CONF_TYPE] == CONF_SENSOR:
+            new_sensor = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_sensor(new_sensor))
+    return menu_screen
+
 MENU_IDS = [
     CONF_BACKLIGHT,
     CONF_SLEEP_SWITCH,
     CONF_MEDIA_PLAYERS,
-    CONF_LIGHTS, 
-    CONF_SERVICES, 
+    CONF_LIGHT_GROUP, 
+    CONF_SERVICE_GROUP, 
     CONF_SWITCHES, 
     CONF_SENSORS
 ]
@@ -392,6 +502,10 @@ async def to_code(config):
 
     menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display)
     await cg.register_component(menu, config)
+
+    for conf in config.get(CONF_SCREENS, []):
+        menu_screen = await menu_screen_to_code(conf)
+        cg.add(menu.register_screen(menu_screen))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)
