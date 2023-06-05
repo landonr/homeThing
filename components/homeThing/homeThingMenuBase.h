@@ -249,6 +249,7 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
+    active_menu_screen = nullptr;
     reload_menu_items_ = true;
 #ifdef USE_MEDIA_PLAYER_GROUP
     circle_menu_->clear_active_menu();

@@ -35,6 +35,16 @@ class MenuCommand : public EntityBase {
   std::string name_;
 };
 
+enum MenuItemType {
+  MenuItemTypeNone,
+  MenuItemTypeTitle,
+  MenuItemTypeSwitch,
+  MenuItemTypeTextSensor,
+  MenuItemTypeCommand,
+  MenuItemTypeSensor,
+  MenuItemTypeLight
+};
+
 class HomeThingMenuScreen {
  public:
   HomeThingMenuScreen(std::string name) : name_(name) {}
@@ -45,28 +55,29 @@ class HomeThingMenuScreen {
   void set_show_version(bool show_version) { show_version_ = show_version; }
 
   void register_switch(switch_::Switch* new_switch) {
-    switches_.push_back(new_switch);
+    entities_.push_back(std::make_tuple(MenuItemTypeSwitch, new_switch));
     // new_switch->add_on_state_callback(
     //     [this, new_switch](bool state) { this->publish_state(0); });
   }
 
   void register_text_sensor(text_sensor::TextSensor* new_text_sensor) {
-    text_sensors_.push_back(new_text_sensor);
+    entities_.push_back(
+        std::make_tuple(MenuItemTypeTextSensor, new_text_sensor));
     // new_text_sensor->add_on_state_callback(
     //     [this, new_text_sensor](std::string state) { this->publish_state(0); });
   }
 
   void register_command(MenuCommand* new_command) {
-    menu_commands_.push_back(new_command);
+    entities_.push_back(std::make_tuple(MenuItemTypeCommand, new_command));
   }
 
   void register_sensor(sensor::Sensor* new_sensor) {
-    sensors_.push_back(new_sensor);
+    entities_.push_back(std::make_tuple(MenuItemTypeSensor, new_sensor));
   }
 
 #ifdef USE_LIGHT_GROUP
   void register_light(light::LightState* new_light) {
-    lights_.push_back(new_light);
+    entities_.push_back(std::make_tuple(MenuItemTypeLight, new_light));
   }
 #endif
 
@@ -82,65 +93,81 @@ class HomeThingMenuScreen {
     }
 #endif
 
-    for (const auto textSensor : text_sensors_) {
-      ESP_LOGD(MENU_TITLE_SCREEN_TAG, "text sensor state %s",
-               textSensor->state.c_str());
-      if (textSensor->get_name() != "") {
-        out.push_back(std::make_shared<MenuTitleBase>(
-            textSensor->get_name() + " " + textSensor->get_state(), "",
-            NoMenuTitleRightIcon));
-      } else {
-        out.push_back(std::make_shared<MenuTitleBase>(textSensor->state, "",
-                                                      NoMenuTitleRightIcon));
-      }
-    }
-
-    for (const auto switchObject : switches_) {
-      ESP_LOGD(MENU_TITLE_SCREEN_TAG, "switch state %d", switchObject->state);
-      MenuTitleLeftIcon state =
-          switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-      out.push_back(std::make_shared<MenuTitleToggle>(
-          switchObject->get_name(), switchObject->get_object_id(), state,
-          NoMenuTitleRightIcon));
-    }
-
-    for (auto& command : menu_commands_) {
-      if (command->get_name() != "") {
-        out.push_back(std::make_shared<MenuTitleBase>(command->get_name(), "",
-                                                      NoMenuTitleRightIcon));
-      } else {
-        out.push_back(std::make_shared<MenuTitleBase>(
-            command->get_object_id(), "", NoMenuTitleRightIcon));
-      }
-    }
-
+    for (const auto entity : entities_) {
+      switch (std::get<0>(entity)) {
+        case MenuItemTypeTitle:
+          out.push_back(std::make_shared<MenuTitleBase>(
+              std::get<1>(entity)->get_name(), "", NoMenuTitleRightIcon));
+          break;
+        case MenuItemTypeSwitch: {
+          auto switchObject =
+              static_cast<switch_::Switch*>(std::get<1>(entity));
+          ESP_LOGD(MENU_TITLE_SCREEN_TAG, "switch state %d",
+                   switchObject->state);
+          MenuTitleLeftIcon state =
+              switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
+          out.push_back(std::make_shared<MenuTitleToggle>(
+              switchObject->get_name(), switchObject->get_object_id(), state,
+              NoMenuTitleRightIcon));
+          break;
+        }
+        case MenuItemTypeTextSensor: {
+          auto textSensor =
+              static_cast<text_sensor::TextSensor*>(std::get<1>(entity));
+          ESP_LOGD(MENU_TITLE_SCREEN_TAG, "text sensor state %s",
+                   textSensor->state.c_str());
+          if (textSensor->get_name() != "") {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                textSensor->get_name() + " " + textSensor->get_state(), "",
+                NoMenuTitleRightIcon));
+          } else {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                textSensor->state, "", NoMenuTitleRightIcon));
+          }
+          break;
+        }
+        case MenuItemTypeCommand: {
+          auto command = static_cast<MenuCommand*>(std::get<1>(entity));
+          if (command->get_name() != "") {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                command->get_name(), "", NoMenuTitleRightIcon));
+          } else {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                command->get_object_id(), "", NoMenuTitleRightIcon));
+          }
+          break;
+        }
+        case MenuItemTypeSensor: {
+          auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
+          auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
+          if (sensor->get_name() != "") {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                sensor->get_name() + ": " + state, "", NoMenuTitleRightIcon));
+          } else {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                sensor->get_object_id() + ": " + state, "",
+                NoMenuTitleRightIcon));
+          }
+          break;
+        }
+        case MenuItemTypeLight: {
 #ifdef USE_LIGHT_GROUP
-    for (auto& light : lights_) {
-      auto output = static_cast<light::LightOutput*>(light->get_output());
-      ESP_LOGD(MENU_TITLE_SCREEN_TAG, "state %d (%s)", light,
-               light->get_name().c_str());
-      MenuTitleLeftIcon state = light->remote_values.is_on()
-                                    ? OnMenuTitleLeftIcon
-                                    : OffMenuTitleLeftIcon;
-      MenuTitleRightIcon rightIcon = supportsBrightness(light)
-                                         ? ArrowMenuTitleRightIcon
-                                         : NoMenuTitleRightIcon;
-      out.push_back(std::make_shared<MenuTitleLight>(
-          light->get_name(), "", state, rightIcon, rgbLightColor(light)));
-    }
+          auto light = static_cast<light::LightState*>(std::get<1>(entity));
+          auto output = static_cast<light::LightOutput*>(light->get_output());
+          MenuTitleLeftIcon state = light->remote_values.is_on()
+                                        ? OnMenuTitleLeftIcon
+                                        : OffMenuTitleLeftIcon;
+          MenuTitleRightIcon rightIcon = supportsBrightness(light)
+                                             ? ArrowMenuTitleRightIcon
+                                             : NoMenuTitleRightIcon;
+          out.push_back(std::make_shared<MenuTitleLight>(
+              light->get_name(), "", state, rightIcon,
+              light::rgbLightColor(light)));
 #endif
-
-    for (auto& sensor : sensors_) {
-      auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
-      if (sensor->get_name() != "") {
-        out.push_back(std::make_shared<MenuTitleBase>(
-            sensor->get_name() + ": " + state, "", NoMenuTitleRightIcon));
-      } else {
-        out.push_back(std::make_shared<MenuTitleBase>(
-            sensor->get_object_id() + ": " + state, "", NoMenuTitleRightIcon));
+          break;
+        }
       }
     }
-
     return out;
   }
 
@@ -159,37 +186,40 @@ class HomeThingMenuScreen {
       index -= 1;
     }
 #endif
-    if (index < text_sensors_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
-      return false;
-    }
-    index -= text_sensors_.size();
-    if (index < switches_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
-      auto switchObject = switches_[index];
-      switchObject->toggle();
-      return true;
-    }
-    index -= switches_.size();
-    if (index < menu_commands_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
-      auto command = menu_commands_[index];
-      command->on_command();
-      return true;
-    }
+    auto entity = entities_[index];
+    switch (std::get<0>(entity)) {
+      case MenuItemTypeTitle:
+        return false;
+      case MenuItemTypeSwitch: {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
+        auto switchObject =
+            static_cast<switch_::Switch*>(std::get<1>(entities_[index]));
+        switchObject->toggle();
+        return true;
+      }
+      case MenuItemTypeTextSensor: {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
+        return false;
+      }
+      case MenuItemTypeCommand: {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
+        auto command = static_cast<MenuCommand*>(std::get<1>(entities_[index]));
+        command->on_command();
+        return true;
+      }
+      case MenuItemTypeSensor: {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected sensor %d", index);
+        return false;
+      }
+      case MenuItemTypeLight: {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
 #ifdef USE_LIGHT_GROUP
-    index -= menu_commands_.size();
-    if (index < lights_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
-      auto light = lights_[index];
-      light->toggle().perform();
-      return true;
-    }
+        auto light =
+            static_cast<light::LightState*>(std::get<1>(entities_[index]));
+        light->toggle().perform();
 #endif
-    index -= lights_.size();
-    if (index < sensors_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected sensor %d", index);
-      return true;
+        return true;
+      }
     }
     return false;
   }
@@ -209,49 +239,54 @@ class HomeThingMenuScreen {
       index -= 1;
     }
 #endif
-    if (index < text_sensors_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
-      return false;
-    }
-    index -= text_sensors_.size();
-    if (index < switches_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
-      return false;
-    }
-    index -= switches_.size();
-    if (index < menu_commands_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
-      auto command = menu_commands_[index];
-      command->on_command();
-      return true;
-    }
-#ifdef USE_LIGHT_GROUP
-    index -= menu_commands_.size();
-    if (index < lights_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
-      return false;
+    //     if (index < text_sensors_.size()) {
+    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
+    //       return false;
+    //     }
+    //     index -= text_sensors_.size();
+    //     if (index < switches_.size()) {
+    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
+    //       return false;
+    //     }
+    //     index -= switches_.size();
+    //     if (index < menu_commands_.size()) {
+    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected command %d", index);
+    //       auto command = menu_commands_[index];
+    //       command->on_command();
+    //       return true;
+    //     }
+    //     index -= menu_commands_.size();
+    // #ifdef USE_LIGHT_GROUP
+    //     if (index < lights_.size()) {
+    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
+    //       return false;
+    //     }
+    //     index -= lights_.size();
+    // #endif
+    //     if (index < sensors_.size()) {
+    //       ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected sensor %d", index);
+    //       return false;
+    //     }
+    return false;
+  }
+
+  std::tuple<MenuItemType, EntityBase*>* get_menu_item(int index) {
+    // name isnt an entity
+    index -= 1;
+#ifdef SHOW_VERSION
+    if (show_version_) {
+      index -= 1;
     }
 #endif
-    index -= lights_.size();
-    if (index < sensors_.size()) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected sensor %d", index);
-      return false;
-    }
-    return false;
+    return &entities_[index];
   }
 
  private:
   int index_;
   bool show_version_ = false;
   std::string name_;
-  std::vector<switch_::Switch*> switches_;
-  std::vector<text_sensor::TextSensor*> text_sensors_;
-  std::vector<sensor::Sensor*> sensors_;
-  std::vector<MenuCommand*> menu_commands_;
-
-#ifdef USE_LIGHT_GROUP
-  std::vector<light::LightState*> lights_;
-#endif
+  std::vector<std::tuple<MenuItemType, EntityBase*>> entities_;
 };
+
 }  // namespace homething_menu_base
 }  // namespace esphome

@@ -222,6 +222,7 @@ bool HomeThingMenuBase::selectMenu() {
 
 bool HomeThingMenuBase::selectMenuHold() {
   int menuIndexForSource = menuIndex;
+  ESP_LOGI(TAG, "selectMenuHold: %d", menuIndex);
   switch (activeMenuState) {
     case lightsMenu: {
 #ifdef USE_LIGHT_GROUP
@@ -235,6 +236,29 @@ bool HomeThingMenuBase::selectMenuHold() {
       }
 #endif
       return true;
+    }
+    case settingsMenu: {
+      ESP_LOGI(TAG, "selectMenuHold: screens %d", menuIndex);
+      if (active_menu_screen) {
+        auto menu_item = active_menu_screen->get_menu_item(menuIndex);
+        MenuItemType menu_item_type = std::get<0>(*menu_item);
+        ESP_LOGI(TAG, "selectMenuHold: type %d", menu_item_type);
+        if (menu_item_type == MenuItemTypeLight) {
+          ESP_LOGI(TAG, "selectMenuHold: lighjt %d", menuIndex);
+#ifdef USE_LIGHT_GROUP
+          auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
+          if (light_group_->selectLightDetail(light)) {
+            menuIndex = 0;
+            activeMenuState = lightsDetailMenu;
+            update_display();
+            return true;
+          }
+          ESP_LOGI(TAG, "selectMenuHold: das%d", menuIndex);
+#endif
+        }
+        break;
+      }
+      break;
     }
     default:
       break;

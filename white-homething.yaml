@@ -114,31 +114,35 @@ homeThing:
     font_material_small: material_font_small
     font_logo: home_thing_logo
   screens:
-    - name: desk screen
-      lights:
-        - id: light_desk_lamp
-      commands:
-        - name: "desk nudge up"
+    - name: Desk Screen
+      entities:
+        - type: command
+          name: "desk nudge up"
           command:
             - homeassistant.service:
                 service: button.press
                 data:
                   entity_id: "button.desk_position_nudge_up"
-        - name: "desk nudge down"
+        - type: command
+          name: "desk nudge down"
           command:
             - homeassistant.service:
                 service: button.press
                 data:
                   entity_id: "button.desk_position_nudge_down"
-    - name: settings screen
+        - id: light_desk_lamp
+          type: light
+    - name: Settings Screen
       show_version: True
-      switches:
+      entities:
         - id: "restart_switch"
-      text_sensors:
+          type: switch
         - id: wifi_ssid
-        - id: wifi_ip
-      sensors:
+          type: text_sensor
         - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
 
 spi:
   clk_pin: GPIO18

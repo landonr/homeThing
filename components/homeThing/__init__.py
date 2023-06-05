@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch, light, text_sensor, script
 from esphome.components.light import LightState
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeassistant_light_group import homeassistant_light_group_ns
 from esphome.components.homeassistant_service_group import homeassistant_service_group_ns, SERVICE_LIST_SCHEMA
@@ -53,6 +53,11 @@ CONF_COMMAND = "command"
 CONF_SHOW_VERSION = "show_version"
 CONF_LIGHTS = "lights"
 CONF_SENSORS = "sensors"
+CONF_SENSOR = "sensor"
+CONF_LIGHT = "light"
+CONF_TEXT_SENSOR = "text_sensor"
+CONF_SWITCH = "switch"
+CONF_ENTITIES = "entities"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -248,48 +253,42 @@ MENU_COMMAND_SCHEMA = cv.Schema(
     }
 )
 
+MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
+    {
+        CONF_SWITCH: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(switch.Switch),
+            }
+        ),
+        CONF_TEXT_SENSOR: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(text_sensor.TextSensor),
+            }
+        ),
+        CONF_COMMAND: MENU_COMMAND_SCHEMA,
+        CONF_LIGHT: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(LightState)
+            }
+        ),
+        CONF_SENSOR: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(sensor.Sensor)
+            }
+        ),
+    },
+    key=CONF_TYPE
+)
+
 MENU_SCREEN_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuScreen),
         cv.Required(CONF_NAME): cv.string,
         cv.Optional(CONF_SHOW_VERSION, default=False): cv.boolean,
-        cv.Optional(CONF_SWITCHES): cv.All(
-            cv.ensure_list(
-                cv.Schema({
-                    cv.GenerateID(CONF_ID): cv.use_id(switch.Switch),
-                }),
-            ), cv.Length(min=1)
+        cv.Required(CONF_ENTITIES): cv.All(
+            cv.ensure_list(MENU_ENTITY_TYPED_SCHEMA), cv.Length(min=1)
         ),
-        cv.Optional(CONF_TEXT_SENSORS): cv.All(
-            cv.ensure_list(
-                cv.Schema({
-                    cv.GenerateID(CONF_ID): cv.use_id(text_sensor.TextSensor),
-                }),
-            ),
-            cv.Length(min=1),
-        ),
-        cv.Optional(CONF_COMMANDS): cv.All(
-            cv.ensure_list(MENU_COMMAND_SCHEMA),
-            cv.Length(min=1),
-        ),
-        cv.Optional(CONF_LIGHTS): cv.All(
-            cv.ensure_list(
-                cv.Schema({
-                    cv.GenerateID(CONF_ID): cv.use_id(LightState)
-                }),
-            ),
-            cv.Length(min=1),
-        ),
-        cv.Optional(CONF_SENSORS): cv.All(
-            cv.ensure_list(
-                cv.Schema({
-                    cv.GenerateID(CONF_ID): cv.use_id(sensor.Sensor)
-                }),
-            ),
-            cv.Length(min=1),
-        ),
-    },
-    cv.has_at_least_one_key(CONF_SWITCHES,  CONF_TEXT_SENSORS, CONF_COMMANDS, CONF_LIGHTS, CONF_SENSORS)
+    }
 ).extend(cv.COMPONENT_SCHEMA)
 
 CONFIG_SCHEMA =  cv.All(
@@ -455,19 +454,18 @@ async def menu_screen_to_code(config):
     if CONF_SHOW_VERSION in config:
         cg.add_define("SHOW_VERSION")
         cg.add(menu_screen.set_show_version(config[CONF_SHOW_VERSION]))
-    
-    if CONF_SWITCHES in config:
-        for conf in config.get(CONF_SWITCHES, []):
+
+    for conf in config.get(CONF_ENTITIES, []):
+        if conf[CONF_TYPE] == CONF_SWITCH:
             new_switch = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_switch(new_switch))
-
-    if CONF_TEXT_SENSORS in config:
-        for conf in config.get(CONF_TEXT_SENSORS, []):
+        elif conf[CONF_TYPE] == CONF_TEXT_SENSOR:
             new_text_sensor = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_text_sensor(new_text_sensor))
-
-    if CONF_COMMANDS in config:
-        for conf in config[CONF_COMMANDS]:
+        elif conf[CONF_TYPE] == CONF_LIGHT:
+            new_light = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_light(new_light))
+        elif conf[CONF_TYPE] == CONF_COMMAND:
             service = cg.new_Pvariable(conf[CONF_ID])
             cg.add(service.set_name(conf[CONF_NAME]))
             
@@ -475,14 +473,7 @@ async def menu_screen_to_code(config):
                 trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
                 await automation.build_automation(trigger, [], command)
             cg.add(menu_screen.register_command(service))
-
-    if CONF_LIGHTS in config:
-        for conf in config.get(CONF_LIGHTS, []):
-            new_light = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_light(new_light))
-
-    if CONF_SENSORS in config:
-        for conf in config.get(CONF_SENSORS, []):
+        elif conf[CONF_TYPE] == CONF_SENSOR:
             new_sensor = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_sensor(new_sensor))
     return menu_screen
