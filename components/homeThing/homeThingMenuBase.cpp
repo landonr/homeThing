@@ -826,9 +826,9 @@ void HomeThingMenuBase::buttonPressUp() {
       if (media_player_group_->newSpeakerGroupParent != NULL) {
         media_player_group_->newSpeakerGroupParent = NULL;
       } else {
-        menuTree.push_back(nowPlayingMenu);
         circle_menu_->clear_active_menu();
       }
+      topMenu();
       update_display();
 #endif
       return;
