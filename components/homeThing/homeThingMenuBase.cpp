@@ -930,7 +930,9 @@ bool HomeThingMenuBase::skipBootPressed() {
       switch (menu_display_->boot_->bootSequenceCanSkip(menuTree.back())) {
         case BOOT_MENU_SKIP_STATE_SLEEP:
           ESP_LOGI(TAG, "skipBootPressed: sleep");
+#ifdef USE_SWITCH
           sleep_switch_->turn_on();
+#endif
           return true;
         case BOOT_MENU_SKIP_STATE_MENU:
           ESP_LOGI(TAG, "skipBootPressed: menu");
@@ -1204,11 +1206,13 @@ void HomeThingMenuBase::idleTick() {
     return;
   } else if (idleTime > menu_settings_->get_sleep_after()) {
     ESP_LOGD(TAG, "idleTick: night night? %d", get_charging());
+#ifdef USE_SWITCH
     if (!get_charging() && sleep_switch_) {
       ESP_LOGD(TAG, "idleTick: night night");
       sleep_switch_->turn_on();
       return;
     }
+#endif
   }
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (media_player_group_ != NULL) {

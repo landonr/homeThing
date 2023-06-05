@@ -1,15 +1,24 @@
 #pragma once
 
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+
+#ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
+#endif
+
+#ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
+#endif
+
+#ifdef USE_TEXT_SENSOR
 #include "esphome/components/text_sensor/text_sensor.h"
+#endif
 
 #ifdef SHOW_VERSION
 #include "version.h"
 #endif
 
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
 
@@ -53,28 +62,36 @@ class HomeThingMenuScreen {
   int get_index() { return index_; }
   void set_show_version(bool show_version) { show_version_ = show_version; }
 
+#ifdef USE_SWITCH
   void register_switch(switch_::Switch* new_switch) {
     entities_.push_back(std::make_tuple(MenuItemTypeSwitch, new_switch));
     // new_switch->add_on_state_callback(
     //     [this, new_switch](bool state) { this->publish_state(0); });
   }
+#endif
 
+#ifdef USE_TEXT_SENSOR
   void register_text_sensor(text_sensor::TextSensor* new_text_sensor) {
     entities_.push_back(
         std::make_tuple(MenuItemTypeTextSensor, new_text_sensor));
     // new_text_sensor->add_on_state_callback(
     //     [this, new_text_sensor](std::string state) { this->publish_state(0); });
   }
+#endif
 
+#ifdef USE_COMMAND
   void register_command(MenuCommand* new_command) {
     entities_.push_back(std::make_tuple(MenuItemTypeCommand, new_command));
   }
+#endif
 
+#ifdef USE_SENSOR
   void register_sensor(sensor::Sensor* new_sensor) {
     entities_.push_back(std::make_tuple(MenuItemTypeSensor, new_sensor));
   }
+#endif
 
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
   void register_light(light::LightState* new_light) {
     entities_.push_back(std::make_tuple(MenuItemTypeLight, new_light));
   }
@@ -99,6 +116,7 @@ class HomeThingMenuScreen {
               std::get<1>(entity)->get_name(), "", NoMenuTitleRightIcon));
           break;
         case MenuItemTypeSwitch: {
+#ifdef USE_SWITCH
           auto switchObject =
               static_cast<switch_::Switch*>(std::get<1>(entity));
           ESP_LOGD(MENU_TITLE_SCREEN_TAG, "switch state %d",
@@ -108,6 +126,7 @@ class HomeThingMenuScreen {
           out.push_back(std::make_shared<MenuTitleToggle>(
               switchObject->get_name(), switchObject->get_object_id(), state,
               NoMenuTitleRightIcon));
+#endif
           break;
         }
         case MenuItemTypeTextSensor: {
@@ -190,11 +209,13 @@ class HomeThingMenuScreen {
       case MenuItemTypeTitle:
         return false;
       case MenuItemTypeSwitch: {
+#ifdef USE_SWITCH
         ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected switch %d", index);
         auto switchObject =
             static_cast<switch_::Switch*>(std::get<1>(entities_[index]));
         switchObject->toggle();
         return true;
+#endif
       }
       case MenuItemTypeTextSensor: {
         ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);

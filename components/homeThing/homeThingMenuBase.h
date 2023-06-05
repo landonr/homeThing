@@ -56,9 +56,13 @@ class HomeThingMenuBase : public PollingComponent {
   void set_battery_percent(sensor::Sensor* battery_percent) {
     battery_percent_ = battery_percent;
   }
+
+#ifdef USE_SWITCH
   void set_sleep_switch(switch_::Switch* sleep_switch) {
     sleep_switch_ = sleep_switch;
   }
+#endif
+
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
 
   void register_screen(HomeThingMenuScreen* new_screen) {
@@ -208,7 +212,10 @@ class HomeThingMenuBase : public PollingComponent {
   int static_menu_titles = 0;
   std::vector<MenuStates> menuTree = {bootMenu};
   light::LightState* backlight_{nullptr};
+
+#ifdef USE_SWITCH
   switch_::Switch* sleep_switch_{nullptr};
+#endif
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(

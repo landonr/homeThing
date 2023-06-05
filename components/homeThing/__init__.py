@@ -455,17 +455,31 @@ async def menu_screen_to_code(config):
         cg.add_define("SHOW_VERSION")
         cg.add(menu_screen.set_show_version(config[CONF_SHOW_VERSION]))
 
+    switch_added = False
+    text_sensor_added = False
+    light_added = False
+    sensor_added = False
     for conf in config.get(CONF_ENTITIES, []):
         if conf[CONF_TYPE] == CONF_SWITCH:
+            # if switch_added == False:
+            #     switch_added = True
+            #     cg.add_build_flag("-DUSE_SWITCH")
             new_switch = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_switch(new_switch))
         elif conf[CONF_TYPE] == CONF_TEXT_SENSOR:
+            # if text_sensor_added == False:
+            #     text_sensor_added = True
+            #     cg.add_build_flag("-DUSE_TEXT_SENSOR")
             new_text_sensor = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_text_sensor(new_text_sensor))
         elif conf[CONF_TYPE] == CONF_LIGHT:
+            # if light_added == False:
+            #     light_added = True
+            #     cg.add_build_flag("-DUSE_LIGHT")
             new_light = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_light(new_light))
         elif conf[CONF_TYPE] == CONF_COMMAND:
+            cg.add_build_flag("-DUSE_COMMAND")
             service = cg.new_Pvariable(conf[CONF_ID])
             cg.add(service.set_name(conf[CONF_NAME]))
             
@@ -474,6 +488,9 @@ async def menu_screen_to_code(config):
                 await automation.build_automation(trigger, [], command)
             cg.add(menu_screen.register_command(service))
         elif conf[CONF_TYPE] == CONF_SENSOR:
+            # if sensor_added == False:
+            #     sensor_added = True
+            #     cg.add_build_flag("-DUSE_SENSOR")
             new_sensor = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_sensor(new_sensor))
     return menu_screen
