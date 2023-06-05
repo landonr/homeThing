@@ -7,8 +7,11 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
-#ifdef USE_SENSOR_GROUP
+#ifdef USE_TEXT_SENSOR
 #include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
+#endif
+
+#ifdef USE_SENSOR_GROUP
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
 #endif
 

@@ -130,6 +130,7 @@ class HomeThingMenuScreen {
           break;
         }
         case MenuItemTypeTextSensor: {
+#ifdef USE_TEXT_SENSOR
           auto textSensor =
               static_cast<text_sensor::TextSensor*>(std::get<1>(entity));
           ESP_LOGD(MENU_TITLE_SCREEN_TAG, "text sensor state %s",
@@ -142,6 +143,7 @@ class HomeThingMenuScreen {
             out.push_back(std::make_shared<MenuTitleBase>(
                 textSensor->state, "", NoMenuTitleRightIcon));
           }
+#endif
           break;
         }
         case MenuItemTypeCommand: {
@@ -156,6 +158,7 @@ class HomeThingMenuScreen {
           break;
         }
         case MenuItemTypeSensor: {
+#ifdef USE_SENSOR
           auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
           auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
           if (sensor->get_name() != "") {
@@ -166,10 +169,11 @@ class HomeThingMenuScreen {
                 sensor->get_object_id() + ": " + state, "",
                 NoMenuTitleRightIcon));
           }
+#endif
           break;
         }
         case MenuItemTypeLight: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
           auto light = static_cast<light::LightState*>(std::get<1>(entity));
           auto output = static_cast<light::LightOutput*>(light->get_output());
           MenuTitleLeftIcon state = light->remote_values.is_on()
@@ -233,7 +237,7 @@ class HomeThingMenuScreen {
       }
       case MenuItemTypeLight: {
         ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected light %d", index);
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         auto light =
             static_cast<light::LightState*>(std::get<1>(entities_[index]));
         light->toggle().perform();

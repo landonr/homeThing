@@ -28,6 +28,7 @@ HomeThingColorPalette = homething_menu_base_ns.class_("HomeThingColorPalette")
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
+AUTO_LOAD = ["sensor"]
 DEPENDENCIES = ["wifi", "api"]
 
 CONF_DISPLAY = "display"
