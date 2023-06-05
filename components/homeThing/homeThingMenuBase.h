@@ -63,7 +63,9 @@ class HomeThingMenuBase : public PollingComponent {
   }
 #endif
 
+#ifdef USE_LIGHT
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
+#endif
 
   void register_screen(HomeThingMenuScreen* new_screen) {
     new_screen->set_index(menu_screens_.size());
@@ -211,7 +213,9 @@ class HomeThingMenuBase : public PollingComponent {
   int idleTime = -2;
   int static_menu_titles = 0;
   std::vector<MenuStates> menuTree = {bootMenu};
+#ifdef USE_LIGHT
   light::LightState* backlight_{nullptr};
+#endif
 
 #ifdef USE_SWITCH
   switch_::Switch* sleep_switch_{nullptr};

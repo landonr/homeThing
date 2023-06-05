@@ -478,6 +478,7 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
     idleTime = 0;
   }
 
+#ifdef USE_LIGHT
   if (backlight_) {
     if (!backlight_->remote_values.is_on()) {
       ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display");
@@ -491,6 +492,7 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
           .perform();
     }
   }
+#endif
   return false;
 }
 
@@ -1116,6 +1118,7 @@ bool HomeThingMenuBase::display_can_sleep() {
 }
 
 void HomeThingMenuBase::turn_on_backlight() {
+#ifdef USE_LIGHT
   if (backlight_ && !backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "turn_on_backlight: turning on display");
     auto call = backlight_->turn_on();
@@ -1123,9 +1126,11 @@ void HomeThingMenuBase::turn_on_backlight() {
     call.set_brightness(1);
     call.perform();
   }
+#endif
 }
 
 void HomeThingMenuBase::sleep_display() {
+#ifdef USE_LIGHT
   if (backlight_ && backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "sleep_display: turning off display");
     auto call = backlight_->turn_off();
@@ -1135,9 +1140,11 @@ void HomeThingMenuBase::sleep_display() {
     ESP_LOGD(TAG, "sleep_display: NOT turning off display %d, %d", backlight_,
              backlight_->remote_values.is_on());
   }
+#endif
 }
 
 void HomeThingMenuBase::fade_out_display() {
+#ifdef USE_LIGHT
   if (backlight_ && backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "fade_out_display: fading out display");
     auto call = backlight_->turn_on();
@@ -1145,6 +1152,7 @@ void HomeThingMenuBase::fade_out_display() {
     call.set_transition_length(500);
     call.perform();
   }
+#endif
 }
 
 void HomeThingMenuBase::lockDevice() {
