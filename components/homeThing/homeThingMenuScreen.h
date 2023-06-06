@@ -22,6 +22,10 @@
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
 
+#ifdef USE_COVER
+#include "esphome/components/cover/cover.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -50,7 +54,8 @@ enum MenuItemType {
   MenuItemTypeTextSensor,
   MenuItemTypeCommand,
   MenuItemTypeSensor,
-  MenuItemTypeLight
+  MenuItemTypeLight,
+  MenuItemTypeCover
 };
 
 class HomeThingMenuScreen {
@@ -97,6 +102,12 @@ class HomeThingMenuScreen {
   }
 #endif
 
+#ifdef USE_COVER
+  void register_cover(cover::Cover* new_cover) {
+    entities_.push_back(std::make_tuple(MenuItemTypeCover, new_cover));
+  }
+#endif
+
   std::vector<std::shared_ptr<MenuTitleBase>> menu_titles() {
     std::vector<std::shared_ptr<MenuTitleBase>> out;
     out.push_back(std::make_shared<MenuTitleBase>(this->get_name(), "",
@@ -125,6 +136,20 @@ class HomeThingMenuScreen {
               switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
           out.push_back(std::make_shared<MenuTitleToggle>(
               switchObject->get_name(), switchObject->get_object_id(), state,
+              NoMenuTitleRightIcon));
+#endif
+          break;
+        }
+        case MenuItemTypeCover: {
+#ifdef USE_COVER
+          auto coverObject = static_cast<cover::Cover*>(std::get<1>(entity));
+          ESP_LOGD(MENU_TITLE_SCREEN_TAG, "cover state %d",
+                   coverObject->is_fully_closed());
+          MenuTitleLeftIcon state = coverObject->is_fully_closed()
+                                        ? OffMenuTitleLeftIcon
+                                        : OnMenuTitleLeftIcon;
+          out.push_back(std::make_shared<MenuTitleToggle>(
+              coverObject->get_name(), coverObject->get_object_id(), state,
               NoMenuTitleRightIcon));
 #endif
           break;
@@ -220,6 +245,17 @@ class HomeThingMenuScreen {
         switchObject->toggle();
         return true;
 #endif
+        break;
+      }
+      case MenuItemTypeCover: {
+#ifdef USE_COVER
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected cover %d", index);
+        auto coverObject =
+            static_cast<cover::Cover*>(std::get<1>(entities_[index]));
+        coverObject->make_call().set_command_toggle().perform();
+        return true;
+#endif
+        break;
       }
       case MenuItemTypeTextSensor: {
         ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected text sensor %d", index);
