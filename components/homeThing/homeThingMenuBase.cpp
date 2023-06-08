@@ -876,17 +876,16 @@ void HomeThingMenuBase::buttonPressUp() {
     default:
       break;
   }
-// if (option_menu_ == speakerOptionMenu) {
-//   media_player_group_->toggle_shuffle();
-//   option_menu_ = noOptionMenu;
-//   update_display();
-//   return;
-// }
-// option_menu_ = noOptionMenu;
-#ifdef USE_LIGHT_GROUP
-  if (light_group_)
+  // if (option_menu_ == speakerOptionMenu) {
+  //   media_player_group_->toggle_shuffle();
+  //   option_menu_ = noOptionMenu;
+  //   update_display();
+  //   return;
+  // }
+  // option_menu_ = noOptionMenu;
+  if (active_menu_screen && active_menu_screen->get_selected_entity()) {
     active_menu_screen->set_selected_entity(nullptr);
-#endif
+  }
   topMenu();
   update_display();
 }
