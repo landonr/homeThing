@@ -692,7 +692,8 @@ void HomeThingMenuBase::buttonPressSelectHold() {
 
 bool HomeThingMenuBase::upMenu() {
   if (menuTree.back() == lightsDetailMenu) {
-    active_menu_screen->set_selected_entity(nullptr);
+    if (active_menu_screen)
+      active_menu_screen->set_selected_entity(nullptr);
   }
   if (menuTree.size() > 1) {
     menuTree.pop_back();
@@ -883,9 +884,8 @@ void HomeThingMenuBase::buttonPressUp() {
   //   return;
   // }
   // option_menu_ = noOptionMenu;
-  if (active_menu_screen && active_menu_screen->get_selected_entity()) {
+  if (active_menu_screen)
     active_menu_screen->set_selected_entity(nullptr);
-  }
   topMenu();
   update_display();
 }
@@ -1306,7 +1306,8 @@ void HomeThingMenuBase::idleMenu(bool force) {
     return;
   }
   if (!get_charging() || force) {
-    active_menu_screen->set_selected_entity(nullptr);
+    if (active_menu_screen)
+      active_menu_screen->set_selected_entity(nullptr);
     reset_menu();
 #ifdef USE_MEDIA_PLAYER_GROUP
     menuTree.push_back(nowPlayingMenu);
