@@ -2,6 +2,7 @@
 
 #include <string>
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
+#include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
@@ -34,6 +35,9 @@ class HomeThingMenuHeader {
   }
   void set_charging(binary_sensor::BinarySensor* charging) {
     charging_ = charging;
+  }
+  void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
+    active_menu_screen_ = active_menu_screen;
   }
 
 #ifdef USE_MEDIA_PLAYER_GROUP
@@ -97,6 +101,7 @@ class HomeThingMenuHeader {
   binary_sensor::BinarySensor* charging_{nullptr};
   time::RealTimeClock* esp_time_{nullptr};
   const char* const TAG = "homething.menu.header";
+  HomeThingMenuScreen** active_menu_screen_{nullptr};
 };
 
 }  // namespace homething_menu_base

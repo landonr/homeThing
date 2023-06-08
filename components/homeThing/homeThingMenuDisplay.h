@@ -90,6 +90,9 @@ class HomeThingMenuDisplay {
   }
 #endif
   HomeThingMenuBoot* boot_{nullptr};
+  void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
+    header_->set_active_menu_screen(active_menu_screen);
+  }
 
  private:
   int scrollTop = 0;

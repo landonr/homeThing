@@ -48,7 +48,9 @@ class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(HomeThingMenuSettings* menu_settings,
                     HomeThingMenuDisplay* menu_display)
-      : menu_settings_(menu_settings), menu_display_(menu_display) {}
+      : menu_settings_(menu_settings), menu_display_(menu_display) {
+    menu_display_->set_active_menu_screen(&active_menu_screen);
+  }
   void setup();
 
   void set_charging(binary_sensor::BinarySensor* charging) {

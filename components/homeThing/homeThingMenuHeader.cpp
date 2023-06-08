@@ -66,8 +66,11 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       break;
     case lightsDetailMenu: {
 #ifdef USE_LIGHT_GROUP
-      if (light_group_->getActiveLight() != NULL) {
-        auto activeLight = light_group_->getActiveLight();
+      auto selectedEntity = (*active_menu_screen_)->get_selected_entity();
+      if (selectedEntity != NULL &&
+          std::get<0>(*selectedEntity) == MenuItemTypeLight) {
+        auto activeLight =
+            static_cast<light::LightState*>(std::get<1>(*selectedEntity));
         auto headerMenuTitle = activeLight->get_name();
         int newXPos =
             drawHeaderIcon(icon(activeLight), xPos, rgbLightColor(activeLight));
