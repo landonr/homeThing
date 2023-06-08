@@ -733,11 +733,16 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
       menuIndex = menu_titles.size() - 1;
     }
   } else {
-// 3 button
+    // 3 button
+    switch (menuTree.back()) {
 #ifdef USE_LIGHT_GROUP
-    if (sliderScrollBack())
-      return;
+      case lightsDetailMenu:
+        if (sliderScrollBack())
+          return;
 #endif
+      default:
+        break;
+    }
 
     if (menuIndex > 0) {
       menuIndex--;
@@ -785,10 +790,15 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
     }
   } else {
     // 3 button
+    switch (menuTree.back()) {
 #ifdef USE_LIGHT_GROUP
-    if (sliderScrollForward())
-      return;
+      case lightsDetailMenu:
+        if (sliderScrollForward())
+          return;
 #endif
+      default:
+        break;
+    }
 
     if (menuIndex < menu_titles.size() - 1) {
       menuIndex++;
