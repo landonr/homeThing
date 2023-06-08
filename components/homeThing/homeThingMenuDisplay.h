@@ -63,7 +63,8 @@ class HomeThingMenuDisplay {
   bool draw_menu_screen(
       MenuStates* activeMenuState,
       const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
-      const int menuIndex, HomeThingOptionMenu* option_menu);
+      const int menuIndex, HomeThingOptionMenu* option_menu,
+      bool editing_menu_item);
   void updateDisplay(bool force);
 
   void set_animation(HomeThingMenuAnimation* animation) {
@@ -94,7 +95,7 @@ class HomeThingMenuDisplay {
   int scrollTop = 0;
   bool draw_menu_titles(
       const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
-      const int menuIndex);
+      const int menuIndex, bool editing_menu_item);
   bool draw_menu_title(int menuState, int i, std::string title, int yPos,
                        bool buttonSpace);
   void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);

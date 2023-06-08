@@ -22,6 +22,10 @@
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
 
+#ifdef USE_NUMBER
+#include "esphome/components/number/number.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -50,7 +54,8 @@ enum MenuItemType {
   MenuItemTypeTextSensor,
   MenuItemTypeCommand,
   MenuItemTypeSensor,
-  MenuItemTypeLight
+  MenuItemTypeLight,
+  MenuItemTypeNumber
 };
 
 class HomeThingMenuScreen {
@@ -61,6 +66,13 @@ class HomeThingMenuScreen {
   void set_index(int index) { index_ = index; }
   int get_index() { return index_; }
   void set_show_version(bool show_version) { show_version_ = show_version; }
+  void set_selected_entity(
+      const std::tuple<MenuItemType, EntityBase*>* entity) {
+    selected_entity_ = entity;
+  }
+  const std::tuple<MenuItemType, EntityBase*>* get_selected_entity() {
+    return selected_entity_;
+  }
 
 #ifdef USE_SWITCH
   void register_switch(switch_::Switch* new_switch) {
@@ -94,6 +106,12 @@ class HomeThingMenuScreen {
 #ifdef USE_LIGHT
   void register_light(light::LightState* new_light) {
     entities_.push_back(std::make_tuple(MenuItemTypeLight, new_light));
+  }
+#endif
+
+#ifdef USE_NUMBER
+  void register_number(number::Number* new_number) {
+    entities_.push_back(std::make_tuple(MenuItemTypeNumber, new_number));
   }
 #endif
 
@@ -175,7 +193,7 @@ class HomeThingMenuScreen {
         case MenuItemTypeLight: {
 #ifdef USE_LIGHT
           auto light = static_cast<light::LightState*>(std::get<1>(entity));
-          auto output = static_cast<light::LightOutput*>(light->get_output());
+          // auto output = static_cast<light::LightOutput*>(light->get_output());
           MenuTitleLeftIcon state = light->remote_values.is_on()
                                         ? OnMenuTitleLeftIcon
                                         : OffMenuTitleLeftIcon;
@@ -185,6 +203,21 @@ class HomeThingMenuScreen {
           out.push_back(std::make_shared<MenuTitleLight>(
               light->get_name(), "", state, rightIcon,
               light::rgbLightColor(light)));
+#endif
+          break;
+        }
+        case MenuItemTypeNumber: {
+#ifdef USE_NUMBER
+          auto number = static_cast<number::Number*>(std::get<1>(entity));
+          auto state = to_string(number->state).c_str();
+          if (number->get_name() != "") {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                number->get_name() + ": " + state, "", NoMenuTitleRightIcon));
+          } else {
+            out.push_back(std::make_shared<MenuTitleBase>(
+                number->get_object_id() + ": " + state, "",
+                NoMenuTitleRightIcon));
+          }
 #endif
           break;
         }
@@ -244,20 +277,24 @@ class HomeThingMenuScreen {
 #endif
         return true;
       }
+      case MenuItemTypeNumber: {
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected number %d", index);
+        return false;
+      }
     }
     return false;
   }
 
   bool select_menu_hold(int index) {
     if (index == 0) {
-      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected name %d", index);
+      ESP_LOGI(MENU_TITLE_SCREEN_TAG, "select hold name %d", index);
       return false;
     }
     index -= 1;
 #ifdef SHOW_VERSION
     if (show_version_) {
       if (index == 0) {
-        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected version %d", index);
+        ESP_LOGI(MENU_TITLE_SCREEN_TAG, "select hold version %d", index);
         return false;
       }
       index -= 1;
@@ -266,7 +303,7 @@ class HomeThingMenuScreen {
     return false;
   }
 
-  std::tuple<MenuItemType, EntityBase*>* get_menu_item(int index) {
+  const std::tuple<MenuItemType, EntityBase*>* get_menu_item(int index) {
     // name isnt an entity
     index -= 1;
 #ifdef SHOW_VERSION
@@ -282,6 +319,7 @@ class HomeThingMenuScreen {
   bool show_version_ = false;
   std::string name_;
   std::vector<std::tuple<MenuItemType, EntityBase*>> entities_;
+  const std::tuple<MenuItemType, EntityBase*>* selected_entity_;
 };
 
 }  // namespace homething_menu_base

@@ -7,6 +7,7 @@
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
+#include "esphome/components/homeThing/homeThingMenuControls.h"
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
@@ -146,8 +147,6 @@ class HomeThingMenuBase : public PollingComponent {
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
 #endif
-  bool sliderScrollBack();
-  bool sliderScrollForward();
   bool upMenu();
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
@@ -293,6 +292,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool device_locked_ = false;
   int unlock_presses_ = 0;
   void finish_boot();
+  bool editing_menu_item = false;
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger

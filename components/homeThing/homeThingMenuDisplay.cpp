@@ -76,7 +76,7 @@ void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
 
 bool HomeThingMenuDisplay::draw_menu_titles(
     const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
-    int menuIndex) {
+    int menuIndex, bool editing_menu_item) {
   if (menuTitles->size() == 0 || menuTitles->size() < menuIndex) {
     return false;
   }
@@ -142,12 +142,11 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
       case SliderMenuTitleType: {
 #ifdef USE_LIGHT_GROUP
-        bool lightDetailSelected = light_group_->lightDetailSelected;
         auto item = std::static_pointer_cast<MenuTitleSlider>((*menuTitles)[i]);
         SliderSelectionState sliderState =
-            menuState == i && lightDetailSelected ? SliderSelectionStateActive
-            : menuState == i                      ? SliderSelectionStateHover
-                                                  : SliderSelectionStateNone;
+            menuState == i && editing_menu_item ? SliderSelectionStateActive
+            : menuState == i                    ? SliderSelectionStateHover
+                                                : SliderSelectionStateNone;
         refactor_->drawLightSlider(0, yPos, sliderState, item, i == 2);
         sliderExtra += 0;
 
@@ -186,7 +185,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState,
     const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
-    const int menuIndex, HomeThingOptionMenu* option_menu) {
+    const int menuIndex, HomeThingOptionMenu* option_menu,
+    bool editing_menu_item) {
   bool boot_complete = boot_->boot_complete();
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
@@ -210,7 +210,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
 #endif
       break;
     default:
-      animating = draw_menu_titles(active_menu, menuIndex);
+      animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
       break;
   }
   header_->drawHeader(0, *activeMenuState);
