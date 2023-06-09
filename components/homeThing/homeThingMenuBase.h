@@ -15,10 +15,6 @@
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
-#ifdef USE_LIGHT_GROUP
-#include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
-#endif
-
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
@@ -97,16 +93,6 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group) {
     media_player_group_ = media_player_group;
-  }
-#endif
-
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* get_light_group() {
-    return light_group_;
-  }
-  void set_light_group(
-      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
-    light_group_ = light_group;
   }
 #endif
 
@@ -240,10 +226,6 @@ class HomeThingMenuBase : public PollingComponent {
   void selectNowPlayingMenu();
   HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
       new HomeThingMenuNowPlayingOptionMenu();
-#endif
-
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
 #endif
 
 #ifdef USE_SWITCH_GROUP

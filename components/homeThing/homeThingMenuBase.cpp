@@ -16,20 +16,19 @@ void HomeThingMenuBase::setup() {
   this->display_update_tick_->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
 
-#ifdef USE_LIGHT_GROUP
-  if (this->light_group_) {
-    this->light_group_->add_on_state_callback([this](float state) {
-      switch (menuTree.back()) {
-        case lightsMenu:
-        case lightsDetailMenu:
-          reload_menu_items_ = true;
-          this->update_display();
-        default:
-          break;
-      }
-    });
-  }
-#endif
+// #ifdef USE_LIGHT_GROUP
+//   if (this->light_group_) {
+//     this->light_group_->add_on_state_callback([this](float state) {
+//       switch (menuTree.back()) {
+//         case lightsDetailMenu:
+//           reload_menu_items_ = true;
+//           this->update_display();
+//         default:
+//           break;
+//       }
+//     });
+//   }
+// #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (this->media_player_group_) {
@@ -178,12 +177,6 @@ bool HomeThingMenuBase::selectMenu() {
 #endif
       break;
     }
-    case lightsMenu: {
-#ifdef USE_LIGHT_GROUP
-      light_group_->toggleLight(menuIndex);
-#endif
-      return true;
-    }
     case lightsDetailMenu:
       editing_menu_item = true;
       break;
@@ -242,7 +235,6 @@ bool HomeThingMenuBase::selectMenuHold() {
           ESP_LOGI(TAG, "selectMenuHold: name %s", light->get_name().c_str());
           if (supportsBrightness(light)) {
             active_menu_screen->set_selected_entity(menu_item);
-            // light_group_->setActiveLight(light);
             menuIndex = 0;
             menuTree.push_back(lightsDetailMenu);
             return true;
@@ -276,11 +268,6 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
     out.push_back(sensorsMenu);
   }
 #endif
-#ifdef USE_LIGHT_GROUP
-  if (light_group_) {
-    out.push_back(lightsMenu);
-  }
-#endif
 
 #ifdef USE_SWITCH_GROUP
   if (switch_group_) {
@@ -306,9 +293,6 @@ bool HomeThingMenuBase::selectRootMenu() {
       break;
     case mediaPlayersMenu:
       menuTree.push_back(mediaPlayersMenu);
-      break;
-    case lightsMenu:
-      menuTree.push_back(lightsMenu);
       break;
     case switchesMenu:
       menuTree.push_back(switchesMenu);
@@ -420,11 +404,6 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       return sensorTitles(sensor_group_->sensors);
 #endif
       break;
-    case lightsMenu:
-#ifdef USE_LIGHT_GROUP
-      return lightTitleSwitches(light_group_->lights);
-#endif
-      break;
     case lightsDetailMenu: {
 #ifdef USE_LIGHT_GROUP
       auto selectedEntity = active_menu_screen->get_selected_entity();
@@ -436,11 +415,6 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
       } else {
         return {};
       }
-      // if (light_group_->getActiveLight() != NULL) {
-      //   return lightTitleItems(light_group_->getActiveLight());
-      // } else {
-      //   return {};
-      // }
 #endif
       break;
     }
@@ -649,48 +623,6 @@ void HomeThingMenuBase::buttonPressSelectHold() {
     update_display();
   }
 }
-
-// #ifdef USE_LIGHT_GROUP
-// bool HomeThingMenuBase::sliderScrollBack() {
-//   if (editing_menu_item && menuIndex == 0 &&
-//       active_menu_screen->get_selected_entity() != NULL) {
-//     light_group_->decBrightness();
-//     debounceUpdateDisplay();
-//     return true;
-//   } else if (editing_menu_item && menuIndex == 1 &&
-//              active_menu_screen->get_selected_entity() != NULL) {
-//     light_group_->decTemperature();
-//     debounceUpdateDisplay();
-//     return true;
-//   } else if (editing_menu_item && menuIndex == 2 &&
-//              active_menu_screen->get_selected_entity() != NULL) {
-//     light_group_->decColor();
-//     debounceUpdateDisplay();
-//     return true;
-//   }
-//   return false;
-// }
-
-// bool HomeThingMenuBase::sliderScrollForward() {
-//   if (editing_menu_item && menuIndex == 0 &&
-//       active_menu_screen->get_selected_entity() != NULL) {
-//     light_group_->incBrightness();
-//     debounceUpdateDisplay();
-//     return true;
-//   } else if (editing_menu_item && menuIndex == 1 &&
-//              active_menu_screen->get_selected_entity() != NULL) {
-//     light_group_->incTemperature();
-//     debounceUpdateDisplay();
-//     return true;
-//   } else if (editing_menu_item && menuIndex == 2 &&
-//              active_menu_screen->get_selected_entity() != NULL) {
-//     light_group_->incColor();
-//     debounceUpdateDisplay();
-//     return true;
-//   }
-//   return false;
-// }
-// #endif
 
 bool HomeThingMenuBase::upMenu() {
   if (menuTree.back() == lightsDetailMenu) {
@@ -1125,7 +1057,6 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     case groupMenu:
     case mediaPlayersMenu:
     case scenesMenu:
-    case lightsMenu:
     case lightsDetailMenu:
     case sensorsMenu:
     case bootMenu:

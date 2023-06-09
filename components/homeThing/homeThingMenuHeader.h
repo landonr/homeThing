@@ -48,13 +48,6 @@ class HomeThingMenuHeader {
   }
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  void set_light_group(
-      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
-    light_group_ = light_group;
-  }
-#endif
-
  private:
   float get_battery_percent() {
     if (battery_percent_ != nullptr && battery_percent_->has_state()) {
@@ -88,10 +81,6 @@ class HomeThingMenuHeader {
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
-#endif
-
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
 #endif
 
   display::DisplayBuffer* display_buffer_{nullptr};

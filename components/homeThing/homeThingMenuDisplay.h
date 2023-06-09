@@ -83,12 +83,6 @@ class HomeThingMenuDisplay {
   }
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  void set_light_group(
-      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
-    light_group_ = light_group;
-  }
-#endif
   HomeThingMenuBoot* boot_{nullptr};
   void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
     header_->set_active_menu_screen(active_menu_screen);
@@ -127,9 +121,6 @@ class HomeThingMenuDisplay {
       media_player_group_{nullptr};
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
-#endif
   const char* const TAG = "homething.menu.display";
 };
 
