@@ -63,7 +63,8 @@ class HomeThingMenuDisplay {
   bool draw_menu_screen(
       MenuStates* activeMenuState,
       const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
-      const int menuIndex, HomeThingOptionMenu* option_menu);
+      const int menuIndex, HomeThingOptionMenu* option_menu,
+      bool editing_menu_item);
   void updateDisplay(bool force);
 
   void set_animation(HomeThingMenuAnimation* animation) {
@@ -82,19 +83,16 @@ class HomeThingMenuDisplay {
   }
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  void set_light_group(
-      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
-    light_group_ = light_group;
-  }
-#endif
   HomeThingMenuBoot* boot_{nullptr};
+  void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
+    header_->set_active_menu_screen(active_menu_screen);
+  }
 
  private:
   int scrollTop = 0;
   bool draw_menu_titles(
       const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
-      const int menuIndex);
+      const int menuIndex, bool editing_menu_item);
   bool draw_menu_title(int menuState, int i, std::string title, int yPos,
                        bool buttonSpace);
   void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
@@ -123,9 +121,6 @@ class HomeThingMenuDisplay {
       media_player_group_{nullptr};
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
-#endif
   const char* const TAG = "homething.menu.display";
 };
 

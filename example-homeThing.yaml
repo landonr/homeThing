@@ -23,10 +23,13 @@ substitutions:
 # switch menu
 switch:
   # replace with your switchs
-    - platform: homeassistant_switch_group
-      entity_id: "switch.oven_fan"
-      name: "Oven Fan"
-      id: oven_fan_switch
+  - platform: homeassistant_switch_group
+    entity_id: "switch.oven_fan"
+    name: "Oven Fan"
+    id: oven_fan_switch
+  - platform: restart
+    id: restart_switch
+    name: "${friendly_name} Restart"
 
 homeassistant_switch_group:
   # defined above with switches
@@ -48,15 +51,10 @@ homeassistant_sensor_group:
 
 # light menu
 light:
-  - platform: homeassistant_light_group
+  - platform: homeassistant_component
     id: light_office_lamp
     entity_id: light.office_lamp
     name: Office Lamp
-
-homeassistant_light_group:
-  id: light_group_component
-  lights:
-    - id: light_office_lamp
 
 # sonos favorite source
 media_player_source_sonos:
@@ -110,9 +108,8 @@ homeThing:
   battery: #optional
     battery_percent: battery_percent
     charging: charging
-   # need atleast 1 group_component
+   # need atleast 1 group_component or screen
   media_player_group: media_group_component
-  light_group: light_group_component
   service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
@@ -130,6 +127,20 @@ homeThing:
     font_material_large: material_font_large
     font_material_small: material_font_small
     font_logo: home_thing_logo
+  screens:
+    - name: Settings Screen
+      show_version: True
+      entities:
+        - id: backlight
+          type: light
+        - id: "restart_switch"
+          type: switch
+        - id: wifi_ssid
+          type: text_sensor
+        - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
 
 # maybe modify: display setup
 spi:
@@ -182,7 +193,6 @@ external_components:
       homeassistant_component, # required for all components
       homeassistant_switch_group, # only include if you use switches
       homeassistant_sensor_group, # only include if you use text sensors in menu
-      homeassistant_light_group, # only include if you use lights
       homeassistant_media_player, # only include if you use media players
       homeassistant_service_group, # only include if you want to call services/scripts
       media_player_source, # required for all media player sources

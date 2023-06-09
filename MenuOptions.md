@@ -13,7 +13,6 @@ homeThing:
     battery_percent: battery_percent
     charging: connected
   media_player_group: media_group_component
-  light_group: light_group_component
   service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
