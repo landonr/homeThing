@@ -47,7 +47,6 @@ external_components:
       homeassistant_component, # base component to control home assistant entities. required for all
       homeassistant_switch_group, # only include if you use switches in menu
       homeassistant_sensor_group, # only include if you use text sensors in menu
-      homeassistant_light_group, # only include if you use lights in menu
       homeassistant_media_player, # only include if you use media players in menu
       homeassistant_service_group, # only include if you want to call services/scripts
       media_player_source, # required for all media player sources
@@ -94,12 +93,6 @@ text_sensor:
     name: "Weather"
     id: sensor_weather
 
-light:
-  - platform: homeassistant_light_group
-    id: light_office_lamp
-    entity_id: light.office_lamp
-    name: Office Lamp
-
 # sonos favorite source
 media_player_source_sonos:
   id: sonos
@@ -135,12 +128,6 @@ homeassistant_sensor_group:
   id: sensor_group_component
   sensors:
     - id: sensor_weather
-
-# light menu - replace with your IDs
-homeassistant_light_group:
-  id: light_group_component
-  lights:
-    - id: light_office_lamp
 
 # media player menu - replace with your IDs
 homeassistant_media_player:
@@ -179,7 +166,6 @@ homeThing:
     charging: charging
    # need atleast 1 group_component
   media_player_group: media_group_component
-  light_group: light_group_component
   service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
