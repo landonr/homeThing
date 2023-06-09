@@ -17,6 +17,7 @@ class HomeThingMenuControls {
     MenuItemType menu_item_type = std::get<0>(*entity);
     switch (menu_item_type) {
       case MenuItemTypeLight: {
+        #ifdef USE_LIGHT
         auto light = static_cast<light::LightState*>(std::get<1>(*entity));
         if (editing_menu_item && menuIndex == 0 && entity != NULL) {
           HomeThingLightHelpers::decBrightness(light);
@@ -28,13 +29,18 @@ class HomeThingMenuControls {
           HomeThingLightHelpers::decColor(light);
           return true;
         }
+        #endif
+        break;
       }
       case MenuItemTypeNumber: {
+        #ifdef USE_NUMBER
         if (editing_menu_item) {
           auto number = static_cast<number::Number*>(std::get<1>(*entity));
           number->make_call().number_decrement(false).perform();
           return true;
         }
+        #endif
+        break;
       }
       default:
         break;
@@ -48,6 +54,7 @@ class HomeThingMenuControls {
     MenuItemType menu_item_type = std::get<0>(*entity);
     switch (menu_item_type) {
       case MenuItemTypeLight: {
+        #ifdef USE_LIGHT
         auto light = static_cast<light::LightState*>(std::get<1>(*entity));
         if (editing_menu_item && menuIndex == 0 && entity != NULL) {
           HomeThingLightHelpers::incBrightness(light);
@@ -59,13 +66,18 @@ class HomeThingMenuControls {
           HomeThingLightHelpers::incColor(light);
           return true;
         }
+        #endif
+        break;
       }
       case MenuItemTypeNumber: {
+        #ifdef USE_NUMBER
         if (editing_menu_item) {
           auto number = static_cast<number::Number*>(std::get<1>(*entity));
           number->make_call().number_increment(false).perform();
           return true;
         }
+        #endif
+        break;
       }
       default:
         break;
