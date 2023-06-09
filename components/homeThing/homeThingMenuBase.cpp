@@ -207,7 +207,10 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     case settingsMenu:
       if (active_menu_screen && active_menu_screen->select_menu(menuIndex)) {
-        if (active_menu_screen->get_selected_entity()) {
+        auto selected_entity = active_menu_screen->get_selected_entity();
+        if (selected_entity) {
+          MenuItemType menu_item_type = std::get<0>(*selected_entity);
+          ESP_LOGI(TAG, "selectMenu: began editing type %d", menu_item_type);
           editing_menu_item = true;
         }
         update_display();

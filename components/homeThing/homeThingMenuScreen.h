@@ -358,7 +358,7 @@ class HomeThingMenuScreen {
   bool show_version_ = false;
   std::string name_;
   std::vector<std::tuple<MenuItemType, EntityBase*>> entities_;
-  const std::tuple<MenuItemType, EntityBase*>* selected_entity_;
+  const std::tuple<MenuItemType, EntityBase*>* selected_entity_ = nullptr;
 };
 
 }  // namespace homething_menu_base
