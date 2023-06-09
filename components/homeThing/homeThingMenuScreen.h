@@ -19,8 +19,8 @@
 #endif
 
 #ifdef USE_LIGHT
-#include "esphome/components/light/light_state.h"
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
+#include "esphome/components/light/light_state.h"
 #endif
 
 #ifdef USE_NUMBER

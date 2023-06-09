@@ -16,19 +16,19 @@ void HomeThingMenuBase::setup() {
   this->display_update_tick_->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
 
-// #ifdef USE_LIGHT_GROUP
-//   if (this->light_group_) {
-//     this->light_group_->add_on_state_callback([this](float state) {
-//       switch (menuTree.back()) {
-//         case lightsDetailMenu:
-//           reload_menu_items_ = true;
-//           this->update_display();
-//         default:
-//           break;
-//       }
-//     });
-//   }
-// #endif
+  // #ifdef USE_LIGHT_GROUP
+  //   if (this->light_group_) {
+  //     this->light_group_->add_on_state_callback([this](float state) {
+  //       switch (menuTree.back()) {
+  //         case lightsDetailMenu:
+  //           reload_menu_items_ = true;
+  //           this->update_display();
+  //         default:
+  //           break;
+  //       }
+  //     });
+  //   }
+  // #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (this->media_player_group_) {
