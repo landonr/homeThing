@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch, light, text_sensor, script, cover
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
@@ -280,8 +280,8 @@ MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
         CONF_COVER: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(cover.Cover),
-                # cv.Required(CONF_NAME): cv.string,
-        },
+            }
+        ),
         CONF_NUMBER: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(number.Number)
