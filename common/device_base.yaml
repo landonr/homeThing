@@ -40,14 +40,14 @@ sensor:
     unit_of_measurement: 'B'
     state_class: measurement
     update_interval: 10s
-
+    
   - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
     name: "WiFi Signal dB"
     id: wifi_signal_db
     update_interval: 60s
     entity_category: "diagnostic"
     internal: True
-
+    
   - platform: copy # Reports the WiFi signal strength in %
     source_id: wifi_signal_db
     name: "WiFi Signal %"

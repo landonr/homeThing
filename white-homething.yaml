@@ -105,6 +105,8 @@ homeThing:
       entities:
         - type: cover
           id: cover_megadesk
+        - type: number
+          id: desk_height_number
         - type: command
           name: "desk nudge up"
           command:
@@ -139,6 +141,15 @@ spi:
   clk_pin: GPIO18
   mosi_pin: GPIO19
 
+number:
+  - platform: homeassistant_component
+    entity_id: number.desk_height_cm
+    name: desk height
+    id: desk_height_number
+    min_value: 61.0
+    max_value: 105.0
+    step: 1
+
 display:
   - platform: st7789v
     model: TTGO_TDisplay_135x240
@@ -157,3 +168,4 @@ cover:
     entity_id: "cover.megadesk_cover"
     name: "Megadesk"
     id: cover_megadesk
+    

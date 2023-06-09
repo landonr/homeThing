@@ -7,16 +7,13 @@
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
+#include "esphome/components/homeThing/homeThingMenuControls.h"
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
-
-#ifdef USE_LIGHT_GROUP
-#include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
-#endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
@@ -47,7 +44,9 @@ class HomeThingMenuBase : public PollingComponent {
  public:
   HomeThingMenuBase(HomeThingMenuSettings* menu_settings,
                     HomeThingMenuDisplay* menu_display)
-      : menu_settings_(menu_settings), menu_display_(menu_display) {}
+      : menu_settings_(menu_settings), menu_display_(menu_display) {
+    menu_display_->set_active_menu_screen(&active_menu_screen);
+  }
   void setup();
 
   void set_charging(binary_sensor::BinarySensor* charging) {
@@ -97,16 +96,6 @@ class HomeThingMenuBase : public PollingComponent {
   }
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* get_light_group() {
-    return light_group_;
-  }
-  void set_light_group(
-      homeassistant_light_group::HomeAssistantLightGroup* light_group) {
-    light_group_ = light_group;
-  }
-#endif
-
 #ifdef USE_SWITCH_GROUP
   homeassistant_switch_group::HomeAssistantSwitchGroup* get_switch_group() {
     return switch_group_;
@@ -146,8 +135,6 @@ class HomeThingMenuBase : public PollingComponent {
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
 #endif
-  bool sliderScrollBack();
-  bool sliderScrollForward();
   bool upMenu();
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
@@ -241,10 +228,6 @@ class HomeThingMenuBase : public PollingComponent {
       new HomeThingMenuNowPlayingOptionMenu();
 #endif
 
-#ifdef USE_LIGHT_GROUP
-  homeassistant_light_group::HomeAssistantLightGroup* light_group_{nullptr};
-#endif
-
 #ifdef USE_SWITCH_GROUP
   homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_{nullptr};
 #endif
@@ -262,6 +245,7 @@ class HomeThingMenuBase : public PollingComponent {
     menuIndex = 0;
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
+    editing_menu_item = false;
 #ifdef USE_MEDIA_PLAYER_GROUP
     circle_menu_->clear_active_menu();
 #endif
@@ -293,6 +277,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool device_locked_ = false;
   int unlock_presses_ = 0;
   void finish_boot();
+  bool editing_menu_item = false;
 };  // namespace homething_menu_base
 
 class HomeThingDisplayMenuOnRedrawTrigger
