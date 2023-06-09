@@ -214,6 +214,9 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     case settingsMenu:
       if (active_menu_screen && active_menu_screen->select_menu(menuIndex)) {
+        if (active_menu_screen->get_selected_entity()) {
+          editing_menu_item = true;
+        }
         update_display();
       }
       break;
@@ -577,7 +580,7 @@ void HomeThingMenuBase::buttonPressSelect() {
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+      case settingsMenu:
         if (editing_menu_item) {
           // deselect light if selected and stay in lightsDetailMenu
           editing_menu_item = false;
@@ -585,7 +588,6 @@ void HomeThingMenuBase::buttonPressSelect() {
           update_display();
           return;
         }
-#endif
         break;
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
@@ -728,6 +730,17 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
           return;
         }
 #endif
+      case settingsMenu:
+        if (editing_menu_item && active_menu_screen &&
+            active_menu_screen->get_selected_entity() &&
+            HomeThingMenuControls::editingScrollBack(
+                active_menu_screen->get_selected_entity(), menuIndex,
+                editing_menu_item)) {
+          reload_menu_items_ = true;
+          debounceUpdateDisplay();
+          return;
+        }
+        break;
       default:
         break;
     }
@@ -791,6 +804,16 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
           return;
         }
 #endif
+      case settingsMenu:
+        if (editing_menu_item && active_menu_screen &&
+            active_menu_screen->get_selected_entity() &&
+            HomeThingMenuControls::editingScrollForward(
+                active_menu_screen->get_selected_entity(), menuIndex,
+                editing_menu_item)) {
+          reload_menu_items_ = true;
+          debounceUpdateDisplay();
+          return;
+        }
       default:
         break;
     }
@@ -875,6 +898,13 @@ void HomeThingMenuBase::buttonPressUp() {
 #endif
       break;
     default:
+    case settingsMenu:
+      if (editing_menu_item) {
+        editing_menu_item = false;
+        reload_menu_items_ = true;
+        update_display();
+        return;
+      }
       break;
   }
   // if (option_menu_ == speakerOptionMenu) {

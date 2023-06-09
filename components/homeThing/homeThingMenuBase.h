@@ -263,6 +263,7 @@ class HomeThingMenuBase : public PollingComponent {
     menuIndex = 0;
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
+    editing_menu_item = false;
 #ifdef USE_MEDIA_PLAYER_GROUP
     circle_menu_->clear_active_menu();
 #endif

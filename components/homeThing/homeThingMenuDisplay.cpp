@@ -93,6 +93,9 @@ bool HomeThingMenuDisplay::draw_menu_titles(
     }
     auto rightIconState = (*menuTitles)[i]->rightIconState;
     auto titleName = (*menuTitles)[i]->get_name();
+    if (i == menuIndex && editing_menu_item) {
+      titleName = "*" + titleName;
+    }
     ESP_LOGD(TAG, "draw_menu_titles: %s", titleName.c_str());
     switch ((*menuTitles)[i]->titleType) {
       case BaseMenuTitleType:

@@ -279,7 +279,9 @@ class HomeThingMenuScreen {
       }
       case MenuItemTypeNumber: {
         ESP_LOGI(MENU_TITLE_SCREEN_TAG, "selected number %d", index);
-        return false;
+        auto entity = &entities_[index];
+        set_selected_entity(entity);
+        return true;
       }
     }
     return false;
