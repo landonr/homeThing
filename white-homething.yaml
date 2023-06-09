@@ -28,9 +28,9 @@ external_components:
     #   type: git
     #   url: https://github.com/landonr/homeThing
     #   ref: main
-    # refresh: 0s
       type: local
       path: components
+    refresh: 0s
     components: [homeThing]
   - source:
     #   type: git
@@ -43,7 +43,6 @@ external_components:
       homeassistant_component, 
       homeassistant_switch_group, 
       homeassistant_sensor_group,
-      homeassistant_light_group,
       homeassistant_media_player,
       homeassistant_service_group,
       media_player_source,
@@ -104,6 +103,8 @@ homeThing:
   screens:
     - name: Desk Screen
       entities:
+        - type: cover
+          id: cover_megadesk
         - type: command
           name: "desk nudge up"
           command:
@@ -151,31 +152,8 @@ display:
       id(homeThingMenu)->draw_menu_screen();
       return;
 
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: IP Address
-      internal: True
-      id: wifi_ip
-    ssid:
-      name: SSID
-      internal: True
-      id: wifi_ssid
-
-sensor:
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
-    name: "WiFi Signal dB"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: "diagnostic"
-    internal: True
-
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Signal %"
-    id: wifi_signal_percent
-    internal: True
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
+cover:
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
