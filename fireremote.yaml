@@ -36,12 +36,12 @@ external_components:
       path: components
     components: [homeThing]
   - source:
-  #     type: git
-  #     url: https://github.com/landonr/esphome-components
-  #     ref: main
-  #   refresh: 0s
-      type: local
-      path: ../local_components/components
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+      # type: local
+      # path: ../local_components/components
     components: [
       homeassistant_component, 
       homeassistant_switch_group, 
