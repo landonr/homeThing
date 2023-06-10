@@ -13,9 +13,8 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
-#include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP

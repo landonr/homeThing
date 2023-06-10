@@ -16,20 +16,17 @@ void HomeThingMenuBase::setup() {
   this->display_update_tick_->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
 
-  // #ifdef USE_LIGHT_GROUP
-  //   if (this->light_group_) {
-  //     this->light_group_->add_on_state_callback([this](float state) {
-  //       switch (menuTree.back()) {
-  //         case lightsDetailMenu:
-  //           reload_menu_items_ = true;
-  //           this->update_display();
-  //         default:
-  //           break;
-  //       }
-  //     });
-  //   }
-  // #endif
-
+  for (auto screen : menu_screens_) {
+    screen->add_on_state_callback([this]() {
+      switch (menuTree.back()) {
+        case settingsMenu:
+          reload_menu_items_ = true;
+          this->update_display();
+        default:
+          break;
+      }
+    });
+  }
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (this->media_player_group_) {
     this->media_player_group_->add_on_state_callback([this](float state) {
@@ -178,6 +175,7 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     }
     case lightsDetailMenu:
+      ESP_LOGI(TAG, "selectMenu: began editing light detail");
       editing_menu_item = true;
       break;
     case mediaPlayersMenu: {
@@ -233,7 +231,7 @@ bool HomeThingMenuBase::selectMenuHold() {
         ESP_LOGI(TAG, "selectMenuHold: %d", menuIndex);
         MenuItemType menu_item_type = std::get<0>(*menu_item);
         if (menu_item_type == MenuItemTypeLight) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
           auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
           ESP_LOGI(TAG, "selectMenuHold: name %s", light->get_name().c_str());
           if (supportsBrightness(light)) {
@@ -408,7 +406,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
       break;
     case lightsDetailMenu: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       auto selectedEntity = active_menu_screen->get_selected_entity();
       if (selectedEntity != NULL &&
           std::get<0>(*selectedEntity) == MenuItemTypeLight) {
@@ -590,7 +588,7 @@ void HomeThingMenuBase::buttonPressSelect() {
     // 3 button
     switch (menuTree.back()) {
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         if (editing_menu_item) {
           // deselect light if selected and stay in lightsDetailMenu
           editing_menu_item = false;
@@ -657,7 +655,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 #endif
         return;
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         if (HomeThingMenuControls::editingScrollBack(
                 active_menu_screen->get_selected_entity(), menuIndex,
                 editing_menu_item)) {
@@ -687,7 +685,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   } else {
     // 3 button
     switch (menuTree.back()) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       case lightsDetailMenu:
         if (HomeThingMenuControls::editingScrollBack(
                 active_menu_screen->get_selected_entity(), menuIndex,
@@ -731,7 +729,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
 #endif
         return;
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         if (HomeThingMenuControls::editingScrollForward(
                 active_menu_screen->get_selected_entity(), menuIndex,
                 editing_menu_item)) {
@@ -761,7 +759,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
   } else {
     // 3 button
     switch (menuTree.back()) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       case lightsDetailMenu:
         if (HomeThingMenuControls::editingScrollForward(
                 active_menu_screen->get_selected_entity(), menuIndex,
@@ -819,7 +817,7 @@ void HomeThingMenuBase::buttonPressUp() {
 #endif
       return;
     case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       if (editing_menu_item) {
         // deselect light if selected and stay in lightsDetailMenu
         editing_menu_item = false;

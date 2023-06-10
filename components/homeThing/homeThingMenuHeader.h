@@ -6,10 +6,6 @@
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
-#ifdef USE_LIGHT_GROUP
-#include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
-#endif
-
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"

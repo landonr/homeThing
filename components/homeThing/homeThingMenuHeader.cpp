@@ -1,6 +1,6 @@
 #include "homeThingMenuHeader.h"
-#ifdef USE_LIGHT_GROUP
-#include "esphome/components/homeassistant_light_group/LightExtensions.h"
+#ifdef USE_LIGHT
+#include "esphome/components/homeassistant_component/LightExtensions.h"
 #endif
 
 namespace esphome {
@@ -65,7 +65,7 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       drawHeaderTitleWithString("Lights", xPos);
       break;
     case lightsDetailMenu: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       auto selectedEntity = (*active_menu_screen_)->get_selected_entity();
       if (selectedEntity != NULL &&
           std::get<0>(*selectedEntity) == MenuItemTypeLight) {

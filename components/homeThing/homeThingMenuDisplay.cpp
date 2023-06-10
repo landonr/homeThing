@@ -114,7 +114,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 #endif
         break;
       case LightMenuTitleType: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         auto lightTitle =
             std::static_pointer_cast<MenuTitleLight>((*menuTitles)[i]);
         if (lightTitle != NULL) {
@@ -144,7 +144,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         break;
       }
       case SliderMenuTitleType: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         auto item = std::static_pointer_cast<MenuTitleSlider>((*menuTitles)[i]);
         SliderSelectionState sliderState =
             menuState == i && editing_menu_item ? SliderSelectionStateActive
@@ -271,7 +271,7 @@ void HomeThingMenuDisplay::drawLeftTitleIcon(
     case OffMenuTitleLeftIcon:
     case OnMenuTitleLeftIcon:
       if (toggleTitle->titleType == LightMenuTitleType) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         auto lightToggleTitle =
             std::static_pointer_cast<MenuTitleLight>(toggleTitle);
         if (lightToggleTitle != NULL) {
