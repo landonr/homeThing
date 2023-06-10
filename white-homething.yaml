@@ -1,7 +1,5 @@
 esphome:
   name: "white-homething"
-  platform: ESP32
-  board: featheresp32
   on_boot:
     priority: 600.0
     then:
@@ -12,6 +10,9 @@ esphome:
               - wifi.connected:
           then:
             - switch.turn_on: sleep_toggle
+
+esp32:
+  board: featheresp32
 
 wifi:
   ssid: !secret wifi_ssid
@@ -53,16 +54,15 @@ external_components:
 
 packages:
   device_base: !include common/device_base.yaml
+  settings: !include common/settings.yaml
   ipod_control_backlight: !include common/ipod/lilygo_tdisplay_ipod_backlight.yaml
   ipod_control_battery: !include common/ipod/lilygo_tdisplay_ipod_battery.yaml
   ipod_control_binary_sensor: !include common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
   ipod_control_rotary: !include common/ipod/lilygo_tdisplay_ipod_rotary.yaml
   ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
   home_media_player: !include homeConfig/media_player.yaml
-  home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
-  menu_group: !include homeConfig/services.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 

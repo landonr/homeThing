@@ -42,10 +42,11 @@ class HomeThingMenuBootAnimationConfig {
   HomeThingMenuAnimationConfig loading_bar_config = {20, 9};
 
   int total_animation_length() {
-    return max(logo_config.delay_time + logo_config.animation_length,
-               max(header_config.delay_time + header_config.animation_length,
-                   loading_bar_config.delay_time +
-                       loading_bar_config.animation_length));
+    return std::max(
+        logo_config.delay_time + logo_config.animation_length,
+        std::max(header_config.delay_time + header_config.animation_length,
+                 loading_bar_config.delay_time +
+                     loading_bar_config.animation_length));
   }
 };
 

@@ -120,7 +120,7 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
     const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu) {
-  if (option_menu && drawOptionMenuAndStop(option_menu) ||
+  if ((option_menu && drawOptionMenuAndStop(option_menu)) ||
       display_state_ == nullptr) {
     return;
   }

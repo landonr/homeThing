@@ -7,10 +7,6 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
-#ifdef USE_TEXT_SENSOR
-#include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
-#endif
-
 #ifdef USE_SENSOR_GROUP
 #include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
 #endif
@@ -37,7 +33,6 @@ enum MenuStates {
   groupMenu,
   mediaPlayersMenu,
   scenesMenu,
-  lightsMenu,
   lightsDetailMenu,
   switchesMenu,
   nowPlayingMenu,
@@ -62,8 +57,6 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Sources";
     case mediaPlayersMenu:
       return "Media Players";
-    case lightsMenu:
-      return "Lights";
     case lightsDetailMenu:
       return "Light Detail";
     case switchesMenu:
@@ -92,8 +85,6 @@ static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
       return ArrowMenuTitleRightIcon;
     case mediaPlayersMenu:
       return ArrowMenuTitleRightIcon;
-    case lightsMenu:
-      return ArrowMenuTitleRightIcon;
     case lightsDetailMenu:
       return ArrowMenuTitleRightIcon;
     case switchesMenu:
@@ -108,6 +99,8 @@ static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
       return ArrowMenuTitleRightIcon;
     case bootMenu:
       return NoMenuTitleRightIcon;
+    case settingsMenu:
+      return ArrowMenuTitleRightIcon;
   }
   return NoMenuTitleRightIcon;
 }
@@ -128,6 +121,9 @@ enum SliderSelectionState {
 };
 
 class MenuTitleBase {
+ protected:
+  std::string name_;
+
  public:
   std::string entity_id_;
   MenuTitleRightIcon rightIconState;
@@ -147,9 +143,6 @@ class MenuTitleBase {
       return entity_id_;
     }
   }
-
- protected:
-  std::string name_;
 };
 
 class MenuTitleToggle : public MenuTitleBase {
@@ -181,9 +174,9 @@ class MenuTitleSlider : public MenuTitleBase {
   bool currentState;
   int sliderValue;
   int displayValue;
+  std::string sliderUnit;
   int value_min_;
   int value_max_;
-  std::string sliderUnit;
   MenuTitleSlider(std::string newTitle, std::string newEntityId,
                   MenuTitleRightIcon newRightIconState, int newSliderValue,
                   int newDisplayValue, std::string newSliderUnit, int value_min,
@@ -433,9 +426,9 @@ static std::vector<MenuTitlePlayer*> mediaPlayersTitleString(
 }
 
 static std::vector<std::shared_ptr<MenuTitleBase>> activePlayerSourceTitles(
-    std::vector<media_player_source::MediaPlayerSourceBase*> sources) {
+    std::vector<media_player_source::MediaPlayerSourceBase*>* sources) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& source : sources) {
+  for (auto& source : *sources) {
     auto new_menu_title = std::make_shared<MenuTitleBase>(
         source->get_name(), "", NoMenuTitleRightIcon);
     out.push_back(new_menu_title);

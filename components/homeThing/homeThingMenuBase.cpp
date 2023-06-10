@@ -372,15 +372,15 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #ifdef USE_MEDIA_PLAYER_GROUP
       auto sources = media_player_group_->activePlayerSources();
       auto index = media_player_group_->get_active_player_source_index();
-      if (index == -1 && sources.size() > 1) {
+      if (index == -1 && sources->size() > 1) {
         auto sourceTitles = activePlayerSourceTitles(sources);
         return {sourceTitles.begin(), sourceTitles.end()};
-      } else if (index == -1 && sources.size() == 1) {
-        auto playerSources = sources[0]->get_sources();
+      } else if (index == -1 && sources->size() == 1) {
+        auto playerSources = (*sources)[0]->get_sources();
         auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};
-      } else if (sources.size() > 1) {
-        auto playerSources = sources[index]->get_sources();
+      } else if (sources->size() > 1) {
+        auto playerSources = (*sources)[index]->get_sources();
         auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};
       }
@@ -463,7 +463,7 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
       turn_on_backlight();
       update_display();
       return true;
-    } else {
+    } else if (backlight_->remote_values.get_brightness() < 1) {
       backlight_->turn_on()
           .set_transition_length(250)
           .set_brightness(1)
@@ -634,6 +634,7 @@ bool HomeThingMenuBase::upMenu() {
     menuTree.pop_back();
     menuIndex = 0;
     reload_menu_items_ = true;
+    menu_titles.clear();
     update_display();
     return true;
   }
@@ -825,7 +826,7 @@ void HomeThingMenuBase::buttonPressUp() {
         update_display();
         return;
       }
-      // if no light is selected go back to lightsMenu
+      // if no light is selected go up menu
       if (upMenu())
         return;
 #endif
@@ -1241,8 +1242,6 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
     menuTree.push_back(sourcesMenu);
   } else if (screenName == "mediaPlayers") {
     menuTree.push_back(mediaPlayersMenu);
-  } else if (screenName == "lights") {
-    menuTree.push_back(lightsMenu);
   } else if (screenName == "lightDetail") {
     menuTree.push_back(lightsDetailMenu);
   } else if (screenName == "switches") {

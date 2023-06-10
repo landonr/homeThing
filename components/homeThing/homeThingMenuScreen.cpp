@@ -17,6 +17,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
 
   for (const auto entity : entities_) {
     switch (std::get<0>(entity)) {
+      case MenuItemTypeNone:
+        break;
       case MenuItemTypeTitle:
         out.push_back(std::make_shared<MenuTitleBase>(
             std::get<1>(entity)->get_name(), "", NoMenuTitleRightIcon));
@@ -140,6 +142,8 @@ bool HomeThingMenuScreen::select_menu(int index) {
 #endif
   auto entity = entities_[index];
   switch (std::get<0>(entity)) {
+    case MenuItemTypeNone:
+      return false;
     case MenuItemTypeTitle:
       return false;
     case MenuItemTypeSwitch: {

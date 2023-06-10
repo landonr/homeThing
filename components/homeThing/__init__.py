@@ -449,7 +449,7 @@ async def menu_display_to_code(config, display_buffer):
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header, text_helpers)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, menu_header, menu_boot)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, text_helpers, refactor, menu_header)
     await ids_to_code(config, menu_display, MENU_DISPLAY_IDS)
     
     if CONF_MEDIA_PLAYERS in config:

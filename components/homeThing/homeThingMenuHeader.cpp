@@ -61,9 +61,6 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case scenesMenu:
       drawHeaderTitleWithString("Scenes/Actions", xPos);
       break;
-    case lightsMenu:
-      drawHeaderTitleWithString("Lights", xPos);
-      break;
     case lightsDetailMenu: {
 #ifdef USE_LIGHT
       auto selectedEntity = (*active_menu_screen_)->get_selected_entity();

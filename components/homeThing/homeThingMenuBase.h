@@ -207,8 +207,8 @@ class HomeThingMenuBase : public PollingComponent {
 #ifdef USE_SWITCH
   switch_::Switch* sleep_switch_{nullptr};
 #endif
-  HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuSettings* menu_settings_{nullptr};
+  HomeThingMenuDisplay* menu_display_{nullptr};
   std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
       std::vector<MenuStates> menu);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
