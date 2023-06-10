@@ -61,7 +61,6 @@ packages:
   ipod_control_rotary: !include common/ipod/lilygo_tdisplay_ipod_rotary.yaml
   ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
   home_media_player: !include homeConfig/media_player.yaml
-  home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
@@ -74,6 +73,20 @@ color:
     red_int: 75
     green_int: 45
     blue_int: 209
+
+light:
+  - platform: homeassistant_component
+    id: light_desk_lamp
+    entity_id: light.desk_lamp
+    name: Desk Lamp
+  - platform: homeassistant_component
+    id: light_all_lights
+    entity_id: light.all_lights
+    name: All Lights
+  - platform: homeassistant_component
+    id: light_rgb_lights
+    entity_id: light.rgb_lights
+    name: Color Lights 
 
 homeThing:
   id: homeThingMenu
@@ -123,6 +136,29 @@ homeThing:
                   entity_id: "button.desk_position_nudge_down"
         - id: light_desk_lamp
           type: light
+    - name: Lights Screen
+      entities:
+        - id: light_all_lights
+          type: light
+        - id: light_rgb_lights
+          type: light
+        - type: command
+          name: "color lights"
+          command:
+            - homeassistant.service:
+                service: script.colors
+        - type: command
+          name: "hell lights"
+          command:
+            - homeassistant.service:
+                service: scene.turn_on
+                data:
+                  entity_id: "scene.hell"
+        - type: command
+          name: "lights off"
+          command:
+            - homeassistant.service:
+                service: script.off_script
     - name: Settings Screen
       show_version: True
       entities:
