@@ -86,19 +86,6 @@ homeassistant_media_player:
     - id: media_player_tv
       type: roku
 
-# service menu
-homeassistant_service_group:
-  id: service_group_component
-  commands:
-    - text: "desk nudge up"
-      command:
-        - lambda: |-
-            ESP_LOGI("homeassistant_service_group", "nudge up");
-        - homeassistant.service:
-            service: button.press
-            data:
-              entity_id: "button.desk_position_nudge_up"
-
 # homeThing config
 # you only need one menu _group
 homeThing:
@@ -110,7 +97,6 @@ homeThing:
     charging: charging
    # need atleast 1 group_component or screen
   media_player_group: media_group_component
-  service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
   display: my_display # required

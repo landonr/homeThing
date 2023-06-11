@@ -61,7 +61,6 @@ packages:
   home_text_sensor: !include homeConfig/text_sensor.yaml
   home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
-  menu_group: !include homeConfig/services.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 
@@ -100,7 +99,6 @@ homeThing:
     battery_percent: battery_percent
     charging: charging
   media_player_group: media_group_component
-  service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
   display: my_display

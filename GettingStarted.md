@@ -137,17 +137,6 @@ homeassistant_media_player:
       type: speaker
     - id: media_player_tv
       type: roku
-
-# service menu - replace with your IDs
-homeassistant_service_group:
-  id: service_group_component
-  commands:
-    - text: "desk nudge up"
-      command:
-        - homeassistant.service:
-            service: button.press
-            data:
-              entity_id: "button.desk_position_nudge_up"
 ```
 
 ### 6. Set up the homeThing menu
@@ -166,7 +155,6 @@ homeThing:
     charging: charging
    # need atleast 1 group_component
   media_player_group: media_group_component
-  service_group: service_group_component
   sensor_group: sensor_group_component
   switch_group: switch_group_component
   display: my_display # required
