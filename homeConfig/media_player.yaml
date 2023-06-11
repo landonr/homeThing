@@ -14,8 +14,20 @@ media_player_source_custom:
   - id: youtube_videos
     name: youtube videos
     sources:
-      - name: cat video
+      - name: fred again boilerroom
+        media_id: c0-hvjV2A5Y
+        media_type: app
+        app: youtube
+      - name: 100 gecs boilerroom
         media_id: 8NWHnWbpxmc
+        media_type: app
+        app: youtube
+      - name: young marco dekmantel 2017
+        media_id: 1_vXiL_qD5c
+        media_type: app
+        app: youtube
+      - name: fred again, skrilly, four tet coachella
+        media_id: dFfC92iBxNw
         media_type: app
         app: youtube
 
