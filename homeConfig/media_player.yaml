@@ -16,7 +16,8 @@ media_player_source_custom:
     sources:
       - name: cat video
         media_id: 8NWHnWbpxmc
-        media_type: source
+        media_type: app
+        app: youtube
 
 media_player:
   - platform: homeassistant_media_player

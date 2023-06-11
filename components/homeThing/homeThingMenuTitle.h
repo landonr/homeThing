@@ -438,14 +438,14 @@ static std::vector<std::shared_ptr<MenuTitleBase>> activePlayerSourceTitles(
 
 static std::vector<std::shared_ptr<MenuTitleSource>>
 activePlayerSourceItemTitles(
-    std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
+    std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>*
         sourceItems) {
-  if (sourceItems.size() == 0) {
+  if (sourceItems->size() == 0) {
     ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
     return {};
   }
   std::vector<std::shared_ptr<MenuTitleSource>> out;
-  for (auto& sourceItem : sourceItems) {
+  for (auto& sourceItem : (*sourceItems)) {
     auto name = sourceItem->get_name();
     ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
              name.c_str());
