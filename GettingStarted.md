@@ -154,8 +154,14 @@ homeThing:
     font_material_small: material_font_small
     font_logo: home_thing_logo
   screens:	# you can have multiple screens
+    - name: Kitchen Screen
+      entities:
+        - id: oven_fan
+          type: switch
+        - id: sensor_weather
+          type: text_sensor
     - name: Settings Screen
-      show_version: True
+      show_version: True # defaults to false
       entities:
         - id: backlight
           type: light
