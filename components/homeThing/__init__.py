@@ -1,13 +1,10 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, wifi, api, binary_sensor, sensor, switch, light, text_sensor, number
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
-from esphome.components.homeassistant_service_group import homeassistant_service_group_ns
-from esphome.components.homeassistant_sensor_group import homeassistant_sensor_group_ns
-from esphome.components.homeassistant_switch_group import homeassistant_switch_group_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
@@ -40,13 +37,8 @@ CONF_API = "api_connected"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
 CONF_MEDIA_PLAYERS = "media_player_group"
-CONF_SERVICE_GROUP = "service_group"
-CONF_SENSOR_GROUP = "sensor_group"
-CONF_SWITCH_GROUP = "switch_group"
 CONF_ON_REDRAW = "on_redraw"
 CONF_SCREENS = "screens"
-CONF_SWITCHES = "switches"
-CONF_TEXT_SENSORS = "text_sensors"
 CONF_COMMANDS = "commands"
 CONF_COMMAND = "command"
 CONF_SHOW_VERSION = "show_version"
@@ -57,6 +49,7 @@ CONF_LIGHT = "light"
 CONF_TEXT_SENSOR = "text_sensor"
 CONF_SWITCH = "switch"
 CONF_ENTITIES = "entities"
+CONF_COVER = "cover"
 CONF_NUMBER = "number"
 
 # battery settings
@@ -276,6 +269,11 @@ MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.use_id(sensor.Sensor)
             }
         ),
+        CONF_COVER: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(cover.Cover),
+            }
+        ),
         CONF_NUMBER: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(number.Number)
@@ -309,9 +307,6 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
             cv.Optional(CONF_MENU_DISPLAY, default={}): MENU_DISPLAY_SCHEMA,
             cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
-            cv.Optional(CONF_SERVICE_GROUP): cv.use_id(homeassistant_service_group_ns.HomeAssistantServiceGroup),
-            cv.Optional(CONF_SWITCH_GROUP): cv.use_id(homeassistant_switch_group_ns.HomeAssistantSwitchGroup),
-            cv.Optional(CONF_SENSOR_GROUP): cv.use_id(homeassistant_sensor_group_ns.HomeAssistantSensorsGroup),
             cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
                 {
@@ -325,7 +320,7 @@ CONFIG_SCHEMA =  cv.All(
             ),
         }
     ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS, CONF_SERVICE_GROUP, CONF_SWITCH_GROUP, CONF_SENSORS, CONF_SCREENS)
+    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS, CONF_SCREENS)
 )
 
 async def ids_to_code(config, var, types):
@@ -443,7 +438,7 @@ async def menu_display_to_code(config, display_buffer):
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header, text_helpers)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, text_helpers, refactor, menu_header, menu_boot)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, text_helpers, refactor, menu_header)
     await ids_to_code(config, menu_display, MENU_DISPLAY_IDS)
     
     if CONF_MEDIA_PLAYERS in config:
@@ -481,6 +476,9 @@ async def menu_screen_to_code(config):
         elif conf[CONF_TYPE] == CONF_SENSOR:
             new_sensor = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_sensor(new_sensor))
+        elif conf[CONF_TYPE] == CONF_COVER:
+            new_cover = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_cover(new_cover))
         elif conf[CONF_TYPE] == CONF_NUMBER:
             new_number = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_number(new_number))
@@ -489,10 +487,7 @@ async def menu_screen_to_code(config):
 MENU_IDS = [
     CONF_BACKLIGHT,
     CONF_SLEEP_SWITCH,
-    CONF_MEDIA_PLAYERS,
-    CONF_SERVICE_GROUP, 
-    CONF_SWITCHES, 
-    CONF_SENSORS
+    CONF_MEDIA_PLAYERS
 ]
 
 async def to_code(config):

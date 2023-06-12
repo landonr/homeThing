@@ -16,20 +16,17 @@ void HomeThingMenuBase::setup() {
   this->display_update_tick_->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
 
-  // #ifdef USE_LIGHT_GROUP
-  //   if (this->light_group_) {
-  //     this->light_group_->add_on_state_callback([this](float state) {
-  //       switch (menuTree.back()) {
-  //         case lightsDetailMenu:
-  //           reload_menu_items_ = true;
-  //           this->update_display();
-  //         default:
-  //           break;
-  //       }
-  //     });
-  //   }
-  // #endif
-
+  for (auto screen : menu_screens_) {
+    screen->add_on_state_callback([this]() {
+      switch (menuTree.back()) {
+        case settingsMenu:
+          reload_menu_items_ = true;
+          this->update_display();
+        default:
+          break;
+      }
+    });
+  }
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (this->media_player_group_) {
     this->media_player_group_->add_on_state_callback([this](float state) {
@@ -39,34 +36,6 @@ void HomeThingMenuBase::setup() {
         case nowPlayingMenu:
         case sourcesMenu:
         case groupMenu:
-          this->update_display();
-        default:
-          break;
-      }
-    });
-  }
-#endif
-
-#ifdef USE_SWITCH_GROUP
-  if (this->switch_group_) {
-    this->switch_group_->add_on_state_callback([this](float state) {
-      switch (menuTree.back()) {
-        case switchesMenu:
-          reload_menu_items_ = true;
-          this->update_display();
-        default:
-          break;
-      }
-    });
-  }
-#endif
-
-#ifdef USE_SENSOR_GROUP
-  if (this->sensor_group_) {
-    this->sensor_group_->add_on_state_callback([this](float state) {
-      switch (menuTree.back()) {
-        case sensorsMenu:
-          reload_menu_items_ = true;
           this->update_display();
         default:
           break;
@@ -178,6 +147,7 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     }
     case lightsDetailMenu:
+      ESP_LOGI(TAG, "selectMenu: began editing light detail");
       editing_menu_item = true;
       break;
     case mediaPlayersMenu: {
@@ -191,23 +161,12 @@ bool HomeThingMenuBase::selectMenu() {
 #endif
       break;
     }
-#ifdef USE_SERVICE_GROUP
-    case scenesMenu:
-      if (service_group_->select_service(menuIndex)) {
-        topMenu();
-      }
-#endif
-      break;
-    case switchesMenu:
-#ifdef USE_SWITCH_GROUP
-      if (switch_group_->selectSwitch(menuIndex)) {
-        topMenu();
-      }
-#endif
-      break;
     case settingsMenu:
       if (active_menu_screen && active_menu_screen->select_menu(menuIndex)) {
-        if (active_menu_screen->get_selected_entity()) {
+        auto selected_entity = active_menu_screen->get_selected_entity();
+        if (selected_entity) {
+          MenuItemType menu_item_type = std::get<0>(*selected_entity);
+          ESP_LOGI(TAG, "selectMenu: began editing type %d", menu_item_type);
           editing_menu_item = true;
         }
         update_display();
@@ -230,7 +189,7 @@ bool HomeThingMenuBase::selectMenuHold() {
         ESP_LOGI(TAG, "selectMenuHold: %d", menuIndex);
         MenuItemType menu_item_type = std::get<0>(*menu_item);
         if (menu_item_type == MenuItemTypeLight) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
           auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
           ESP_LOGI(TAG, "selectMenuHold: name %s", light->get_name().c_str());
           if (supportsBrightness(light)) {
@@ -258,22 +217,6 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
     out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
   }
 #endif
-#ifdef USE_SERVICE_GROUP
-  if (service_group_) {
-    out.push_back(scenesMenu);
-  }
-#endif
-#ifdef USE_SENSOR_GROUP
-  if (sensor_group_) {
-    out.push_back(sensorsMenu);
-  }
-#endif
-
-#ifdef USE_SWITCH_GROUP
-  if (switch_group_) {
-    out.push_back(switchesMenu);
-  }
-#endif
   static_menu_titles = out.size();
 
   for (auto& menu_screen : menu_screens_) {
@@ -293,22 +236,6 @@ bool HomeThingMenuBase::selectRootMenu() {
       break;
     case mediaPlayersMenu:
       menuTree.push_back(mediaPlayersMenu);
-      break;
-    case switchesMenu:
-      menuTree.push_back(switchesMenu);
-      break;
-    case scenesMenu:
-      menuTree.push_back(scenesMenu);
-      break;
-    // case backlightMenu:
-    //   topMenu();
-    //   sleep_display();
-    //   return false;
-    // case sleepMenu:
-    //   sleep_switch_->turn_on();
-    //   return false;
-    case sensorsMenu:
-      menuTree.push_back(sensorsMenu);
       break;
     case settingsMenu:
       menuTree.push_back(settingsMenu);
@@ -371,15 +298,15 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #ifdef USE_MEDIA_PLAYER_GROUP
       auto sources = media_player_group_->activePlayerSources();
       auto index = media_player_group_->get_active_player_source_index();
-      if (index == -1 && sources.size() > 1) {
+      if (index == -1 && sources->size() > 1) {
         auto sourceTitles = activePlayerSourceTitles(sources);
         return {sourceTitles.begin(), sourceTitles.end()};
-      } else if (index == -1 && sources.size() == 1) {
-        auto playerSources = sources[0]->get_sources();
+      } else if (index == -1 && sources->size() == 1) {
+        auto playerSources = (*sources)[0]->get_sources();
         auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};
-      } else if (sources.size() > 1) {
-        auto playerSources = sources[index]->get_sources();
+      } else if (sources->size() > 1) {
+        auto playerSources = (*sources)[index]->get_sources();
         auto sourceTitles = activePlayerSourceItemTitles(playerSources);
         return {sourceTitles.begin(), sourceTitles.end()};
       }
@@ -394,18 +321,8 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
       break;
     }
-    case scenesMenu:
-#ifdef USE_SERVICE_GROUP
-      return sceneTitleStrings(service_group_->services);
-#endif
-      break;
-    case sensorsMenu:
-#ifdef USE_SENSOR_GROUP
-      return sensorTitles(sensor_group_->sensors);
-#endif
-      break;
     case lightsDetailMenu: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       auto selectedEntity = active_menu_screen->get_selected_entity();
       if (selectedEntity != NULL &&
           std::get<0>(*selectedEntity) == MenuItemTypeLight) {
@@ -418,11 +335,6 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
       break;
     }
-    case switchesMenu:
-#ifdef USE_SWITCH_GROUP
-      return switchTitleSwitches(switch_group_->switches);
-#endif
-      break;
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       return speakerNowPlayingMenuStates(media_player_group_->active_player_);
@@ -462,7 +374,7 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
       turn_on_backlight();
       update_display();
       return true;
-    } else {
+    } else if (backlight_->remote_values.get_brightness() < 1) {
       backlight_->turn_on()
           .set_transition_length(250)
           .set_brightness(1)
@@ -587,7 +499,7 @@ void HomeThingMenuBase::buttonPressSelect() {
     // 3 button
     switch (menuTree.back()) {
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         if (editing_menu_item) {
           // deselect light if selected and stay in lightsDetailMenu
           editing_menu_item = false;
@@ -633,6 +545,7 @@ bool HomeThingMenuBase::upMenu() {
     menuTree.pop_back();
     menuIndex = 0;
     reload_menu_items_ = true;
+    menu_titles.clear();
     update_display();
     return true;
   }
@@ -654,7 +567,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
 #endif
         return;
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         if (HomeThingMenuControls::editingScrollBack(
                 active_menu_screen->get_selected_entity(), menuIndex,
                 editing_menu_item)) {
@@ -684,7 +597,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   } else {
     // 3 button
     switch (menuTree.back()) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       case lightsDetailMenu:
         if (HomeThingMenuControls::editingScrollBack(
                 active_menu_screen->get_selected_entity(), menuIndex,
@@ -728,7 +641,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
 #endif
         return;
       case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
         if (HomeThingMenuControls::editingScrollForward(
                 active_menu_screen->get_selected_entity(), menuIndex,
                 editing_menu_item)) {
@@ -758,7 +671,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
   } else {
     // 3 button
     switch (menuTree.back()) {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       case lightsDetailMenu:
         if (HomeThingMenuControls::editingScrollForward(
                 active_menu_screen->get_selected_entity(), menuIndex,
@@ -816,7 +729,7 @@ void HomeThingMenuBase::buttonPressUp() {
 #endif
       return;
     case lightsDetailMenu:
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       if (editing_menu_item) {
         // deselect light if selected and stay in lightsDetailMenu
         editing_menu_item = false;
@@ -824,7 +737,7 @@ void HomeThingMenuBase::buttonPressUp() {
         update_display();
         return;
       }
-      // if no light is selected go back to lightsMenu
+      // if no light is selected go up menu
       if (upMenu())
         return;
 #endif
@@ -1056,11 +969,8 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     case sourcesMenu:
     case groupMenu:
     case mediaPlayersMenu:
-    case scenesMenu:
     case lightsDetailMenu:
-    case sensorsMenu:
     case bootMenu:
-    case switchesMenu:
       break;
   }
 }
@@ -1240,20 +1150,12 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
     menuTree.push_back(sourcesMenu);
   } else if (screenName == "mediaPlayers") {
     menuTree.push_back(mediaPlayersMenu);
-  } else if (screenName == "lights") {
-    menuTree.push_back(lightsMenu);
   } else if (screenName == "lightDetail") {
     menuTree.push_back(lightsDetailMenu);
-  } else if (screenName == "switches") {
-    menuTree.push_back(switchesMenu);
-  } else if (screenName == "scenes") {
-    menuTree.push_back(scenesMenu);
   } else if (screenName == "home") {
     menuTree.assign(1, rootMenu);
   } else if (screenName == "speakerGroup") {
     menuTree.push_back(groupMenu);
-  } else if (screenName == "sensors") {
-    menuTree.push_back(sensorsMenu);
   } else if (screenName == "boot") {
     menuTree.push_back(bootMenu);
   }

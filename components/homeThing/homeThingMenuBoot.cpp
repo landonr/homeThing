@@ -182,6 +182,9 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
              display_state_->get_margin_size() / 2 -
              display_state_->get_font_small()->get_baseline();
   switch (skip_state) {
+    case BOOT_MENU_SKIP_STATE_NONE: {
+      break;
+    };
     case BOOT_MENU_SKIP_STATE_MENU: {
       display_buffer_->printf(
           xPos, yPos, display_state_->get_font_small(),
@@ -261,14 +264,14 @@ bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
   int xPos = display_buffer_->get_width() / 2;
   int maxAnimationDuration = 0;
   maxAnimationDuration =
-      max(maxAnimationDuration, drawBootSequenceHeader(activeMenuState));
+      std::max(maxAnimationDuration, drawBootSequenceHeader(activeMenuState));
   maxAnimationDuration =
-      max(maxAnimationDuration, drawBootSequenceLogo(xPos, imageYPos));
+      std::max(maxAnimationDuration, drawBootSequenceLogo(xPos, imageYPos));
   maxAnimationDuration =
-      max(maxAnimationDuration, drawBootSequenceLoadingBarAnimation());
+      std::max(maxAnimationDuration, drawBootSequenceLoadingBarAnimation());
   maxAnimationDuration =
-      max(maxAnimationDuration,
-          drawBootSequenceTitle(xPos, imageYPos, activeMenuState));
+      std::max(maxAnimationDuration,
+               drawBootSequenceTitle(xPos, imageYPos, activeMenuState));
   const int animationTick = animation_->animationTick->state;
   if (animationTick <= maxAnimationDuration) {
     return true;

@@ -1,6 +1,6 @@
 #include "homeThingMenuHeader.h"
-#ifdef USE_LIGHT_GROUP
-#include "esphome/components/homeassistant_light_group/LightExtensions.h"
+#ifdef USE_LIGHT
+#include "esphome/components/homeassistant_component/LightExtensions.h"
 #endif
 
 namespace esphome {
@@ -58,14 +58,8 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case mediaPlayersMenu:
       drawHeaderTitleWithString("Media Players", xPos);
       break;
-    case scenesMenu:
-      drawHeaderTitleWithString("Scenes/Actions", xPos);
-      break;
-    case lightsMenu:
-      drawHeaderTitleWithString("Lights", xPos);
-      break;
     case lightsDetailMenu: {
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
       auto selectedEntity = (*active_menu_screen_)->get_selected_entity();
       if (selectedEntity != NULL &&
           std::get<0>(*selectedEntity) == MenuItemTypeLight) {
@@ -81,12 +75,6 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 #endif
       break;
     }
-    case switchesMenu:
-      drawHeaderTitleWithString("Switches", xPos);
-      break;
-    case sensorsMenu:
-      drawHeaderTitleWithString("Sensors", xPos);
-      break;
     case bootMenu:
       drawHeaderTitleWithString(display_state_->get_boot_device_name(), xPos,
                                 yPosOffset);

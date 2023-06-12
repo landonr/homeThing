@@ -1,15 +1,5 @@
 switch:
-  - platform: homeassistant_switch_group
+  - platform: homeassistant_component
     entity_id: "switch.oven_fan"
     name: "Oven Fan"
     id: oven_fan_switch
-  - platform: restart
-    id: restart_switch
-    name: "${friendly_name} Restart"
-
-
-homeassistant_switch_group:
-  id: switch_group_component
-  switches:
-    - id: "oven_fan_switch"
-    - id: "restart_switch"

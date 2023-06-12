@@ -13,26 +13,13 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 
-#ifdef USE_LIGHT_GROUP
+#ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
-#include "esphome/components/homeassistant_light_group/HomeAssistantLightGroup.h"
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
-#endif
-
-#ifdef USE_SENSOR_GROUP
-#include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
-#endif
-
-#ifdef USE_SERVICE_GROUP
-#include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
-#endif
-
-#ifdef USE_SWITCH_GROUP
-#include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
 #endif
 
 #ifdef USE_LIGHT
@@ -47,17 +34,18 @@ namespace homething_menu_base {
 
 class HomeThingMenuDisplay {
  public:
-  HomeThingMenuDisplay(display::DisplayBuffer* display_buffer,
+  HomeThingMenuDisplay(HomeThingMenuBoot* boot,
+                       display::DisplayBuffer* display_buffer,
                        HomeThingMenuDisplayState* display_state,
                        HomeThingMenuTextHelpers* text_helpers,
                        HomeThingMenuRefactor* refactor,
-                       HomeThingMenuHeader* header, HomeThingMenuBoot* boot)
-      : display_buffer_(display_buffer),
+                       HomeThingMenuHeader* header)
+      : boot_(boot),
+        display_buffer_(display_buffer),
         display_state_(display_state),
         text_helpers_(text_helpers),
         refactor_(refactor),
-        header_(header),
-        boot_(boot) {}
+        header_(header) {}
   void setup();
   void draw_lock_screen(int unlock_presses);
   bool draw_menu_screen(
@@ -107,9 +95,9 @@ class HomeThingMenuDisplay {
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
-  HomeThingMenuAnimation* animation_{nullptr};
-  HomeThingMenuHeader* header_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
+  HomeThingMenuHeader* header_{nullptr};
+  HomeThingMenuAnimation* animation_{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   void drawTitleImage(

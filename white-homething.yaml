@@ -1,7 +1,5 @@
 esphome:
   name: "white-homething"
-  platform: ESP32
-  board: featheresp32
   on_boot:
     priority: 600.0
     then:
@@ -12,6 +10,9 @@ esphome:
               - wifi.connected:
           then:
             - switch.turn_on: sleep_toggle
+
+esp32:
+  board: featheresp32
 
 wifi:
   ssid: !secret wifi_ssid
@@ -28,9 +29,9 @@ external_components:
     #   type: git
     #   url: https://github.com/landonr/homeThing
     #   ref: main
-    # refresh: 0s
       type: local
       path: components
+    refresh: 0s
     components: [homeThing]
   - source:
     #   type: git
@@ -40,11 +41,8 @@ external_components:
       type: local
       path: ../local_components/components
     components: [
-      homeassistant_component, 
-      homeassistant_switch_group, 
-      homeassistant_sensor_group,
+      homeassistant_component,
       homeassistant_media_player,
-      homeassistant_service_group,
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,
@@ -53,16 +51,14 @@ external_components:
 
 packages:
   device_base: !include common/device_base.yaml
+  settings: !include common/settings.yaml
   ipod_control_backlight: !include common/ipod/lilygo_tdisplay_ipod_backlight.yaml
   ipod_control_battery: !include common/ipod/lilygo_tdisplay_ipod_battery.yaml
   ipod_control_binary_sensor: !include common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
   ipod_control_rotary: !include common/ipod/lilygo_tdisplay_ipod_rotary.yaml
   ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
   home_media_player: !include homeConfig/media_player.yaml
-  home_text_sensor: !include homeConfig/text_sensor.yaml
-  home_light: !include homeConfig/light.yaml
   home_switch: !include homeConfig/switch.yaml
-  menu_group: !include homeConfig/services.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
 
@@ -74,6 +70,20 @@ color:
     red_int: 75
     green_int: 45
     blue_int: 209
+
+light:
+  - platform: homeassistant_component
+    id: light_desk_lamp
+    entity_id: light.desk_lamp
+    name: Desk Lamp
+  - platform: homeassistant_component
+    id: light_all_lights
+    entity_id: light.all_lights
+    name: All Lights
+  - platform: homeassistant_component
+    id: light_rgb_lights
+    entity_id: light.rgb_lights
+    name: Color Lights 
 
 homeThing:
   id: homeThingMenu
@@ -103,8 +113,8 @@ homeThing:
   screens:
     - name: Desk Screen
       entities:
-        # - id: cover_megadesk
-        #   type: cover
+        - type: cover
+          id: cover_megadesk
         - type: number
           id: desk_height_number
         - type: command
@@ -123,6 +133,29 @@ homeThing:
                   entity_id: "button.desk_position_nudge_down"
         - id: light_desk_lamp
           type: light
+    - name: Lights Screen
+      entities:
+        - id: light_all_lights
+          type: light
+        - id: light_rgb_lights
+          type: light
+        - type: command
+          name: "color lights"
+          command:
+            - homeassistant.service:
+                service: script.colors
+        - type: command
+          name: "hell lights"
+          command:
+            - homeassistant.service:
+                service: scene.turn_on
+                data:
+                  entity_id: "scene.hell"
+        - type: command
+          name: "lights off"
+          command:
+            - homeassistant.service:
+                service: script.off_script
     - name: Settings Screen
       show_version: True
       entities:
@@ -162,3 +195,10 @@ display:
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
+
+cover:
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
+    

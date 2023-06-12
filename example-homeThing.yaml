@@ -23,7 +23,7 @@ substitutions:
 # switch menu
 switch:
   # replace with your switchs
-  - platform: homeassistant_switch_group
+  - platform: homeassistant_component
     entity_id: "switch.oven_fan"
     name: "Oven Fan"
     id: oven_fan_switch
@@ -31,23 +31,12 @@ switch:
     id: restart_switch
     name: "${friendly_name} Restart"
 
-homeassistant_switch_group:
-  # defined above with switches
-  id: switch_group_component
-  switches:
-    - id: "oven_fan_switch"
-
 # sensor menu
 text_sensor:
   - platform: homeassistant
     entity_id: "sensor.vancouver_forecast"
     name: "Weather"
     id: sensor_weather
-
-homeassistant_sensor_group:
-  id: sensor_group_component
-  sensors:
-    - id: sensor_weather
 
 # light menu
 light:
@@ -86,19 +75,6 @@ homeassistant_media_player:
     - id: media_player_tv
       type: roku
 
-# service menu
-homeassistant_service_group:
-  id: service_group_component
-  commands:
-    - text: "desk nudge up"
-      command:
-        - lambda: |-
-            ESP_LOGI("homeassistant_service_group", "nudge up");
-        - homeassistant.service:
-            service: button.press
-            data:
-              entity_id: "button.desk_position_nudge_up"
-
 # homeThing config
 # you only need one menu _group
 homeThing:
@@ -110,9 +86,6 @@ homeThing:
     charging: charging
    # need atleast 1 group_component or screen
   media_player_group: media_group_component
-  service_group: service_group_component
-  sensor_group: sensor_group_component
-  switch_group: switch_group_component
   display: my_display # required
   on_redraw: # required
     then:
@@ -181,8 +154,10 @@ packages:
 # only remove components if you aren't using the group
 external_components:
   - source:
-      type: git
-      url: https://github.com/landonr/homeThing
+      type: local
+      path: ../local_components/components
+      # type: git
+      # url: https://github.com/landonr/homeThing
     refresh: 0s
     components: [homeThing]
   - source:

@@ -7,21 +7,6 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
-#ifdef USE_TEXT_SENSOR
-#include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
-#endif
-
-#ifdef USE_SENSOR_GROUP
-#include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
-#endif
-
-#ifdef USE_SERVICE_GROUP
-#include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
-#endif
-
-#ifdef USE_SWITCH_GROUP
-#include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
-#endif
 #include "esphome/core/log.h"
 #include "version.h"
 
@@ -36,12 +21,8 @@ enum MenuStates {
   sourcesMenu,
   groupMenu,
   mediaPlayersMenu,
-  scenesMenu,
-  lightsMenu,
   lightsDetailMenu,
-  switchesMenu,
   nowPlayingMenu,
-  sensorsMenu,
   settingsMenu
 };
 
@@ -62,20 +43,12 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Sources";
     case mediaPlayersMenu:
       return "Media Players";
-    case lightsMenu:
-      return "Lights";
     case lightsDetailMenu:
       return "Light Detail";
-    case switchesMenu:
-      return "Switches";
-    case scenesMenu:
-      return "Scenes and Actions";
     case rootMenu:
       return "Home";
     case groupMenu:
       return "Speaker Group";
-    case sensorsMenu:
-      return "Sensors";
     case bootMenu:
       return "Boot";
     case settingsMenu:
@@ -92,22 +65,16 @@ static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
       return ArrowMenuTitleRightIcon;
     case mediaPlayersMenu:
       return ArrowMenuTitleRightIcon;
-    case lightsMenu:
-      return ArrowMenuTitleRightIcon;
     case lightsDetailMenu:
-      return ArrowMenuTitleRightIcon;
-    case switchesMenu:
-      return ArrowMenuTitleRightIcon;
-    case scenesMenu:
       return ArrowMenuTitleRightIcon;
     case rootMenu:
       return NoMenuTitleRightIcon;
     case groupMenu:
       return ArrowMenuTitleRightIcon;
-    case sensorsMenu:
-      return ArrowMenuTitleRightIcon;
     case bootMenu:
       return NoMenuTitleRightIcon;
+    case settingsMenu:
+      return ArrowMenuTitleRightIcon;
   }
   return NoMenuTitleRightIcon;
 }
@@ -128,6 +95,9 @@ enum SliderSelectionState {
 };
 
 class MenuTitleBase {
+ protected:
+  std::string name_;
+
  public:
   std::string entity_id_;
   MenuTitleRightIcon rightIconState;
@@ -147,9 +117,6 @@ class MenuTitleBase {
       return entity_id_;
     }
   }
-
- protected:
-  std::string name_;
 };
 
 class MenuTitleToggle : public MenuTitleBase {
@@ -181,9 +148,9 @@ class MenuTitleSlider : public MenuTitleBase {
   bool currentState;
   int sliderValue;
   int displayValue;
+  std::string sliderUnit;
   int value_min_;
   int value_max_;
-  std::string sliderUnit;
   MenuTitleSlider(std::string newTitle, std::string newEntityId,
                   MenuTitleRightIcon newRightIconState, int newSliderValue,
                   int newDisplayValue, std::string newSliderUnit, int value_min,
@@ -202,64 +169,6 @@ class MenuTitleSlider : public MenuTitleBase {
     return value_minus_min / old_range;
   }
 };
-
-// switch
-
-#ifdef USE_SWITCH_GROUP
-static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
-    const std::vector<switch_::Switch*>& switches) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (const auto switchObject : switches) {
-    ESP_LOGD(MENU_TITLE_TAG, "switch state %d", switchObject->state);
-    MenuTitleLeftIcon state =
-        switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-    out.push_back(std::make_shared<MenuTitleToggle>(
-        switchObject->get_name(), switchObject->get_object_id(), state,
-        NoMenuTitleRightIcon));
-  }
-  return out;
-}
-
-#endif  // switch
-
-#ifdef USE_SERVICE_GROUP  // service
-
-static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
-    const std::vector<
-        homeassistant_service_group::HomeAssistantServiceCommand*>& services) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& service : services) {
-    ESP_LOGD(MENU_TITLE_TAG, "MENU Service %s",
-             service->get_text<std::string>().c_str());
-    std::string service_text = service->get_text<std::string>();
-    out.push_back(std::make_shared<MenuTitleBase>(service_text, "2",
-                                                  NoMenuTitleRightIcon));
-  }
-  return out;
-}
-
-#endif  // service
-
-#ifdef USE_SENSOR_GROUP  // sensor
-
-static std::vector<std::shared_ptr<MenuTitleBase>> sensorTitles(
-    const std::vector<esphome::homeassistant::HomeassistantTextSensor*>&
-        sensors) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& sensor : sensors) {
-    if (sensor->get_name() != "") {
-      out.push_back(std::make_shared<MenuTitleBase>(
-          sensor->get_name() + " " + sensor->get_state(), "",
-          NoMenuTitleRightIcon));
-    } else {
-      out.push_back(std::make_shared<MenuTitleBase>(sensor->state, "",
-                                                    NoMenuTitleRightIcon));
-    }
-  }
-  return out;
-}
-
-#endif  // sensor
 
 #ifdef USE_MEDIA_PLAYER_GROUP  // now playing bottom menu
 
@@ -433,9 +342,9 @@ static std::vector<MenuTitlePlayer*> mediaPlayersTitleString(
 }
 
 static std::vector<std::shared_ptr<MenuTitleBase>> activePlayerSourceTitles(
-    std::vector<media_player_source::MediaPlayerSourceBase*> sources) {
+    std::vector<media_player_source::MediaPlayerSourceBase*>* sources) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& source : sources) {
+  for (auto& source : *sources) {
     auto new_menu_title = std::make_shared<MenuTitleBase>(
         source->get_name(), "", NoMenuTitleRightIcon);
     out.push_back(new_menu_title);
@@ -445,14 +354,14 @@ static std::vector<std::shared_ptr<MenuTitleBase>> activePlayerSourceTitles(
 
 static std::vector<std::shared_ptr<MenuTitleSource>>
 activePlayerSourceItemTitles(
-    std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>
+    std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>*
         sourceItems) {
-  if (sourceItems.size() == 0) {
+  if (sourceItems->size() == 0) {
     ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
     return {};
   }
   std::vector<std::shared_ptr<MenuTitleSource>> out;
-  for (auto& sourceItem : sourceItems) {
+  for (auto& sourceItem : (*sourceItems)) {
     auto name = sourceItem->get_name();
     ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
              name.c_str());

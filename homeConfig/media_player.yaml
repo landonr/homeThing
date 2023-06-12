@@ -14,9 +14,22 @@ media_player_source_custom:
   - id: youtube_videos
     name: youtube videos
     sources:
-      - name: cat video
+      - name: fred again boilerroom
+        media_id: c0-hvjV2A5Y
+        media_type: app
+        app: youtube
+      - name: 100 gecs boilerroom
         media_id: 8NWHnWbpxmc
-        media_type: source
+        media_type: app
+        app: youtube
+      - name: young marco dekmantel 2017
+        media_id: 1_vXiL_qD5c
+        media_type: app
+        app: youtube
+      - name: fred again, skrilly, four tet coachella
+        media_id: dFfC92iBxNw
+        media_type: app
+        app: youtube
 
 media_player:
   - platform: homeassistant_media_player
@@ -69,11 +82,11 @@ media_player:
     sources:
       - id: spotty
         type: spotify
-  # - platform: homeassistant_media_player
-  #   name: PC
-  #   entity_id: "media_player.tower"
-  #   id: media_player_tower
-  #   type: speaker
+  - platform: homeassistant_media_player
+    name: PC
+    entity_id: "media_player.tower"
+    id: media_player_tower
+    type: speaker
   # - platform: homeassistant_media_player
   #   name: Kodi
   #   entity_id: "media_player.kodi_desktop"
@@ -93,7 +106,7 @@ homeassistant_media_player:
       type: speaker
     - id: media_player_spotify
       type: speaker
-    # - id: media_player_tower
-    #   type: speaker
+    - id: media_player_tower
+      type: speaker
     # - id: media_player_kodi
     #   type: kodi

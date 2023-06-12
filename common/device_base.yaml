@@ -13,10 +13,6 @@ api:
       - lambda: |-
           id(homeThingMenu)->goToScreenFromString(screen_name);
 
-http_request:
-  useragent: esphome/device
-  timeout: 10s
-
 time:
   - platform: homeassistant
     id: esptime
@@ -40,29 +36,3 @@ sensor:
     unit_of_measurement: 'B'
     state_class: measurement
     update_interval: 10s
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
-    name: "WiFi Signal dB"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: "diagnostic"
-    internal: True
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Signal %"
-    id: wifi_signal_percent
-    internal: True
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
-
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: IP Address
-      internal: True
-      id: wifi_ip
-    ssid:
-      name: SSID
-      internal: True
-      id: wifi_ssid
