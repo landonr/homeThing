@@ -1,10 +1,5 @@
 switch:
-  - platform: homeassistant_switch_group
+  - platform: homeassistant_component
     entity_id: "switch.oven_fan"
     name: "Oven Fan"
     id: oven_fan_switch
-
-homeassistant_switch_group:
-  id: switch_group_component
-  switches:
-    - id: "oven_fan_switch"

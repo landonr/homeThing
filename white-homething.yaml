@@ -41,11 +41,8 @@ external_components:
       type: local
       path: ../local_components/components
     components: [
-      homeassistant_component, 
-      homeassistant_switch_group, 
-      homeassistant_sensor_group,
+      homeassistant_component,
       homeassistant_media_player,
-      homeassistant_service_group,
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,

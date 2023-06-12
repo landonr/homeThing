@@ -7,17 +7,6 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
-#ifdef USE_SENSOR_GROUP
-#include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
-#endif
-
-#ifdef USE_SERVICE_GROUP
-#include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
-#endif
-
-#ifdef USE_SWITCH_GROUP
-#include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
-#endif
 #include "esphome/core/log.h"
 #include "version.h"
 

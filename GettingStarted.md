@@ -82,7 +82,7 @@ packages:
 
 ```yaml
 switch:
-    - platform: homeassistant_switch_group
+    - platform: homeassistant_component
       entity_id: "switch.oven_fan"
       name: "Oven Fan"
       id: oven_fan_switch
@@ -155,8 +155,6 @@ homeThing:
     charging: charging
    # need atleast 1 group_component
   media_player_group: media_group_component
-  sensor_group: sensor_group_component
-  switch_group: switch_group_component
   display: my_display # required
   on_redraw: # required
     then:

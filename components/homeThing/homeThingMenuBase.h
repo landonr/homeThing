@@ -22,18 +22,6 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
-#ifdef USE_SENSOR_GROUP
-#include "esphome/components/homeassistant_sensor_group/HomeAssistantSensorGroup.h"
-#endif
-
-#ifdef USE_SERVICE_GROUP
-#include "esphome/components/homeassistant_service_group/HomeAssistantServiceGroup.h"
-#endif
-
-#ifdef USE_SWITCH_GROUP
-#include "esphome/components/homeassistant_switch_group/HomeAssistantSwitchGroup.h"
-#endif
-
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 
@@ -71,19 +59,6 @@ class HomeThingMenuBase : public PollingComponent {
     menu_screens_.push_back(new_screen);
   }
 
-#ifdef USE_SERVICE_GROUP
-  homeassistant_service_group::HomeAssistantServiceGroup* get_service_group() {
-    return service_group_;
-  }
-#endif
-
-#ifdef USE_SERVICE_GROUP
-  void set_service_group(
-      homeassistant_service_group::HomeAssistantServiceGroup* service_group) {
-    service_group_ = service_group;
-  }
-#endif
-
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group() {
@@ -93,26 +68,6 @@ class HomeThingMenuBase : public PollingComponent {
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group) {
     media_player_group_ = media_player_group;
-  }
-#endif
-
-#ifdef USE_SWITCH_GROUP
-  homeassistant_switch_group::HomeAssistantSwitchGroup* get_switch_group() {
-    return switch_group_;
-  }
-  void set_switch_group(
-      homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group) {
-    switch_group_ = switch_group;
-  }
-#endif
-
-#ifdef USE_SENSOR_GROUP
-  homeassistant_sensor_group::HomeAssistantSensorGroup* get_sensor_group() {
-    return sensor_group_;
-  }
-  void set_sensor_group(
-      homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group) {
-    sensor_group_ = sensor_group;
   }
 #endif
 
@@ -215,25 +170,12 @@ class HomeThingMenuBase : public PollingComponent {
   std::vector<HomeThingMenuScreen*> menu_screens_;
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
-#ifdef USE_SERVICE_GROUP
-  homeassistant_service_group::HomeAssistantServiceGroup* service_group_{
-      nullptr};
-#endif
-
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
   void selectNowPlayingMenu();
   HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
       new HomeThingMenuNowPlayingOptionMenu();
-#endif
-
-#ifdef USE_SWITCH_GROUP
-  homeassistant_switch_group::HomeAssistantSwitchGroup* switch_group_{nullptr};
-#endif
-
-#ifdef USE_SENSOR_GROUP
-  homeassistant_sensor_group::HomeAssistantSensorGroup* sensor_group_{nullptr};
 #endif
 
   void update_display() { this->on_redraw_callbacks_.call(); }

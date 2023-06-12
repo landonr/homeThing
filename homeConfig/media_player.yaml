@@ -74,19 +74,19 @@ media_player:
     sources:
       - id: youtube_videos
         type: custom
-  # - platform: homeassistant_media_player
-  #   name: Spotify
-  #   entity_id: "media_player.spotify_landorghini"
-  #   id: media_player_spotify
-  #   type: speaker
-  #   sources:
-  #     - id: spotty
-  #       type: spotify
-  # - platform: homeassistant_media_player
-  #   name: PC
-  #   entity_id: "media_player.tower"
-  #   id: media_player_tower
-  #   type: speaker
+  - platform: homeassistant_media_player
+    name: Spotify
+    entity_id: "media_player.spotify_landorghini"
+    id: media_player_spotify
+    type: speaker
+    sources:
+      - id: spotty
+        type: spotify
+  - platform: homeassistant_media_player
+    name: PC
+    entity_id: "media_player.tower"
+    id: media_player_tower
+    type: speaker
   # - platform: homeassistant_media_player
   #   name: Kodi
   #   entity_id: "media_player.kodi_desktop"
@@ -104,9 +104,9 @@ homeassistant_media_player:
       type: roku
     - id: media_player_kitchen
       type: speaker
-    # - id: media_player_spotify
-    #   type: speaker
-    # - id: media_player_tower
-    #   type: speaker
+    - id: media_player_spotify
+      type: speaker
+    - id: media_player_tower
+      type: speaker
     # - id: media_player_kodi
     #   type: kodi

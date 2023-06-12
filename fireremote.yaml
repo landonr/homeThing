@@ -36,18 +36,15 @@ external_components:
       path: components
     components: [homeThing]
   - source:
-      type: git
-      url: https://github.com/landonr/esphome-components
-      ref: main
-    refresh: 0s
-      # type: local
-      # path: ../local_components/components
+    #   type: git
+    #   url: https://github.com/landonr/esphome-components
+    #   ref: main
+    # refresh: 0s
+      type: local
+      path: ../local_components/components
     components: [
-      homeassistant_component, 
-      homeassistant_switch_group, 
-      homeassistant_sensor_group,
+      homeassistant_component,
       homeassistant_media_player,
-      homeassistant_service_group,
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,
@@ -175,8 +172,6 @@ homeThing:
     battery_percent: battery_percent
     charging: connected
   media_player_group: media_group_component
-  sensor_group: sensor_group_component
-  switch_group: switch_group_component
   display: my_display
   on_redraw:
     then:

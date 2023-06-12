@@ -13,8 +13,6 @@ homeThing:
     battery_percent: battery_percent
     charging: connected
   media_player_group: media_group_component
-  sensor_group: sensor_group_component
-  switch_group: switch_group_component
   display: my_display
   on_redraw:
     then:
