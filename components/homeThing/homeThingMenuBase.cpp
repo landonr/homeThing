@@ -43,34 +43,6 @@ void HomeThingMenuBase::setup() {
     });
   }
 #endif
-
-#ifdef USE_SWITCH_GROUP
-  if (this->switch_group_) {
-    this->switch_group_->add_on_state_callback([this](float state) {
-      switch (menuTree.back()) {
-        case switchesMenu:
-          reload_menu_items_ = true;
-          this->update_display();
-        default:
-          break;
-      }
-    });
-  }
-#endif
-
-#ifdef USE_SENSOR_GROUP
-  if (this->sensor_group_) {
-    this->sensor_group_->add_on_state_callback([this](float state) {
-      switch (menuTree.back()) {
-        case sensorsMenu:
-          reload_menu_items_ = true;
-          this->update_display();
-        default:
-          break;
-      }
-    });
-  }
-#endif
 }
 
 void HomeThingMenuBase::draw_menu_screen() {
@@ -189,20 +161,6 @@ bool HomeThingMenuBase::selectMenu() {
 #endif
       break;
     }
-#ifdef USE_SERVICE_GROUP
-    case scenesMenu:
-      if (service_group_->select_service(menuIndex)) {
-        topMenu();
-      }
-#endif
-      break;
-    case switchesMenu:
-#ifdef USE_SWITCH_GROUP
-      if (switch_group_->selectSwitch(menuIndex)) {
-        topMenu();
-      }
-#endif
-      break;
     case settingsMenu:
       if (active_menu_screen && active_menu_screen->select_menu(menuIndex)) {
         auto selected_entity = active_menu_screen->get_selected_entity();
@@ -259,22 +217,6 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
     out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
   }
 #endif
-#ifdef USE_SERVICE_GROUP
-  if (service_group_) {
-    out.push_back(scenesMenu);
-  }
-#endif
-#ifdef USE_SENSOR_GROUP
-  if (sensor_group_) {
-    out.push_back(sensorsMenu);
-  }
-#endif
-
-#ifdef USE_SWITCH_GROUP
-  if (switch_group_) {
-    out.push_back(switchesMenu);
-  }
-#endif
   static_menu_titles = out.size();
 
   for (auto& menu_screen : menu_screens_) {
@@ -294,22 +236,6 @@ bool HomeThingMenuBase::selectRootMenu() {
       break;
     case mediaPlayersMenu:
       menuTree.push_back(mediaPlayersMenu);
-      break;
-    case switchesMenu:
-      menuTree.push_back(switchesMenu);
-      break;
-    case scenesMenu:
-      menuTree.push_back(scenesMenu);
-      break;
-    // case backlightMenu:
-    //   topMenu();
-    //   sleep_display();
-    //   return false;
-    // case sleepMenu:
-    //   sleep_switch_->turn_on();
-    //   return false;
-    case sensorsMenu:
-      menuTree.push_back(sensorsMenu);
       break;
     case settingsMenu:
       menuTree.push_back(settingsMenu);
@@ -395,16 +321,6 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
       break;
     }
-    case scenesMenu:
-#ifdef USE_SERVICE_GROUP
-      return sceneTitleStrings(service_group_->services);
-#endif
-      break;
-    case sensorsMenu:
-#ifdef USE_SENSOR_GROUP
-      return sensorTitles(sensor_group_->sensors);
-#endif
-      break;
     case lightsDetailMenu: {
 #ifdef USE_LIGHT
       auto selectedEntity = active_menu_screen->get_selected_entity();
@@ -419,11 +335,6 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
       break;
     }
-    case switchesMenu:
-#ifdef USE_SWITCH_GROUP
-      return switchTitleSwitches(switch_group_->switches);
-#endif
-      break;
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
       return speakerNowPlayingMenuStates(media_player_group_->active_player_);
@@ -1058,11 +969,8 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     case sourcesMenu:
     case groupMenu:
     case mediaPlayersMenu:
-    case scenesMenu:
     case lightsDetailMenu:
-    case sensorsMenu:
     case bootMenu:
-    case switchesMenu:
       break;
   }
 }
@@ -1244,16 +1152,10 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
     menuTree.push_back(mediaPlayersMenu);
   } else if (screenName == "lightDetail") {
     menuTree.push_back(lightsDetailMenu);
-  } else if (screenName == "switches") {
-    menuTree.push_back(switchesMenu);
-  } else if (screenName == "scenes") {
-    menuTree.push_back(scenesMenu);
   } else if (screenName == "home") {
     menuTree.assign(1, rootMenu);
   } else if (screenName == "speakerGroup") {
     menuTree.push_back(groupMenu);
-  } else if (screenName == "sensors") {
-    menuTree.push_back(sensorsMenu);
   } else if (screenName == "boot") {
     menuTree.push_back(bootMenu);
   }

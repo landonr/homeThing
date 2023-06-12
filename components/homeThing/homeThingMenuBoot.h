@@ -111,17 +111,3 @@ class HomeThingMenuBoot {
 
 }  // namespace homething_menu_base
 }  // namespace esphome
-
-// # interval:
-// #   - interval: 1s
-// #     then:
-// #     - lambda: |-
-// #         idleTick();
-// #   - interval: 40ms
-// #     then:
-// #     - lambda: |-
-// #         activeTick();
-// #   - interval: 100ms
-// #     then:
-// #     - lambda: |-
-// #         marqueeTick();

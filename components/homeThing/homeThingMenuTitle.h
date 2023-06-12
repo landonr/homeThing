@@ -21,11 +21,8 @@ enum MenuStates {
   sourcesMenu,
   groupMenu,
   mediaPlayersMenu,
-  scenesMenu,
   lightsDetailMenu,
-  switchesMenu,
   nowPlayingMenu,
-  sensorsMenu,
   settingsMenu
 };
 
@@ -48,16 +45,10 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Media Players";
     case lightsDetailMenu:
       return "Light Detail";
-    case switchesMenu:
-      return "Switches";
-    case scenesMenu:
-      return "Scenes and Actions";
     case rootMenu:
       return "Home";
     case groupMenu:
       return "Speaker Group";
-    case sensorsMenu:
-      return "Sensors";
     case bootMenu:
       return "Boot";
     case settingsMenu:
@@ -76,15 +67,9 @@ static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
       return ArrowMenuTitleRightIcon;
     case lightsDetailMenu:
       return ArrowMenuTitleRightIcon;
-    case switchesMenu:
-      return ArrowMenuTitleRightIcon;
-    case scenesMenu:
-      return ArrowMenuTitleRightIcon;
     case rootMenu:
       return NoMenuTitleRightIcon;
     case groupMenu:
-      return ArrowMenuTitleRightIcon;
-    case sensorsMenu:
       return ArrowMenuTitleRightIcon;
     case bootMenu:
       return NoMenuTitleRightIcon;
@@ -184,64 +169,6 @@ class MenuTitleSlider : public MenuTitleBase {
     return value_minus_min / old_range;
   }
 };
-
-// switch
-
-#ifdef USE_SWITCH_GROUP
-static std::vector<std::shared_ptr<MenuTitleBase>> switchTitleSwitches(
-    const std::vector<switch_::Switch*>& switches) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (const auto switchObject : switches) {
-    ESP_LOGD(MENU_TITLE_TAG, "switch state %d", switchObject->state);
-    MenuTitleLeftIcon state =
-        switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-    out.push_back(std::make_shared<MenuTitleToggle>(
-        switchObject->get_name(), switchObject->get_object_id(), state,
-        NoMenuTitleRightIcon));
-  }
-  return out;
-}
-
-#endif  // switch
-
-#ifdef USE_SERVICE_GROUP  // service
-
-static std::vector<std::shared_ptr<MenuTitleBase>> sceneTitleStrings(
-    const std::vector<
-        homeassistant_service_group::HomeAssistantServiceCommand*>& services) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& service : services) {
-    ESP_LOGD(MENU_TITLE_TAG, "MENU Service %s",
-             service->get_text<std::string>().c_str());
-    std::string service_text = service->get_text<std::string>();
-    out.push_back(std::make_shared<MenuTitleBase>(service_text, "2",
-                                                  NoMenuTitleRightIcon));
-  }
-  return out;
-}
-
-#endif  // service
-
-#ifdef USE_SENSOR_GROUP  // sensor
-
-static std::vector<std::shared_ptr<MenuTitleBase>> sensorTitles(
-    const std::vector<esphome::homeassistant::HomeassistantTextSensor*>&
-        sensors) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  for (auto& sensor : sensors) {
-    if (sensor->get_name() != "") {
-      out.push_back(std::make_shared<MenuTitleBase>(
-          sensor->get_name() + " " + sensor->get_state(), "",
-          NoMenuTitleRightIcon));
-    } else {
-      out.push_back(std::make_shared<MenuTitleBase>(sensor->state, "",
-                                                    NoMenuTitleRightIcon));
-    }
-  }
-  return out;
-}
-
-#endif  // sensor
 
 #ifdef USE_MEDIA_PLAYER_GROUP  // now playing bottom menu
 

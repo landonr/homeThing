@@ -58,9 +58,6 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
     case mediaPlayersMenu:
       drawHeaderTitleWithString("Media Players", xPos);
       break;
-    case scenesMenu:
-      drawHeaderTitleWithString("Scenes/Actions", xPos);
-      break;
     case lightsDetailMenu: {
 #ifdef USE_LIGHT
       auto selectedEntity = (*active_menu_screen_)->get_selected_entity();
@@ -78,12 +75,6 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 #endif
       break;
     }
-    case switchesMenu:
-      drawHeaderTitleWithString("Switches", xPos);
-      break;
-    case sensorsMenu:
-      drawHeaderTitleWithString("Sensors", xPos);
-      break;
     case bootMenu:
       drawHeaderTitleWithString(display_state_->get_boot_device_name(), xPos,
                                 yPosOffset);
