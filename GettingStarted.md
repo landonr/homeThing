@@ -45,10 +45,7 @@ external_components:
       ref: main
     components: [
       homeassistant_component, # base component to control home assistant entities. required for all
-      homeassistant_switch_group, # only include if you use switches in menu
-      homeassistant_sensor_group, # only include if you use text sensors in menu
       homeassistant_media_player, # only include if you use media players in menu
-      homeassistant_service_group, # only include if you want to call services/scripts
       media_player_source, # required for all media player sources
       media_player_source_sonos, # loads sonos favorites into a list
       media_player_source_spotify, # loads spotify playlists from Spotcast sensor into a list
@@ -114,21 +111,8 @@ media_player:
     soundbar:
       speaker: media_player_beam
 ```
-### 5. Set up the menu groups
+### 5. Set up the media player group
 ```yaml
-# switch menu - replace with your IDs
-homeassistant_switch_group:
-  # defined above with switches
-  id: switch_group_component
-  switches:
-    - id: oven_fan_switch
-
-# sensor menu - replace with your IDs
-homeassistant_sensor_group:
-  id: sensor_group_component
-  sensors:
-    - id: sensor_weather
-
 # media player menu - replace with your IDs
 homeassistant_media_player:
   id: media_group_component
@@ -169,6 +153,20 @@ homeThing:
     font_material_large: material_font_large
     font_material_small: material_font_small
     font_logo: home_thing_logo
+  screens:	# you can have multiple screens
+    - name: Settings Screen
+      show_version: True
+      entities:
+        - id: backlight
+          type: light
+        - id: "restart_switch"
+          type: switch
+        - id: wifi_ssid
+          type: text_sensor
+        - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
 ```
 
 ### 7. Download Fonts
