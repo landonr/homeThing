@@ -36,12 +36,12 @@ external_components:
       path: components
     components: [homeThing]
   - source:
-    #   type: git
-    #   url: https://github.com/landonr/esphome-components
-    #   ref: main
-    # refresh: 0s
-      type: local
-      path: ../local_components/components
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+      # type: local
+      # path: ../local_components/components
     components: [
       homeassistant_component,
       homeassistant_media_player,
@@ -59,6 +59,7 @@ packages:
   home_switch: !include homeConfig/switch.yaml
   fonts: !include common/fonts.yaml
   icon_fonts: !include common/icon_fonts.yaml
+  settings: !include common/settings.yaml
 
 substitutions:
   friendly_name: "homeThingFireRemote"
@@ -162,6 +163,12 @@ spi:
   mosi_pin: 23
   miso_pin: 19
 
+cover:
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
+
 homeThing:
   id: homeThingMenu
   settings:
@@ -195,6 +202,42 @@ homeThing:
     dark_mode: true
     draw_volume_level: false
     draw_header_time: true
+  screens:
+    - name: Desk Screen
+      entities:
+        - type: cover
+          id: cover_megadesk
+        - type: command
+          name: "desk nudge up"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_up"
+        - type: command
+          name: "desk nudge down"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_down"
+        - id: light_desk_lamp
+          type: light
+    - name: Settings Screen
+      show_version: True
+      entities:
+        - id: side_light
+          type: light
+        - id: backlight
+          type: light
+        - id: "restart_switch"
+          type: switch
+        - id: wifi_ssid
+          type: text_sensor
+        - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
 
 display:
   - platform: ili9xxx
