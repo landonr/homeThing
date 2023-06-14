@@ -59,6 +59,12 @@ class HomeThingMenuDisplay {
     animation_ = animation;
     boot_->set_animation(animation);
   }
+  bool get_draw_now_playing_menu() {
+#ifdef USE_MEDIA_PLAYER_GROUP
+    return display_state_->get_draw_now_playing_bottom_menu();
+#endif
+    return false;
+  }
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(

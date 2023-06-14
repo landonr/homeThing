@@ -21,7 +21,7 @@ enum CircleOptionMenuPosition : int {
 struct CircleOptionMenuItem {
   CircleOptionMenuPosition position;
 #ifdef USE_MEDIA_PLAYER_GROUP
-  homeassistant_media_player::MediaPlayerSupportedFeature feature;
+  homeassistant_media_player::MediaPlayerFeatureCommand* command;
 #endif
 };
 

@@ -45,7 +45,6 @@ class HomeThingMenuNowPlaying {
   std::string secondsToString(int seconds);
   void drawMediaDuration();
   bool drawOptionMenuAndStop(const HomeThingOptionMenu* option_menu);
-  std::string stringForNowPlayingMenuState(NowPlayingMenuState state);
   void drawNowPlayingSelectMenu(
       const std::vector<std::shared_ptr<MenuTitleBase>>* menu_titles,
       int menu_index);

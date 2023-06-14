@@ -19,10 +19,7 @@ wifi:
   password: !secret wifi_password
   fast_connect: true
   id: wifi_id
-  power_save_mode: HIGH
-  ap:
-    ssid: "${friendly_name} Fallback"
-    password: !secret wifi_fallback_password
+  # power_save_mode: HIGH
 
 external_components:
   - source:

@@ -28,7 +28,7 @@ void HomeThingMenuNowPlayingOptionMenu::set_active_menu(
 std::vector<CircleOptionMenuItem>
 HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
-  auto supported_features = player->get_option_menu_features();
+  auto supported_features = *(player->get_option_menu_features(bottomMenu_));
   auto out = std::vector<CircleOptionMenuItem>();
   auto max_index = std::min(static_cast<int>(supported_features.size()), 5);
   int i_offset = 0;
@@ -36,8 +36,9 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
     if (i - i_offset >= max_index) {
       return out;
     }
-    auto feature = *(supported_features[i].get());
-    ESP_LOGD(
+    auto command = (supported_features[i]);
+    auto feature = command->get_feature();
+    ESP_LOGI(
         TAG, "get_supported_feature_options: %s index %d of %d, state: %d - %s",
         player->get_name().c_str(), i, max_index, player->playerState,
         homeassistant_media_player::supported_feature_string(feature).c_str());
@@ -57,13 +58,13 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
     }
     auto newItem = CircleOptionMenuItem();
     newItem.position = static_cast<CircleOptionMenuPosition>(i - i_offset);
-    newItem.feature = feature;
+    newItem.command = command;
     out.push_back(newItem);
   }
   return out;
 }
 
-homeassistant_media_player::MediaPlayerSupportedFeature*
+homeassistant_media_player::MediaPlayerFeatureCommand*
 HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
     CircleOptionMenuPosition position,
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
@@ -73,7 +74,7 @@ HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
              homeassistant_media_player::supported_feature_string(
                  supported_features[static_cast<int>(position)].feature)
                  .c_str());
-    return &supported_features[static_cast<int>(position)].feature;
+    return supported_features[static_cast<int>(position)].command;
   }
   return nullptr;
 }

@@ -17,7 +17,7 @@ namespace homething_menu_base {
 
 class HomeThingMenuNowPlayingOptionMenu {
  public:
-  homeassistant_media_player::MediaPlayerSupportedFeature* tap_option_menu(
+  homeassistant_media_player::MediaPlayerFeatureCommand* tap_option_menu(
       CircleOptionMenuPosition position,
       homeassistant_media_player::HomeAssistantBaseMediaPlayer* player);
   void set_active_menu(
@@ -25,6 +25,7 @@ class HomeThingMenuNowPlayingOptionMenu {
       homeassistant_media_player::HomeAssistantBaseMediaPlayer* player);
   HomeThingOptionMenu* get_active_menu() { return active_menu_; }
   void clear_active_menu() { active_menu_ = nullptr; }
+  void set_bottom_menu(bool bottomMenu) { bottomMenu_ = bottomMenu; }
 
  private:
   HomeThingOptionMenu* active_menu_{nullptr};
@@ -32,6 +33,7 @@ class HomeThingMenuNowPlayingOptionMenu {
   std::vector<CircleOptionMenuItem> get_supported_feature_options(
       homeassistant_media_player::HomeAssistantBaseMediaPlayer* player);
   const char* const TAG = "homething.menu.option";
+  bool bottomMenu_ = false;
 };
 }  // namespace homething_menu_base
 }  // namespace esphome

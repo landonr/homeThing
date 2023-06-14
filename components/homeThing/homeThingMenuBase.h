@@ -86,7 +86,7 @@ class HomeThingMenuBase : public PollingComponent {
   // controls
 #ifdef USE_MEDIA_PLAYER_GROUP
   bool select_media_player_feature(
-      homeassistant_media_player::MediaPlayerSupportedFeature* feature);
+      homeassistant_media_player::MediaPlayerFeatureCommand* command);
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
 #endif

@@ -48,11 +48,11 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
                           display_state_->get_color_palette()->get_gray());
 
   for (auto& feature : supported_features) {
-    auto element = feature.feature;
+    auto element = feature.command->get_feature();
     double angle = feature.position * M_PI / 2.0;
     auto coordinate = get_coordinate(radius, angle);
 
-    auto title = homeassistant_media_player::supported_feature_string(element);
+    auto title = feature.command->get_title();
 
     display::TextAlign text_alignment =
         text_align_for_circle_position(feature.position);
@@ -280,33 +280,6 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
       text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
       display::TextAlign::TOP_RIGHT, "%d:%s", mediaDuration / 60,
       mediaDurationSeconds.c_str());
-}
-
-std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
-    NowPlayingMenuState state) {
-  switch (state) {
-    case pauseNowPlayingMenuState:
-      return media_player_group_->playTitleString();
-    case volumeUpNowPlayingMenuState:
-      return "Vol Up";
-    case volumeDownNowPlayingMenuState:
-      return "Vol Down";
-    case nextNowPlayingMenuState:
-      return "Next";
-    case menuNowPlayingMenuState:
-      return "Menu";
-    case backNowPlayingMenuState:
-      return "Back";
-    case TVPowerNowPlayingMenuState:
-      return "Power";
-    case homeNowPlayingMenuState:
-      return "TV Home";
-    case groupNowPlayingMenuState:
-      return "Group";
-    case shuffleNowPlayingMenuState:
-      return media_player_group_->shuffle_string();
-  }
-  return "";
 }
 
 void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {

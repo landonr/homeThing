@@ -427,42 +427,53 @@ static std::string friendlyNameForEntityId(
   return "";
 }
 
-enum NowPlayingMenuState {
-  pauseNowPlayingMenuState,
-  volumeUpNowPlayingMenuState,
-  volumeDownNowPlayingMenuState,
-  nextNowPlayingMenuState,
-  menuNowPlayingMenuState,
-  shuffleNowPlayingMenuState,
-  backNowPlayingMenuState,
-  TVPowerNowPlayingMenuState,
-  homeNowPlayingMenuState,
-  groupNowPlayingMenuState
-};
-
 static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
-  std::string playString =
-      player->playerState == homeassistant_media_player::RemotePlayerState::
-                                 PlayingRemotePlayerState
-          ? "Pause"
-          : "Play";
-
+    homeassistant_media_player::HomeAssistantBaseMediaPlayer* player,
+    bool bottomMenu) {
   std::vector<std::shared_ptr<MenuTitleBase>> out;
-  auto menu_feature =
-      homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME;
-  out.push_back(std::make_shared<MenuTitleBase>(
-      homeassistant_media_player::supported_feature_string(menu_feature),
-      homeassistant_media_player::supported_feature_string_map[menu_feature],
-      NoMenuTitleRightIcon));
-  auto supported_features = player->get_option_menu_features();
-  for (auto iter = supported_features.begin(); iter != supported_features.end();
-       ++iter) {
-    homeassistant_media_player::MediaPlayerSupportedFeature item =
-        *(iter->get());
+
+  auto supported_features = player->get_option_menu_features(bottomMenu);
+  for (auto iter = supported_features->begin();
+       iter != supported_features->end(); ++iter) {
+    auto item = (*iter)->get_feature();
     auto entity_id =
         homeassistant_media_player::supported_feature_string_map[item];
-    switch (*(iter->get())) {
+    auto title = (*iter)->get_title();
+    ESP_LOGI(MENU_TITLE_TAG,
+             "speakerNowPlayingMenuStates: %s %s draw bottom %d", title.c_str(),
+             entity_id.c_str(), bottomMenu);
+    switch (item) {
+      case homeassistant_media_player::MediaPlayerSupportedFeature::PLAY:
+        break;
+      case homeassistant_media_player::MediaPlayerSupportedFeature::PAUSE: {
+        std::string playString =
+            player->playerState ==
+                    homeassistant_media_player::RemotePlayerState::
+                        PlayingRemotePlayerState
+                ? "Pause"
+                : "Play";
+        // if (bottomMenu)
+        out.push_back(std::make_shared<MenuTitleBase>(playString, entity_id,
+                                                      NoMenuTitleRightIcon));
+        break;
+      }
+      case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
+        if (bottomMenu) {
+          out.push_back(std::make_shared<MenuTitleBase>(
+              "Vol Up",
+              homeassistant_media_player::supported_feature_string_map
+                  [homeassistant_media_player::MediaPlayerSupportedFeature::
+                       VOLUME_UP],
+              NoMenuTitleRightIcon));
+          out.push_back(std::make_shared<MenuTitleBase>(
+              "Vol Dn",
+              homeassistant_media_player::supported_feature_string_map
+                  [homeassistant_media_player::MediaPlayerSupportedFeature::
+                       VOLUME_DOWN],
+              NoMenuTitleRightIcon));
+          break;
+        }
+        break;
       case homeassistant_media_player::MediaPlayerSupportedFeature::
           SHUFFLE_SET: {
         std::string shuffle_string =
@@ -471,9 +482,17 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
                                                       NoMenuTitleRightIcon));
         break;
       }
+      case homeassistant_media_player::MediaPlayerSupportedFeature::
+          CUSTOM_COMMAND: {
+        auto command = (*iter)->get_command();
+        if (command != nullptr) {
+          auto command_name = command->get_name();
+          out.push_back(std::make_shared<MenuTitleBase>(command_name, entity_id,
+                                                        NoMenuTitleRightIcon));
+        }
+        break;
+      }
       default:
-        auto title = homeassistant_media_player::supported_feature_string(
-            *(iter->get()));
         out.push_back(std::make_shared<MenuTitleBase>(title, entity_id,
                                                       NoMenuTitleRightIcon));
         break;

@@ -28,6 +28,7 @@ void HomeThingMenuBase::setup() {
     });
   }
 #ifdef USE_MEDIA_PLAYER_GROUP
+  circle_menu_->set_bottom_menu(menu_display_->get_draw_now_playing_menu());
   if (this->media_player_group_) {
     this->media_player_group_->add_on_state_callback([this](float state) {
       switch (menuTree.back()) {
@@ -337,7 +338,9 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
     }
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      return speakerNowPlayingMenuStates(media_player_group_->active_player_);
+      return speakerNowPlayingMenuStates(
+          media_player_group_->active_player_,
+          menu_display_->get_draw_now_playing_menu());
 #endif
       break;
     case groupMenu: {
@@ -388,19 +391,18 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
 #ifdef USE_MEDIA_PLAYER_GROUP
 void HomeThingMenuBase::selectNowPlayingMenu() {
   if (menu_titles.size() <= 0 && menuIndex < menu_titles.size()) {
-    ESP_LOGI(TAG, "selectNowPlayingMenu: select menud %d", menuIndex);
+    ESP_LOGI(TAG, "selectNowPlayingMenu: select menu %d", menuIndex);
     return;
   }
-  auto menu_name = speakerNowPlayingMenuStates(
-                       media_player_group_->active_player_)[menuIndex]
-                       ->entity_id_;
-  homeassistant_media_player::MediaPlayerSupportedFeature menu_item =
-      homeassistant_media_player::supported_feature_item_map[menu_name];
-
-  ESP_LOGI(TAG, "selectNowPlayingMenu: select menu # %d, named: %s, item %d",
-           menuIndex, menu_name.c_str(), menu_item);
-  switch (menu_item) {
-    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_STEP:
+  auto features = media_player_group_->active_player_->get_option_menu_features(
+      menu_display_->get_draw_now_playing_menu());
+  auto active_feature = (*features)[menuIndex];
+  ESP_LOGI(TAG, "selectNowPlayingMenu: %d, %s", menuIndex,
+           active_feature->get_title().c_str());
+  switch (active_feature->get_feature()) {
+    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
+    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_UP:
+    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_DOWN:
       circle_menu_->set_active_menu(volumeOptionMenu,
                                     media_player_group_->active_player_);
       break;
@@ -411,13 +413,14 @@ void HomeThingMenuBase::selectNowPlayingMenu() {
     default:
       break;
   }
-  select_media_player_feature(&menu_item);
+  select_media_player_feature(active_feature);
   update_display();
 }
 
 bool HomeThingMenuBase::select_media_player_feature(
-    homeassistant_media_player::MediaPlayerSupportedFeature* feature) {
-  switch (*feature) {
+    homeassistant_media_player::MediaPlayerFeatureCommand* command) {
+  auto feature = command->get_feature();
+  switch (feature) {
     case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
       topMenu();
       return true;
@@ -425,8 +428,17 @@ bool HomeThingMenuBase::select_media_player_feature(
       menuIndex = 0;
       menuTree.push_back(groupMenu);
       return true;
+    case homeassistant_media_player::MediaPlayerSupportedFeature::
+        CUSTOM_COMMAND: {
+      auto feature_command = command->get_command();
+      if (feature_command != nullptr) {
+        feature_command->on_command();
+        return true;
+      }
+    }
+
     default:
-      media_player_group_->call_feature(*feature);
+      media_player_group_->call_feature(feature);
       break;
   }
   return false;
