@@ -457,23 +457,6 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
                                                       NoMenuTitleRightIcon));
         break;
       }
-      case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
-        if (bottomMenu) {
-          out.push_back(std::make_shared<MenuTitleBase>(
-              "Vol Up",
-              homeassistant_media_player::supported_feature_string_map
-                  [homeassistant_media_player::MediaPlayerSupportedFeature::
-                       VOLUME_UP],
-              NoMenuTitleRightIcon));
-          out.push_back(std::make_shared<MenuTitleBase>(
-              "Vol Dn",
-              homeassistant_media_player::supported_feature_string_map
-                  [homeassistant_media_player::MediaPlayerSupportedFeature::
-                       VOLUME_DOWN],
-              NoMenuTitleRightIcon));
-          break;
-        }
-        break;
       case homeassistant_media_player::MediaPlayerSupportedFeature::
           SHUFFLE_SET: {
         std::string shuffle_string =
