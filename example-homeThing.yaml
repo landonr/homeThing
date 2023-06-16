@@ -154,10 +154,10 @@ packages:
 # only remove components if you aren't using the group
 external_components:
   - source:
-      type: local
-      path: ../local_components/components
-      # type: git
-      # url: https://github.com/landonr/homeThing
+      # type: local
+      # path: ../local_components/components
+      type: git
+      url: https://github.com/landonr/homeThing
     refresh: 0s
     components: [homeThing]
   - source:
