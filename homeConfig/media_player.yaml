@@ -1,5 +1,6 @@
 media_player_source_sonos:
   id: sonos
+  limit: 50
 
 media_player_source_spotify:
   id: spotty

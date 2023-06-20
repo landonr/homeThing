@@ -36,26 +36,14 @@ HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
     if (i - i_offset >= max_index) {
       return out;
     }
+    ESP_LOGI(TAG, "get_supported_feature_options: %s index %d of %d, state: %d",
+             player->get_name().c_str(), i, max_index, player->playerState);
     auto command = (supported_features[i]);
     auto feature = command->get_feature();
     ESP_LOGI(
         TAG, "get_supported_feature_options: %s index %d of %d, state: %d - %s",
         player->get_name().c_str(), i, max_index, player->playerState,
         homeassistant_media_player::supported_feature_string(feature).c_str());
-    if (feature == homeassistant_media_player::TURN_ON &&
-        player->playerState > homeassistant_media_player::RemotePlayerState::
-                                  PowerOffRemotePlayerState) {
-      i_offset++;
-      max_index++;
-      continue;
-    } else if (feature == homeassistant_media_player::TURN_OFF &&
-               player->playerState <=
-                   homeassistant_media_player::RemotePlayerState::
-                       PowerOffRemotePlayerState) {
-      i_offset++;
-      max_index++;
-      continue;
-    }
     auto newItem = CircleOptionMenuItem();
     newItem.position = static_cast<CircleOptionMenuPosition>(i - i_offset);
     newItem.command = command;

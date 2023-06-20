@@ -48,11 +48,10 @@ class HomeThingMenuDisplay {
         header_(header) {}
   void setup();
   void draw_lock_screen(int unlock_presses);
-  bool draw_menu_screen(
-      MenuStates* activeMenuState,
-      const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
-      const int menuIndex, HomeThingOptionMenu* option_menu,
-      bool editing_menu_item);
+  bool draw_menu_screen(MenuStates* activeMenuState,
+                        const std::vector<MenuTitleBase*>* active_menu,
+                        const int menuIndex, HomeThingOptionMenu* option_menu,
+                        bool editing_menu_item);
   void updateDisplay(bool force);
 
   void set_animation(HomeThingMenuAnimation* animation) {
@@ -84,17 +83,15 @@ class HomeThingMenuDisplay {
 
  private:
   int scrollTop = 0;
-  bool draw_menu_titles(
-      const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
-      const int menuIndex, bool editing_menu_item);
+  bool draw_menu_titles(const std::vector<MenuTitleBase*>* menuTitles,
+                        const int menuIndex, bool editing_menu_item);
   bool draw_menu_title(int menuState, int i, std::string title, int yPos,
                        bool buttonSpace);
   void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
   void scrollMenuPosition(int menuIndex);
   int maxItems();
-  void drawLeftTitleIcon(int menuTitleSize,
-                         std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
-                         int menuState, int yPos);
+  void drawLeftTitleIcon(int menuTitleSize, const MenuTitleToggle* toggleTitle,
+                         int i, int menuState, int yPos);
   void drawRightTitleIcon(int menuTitleSize, MenuTitleRightIcon iconState,
                           int i, int menuState, int yPos);
 

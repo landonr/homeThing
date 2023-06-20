@@ -53,7 +53,16 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
     auto coordinate = get_coordinate(radius, angle);
 
     auto title = feature.command->get_title();
-
+    if (element ==
+        homeassistant_media_player::MediaPlayerSupportedFeature::POWER_SET) {
+      if (media_player_group_->active_player_->playerState ==
+          homeassistant_media_player::RemotePlayerState::
+              PowerOffRemotePlayerState) {
+        title = "Turn On";
+      } else {
+        title = "Turn Off";
+      }
+    }
     display::TextAlign text_alignment =
         text_align_for_circle_position(feature.position);
     if (feature.position == CENTER) {
@@ -72,8 +81,7 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
 }
 
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
-    const std::vector<std::shared_ptr<MenuTitleBase>>* menu_titles,
-    int menu_index) {
+    const std::vector<MenuTitleBase*>* menu_titles, int menu_index) {
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
              display_state_->get_font_large()->get_baseline();
   auto menuTitlesSize = menu_titles->size();
@@ -119,7 +127,7 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
-    const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu) {
+    const std::vector<MenuTitleBase*>* active_menu) {
   if ((option_menu && drawOptionMenuAndStop(option_menu)) ||
       display_state_ == nullptr) {
     return;

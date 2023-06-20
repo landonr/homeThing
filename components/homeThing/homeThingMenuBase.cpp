@@ -33,11 +33,15 @@ void HomeThingMenuBase::setup() {
     this->media_player_group_->add_on_state_callback([this](float state) {
       switch (menuTree.back()) {
         case bootMenu:
-        case rootMenu:
-        case nowPlayingMenu:
-        case sourcesMenu:
-        case groupMenu:
+          ESP_LOGI(TAG, "draw_menu_screen: update display boot");
           this->update_display();
+          break;
+        case nowPlayingMenu:
+        case groupMenu:
+          ESP_LOGI(TAG, "draw_menu_screen: update display");
+          reload_menu_items_ = true;
+          this->displayUpdateDebounced();
+          break;
         default:
           break;
       }
@@ -66,8 +70,11 @@ void HomeThingMenuBase::draw_menu_screen() {
       (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
     ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
              title_name.c_str(), menu_titles.size());
+    for (auto title : menu_titles) {
+      delete title;
+    }
     menu_titles.clear();
-    menu_titles = activeMenu();
+    activeMenu(&menu_titles);
     reload_menu_items_ = false;
   }
   ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
@@ -120,11 +127,9 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     case sourcesMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-      auto baseTitleState =
-          std::static_pointer_cast<MenuTitleBase>(activeMenuTitle);
+      auto baseTitleState = static_cast<MenuTitleBase*>(activeMenuTitle);
       if (baseTitleState->titleType == SourceMenuTitleType) {
-        auto sourceTitleState =
-            std::static_pointer_cast<MenuTitleSource>(activeMenuTitle);
+        auto sourceTitleState = static_cast<MenuTitleSource*>(activeMenuTitle);
         idleMenu(true);
         media_player_group_->playSource(sourceTitleState->media_source_);
         circle_menu_->set_active_menu(playingNewSourceMenu,
@@ -140,8 +145,7 @@ bool HomeThingMenuBase::selectMenu() {
     }
     case groupMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-      auto playerTitleState =
-          std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
+      auto playerTitleState = static_cast<MenuTitlePlayer*>(activeMenuTitle);
       media_player_group_->selectGroup(playerTitleState->media_player_,
                                        menuIndex);
 #endif
@@ -153,8 +157,7 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     case mediaPlayersMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-      auto media_player_title =
-          std::static_pointer_cast<MenuTitlePlayer>(activeMenuTitle);
+      auto media_player_title = static_cast<MenuTitlePlayer*>(activeMenuTitle);
       if (media_player_group_->selectMediaPlayers(
               media_player_title->media_player_)) {
         topMenu();
@@ -255,27 +258,24 @@ bool HomeThingMenuBase::selectRootMenu() {
   return true;
 }
 
-std::shared_ptr<MenuTitleBase> HomeThingMenuBase::menuTitleForType(
-    MenuStates stringType, int index) {
+MenuTitleBase* HomeThingMenuBase::menuTitleForType(MenuStates stringType,
+                                                   int index) {
   if (stringType == settingsMenu && menu_screens_.size() > 0) {
     HomeThingMenuScreen* menu_screen =
         menu_screens_[index - static_menu_titles];
     std::string menu_name = menu_screen->get_name();
-    return std::make_shared<MenuTitleBase>(menu_name, "",
-                                           ArrowMenuTitleRightIcon);
+    return new MenuTitleBase(menu_name, "", ArrowMenuTitleRightIcon);
   }
-  return std::make_shared<MenuTitleBase>(menu_state_title(stringType), "",
-                                         menu_state_right_icon(stringType));
+  return new MenuTitleBase(menu_state_title(stringType), "",
+                           menu_state_right_icon(stringType));
 }
 
-std::vector<std::shared_ptr<MenuTitleBase>>
-HomeThingMenuBase::menuTypesToTitles(std::vector<MenuStates> menu) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
+void HomeThingMenuBase::menuTypesToTitles(
+    std::vector<MenuStates> menu, std::vector<MenuTitleBase*>* menu_titles) {
   for (int i = 0; i < menu.size(); i++) {
     auto menuItem = menu[i];
-    out.push_back(menuTitleForType(menuItem, i));
+    (*menu_titles).push_back(menuTitleForType(menuItem, i));
   }
-  return out;
 }
 
 void HomeThingMenuBase::finish_boot() {
@@ -285,7 +285,7 @@ void HomeThingMenuBase::finish_boot() {
   topMenu();
 }
 
-std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
+void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (media_player_group_ && media_player_group_->playerSearchFinished &&
       menuTree.back() == bootMenu) {
@@ -294,31 +294,31 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
 #endif
   switch (menuTree.back()) {
     case rootMenu:
-      return menuTypesToTitles(rootMenuTitles());
+      return menuTypesToTitles(rootMenuTitles(), menu_titles);
     case sourcesMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
       auto sources = media_player_group_->activePlayerSources();
       auto index = media_player_group_->get_active_player_source_index();
       if (index == -1 && sources->size() > 1) {
-        auto sourceTitles = activePlayerSourceTitles(sources);
-        return {sourceTitles.begin(), sourceTitles.end()};
+        activePlayerSourceTitles(sources, menu_titles);
+        return;
       } else if (index == -1 && sources->size() == 1) {
         auto playerSources = (*sources)[0]->get_sources();
-        auto sourceTitles = activePlayerSourceItemTitles(playerSources);
-        return {sourceTitles.begin(), sourceTitles.end()};
+        activePlayerSourceItemTitles(playerSources, menu_titles);
+        return;
       } else if (sources->size() > 1) {
         auto playerSources = (*sources)[index]->get_sources();
-        auto sourceTitles = activePlayerSourceItemTitles(playerSources);
-        return {sourceTitles.begin(), sourceTitles.end()};
+        activePlayerSourceItemTitles(playerSources, menu_titles);
+        return;
       }
 #endif
       break;
     }
     case mediaPlayersMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-      auto mediaPlayersTitles =
-          mediaPlayersTitleString(media_player_group_->media_players_);
-      return {mediaPlayersTitles.begin(), mediaPlayersTitles.end()};
+      mediaPlayersTitleString(media_player_group_->get_media_players(),
+                              menu_titles);
+      return;
 #endif
       break;
     }
@@ -329,40 +329,44 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuBase::activeMenu() {
           std::get<0>(*selectedEntity) == MenuItemTypeLight) {
         auto light =
             static_cast<light::LightState*>(std::get<1>(*selectedEntity));
-        return lightTitleItems(light);
+        lightTitleItems(light, menu_titles);
+        return;
       } else {
-        return {};
+        return;
       }
 #endif
       break;
     }
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      return speakerNowPlayingMenuStates(
-          media_player_group_->active_player_,
-          menu_display_->get_draw_now_playing_menu());
+      speakerNowPlayingMenuStates(media_player_group_->active_player_,
+                                  menu_display_->get_draw_now_playing_menu(),
+                                  menu_titles);
+      return;
 #endif
       break;
     case groupMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
       if (media_player_group_->newSpeakerGroupParent != NULL) {
-        return groupTitleSwitches(media_player_group_->media_players_,
-                                  media_player_group_->newSpeakerGroupParent);
+        return groupTitleSwitches(media_player_group_->get_media_players(),
+                                  media_player_group_->newSpeakerGroupParent,
+                                  menu_titles);
+        return;
       }
-      return groupTitleString(media_player_group_->media_players_);
+      groupTitleString(media_player_group_->get_media_players(), menu_titles);
+      return;
 #endif
       break;
     }
     case bootMenu:
       break;
     case settingsMenu:
-      return active_menu_screen->menu_titles();
+      active_menu_screen->menu_titles(menu_titles);
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menu_state_title(menuTree.back()).c_str());
       break;
   }
-  return {};
 }
 
 bool HomeThingMenuBase::buttonPressWakeUpDisplay() {

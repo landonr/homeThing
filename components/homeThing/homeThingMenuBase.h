@@ -76,8 +76,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool selectMenu();
   bool selectMenuHold();
   bool selectRootMenu();
-  std::shared_ptr<MenuTitleBase> menuTitleForType(MenuStates stringType,
-                                                  int index);
+  MenuTitleBase* menuTitleForType(MenuStates stringType, int index);
   void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();
@@ -164,8 +163,8 @@ class HomeThingMenuBase : public PollingComponent {
 #endif
   HomeThingMenuSettings* menu_settings_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
-  std::vector<std::shared_ptr<MenuTitleBase>> menuTypesToTitles(
-      std::vector<MenuStates> menu);
+  void menuTypesToTitles(std::vector<MenuStates> menu,
+                         std::vector<MenuTitleBase*>* menu_titles);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
   std::vector<HomeThingMenuScreen*> menu_screens_;
   HomeThingMenuScreen* active_menu_screen{nullptr};
@@ -181,7 +180,7 @@ class HomeThingMenuBase : public PollingComponent {
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();
-  std::vector<std::shared_ptr<MenuTitleBase>> activeMenu();
+  void activeMenu(std::vector<MenuTitleBase*>*);
   std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
@@ -209,7 +208,7 @@ class HomeThingMenuBase : public PollingComponent {
   int rotary_ = 0;
   int menuIndex = 0;
   int rotaryPosition = 0;
-  std::vector<std::shared_ptr<MenuTitleBase>> menu_titles;
+  std::vector<MenuTitleBase*> menu_titles;
   CallbackManager<void()> on_redraw_callbacks_{};
   const char* const TAG = "homething.menu.base";
   bool menu_drawing_ = false;

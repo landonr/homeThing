@@ -110,7 +110,7 @@ class MenuTitleBase {
         rightIconState(newRightIconState),
         titleType(newTitleType) {}
 
-  std::string get_name() {
+  std::string get_name() const {
     if (name_ != "") {
       return name_;
     } else {
@@ -129,7 +129,7 @@ class MenuTitleToggle : public MenuTitleBase {
                   MenuTitleType newTitleType = ToggleMenuTitleType)
       : MenuTitleBase{new_name, newEntityId, newRightIconState, newTitleType},
         leftIconState(newLeftIconState) {}
-  bool indentLine() {
+  bool indentLine() const {
     switch (leftIconState) {
       case OffMenuTitleLeftIcon:
       case OnMenuTitleLeftIcon:
@@ -163,7 +163,7 @@ class MenuTitleSlider : public MenuTitleBase {
         value_min_(value_min),
         value_max_(value_max) {}
 
-  float percent_value() {
+  float percent_value() const {
     float value_minus_min = sliderValue - value_min_;
     float old_range = value_max_ - value_min_;
     return value_minus_min / old_range;
@@ -252,24 +252,25 @@ class MenuTitleSource : public MenuTitleBase {
   std::string sourceTypeString() { return media_source_->sourceTypeString(); }
 };
 
-static std::vector<MenuTitlePlayer*> mediaPlayersTitleString(
+static void mediaPlayersTitleString(
     const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
-        media_players) {
-  std::vector<MenuTitlePlayer*> out;
+        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
+        media_players,
+    std::vector<MenuTitleBase*>* menu_titles) {
 
   std::map<
       homeassistant_media_player::HomeAssistantBaseMediaPlayer*,
       std::vector<homeassistant_media_player::HomeAssistantBaseMediaPlayer*>>
       tree;
 
-  for (const auto media_player : media_players) {
+  for (const auto media_player : (*media_players)) {
     auto parent = media_player->get_parent_media_player();
+    auto groupMembers = media_player->get_group_members();
     ESP_LOGD(
         MENU_TITLE_TAG,
         "mediaPlayersTitleString: player %s parent set %d group members %d",
         media_player->get_entity_id().c_str(), parent != NULL,
-        media_player->groupMembers.size());
+        groupMembers.size());
     if (parent != NULL) {
       // ignore parent if its a soundbar because the tv is the root parent
       if (parent->mediaSource ==
@@ -329,63 +330,59 @@ static std::vector<MenuTitlePlayer*> mediaPlayersTitleString(
   ESP_LOGD(MENU_TITLE_TAG, "mediaPlayersTitleString: ------");
   for (auto tree_item : tree) {
     auto parent = tree_item.first;
-    out.push_back(
+    menu_titles->push_back(
         new MenuTitlePlayer(parent->get_name(), parent->get_entity_id(),
                             NoMenuTitleLeftIcon, NoMenuTitleRightIcon, parent));
     for (const auto media_player : tree_item.second) {
-      out.push_back(new MenuTitlePlayer(
+      menu_titles->push_back(new MenuTitlePlayer(
           media_player->get_name(), media_player->get_entity_id(),
           GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon, media_player));
     }
   }
-  return out;
 }
 
-static std::vector<std::shared_ptr<MenuTitleBase>> activePlayerSourceTitles(
-    std::vector<media_player_source::MediaPlayerSourceBase*>* sources) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
+static void activePlayerSourceTitles(
+    std::vector<media_player_source::MediaPlayerSourceBase*>* sources,
+    std::vector<MenuTitleBase*>* menu_titles) {
   for (auto& source : *sources) {
-    auto new_menu_title = std::make_shared<MenuTitleBase>(
-        source->get_name(), "", NoMenuTitleRightIcon);
-    out.push_back(new_menu_title);
+    auto new_menu_title =
+        new MenuTitleBase(source->get_name(), "", NoMenuTitleRightIcon);
+    (*menu_titles).push_back(new_menu_title);
   }
-  return out;
 }
 
-static std::vector<std::shared_ptr<MenuTitleSource>>
-activePlayerSourceItemTitles(
-    std::vector<std::shared_ptr<media_player_source::MediaPlayerSourceItem>>*
-        sourceItems) {
+static void activePlayerSourceItemTitles(
+    std::vector<media_player_source::MediaPlayerSourceItem*>* sourceItems,
+    std::vector<MenuTitleBase*>* menu_titles) {
   if (sourceItems->size() == 0) {
     ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
-    return {};
+    return;
   }
-  std::vector<std::shared_ptr<MenuTitleSource>> out;
   for (auto& sourceItem : (*sourceItems)) {
     auto name = sourceItem->get_name();
     ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
              name.c_str());
-    auto new_menu_title = std::make_shared<MenuTitleSource>(
-        name, "", NoMenuTitleRightIcon, sourceItem.get());
-    out.push_back(new_menu_title);
+    auto new_menu_title =
+        new MenuTitleSource(name, "", NoMenuTitleRightIcon, sourceItem);
+    (*menu_titles).push_back(new_menu_title);
   }
-  return out;
 }
 
-static std::vector<std::shared_ptr<MenuTitleBase>> groupTitleSwitches(
+static void groupTitleSwitches(
     const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
+        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
         media_players,
     homeassistant_media_player::HomeAssistantBaseMediaPlayer*
-        newSpeakerGroupParent) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
+        newSpeakerGroupParent,
+    std::vector<MenuTitleBase*>* menu_titles) {
   std::vector<std::string> groupedMembers;
-  out.push_back(std::make_shared<MenuTitlePlayer>(
-      "Group " + newSpeakerGroupParent->get_name(),
-      newSpeakerGroupParent->get_entity_id(), NoMenuTitleLeftIcon,
-      ArrowMenuTitleRightIcon, newSpeakerGroupParent));
+  (*menu_titles)
+      .push_back(new MenuTitlePlayer(
+          "Group " + newSpeakerGroupParent->get_name(),
+          newSpeakerGroupParent->get_entity_id(), NoMenuTitleLeftIcon,
+          ArrowMenuTitleRightIcon, newSpeakerGroupParent));
 
-  for (auto& media_player : media_players) {
+  for (auto& media_player : (*media_players)) {
     if (newSpeakerGroupParent->get_entity_id() ==
             media_player->get_entity_id() ||
         media_player->get_player_type() !=
@@ -398,28 +395,30 @@ static std::vector<std::shared_ptr<MenuTitleBase>> groupTitleSwitches(
       auto speaker = static_cast<
           homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
           media_player);
-      if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(),
+      auto groupMembers = speaker->get_group_members();
+      if (std::find(groupMembers->begin(), groupMembers->end(),
                     newSpeakerGroupParent->get_entity_id()) !=
-          speaker->groupMembers.end()) {
-        out.push_back(std::make_shared<MenuTitlePlayer>(
-            speaker->get_name(), speaker->get_entity_id(), OnMenuTitleLeftIcon,
-            NoMenuTitleRightIcon, speaker));
+          groupMembers->end()) {
+        (*menu_titles)
+            .push_back(new MenuTitlePlayer(
+                speaker->get_name(), speaker->get_entity_id(),
+                OnMenuTitleLeftIcon, NoMenuTitleRightIcon, speaker));
       } else {
-        out.push_back(std::make_shared<MenuTitlePlayer>(
-            speaker->get_name(), speaker->get_entity_id(), OffMenuTitleLeftIcon,
-            NoMenuTitleRightIcon, speaker));
+        (*menu_titles)
+            .push_back(new MenuTitlePlayer(
+                speaker->get_name(), speaker->get_entity_id(),
+                OffMenuTitleLeftIcon, NoMenuTitleRightIcon, speaker));
       }
     }
   }
-  return out;
 }
 
 static std::string friendlyNameForEntityId(
     std::string speakerentityId,
     const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
+        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
         media_players) {
-  for (auto& speaker : media_players) {
+  for (auto& speaker : (*media_players)) {
     if (speaker->get_entity_id() == speakerentityId) {
       return speaker->get_name();
     }
@@ -427,11 +426,9 @@ static std::string friendlyNameForEntityId(
   return "";
 }
 
-static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
+static void speakerNowPlayingMenuStates(
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* player,
-    bool bottomMenu) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-
+    bool bottomMenu, std::vector<MenuTitleBase*>* menu_titles) {
   auto supported_features = player->get_option_menu_features(bottomMenu);
   for (auto iter = supported_features->begin();
        iter != supported_features->end(); ++iter) {
@@ -453,16 +450,18 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
                 ? "Pause"
                 : "Play";
         // if (bottomMenu)
-        out.push_back(std::make_shared<MenuTitleBase>(playString, entity_id,
-                                                      NoMenuTitleRightIcon));
+        (*menu_titles)
+            .push_back(
+                new MenuTitleBase(playString, entity_id, NoMenuTitleRightIcon));
         break;
       }
       case homeassistant_media_player::MediaPlayerSupportedFeature::
           SHUFFLE_SET: {
         std::string shuffle_string =
             player->is_shuffling() ? "Shuffling" : "Shuffle";
-        out.push_back(std::make_shared<MenuTitleBase>(shuffle_string, entity_id,
-                                                      NoMenuTitleRightIcon));
+        (*menu_titles)
+            .push_back(new MenuTitleBase(shuffle_string, entity_id,
+                                         NoMenuTitleRightIcon));
         break;
       }
       case homeassistant_media_player::MediaPlayerSupportedFeature::
@@ -470,27 +469,28 @@ static std::vector<std::shared_ptr<MenuTitleBase>> speakerNowPlayingMenuStates(
         auto command = (*iter)->get_command();
         if (command != nullptr) {
           auto command_name = command->get_name();
-          out.push_back(std::make_shared<MenuTitleBase>(command_name, entity_id,
-                                                        NoMenuTitleRightIcon));
+          (*menu_titles)
+              .push_back(new MenuTitleBase(command_name, entity_id,
+                                           NoMenuTitleRightIcon));
         }
         break;
       }
       default:
-        out.push_back(std::make_shared<MenuTitleBase>(title, entity_id,
-                                                      NoMenuTitleRightIcon));
+        (*menu_titles)
+            .push_back(
+                new MenuTitleBase(title, entity_id, NoMenuTitleRightIcon));
         break;
     }
   }
-  return out;
 }
 
-static std::vector<std::shared_ptr<MenuTitleBase>> groupTitleString(
+static void groupTitleString(
     const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>&
-        media_players) {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
+        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
+        media_players,
+    std::vector<MenuTitleBase*>* menu_titles) {
   std::vector<std::string> groupedMembers;
-  for (auto& media_player : media_players) {
+  for (auto& media_player : (*media_players)) {
     ESP_LOGD(MENU_TITLE_TAG, "groupTitleString: %s %s",
              media_player->get_name().c_str(),
              media_player->get_entity_id().c_str());
@@ -507,36 +507,39 @@ static std::vector<std::shared_ptr<MenuTitleBase>> groupTitleString(
     auto speaker = static_cast<
         homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
         media_player);
-    if (speaker->groupMembers.size() > 1) {
-      if (speaker->groupMembers[0] != speaker->get_entity_id()) {
-        ESP_LOGD(MENU_TITLE_TAG, "%s not parent %s",
-                 speaker->groupMembers[0].c_str(),
+    auto groupMembers = speaker->get_group_members();
+    if (groupMembers->size() > 1) {
+      if ((*groupMembers)[0] != speaker->get_entity_id()) {
+        ESP_LOGD(MENU_TITLE_TAG, "%s not parent %s", (*groupMembers)[0].c_str(),
                  speaker->get_entity_id().c_str());
         // speaker isn't the group parent
         continue;
       }
-      out.push_back(std::make_shared<MenuTitlePlayer>(
-          speaker->get_name(), speaker->get_entity_id(), NoMenuTitleLeftIcon,
-          ArrowMenuTitleRightIcon, speaker));
-      for (auto& groupedSpeaker : speaker->groupMembers) {
+      (*menu_titles)
+          .push_back(new MenuTitlePlayer(
+              speaker->get_name(), speaker->get_entity_id(),
+              NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon, speaker));
+      for (auto& groupedSpeaker : (*groupMembers)) {
         if (groupedSpeaker != speaker->get_entity_id()) {
           groupedMembers.push_back(groupedSpeaker);
           std::string groupedSpeakerName =
               friendlyNameForEntityId(groupedSpeaker, media_players);
           if (groupedSpeakerName != "") {
-            out.push_back(std::make_shared<MenuTitlePlayer>(
-                groupedSpeakerName, groupedSpeaker, GroupedMenuTitleLeftIcon,
-                ArrowMenuTitleRightIcon, speaker));
+            (*menu_titles)
+                .push_back(
+                    new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker,
+                                        GroupedMenuTitleLeftIcon,
+                                        ArrowMenuTitleRightIcon, speaker));
           }
         }
       }
     } else {
-      out.push_back(std::make_shared<MenuTitlePlayer>(
-          speaker->get_name(), speaker->get_entity_id(), NoMenuTitleLeftIcon,
-          ArrowMenuTitleRightIcon, speaker));
+      (*menu_titles)
+          .push_back(new MenuTitlePlayer(
+              speaker->get_name(), speaker->get_entity_id(),
+              NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon, speaker));
     }
   }
-  return out;
 }
 
 static MenuTitlePlayer headerMediaPlayerTitle(
@@ -548,9 +551,10 @@ static MenuTitlePlayer headerMediaPlayerTitle(
         homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
         active_player);
     if (activeSpeaker != NULL) {
-      if (activeSpeaker->groupMembers.size() > 1) {
-        friendlyName = friendlyName + " + " +
-                       to_string(activeSpeaker->groupMembers.size() - 1);
+      auto groupMembers = *(activeSpeaker->get_group_members());
+      if (groupMembers.size() > 1) {
+        friendlyName =
+            friendlyName + " + " + to_string(groupMembers.size() - 1);
       }
     }
   }

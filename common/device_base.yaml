@@ -1,5 +1,5 @@
 logger:
-  level: INFO
+  level: WARN
 
 ota:
 
@@ -29,10 +29,4 @@ sensor:
   # Uptime sensor.
   - platform: uptime
     name: "${friendly_name} Uptime"
-    update_interval: 10s
-  - platform: template
-    name: "${friendly_name} Free Memory"
-    lambda: return heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
-    unit_of_measurement: 'B'
-    state_class: measurement
     update_interval: 10s
