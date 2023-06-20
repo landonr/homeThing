@@ -114,9 +114,9 @@ homeassistant_media_player:
   media_players:
     - id: media_player_beam
       type: speaker
-    - id: media_player_office
-      type: speaker
     - id: media_player_kitchen
+      type: speaker
+    - id: media_player_office
       type: speaker
     - id: media_player_bedroom
       type: speaker
