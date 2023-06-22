@@ -219,12 +219,15 @@ int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
 #endif
 
 int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
-  if (!display_state_->get_draw_header_time() || !esp_time_->is_valid()) {
+  if (esp_time_ == nullptr) {
+    return oldXPos;
+  }
+  if (!display_state_->get_draw_header_time() || !esp_time_->now().is_valid()) {
     return oldXPos;
   }
 
   int yPos = getHeaderTextYPos(yPosOffset);
-  std::string timeString = esp_time_->strftime("%I:%M%P");
+  std::string timeString = esp_time_->now().strftime("%I:%M%P");
   if (timeString.length() > 0 && timeString[0] == '0') {
     timeString.erase(0, 1);
   }
