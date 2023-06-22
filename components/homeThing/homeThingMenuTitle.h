@@ -270,7 +270,7 @@ static void mediaPlayersTitleString(
         MENU_TITLE_TAG,
         "mediaPlayersTitleString: player %s parent set %d group members %d",
         media_player->get_entity_id().c_str(), parent != NULL,
-        groupMembers.size());
+        groupMembers->size());
     if (parent != NULL) {
       // ignore parent if its a soundbar because the tv is the root parent
       if (parent->mediaSource ==

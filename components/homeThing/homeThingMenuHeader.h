@@ -13,6 +13,7 @@
 
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/core/time.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -84,7 +85,7 @@ class HomeThingMenuHeader {
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};
-  time::RealTimeClock* esp_time_{nullptr};
+  ESPTime* esp_time_{nullptr};
   const char* const TAG = "homething.menu.header";
   HomeThingMenuScreen** active_menu_screen_{nullptr};
 };

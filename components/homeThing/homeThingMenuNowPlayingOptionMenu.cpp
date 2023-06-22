@@ -60,7 +60,8 @@ HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
   if (supported_features.size() > position) {
     ESP_LOGD(TAG, "tap_option_menu: %d - %s", static_cast<int>(position),
              homeassistant_media_player::supported_feature_string(
-                 supported_features[static_cast<int>(position)].feature)
+                 supported_features[static_cast<int>(position)]
+                     .command->get_feature())
                  .c_str());
     return supported_features[static_cast<int>(position)].command;
   }

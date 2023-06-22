@@ -65,7 +65,7 @@ void HomeThingMenuBase::draw_menu_screen() {
     return;
   }
   menu_drawing_ = true;
-  auto title_name = menu_state_title(activeMenuState).c_str();
+  auto title_name = menu_state_title(activeMenuState);
   if (reload_menu_items_ ||
       (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
     ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
