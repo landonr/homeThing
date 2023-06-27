@@ -121,6 +121,11 @@ homeassistant_media_player:
       type: speaker
     - id: media_player_tv
       type: roku
+    commands: # you can add custom commands to the now playing menu
+      name: "group all"
+      command:
+        - homeassistant.service:
+            service: script.sonos_group_all
 ```
 
 ### 6. Set up the homeThing menu
