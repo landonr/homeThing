@@ -218,7 +218,11 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
   std::vector<MenuStates> out;
 #ifdef USE_MEDIA_PLAYER_GROUP
   if (media_player_group_) {
-    out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
+    if (media_player_group_->totalPlayers() > 1) {
+      out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
+    } else {
+      out.insert(out.end(), {nowPlayingMenu, sourcesMenu});
+    }
   }
 #endif
   static_menu_titles = out.size();
@@ -506,6 +510,9 @@ void HomeThingMenuBase::buttonPressSelect() {
               SpeakerRemotePlayerType:
             break;
         }
+        if (menu_display_->get_draw_now_playing_menu()) {
+          selectNowPlayingMenu();
+        }
 #endif
         return;
       default:
@@ -572,10 +579,18 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   if (!button_press_and_continue())
     return;
   rotary_ = rotary;
+  if (menuIndex == 0 && menu_settings_->get_menu_rollback() &&
+      menuTree.back() != nowPlayingMenu) {
+    upMenu();
+    return;
+  }
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
+        if (menu_display_->get_draw_now_playing_menu()) {
+          break;
+        }
         media_player_group_->decreaseSpeakerVolume();
         circle_menu_->set_active_menu(volumeOptionMenu,
                                       media_player_group_->active_player_);
@@ -630,11 +645,6 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
       menuIndex--;
     } else if (menuTree.back() == nowPlayingMenu) {
       menuIndex = menu_titles.size() - 1;
-    } else if (menuTree.back() == lightsDetailMenu && menuIndex == 0) {
-      if (upMenu())
-        return;
-    } else {
-      topMenu();
     }
   }
   debounceUpdateDisplay();
@@ -650,6 +660,9 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
     switch (menuTree.back()) {
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
+        if (menu_display_->get_draw_now_playing_menu()) {
+          break;
+        }
         media_player_group_->increaseSpeakerVolume();
         circle_menu_->set_active_menu(volumeOptionMenu,
                                       media_player_group_->active_player_);

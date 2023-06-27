@@ -64,6 +64,7 @@ CONF_3_BUTTON = "3_button"
 CONF_2_BUTTON = "2_button"
 CONF_DISPLAY_TIMEOUT = "display_timeout"
 CONF_MENU_ROLLOVER_ON = "menu_rollover"
+CONF_MENU_ROLLBACK_ON = "menu_rollback"
 CONF_SLEEP_SWITCH = "sleep_switch"
 CONF_SLEEP_AFTER = "sleep_after"
 CONF_BACKLIGHT = "backlight"
@@ -147,6 +148,7 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.Optional(CONF_DISPLAY_TIMEOUT, default=16): cv.int_,
         cv.Optional(CONF_SLEEP_AFTER, default=3600): cv.int_,
         cv.Optional(CONF_MENU_ROLLOVER_ON, default=False): cv.boolean,
+        cv.Optional(CONF_MENU_ROLLBACK_ON, default=False): cv.boolean,
         cv.Optional(CONF_LOCK_AFTER, default=0): cv.int_,
     }
 )
@@ -341,6 +343,7 @@ MENU_SETTING_TYPES = [
     CONF_DISPLAY_TIMEOUT,
     CONF_SLEEP_AFTER,
     CONF_MENU_ROLLOVER_ON,
+    CONF_MENU_ROLLBACK_ON,
     CONF_LOCK_AFTER
 ]
 

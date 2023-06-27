@@ -36,11 +36,15 @@ class HomeThingMenuSettings {
   bool get_menu_rollover() { return menu_rollover_; }
   void set_menu_rollover(bool menu_rollover) { menu_rollover_ = menu_rollover; }
 
+  bool get_menu_rollback() { return menu_rollback_; }
+  void set_menu_rollback(bool menu_rollback) { menu_rollback_ = menu_rollback; }
+
  private:
   MenuMode mode_;
   int display_timeout_;
   int sleep_after_;
   bool menu_rollover_;
+  bool menu_rollback_;
 
 #ifdef USE_SWITCH
   switch_::Switch* sleep_switch_;

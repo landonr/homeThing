@@ -349,7 +349,7 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
           getWrappedTitles(display_buffer_->get_width() / 2,
                            display_state_->get_font_large()->get_baseline(),
                            display::TextAlign::TOP_CENTER,
-                           media_player_group_->playingNewSourceText);
+                           media_player_group_->new_source_name());
       drawTextWrapped(
           display_buffer_->get_width() / 2,
           display_state_->get_header_height() +

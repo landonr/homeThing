@@ -242,7 +242,8 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
-  if (!display_state_->get_draw_battery_level()) {
+  if (!display_state_->get_draw_battery_level() ||
+      battery_percent_ == nullptr) {
     return oldXPos;
   }
   float batteryWidth = 24;

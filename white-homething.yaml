@@ -89,6 +89,8 @@ homeThing:
     sleep_after: 14400
   sleep_switch: sleep_toggle
   backlight: backlight
+  header:
+    time_id: esptime
   battery:
     battery_percent: battery_percent
     charging: charging
@@ -113,8 +115,6 @@ homeThing:
       entities:
         - type: cover
           id: cover_megadesk
-        - type: number
-          id: desk_height_number
         - type: command
           name: "desk nudge up"
           command:
@@ -171,15 +171,6 @@ homeThing:
 spi:
   clk_pin: GPIO18
   mosi_pin: GPIO19
-
-number:
-  - platform: homeassistant_component
-    entity_id: number.desk_height_cm
-    name: desk height
-    id: desk_height_number
-    min_value: 61.0
-    max_value: 105.0
-    step: 1
 
 display:
   - platform: st7789v
