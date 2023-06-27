@@ -1,0 +1,18 @@
+debug:
+  update_interval: 5s
+
+text_sensor:
+  - platform: debug
+    device:
+      name: "${friendly_name} Device Info"
+    reset_reason:
+      name: "${friendly_name} Reset Reason"
+
+sensor:
+  - platform: debug
+    free:
+      name: "${friendly_name} Heap Free"
+    block:
+      name: "${friendly_name} Heap Max Block"
+    loop_time:
+      name: "${friendly_name} Loop Time"

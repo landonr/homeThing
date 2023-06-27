@@ -75,8 +75,8 @@ void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
 }
 
 bool HomeThingMenuDisplay::draw_menu_titles(
-    const std::vector<std::shared_ptr<MenuTitleBase>>* menuTitles,
-    int menuIndex, bool editing_menu_item) {
+    const std::vector<MenuTitleBase*>* menuTitles, int menuIndex,
+    bool editing_menu_item) {
   if (menuTitles->size() == 0 || menuTitles->size() < menuIndex) {
     return false;
   }
@@ -115,8 +115,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         break;
       case LightMenuTitleType: {
 #ifdef USE_LIGHT
-        auto lightTitle =
-            std::static_pointer_cast<MenuTitleLight>((*menuTitles)[i]);
+        auto lightTitle = static_cast<MenuTitleLight*>((*menuTitles)[i]);
         if (lightTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
                                       lightTitle->indentLine());
@@ -130,8 +129,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         break;
       }
       case ToggleMenuTitleType: {
-        auto toggleTitle =
-            std::static_pointer_cast<MenuTitleToggle>((*menuTitles)[i]);
+        auto toggleTitle = static_cast<MenuTitleToggle*>((*menuTitles)[i]);
         if (toggleTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
                                       toggleTitle->indentLine());
@@ -145,7 +143,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
       case SliderMenuTitleType: {
 #ifdef USE_LIGHT
-        auto item = std::static_pointer_cast<MenuTitleSlider>((*menuTitles)[i]);
+        auto item = static_cast<MenuTitleSlider*>((*menuTitles)[i]);
         SliderSelectionState sliderState =
             menuState == i && editing_menu_item ? SliderSelectionStateActive
             : menuState == i                    ? SliderSelectionStateHover
@@ -161,8 +159,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       }
       case PlayerMenuTitleType: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-        auto playerTitle =
-            std::static_pointer_cast<MenuTitlePlayer>((*menuTitles)[i]);
+        auto playerTitle = static_cast<MenuTitlePlayer*>((*menuTitles)[i]);
         if (playerTitle != NULL) {
           draw_menu_title(menuState, i, titleName, yPos,
                           playerTitle->indentLine());
@@ -186,8 +183,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 }
 
 bool HomeThingMenuDisplay::draw_menu_screen(
-    MenuStates* activeMenuState,
-    const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu,
+    MenuStates* activeMenuState, const std::vector<MenuTitleBase*>* active_menu,
     const int menuIndex, HomeThingOptionMenu* option_menu,
     bool editing_menu_item) {
   bool boot_complete = boot_->boot_complete();
@@ -262,9 +258,9 @@ int HomeThingMenuDisplay::maxItems() {
   return maxItems;
 }
 
-void HomeThingMenuDisplay::drawLeftTitleIcon(
-    int menuTitleSize, std::shared_ptr<MenuTitleToggle> toggleTitle, int i,
-    int menuState, int yPos) {
+void HomeThingMenuDisplay::drawLeftTitleIcon(int menuTitleSize,
+                                             const MenuTitleToggle* toggleTitle,
+                                             int i, int menuState, int yPos) {
   switch (toggleTitle->leftIconState) {
     case NoMenuTitleLeftIcon:
       break;
@@ -272,8 +268,7 @@ void HomeThingMenuDisplay::drawLeftTitleIcon(
     case OnMenuTitleLeftIcon:
       if (toggleTitle->titleType == LightMenuTitleType) {
 #ifdef USE_LIGHT
-        auto lightToggleTitle =
-            std::static_pointer_cast<MenuTitleLight>(toggleTitle);
+        auto lightToggleTitle = static_cast<const MenuTitleLight*>(toggleTitle);
         if (lightToggleTitle != NULL) {
           auto lightColor =
               lightToggleTitle->leftIconState == OnMenuTitleLeftIcon

@@ -137,7 +137,7 @@ class HomeThingMenuScreen {
   void add_on_state_callback(std::function<void()>&& callback) {
     this->callback_.add(std::move(callback));
   }
-  std::vector<std::shared_ptr<MenuTitleBase>> menu_titles();
+  void menu_titles(std::vector<MenuTitleBase*>* menu_titles);
   bool select_menu(int index);
   bool select_menu_hold(int index);
   const std::tuple<MenuItemType, EntityBase*>* get_menu_item(int index);

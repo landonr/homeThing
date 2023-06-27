@@ -1,9 +1,9 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time
 from esphome.components.light import LightState
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
@@ -64,6 +64,7 @@ CONF_3_BUTTON = "3_button"
 CONF_2_BUTTON = "2_button"
 CONF_DISPLAY_TIMEOUT = "display_timeout"
 CONF_MENU_ROLLOVER_ON = "menu_rollover"
+CONF_MENU_ROLLBACK_ON = "menu_rollback"
 CONF_SLEEP_SWITCH = "sleep_switch"
 CONF_SLEEP_AFTER = "sleep_after"
 CONF_BACKLIGHT = "backlight"
@@ -122,7 +123,7 @@ MENU_DISPLAY_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_TEXT_HELPERS): cv.declare_id(HomeThingMenuTextHelpers),
         cv.GenerateID(CONF_REFACTOR): cv.declare_id(HomeThingMenuRefactor),
         cv.GenerateID(CONF_NOW_PLAYING): cv.declare_id(HomeThingMenuNowPlaying),
-        cv.GenerateID(CONF_HEADER): cv.declare_id(HomeThingMenuHeader),
+        cv.GenerateID(CONF_HEADER): cv.use_id(HomeThingMenuHeader),
     }
 )
 
@@ -147,6 +148,7 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.Optional(CONF_DISPLAY_TIMEOUT, default=16): cv.int_,
         cv.Optional(CONF_SLEEP_AFTER, default=3600): cv.int_,
         cv.Optional(CONF_MENU_ROLLOVER_ON, default=False): cv.boolean,
+        cv.Optional(CONF_MENU_ROLLBACK_ON, default=False): cv.boolean,
         cv.Optional(CONF_LOCK_AFTER, default=0): cv.int_,
     }
 )
@@ -225,6 +227,7 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
 HEADER_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuHeader),
+        cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
     }
 )
 
@@ -340,6 +343,7 @@ MENU_SETTING_TYPES = [
     CONF_DISPLAY_TIMEOUT,
     CONF_SLEEP_AFTER,
     CONF_MENU_ROLLOVER_ON,
+    CONF_MENU_ROLLBACK_ON,
     CONF_LOCK_AFTER
 ]
 
@@ -434,6 +438,9 @@ async def menu_display_to_code(config, display_buffer):
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
     await ids_to_code(config, menu_header, MENU_HEADER_IDS)
+    if CONF_TIME_ID in config[CONF_HEADER]:
+        time_ = await cg.get_variable(config[CONF_HEADER][CONF_TIME_ID])
+        cg.add(menu_header.set_time_id(time_))
     await battery_to_code(config, menu_header)
     menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header, text_helpers)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)

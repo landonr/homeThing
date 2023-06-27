@@ -219,19 +219,13 @@ int HomeThingMenuHeader::drawHeaderVolumeLevel(int oldXPos, int yPosOffset) {
 #endif
 
 int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
+  if (esp_time_ == nullptr) {
+    return oldXPos;
+  }
   if (!display_state_->get_draw_header_time() || !esp_time_->now().is_valid()) {
     return oldXPos;
   }
-  // switch (activeMenuState) {
-  //   case rootMenu:
-  //   case nowPlayingMenu:
-  //     break;
-  //   default:
-  //     if (display_buffer_->get_width() < 200) {
-  //       return oldXPos;
-  //     }
-  //     break;
-  // }
+
   int yPos = getHeaderTextYPos(yPosOffset);
   std::string timeString = esp_time_->now().strftime("%I:%M%P");
   if (timeString.length() > 0 && timeString[0] == '0') {
@@ -248,7 +242,8 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
 }
 
 int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
-  if (!display_state_->get_draw_battery_level()) {
+  if (!display_state_->get_draw_battery_level() ||
+      battery_percent_ == nullptr) {
     return oldXPos;
   }
   float batteryWidth = 24;

@@ -1,5 +1,6 @@
 media_player_source_sonos:
   id: sonos
+  limit: 50
 
 media_player_source_spotify:
   id: spotty
@@ -44,6 +45,11 @@ media_player:
         type: spotify
       - id: fav_playlists
         type: custom
+    commands:
+      name: "group all"
+      command:
+        - homeassistant.service:
+            service: script.sonos_group_all
   - platform: homeassistant_media_player
     name: Kitchen
     entity_id: "media_player.kitchen"
@@ -65,6 +71,16 @@ media_player:
       - id: spotty
         type: spotify
   - platform: homeassistant_media_player
+    name: Bedroom
+    entity_id: "media_player.bedroom"
+    id: media_player_bedroom
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+      - id: spotty
+        type: spotify
+  - platform: homeassistant_media_player
     name: TV
     entity_id: "media_player.55_tcl_roku_tv"
     id: media_player_tv
@@ -74,19 +90,19 @@ media_player:
     sources:
       - id: youtube_videos
         type: custom
-  - platform: homeassistant_media_player
-    name: Spotify
-    entity_id: "media_player.spotify_landorghini"
-    id: media_player_spotify
-    type: speaker
-    sources:
-      - id: spotty
-        type: spotify
-  - platform: homeassistant_media_player
-    name: PC
-    entity_id: "media_player.tower"
-    id: media_player_tower
-    type: speaker
+  # - platform: homeassistant_media_player
+  #   name: Spotify
+  #   entity_id: "media_player.spotify_landorghini"
+  #   id: media_player_spotify
+  #   type: speaker
+  #   sources:
+  #     - id: spotty
+  #       type: spotify
+  # - platform: homeassistant_media_player
+  #   name: PC
+  #   entity_id: "media_player.tower"
+  #   id: media_player_tower
+  #   type: speaker
   # - platform: homeassistant_media_player
   #   name: Kodi
   #   entity_id: "media_player.kodi_desktop"
@@ -98,15 +114,17 @@ homeassistant_media_player:
   media_players:
     - id: media_player_beam
       type: speaker
+    - id: media_player_kitchen
+      type: speaker
     - id: media_player_office
+      type: speaker
+    - id: media_player_bedroom
       type: speaker
     - id: media_player_tv
       type: roku
-    - id: media_player_kitchen
-      type: speaker
-    - id: media_player_spotify
-      type: speaker
-    - id: media_player_tower
-      type: speaker
+    # - id: media_player_spotify
+    #   type: speaker
+    # - id: media_player_tower
+    #   type: speaker
     # - id: media_player_kodi
     #   type: kodi

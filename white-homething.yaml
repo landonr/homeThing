@@ -20,9 +20,6 @@ wifi:
   fast_connect: true
   id: wifi_id
   power_save_mode: HIGH
-  ap:
-    ssid: "${friendly_name} Fallback"
-    password: !secret wifi_fallback_password
 
 external_components:
   - source:
@@ -51,7 +48,7 @@ external_components:
 
 packages:
   device_base: !include common/device_base.yaml
-  settings: !include common/settings.yaml
+  # settings: !include common/settings.yaml
   ipod_control_backlight: !include common/ipod/lilygo_tdisplay_ipod_backlight.yaml
   ipod_control_battery: !include common/ipod/lilygo_tdisplay_ipod_battery.yaml
   ipod_control_binary_sensor: !include common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
@@ -59,8 +56,9 @@ packages:
   ipod_control_sleep: !include common/ipod/lilygo_tdisplay_ipod_sleep.yaml
   home_media_player: !include homeConfig/media_player.yaml
   home_switch: !include homeConfig/switch.yaml
-  fonts: !include common/fonts.yaml
+  fonts: !include common/fonts-light.yaml
   icon_fonts: !include common/icon_fonts.yaml
+  debug: !include common/debugging.yaml
 
 substitutions:
   friendly_name: "white homething"
@@ -91,6 +89,8 @@ homeThing:
     sleep_after: 14400
   sleep_switch: sleep_toggle
   backlight: backlight
+  header:
+    time_id: esptime
   battery:
     battery_percent: battery_percent
     charging: charging
@@ -106,7 +106,7 @@ homeThing:
     font_small: small_font
     font_medium: medium_font
     font_large: large_font
-    font_large_heavy: large_heavy_font
+    font_large_heavy: large_font
     font_material_large: material_font_large
     font_material_small: material_font_small
     font_logo: home_thing_logo
@@ -115,8 +115,6 @@ homeThing:
       entities:
         - type: cover
           id: cover_megadesk
-        - type: number
-          id: desk_height_number
         - type: command
           name: "desk nudge up"
           command:
@@ -156,32 +154,23 @@ homeThing:
           command:
             - homeassistant.service:
                 service: script.off_script
-    - name: Settings Screen
-      show_version: True
-      entities:
-        - id: backlight
-          type: light
-        - id: "restart_switch"
-          type: switch
-        - id: wifi_ssid
-          type: text_sensor
-        - id: wifi_signal_percent
-          type: sensor
-        - id: wifi_ip
-          type: text_sensor
+    # - name: Settings Screen
+    #   show_version: True
+    #   entities:
+    #     - id: backlight
+    #       type: light
+    #     - id: "restart_switch"
+    #       type: switch
+    #     - id: wifi_ssid
+    #       type: text_sensor
+    #     - id: wifi_signal_percent
+    #       type: sensor
+    #     - id: wifi_ip
+    #       type: text_sensor
 
 spi:
   clk_pin: GPIO18
   mosi_pin: GPIO19
-
-number:
-  - platform: homeassistant_component
-    entity_id: number.desk_height_cm
-    name: desk height
-    id: desk_height_number
-    min_value: 61.0
-    max_value: 105.0
-    step: 1
 
 display:
   - platform: st7789v

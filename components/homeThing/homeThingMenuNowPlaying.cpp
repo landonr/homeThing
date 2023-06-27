@@ -48,12 +48,21 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
                           display_state_->get_color_palette()->get_gray());
 
   for (auto& feature : supported_features) {
-    auto element = feature.feature;
+    auto element = feature.command->get_feature();
     double angle = feature.position * M_PI / 2.0;
     auto coordinate = get_coordinate(radius, angle);
 
-    auto title = homeassistant_media_player::supported_feature_string(element);
-
+    auto title = feature.command->get_title();
+    if (element ==
+        homeassistant_media_player::MediaPlayerSupportedFeature::POWER_SET) {
+      if (media_player_group_->active_player_->playerState ==
+          homeassistant_media_player::RemotePlayerState::
+              PowerOffRemotePlayerState) {
+        title = "Turn On";
+      } else {
+        title = "Turn Off";
+      }
+    }
     display::TextAlign text_alignment =
         text_align_for_circle_position(feature.position);
     if (feature.position == CENTER) {
@@ -72,8 +81,7 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
 }
 
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
-    const std::vector<std::shared_ptr<MenuTitleBase>>* menu_titles,
-    int menu_index) {
+    const std::vector<MenuTitleBase*>* menu_titles, int menu_index) {
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
              display_state_->get_font_large()->get_baseline();
   auto menuTitlesSize = menu_titles->size();
@@ -119,7 +127,7 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
-    const std::vector<std::shared_ptr<MenuTitleBase>>* active_menu) {
+    const std::vector<MenuTitleBase*>* active_menu) {
   if ((option_menu && drawOptionMenuAndStop(option_menu)) ||
       display_state_ == nullptr) {
     return;
@@ -282,33 +290,6 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
       mediaDurationSeconds.c_str());
 }
 
-std::string HomeThingMenuNowPlaying::stringForNowPlayingMenuState(
-    NowPlayingMenuState state) {
-  switch (state) {
-    case pauseNowPlayingMenuState:
-      return media_player_group_->playTitleString();
-    case volumeUpNowPlayingMenuState:
-      return "Vol Up";
-    case volumeDownNowPlayingMenuState:
-      return "Vol Down";
-    case nextNowPlayingMenuState:
-      return "Next";
-    case menuNowPlayingMenuState:
-      return "Menu";
-    case backNowPlayingMenuState:
-      return "Back";
-    case TVPowerNowPlayingMenuState:
-      return "Power";
-    case homeNowPlayingMenuState:
-      return "TV Home";
-    case groupNowPlayingMenuState:
-      return "Group";
-    case shuffleNowPlayingMenuState:
-      return media_player_group_->shuffle_string();
-  }
-  return "";
-}
-
 void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int barMargin = 1;
   int barHeight = display_state_->get_font_small()->get_baseline();
@@ -368,7 +349,7 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
           getWrappedTitles(display_buffer_->get_width() / 2,
                            display_state_->get_font_large()->get_baseline(),
                            display::TextAlign::TOP_CENTER,
-                           media_player_group_->playingNewSourceText);
+                           media_player_group_->new_source_name());
       drawTextWrapped(
           display_buffer_->get_width() / 2,
           display_state_->get_header_height() +

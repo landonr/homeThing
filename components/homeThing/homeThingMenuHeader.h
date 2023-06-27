@@ -13,6 +13,8 @@
 
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/time/real_time_clock.h"
+#include "esphome/core/time.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -35,6 +37,7 @@ class HomeThingMenuHeader {
   void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
     active_menu_screen_ = active_menu_screen;
   }
+  void set_time_id(time::RealTimeClock* time_id) { this->esp_time_ = time_id; }
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(

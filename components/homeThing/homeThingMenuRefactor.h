@@ -24,22 +24,19 @@ class HomeThingMenuRefactor {
   void drawGroupedBar(int yPos, bool extend);
   void drawLightSliderBar(int xPos, int yPos, int sliderHeight,
                           SliderSelectionState sliderState,
-                          std::shared_ptr<MenuTitleSlider> slider,
-                          bool drawRGB);
+                          const MenuTitleSlider* slider, bool drawRGB);
   void drawLightSliderRGBBar(int xPos, int yPos, int sliderHeight,
                              int slider_width);
   void drawLightSlider(int xPos, int yPos, SliderSelectionState sliderState,
-                       std::shared_ptr<MenuTitleSlider> slider, bool drawRGB);
+                       const MenuTitleSlider* slider, bool drawRGB);
   void drawLightSwitch(bool switchState, int yPos, Color lightColor,
                        bool rowSelected);
   void drawLightSliderCircle(int xPos, int yPos, int sliderHeight,
                              SliderSelectionState sliderState,
-                             std::shared_ptr<MenuTitleSlider> slider,
-                             bool drawRGB);
+                             const MenuTitleSlider* slider, bool drawRGB);
   void drawLightSliderTitle(int xPos, int yPos, int sliderHeight,
                             SliderSelectionState sliderState,
-                            std::shared_ptr<MenuTitleSlider> slider,
-                            bool drawRGB);
+                            const MenuTitleSlider* slider, bool drawRGB);
   void drawSwitch(bool switchState, int yPos);
   void drawArrow(int yPos, int menuTitlesCount, int maxItems);
 

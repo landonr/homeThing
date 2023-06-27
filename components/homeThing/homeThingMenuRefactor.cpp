@@ -43,9 +43,11 @@ void HomeThingMenuRefactor::drawLightSliderRGBBar(int xPos, int yPos,
   }
 }
 
-void HomeThingMenuRefactor::drawLightSliderBar(
-    int xPos, int yPos, int sliderHeight, SliderSelectionState sliderState,
-    std::shared_ptr<MenuTitleSlider> slider, bool drawRGB) {
+void HomeThingMenuRefactor::drawLightSliderBar(int xPos, int yPos,
+                                               int sliderHeight,
+                                               SliderSelectionState sliderState,
+                                               const MenuTitleSlider* slider,
+                                               bool drawRGB) {
   int slider_min = xPos + display_state_->get_slider_margin_size();
   int slider_width = display_buffer_->get_width() -
                      2 * display_state_->get_slider_margin_size();
@@ -75,7 +77,7 @@ void HomeThingMenuRefactor::drawLightSliderBar(
 
 void HomeThingMenuRefactor::drawLightSliderCircle(
     int xPos, int yPos, int sliderHeight, SliderSelectionState sliderState,
-    std::shared_ptr<MenuTitleSlider> slider, bool drawRGB) {
+    const MenuTitleSlider* slider, bool drawRGB) {
   int circleSize = 5;
   int slider_width = display_buffer_->get_width() -
                      2 * display_state_->get_slider_margin_size();
@@ -117,7 +119,7 @@ void HomeThingMenuRefactor::drawLightSliderCircle(
 
 void HomeThingMenuRefactor::drawLightSliderTitle(
     int xPos, int yPos, int sliderHeight, SliderSelectionState sliderState,
-    std::shared_ptr<MenuTitleSlider> slider, bool drawRGB) {
+    const MenuTitleSlider* slider, bool drawRGB) {
   std::string sliderTitle = "";
   if (drawRGB) {
     sliderTitle = slider->get_name();
@@ -152,9 +154,10 @@ void HomeThingMenuRefactor::drawLightSliderTitle(
   }
 }
 
-void HomeThingMenuRefactor::drawLightSlider(
-    int xPos, int yPos, SliderSelectionState sliderState,
-    std::shared_ptr<MenuTitleSlider> slider, bool drawRGB) {
+void HomeThingMenuRefactor::drawLightSlider(int xPos, int yPos,
+                                            SliderSelectionState sliderState,
+                                            const MenuTitleSlider* slider,
+                                            bool drawRGB) {
   int sliderHeight = 3;
   if (sliderState == SliderSelectionStateHover) {
     display_buffer_->filled_rectangle(

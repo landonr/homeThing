@@ -3,15 +3,15 @@
 namespace esphome {
 namespace homething_menu_base {
 
-std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
-  std::vector<std::shared_ptr<MenuTitleBase>> out;
-  out.push_back(std::make_shared<MenuTitleBase>(this->get_name(), "",
-                                                NoMenuTitleRightIcon));
+void HomeThingMenuScreen::menu_titles(
+    std::vector<MenuTitleBase*>* menu_titles) {
+  menu_titles->push_back(
+      new MenuTitleBase(this->get_name(), "", NoMenuTitleRightIcon));
 #ifdef SHOW_VERSION
   if (show_version_) {
     auto versionString = COMPONENTS_HOMETHING_VERSION;
-    out.push_back(std::make_shared<MenuTitleBase>(versionString, "",
-                                                  NoMenuTitleRightIcon));
+    menu_titles->push_back(
+        new MenuTitleBase(versionString, "", NoMenuTitleRightIcon));
   }
 #endif
 
@@ -20,7 +20,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
       case MenuItemTypeNone:
         break;
       case MenuItemTypeTitle:
-        out.push_back(std::make_shared<MenuTitleBase>(
+        menu_titles->push_back(new MenuTitleBase(
             std::get<1>(entity)->get_name(), "", NoMenuTitleRightIcon));
         break;
       case MenuItemTypeSwitch: {
@@ -29,7 +29,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
         ESP_LOGD(TAG, "switch state %d", switchObject->state);
         MenuTitleLeftIcon state =
             switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-        out.push_back(std::make_shared<MenuTitleToggle>(
+        menu_titles->push_back(new MenuTitleToggle(
             switchObject->get_name(), switchObject->get_object_id(), state,
             NoMenuTitleRightIcon));
 #endif
@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
         MenuTitleLeftIcon state = coverObject->is_fully_closed()
                                       ? OffMenuTitleLeftIcon
                                       : OnMenuTitleLeftIcon;
-        out.push_back(std::make_shared<MenuTitleToggle>(
+        menu_titles->push_back(new MenuTitleToggle(
             coverObject->get_name(), coverObject->get_object_id(), state,
             NoMenuTitleRightIcon));
 #endif
@@ -54,12 +54,12 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
             static_cast<text_sensor::TextSensor*>(std::get<1>(entity));
         ESP_LOGD(TAG, "text sensor state %s", textSensor->state.c_str());
         if (textSensor->get_name() != "") {
-          out.push_back(std::make_shared<MenuTitleBase>(
+          menu_titles->push_back(new MenuTitleBase(
               textSensor->get_name() + " " + textSensor->get_state(), "",
               NoMenuTitleRightIcon));
         } else {
-          out.push_back(std::make_shared<MenuTitleBase>(textSensor->state, "",
-                                                        NoMenuTitleRightIcon));
+          menu_titles->push_back(
+              new MenuTitleBase(textSensor->state, "", NoMenuTitleRightIcon));
         }
 #endif
         break;
@@ -67,11 +67,11 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
       case MenuItemTypeCommand: {
         auto command = static_cast<MenuCommand*>(std::get<1>(entity));
         if (command->get_name() != "") {
-          out.push_back(std::make_shared<MenuTitleBase>(command->get_name(), "",
-                                                        NoMenuTitleRightIcon));
+          menu_titles->push_back(
+              new MenuTitleBase(command->get_name(), "", NoMenuTitleRightIcon));
         } else {
-          out.push_back(std::make_shared<MenuTitleBase>(
-              command->get_object_id(), "", NoMenuTitleRightIcon));
+          menu_titles->push_back(new MenuTitleBase(command->get_object_id(), "",
+                                                   NoMenuTitleRightIcon));
         }
         break;
       }
@@ -80,12 +80,12 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
         auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
         if (sensor->get_name() != "") {
-          out.push_back(std::make_shared<MenuTitleBase>(
+          menu_titles->push_back(new MenuTitleBase(
               sensor->get_name() + ": " + state, "", NoMenuTitleRightIcon));
         } else {
-          out.push_back(std::make_shared<MenuTitleBase>(
-              sensor->get_object_id() + ": " + state, "",
-              NoMenuTitleRightIcon));
+          menu_titles->push_back(
+              new MenuTitleBase(sensor->get_object_id() + ": " + state, "",
+                                NoMenuTitleRightIcon));
         }
 #endif
         break;
@@ -99,9 +99,9 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
         MenuTitleRightIcon rightIcon = supportsBrightness(light)
                                            ? ArrowMenuTitleRightIcon
                                            : NoMenuTitleRightIcon;
-        out.push_back(std::make_shared<MenuTitleLight>(
-            light->get_name(), "", state, rightIcon,
-            light::rgbLightColor(light)));
+        menu_titles->push_back(new MenuTitleLight(light->get_name(), "", state,
+                                                  rightIcon,
+                                                  light::rgbLightColor(light)));
 #endif
         break;
       }
@@ -110,19 +110,18 @@ std::vector<std::shared_ptr<MenuTitleBase>> HomeThingMenuScreen::menu_titles() {
         auto number = static_cast<number::Number*>(std::get<1>(entity));
         auto state = to_string(number->state).c_str();
         if (number->get_name() != "") {
-          out.push_back(std::make_shared<MenuTitleBase>(
+          menu_titles->push_back(new MenuTitleBase(
               number->get_name() + ": " + state, "", NoMenuTitleRightIcon));
         } else {
-          out.push_back(std::make_shared<MenuTitleBase>(
-              number->get_object_id() + ": " + state, "",
-              NoMenuTitleRightIcon));
+          menu_titles->push_back(
+              new MenuTitleBase(number->get_object_id() + ": " + state, "",
+                                NoMenuTitleRightIcon));
         }
 #endif
         break;
       }
     }
   }
-  return out;
 }
 
 bool HomeThingMenuScreen::select_menu(int index) {
