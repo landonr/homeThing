@@ -127,11 +127,15 @@ bool HomeThingMenuBase::selectMenu() {
       break;
     case sourcesMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-      auto baseTitleState = static_cast<MenuTitleBase*>(activeMenuTitle);
-      if (baseTitleState->titleType == SourceMenuTitleType) {
-        auto sourceTitleState = static_cast<MenuTitleSource*>(activeMenuTitle);
+      if (activeMenuTitle->titleType == SourceMenuTitleType) {
+        const auto sourceTitleState =
+            static_cast<MenuTitleSource*>(activeMenuTitle);
+        auto source = sourceTitleState->media_source_;
+        const auto new_source = new media_player_source::MediaPlayerSourceItem(
+            source->get_name(), source->get_media_content_id(),
+            source->get_media_type());
+        media_player_group_->playSource(new_source);
         idleMenu(true);
-        media_player_group_->playSource(sourceTitleState->media_source_);
         circle_menu_->set_active_menu(playingNewSourceMenu,
                                       media_player_group_->active_player_);
         update_display();
@@ -301,8 +305,8 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
       return menuTypesToTitles(rootMenuTitles(), menu_titles);
     case sourcesMenu: {
 #ifdef USE_MEDIA_PLAYER_GROUP
-      auto sources = media_player_group_->activePlayerSources();
-      auto index = media_player_group_->get_active_player_source_index();
+      const auto sources = media_player_group_->activePlayerSources();
+      const auto index = media_player_group_->get_active_player_source_index();
       if (index == -1 && sources->size() > 1) {
         activePlayerSourceTitles(sources, menu_titles);
         return;
@@ -461,7 +465,7 @@ bool HomeThingMenuBase::button_press_now_playing_option_continue(
       ESP_LOGI(
           TAG,
           "button_press_now_playing_option_continue: option menu selected %d",
-          *feature);
+          feature->get_feature());
       circle_menu_->clear_active_menu();
       if (!select_media_player_feature(feature)) {
         return false;
