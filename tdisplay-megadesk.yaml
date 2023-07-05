@@ -28,18 +28,16 @@ substitutions:
   log_level: "WARN"
 
 external_components:
-  # - source: github://landonr/homeThing@lando/now-playing-commands
-  #   refresh: 0s
   - source:
-      type: local
-      path: ../homething/components
+      type: git
+      url: https://github.com/landonr/homeThing
+      ref: main
+    refresh: 0s
     components: [homeThing]
   - source:
-      type: local
-      path: ../local_components/components
-      # type: git
-      # url: https://github.com/landonr/esphome-components
-      # ref: main
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
     refresh: 0s
     components: [
       homeassistant_component,

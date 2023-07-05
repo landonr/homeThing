@@ -59,10 +59,10 @@ packages: # maybe modify: include default ipod controls
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/stickc/axp192.yaml, # power management and screen backlight
-      common/stickc/sleep.yaml, # deep sleep
-      common/stickc/binary_sensor.yaml, # buttons
-      common/stickc/MiniEncoderC.yaml # rotary encoder and built in led
+      common/m5stack-stickc/axp192.yaml, # power management and screen backlight
+      common/m5stack-stickc/sleep.yaml, # deep sleep
+      common/m5stack-stickc/binary_sensor.yaml, # buttons
+      common/m5stack-stickc/MiniEncoderC.yaml # rotary encoder and built in led
     ]
     refresh: 0s
 

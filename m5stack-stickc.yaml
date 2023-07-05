@@ -52,15 +52,15 @@ external_components: #include homething, and esphome-components
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: main
+    ref: example-devices
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/stickc/axp192.yaml, # power management and screen backlight
-      common/stickc/sleep.yaml, # deep sleep
-      common/stickc/binary_sensor.yaml # power management and screen backlight
+      common/m5stack-stickc/axp192.yaml, # power management and screen backlight
+      common/m5stack-stickc/sleep.yaml, # deep sleep
+      common/m5stack-stickc/binary_sensor.yaml # power management and screen backlight
     ]
     refresh: 0s
 

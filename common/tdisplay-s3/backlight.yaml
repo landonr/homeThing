@@ -1,0 +1,12 @@
+output:
+  - platform: ledc
+    pin: GPIO38
+    id: gpio38
+    frequency: 2000
+
+light:
+  - platform: monochromatic
+    output: gpio38
+    name: "Backlight"
+    id: backlight
+    restore_mode: RESTORE_DEFAULT_ON
