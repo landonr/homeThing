@@ -1,3 +1,9 @@
+i2c:
+  - id: bus_a
+    sda: GPIO21
+    scl: GPIO22
+    scan: true
+
 axp192: # setup backlight and charging
  id: axp
  address: 0x34
@@ -45,3 +51,9 @@ binary_sensor:
      then:
        lambda: |-
         //  charging = x;
+
+switch:
+- platform: axp192
+  axp192_id: axp
+  output: ldo3
+  name: LDO3

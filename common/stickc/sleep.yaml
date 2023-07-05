@@ -1,0 +1,18 @@
+deep_sleep:
+ id: deep_sleep_
+ wakeup_pin: 37
+ wakeup_pin_mode: INVERT_WAKEUP
+
+switch:
+- platform: template
+  id: sleep_toggle
+  internal: true
+  optimistic: true
+  on_turn_on:
+    then:
+      - light.turn_off:
+          id: backlight
+          transition_length: 0s
+      - delay: 0.5s
+      - deep_sleep.enter:
+          id: deep_sleep_

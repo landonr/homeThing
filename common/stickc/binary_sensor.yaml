@@ -1,0 +1,32 @@
+binary_sensor:
+ - platform: gpio
+   pin:
+     number: GPIO37
+     inverted: true
+   name: Button A
+   on_press:
+     then:
+       lambda: |-
+           id(homeThingMenu)->buttonPressRight();
+           auto call = id(led1).turn_on();
+           call.set_transition_length(0);
+           call.perform();
+   on_release:
+     then:
+       - light.turn_off: led1
+       
+ - platform: gpio
+   pin:
+     number: GPIO39
+     inverted: true
+   name: Button B
+   on_press:
+     then:
+       lambda: |-
+           id(homeThingMenu)->buttonPressSelect();
+           auto call = id(led1).turn_on();
+           call.set_transition_length(0);
+           call.perform();
+   on_release:
+     then:
+       - light.turn_off: led1

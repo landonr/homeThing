@@ -1,0 +1,33 @@
+MiniEncoderC:
+  id: encoder_base
+  i2c_id: bus_b
+  # address: 0x42
+  button:
+    name: "${friendly_name} Rotary Button"
+    id: rotary_button
+    internal: True
+    on_press:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressSelect();
+  encoder:
+    name: "${friendly_name} Rotary Encoder"
+    id: rotary
+    internal: True
+    encoder_filter: 3
+    on_clockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+    on_anticlockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
+
+# internal LED
+light:
+  - platform: MiniEncoderC
+    name: "${friendly_name} Encoder Light"
+    id: encoder_light
+    i2c_id: bus_b
+    internal: False
