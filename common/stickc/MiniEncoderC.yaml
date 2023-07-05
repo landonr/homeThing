@@ -1,8 +1,8 @@
 i2c:
-   - id: bus_b
-     sda: GPIO0
-     scl: GPIO26
-     scan: true
+  - id: bus_b
+    sda: GPIO0
+    scl: GPIO26
+    scan: true
 
 MiniEncoderC:
   id: encoder_base
