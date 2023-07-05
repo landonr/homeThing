@@ -1,7 +1,12 @@
+i2c:
+   - id: bus_b
+     sda: GPIO0
+     scl: GPIO26
+     scan: true
+
 MiniEncoderC:
   id: encoder_base
   i2c_id: bus_b
-  # address: 0x42
   button:
     name: "${friendly_name} Rotary Button"
     id: rotary_button
