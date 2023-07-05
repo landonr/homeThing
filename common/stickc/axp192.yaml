@@ -1,0 +1,47 @@
+axp192: # setup backlight and charging
+ id: axp
+ address: 0x34
+ update_interval: 60s
+ charge_voltage: 4150mV
+ dcdc1_voltage: 3300mv
+ dcdc3_voltage: 1.5V
+
+sensor: # AXP192 power management - must be present to initialize TFT power on
+ - platform: axp192
+   axp192_id: axp
+   id: batteryPercent
+   type: battery_power
+
+light: # internal LED
+ - platform: monochromatic
+   output:  builtin_led
+   name: Led
+   id: led1
+   internal: True
+ - platform: monochromatic
+   output: axp_ldo3
+   restore_mode: ALWAYS_ON
+   name: "Backlight"
+   id: backlight
+   internal: True
+
+output:
+ - platform: ledc
+   pin: 10
+   inverted: true
+   id: builtin_led
+ - platform: axp192
+   axp192_id: axp
+   output: ldo3
+   id: axp_ldo3  
+
+binary_sensor:
+ - platform: axp192
+   axp192_id: axp
+   type: charge_indicate
+   id: axp_charger
+   name: "Charger"
+   on_state:
+     then:
+       lambda: |-
+        //  charging = x;
