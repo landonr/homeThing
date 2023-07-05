@@ -1,0 +1,15 @@
+light:
+  - platform: fastled_clockless
+    chipset: SK6812
+    pin: GPIO15
+    num_leds: 10
+    rgb_order: GRB
+    id: side_light
+    name: ${friendly_name} Remote Light
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+    effects:
+      - addressable_rainbow:
+          name: Rainbow Effect
+          speed: 20
+          width: 15

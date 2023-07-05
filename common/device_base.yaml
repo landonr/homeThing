@@ -1,5 +1,8 @@
+substitutions:
+  log_level: "INFO"
+
 logger:
-  level: WARN
+  level: ${log_level}
 
 ota:
 

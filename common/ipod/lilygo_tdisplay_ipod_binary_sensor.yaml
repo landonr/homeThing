@@ -4,12 +4,14 @@ substitutions:
   rotary_up_pin: "2"
   rotary_down_pin: "13"
   rotary_select_pin: "17"
+  screen_left_pin: "GPIO0"
+  screen_right_pin: "GPIO35"
 
 binary_sensor:
   ## controls
   - platform: gpio
     pin:
-      number: GPIO0
+      number: $screen_left_pin
       inverted: true
       mode:
         input: true
@@ -27,7 +29,7 @@ binary_sensor:
           id(homeThingMenu)->buttonReleaseScreenLeft();
   - platform: gpio
     pin:
-      number: GPIO35
+      number: $screen_right_pin
       inverted: true
     name: "T-Display Button Input 1"
     id: tdisplay_button_input_1

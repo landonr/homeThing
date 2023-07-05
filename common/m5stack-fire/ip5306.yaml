@@ -1,0 +1,15 @@
+i2c:
+  sda: 21
+  scl: 22
+  scan: True
+
+ip5306:
+  battery_level:
+    name: ${friendly_name} Battery Percent
+    id: battery_percent
+  charger_connected:
+    internal: true
+    id: connected
+  charge_full:
+    id: full
+    internal: true
