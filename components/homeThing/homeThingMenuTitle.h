@@ -352,7 +352,7 @@ static void activePlayerSourceTitles(
 }
 
 static void activePlayerSourceItemTitles(
-    std::vector<media_player_source::MediaPlayerSourceItem*>* sourceItems,
+    const std::vector<media_player_source::MediaPlayerSourceItem*>* sourceItems,
     std::vector<MenuTitleBase*>* menu_titles) {
   if (sourceItems->size() == 0) {
     ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
@@ -363,7 +363,8 @@ static void activePlayerSourceItemTitles(
     ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
              name.c_str());
     auto new_menu_title =
-        new MenuTitleSource(name, "", NoMenuTitleRightIcon, sourceItem);
+        new MenuTitleSource(name, sourceItem->get_media_content_id(),
+                            NoMenuTitleRightIcon, sourceItem);
     (*menu_titles).push_back(new_menu_title);
   }
 }

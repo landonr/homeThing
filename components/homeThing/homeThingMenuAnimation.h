@@ -10,7 +10,7 @@ class HomeThingMenuAnimation {
   HomeThingMenuAnimation() {
     animationTick = new sensor::Sensor();
     animationTick->publish_state(0);
-    auto filter = new sensor::DebounceFilter(17);
+    auto filter = new sensor::DebounceFilter(100);
     animationTick->add_filter(filter);
   }
   void resetAnimation(bool force = false);
