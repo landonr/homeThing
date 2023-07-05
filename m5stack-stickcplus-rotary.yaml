@@ -1,21 +1,34 @@
 esphome:
-  name: tdisplayt4
+  name: m5stickcplus
+  on_boot:
+    priority: 600.0
+    then:
+      - delay: 45s
+      - if:
+          condition:
+            not:
+              - wifi.connected:
+          then:
+            - switch.turn_on: sleep_toggle
 
 esp32:
-  board: esp32dev
+  board: m5stick-c
   framework:
     type: arduino
 
-wifi:
+wifi: # setup wifi, make sure secrets.yaml exists!
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   fast_connect: true
   id: wifi_id
-  ap:
-    ssid: "${friendly_name} Fallback"
-    password: !secret wifi_fallback_password
+  power_save_mode: HIGH
 
 external_components: #include homething, and esphome-components
+  - source:
+      type: git
+      url: https://gitlab.com/geiseri/esphome_extras.git
+    refresh: 0s
+    components: [axp192]
   - source:
       type: git
       url: https://github.com/landonr/homeThing
@@ -33,9 +46,9 @@ external_components: #include homething, and esphome-components
       media_player_source,
       media_player_source_sonos,
       media_player_source_spotify,
-      media_player_source_custom
+      media_player_source_custom,
+      MiniEncoderC
     ]
-
 
 packages: # maybe modify: include default ipod controls
   remote_package:
@@ -45,118 +58,16 @@ packages: # maybe modify: include default ipod controls
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
-      common/settings.yaml # settings screen
+      common/settings.yaml, # settings screen
+      common/stickc/axp192.yaml, # power management and screen backlight
+      common/stickc/sleep.yaml, # deep sleep
+      common/stickc/binary_sensor.yaml, # buttons
+      common/stickc/MiniEncoderC.yaml # rotary encoder and built in led
     ]
     refresh: 0s
 
 substitutions:
-  friendly_name: "tdisplayT4"
-  large_heavy_font_size: "24"
-  large_font_size: "24"
-  medium_font_size: "20"
-  small_font_size: "18"
-  home_thing_logo_size: "64"
-  material_font_large_size: "28"
-  material_font_small_size: "24"
-
-sensor:
-  - platform: rotary_encoder
-    filters:
-    - throttle: 0.01s
-    name: "Rotary Encoder"
-    internal: true
-    pin_a:
-      number: 26
-      mode:
-        input: true
-        pullup: true
-    pin_b:
-      number: 33
-      mode:
-        input: true
-        pullup: true
-    id: rotary
-    on_clockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
-    on_anticlockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
-  - platform: template
-    name: Battery Percent
-    id: batteryPercent
-    unit_of_measurement: '%'
-
-binary_sensor:
-  - platform: gpio
-    internal: true
-    pin:
-      number: 00
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw1
-    on_click:
-      min_length: 5ms
-      max_length: 350ms
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
-    on_multi_click:
-    - timing:
-        - ON for at least 0.5s
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
-  - platform: gpio
-    id: T4_BtnA
-    pin:
-      number: 39
-      inverted: true
-    on_click:
-      then:
-        - lambda: |-
-            id(homeThingMenu)->rotaryScrollCounterClockwise(0);
-  - platform: gpio
-    id: T4_BtnB
-    pin:
-      number: 37
-      inverted: true
-    on_click:
-      then:
-        - lambda: |-
-            id(homeThingMenu)->buttonPressSelect();
-  - platform: gpio
-    id: T4_BtnC
-    pin:
-      number: 38
-      inverted: true
-    on_click:
-      then:
-        - lambda: |-
-            id(homeThingMenu)->rotaryScrollClockwise(0);
-
-switch:
-  - platform: gpio
-    pin:
-      number: 27
-      inverted: false
-    id: comb
-    internal: true
-  - platform: gpio
-    pin:
-      number: 26
-      inverted: false
-    id: coma
-    internal: true
-
-spi:
-  clk_pin: 18
-  miso_pin: 12
-  mosi_pin: 23
+  friendly_name: "homeThing Stick+"
 
 color: # setup primary accent color
   - id: my_primary_accent
@@ -286,15 +197,19 @@ homeThing:
         - id: wifi_ip
           type: text_sensor
 
+spi:
+  clk_pin: GPIO13
+  mosi_pin: GPIO15
+
 display:
-  - platform: ili9xxx
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
     id: my_display
-    model: TFT_2.4
-    cs_pin: 27
-    dc_pin: 32
-    reset_pin: 05
+    cs_pin: GPIO5
+    dc_pin: GPIO23
+    reset_pin: GPIO18
+    rotation: 0
     update_interval: 3600s
-    rotation: 270
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;

@@ -1,10 +1,17 @@
 esphome:
-  name: tdisplayt4
-
-esp32:
-  board: esp32dev
-  framework:
-    type: arduino
+  name: fireremote
+  platform: ESP32
+  board: m5stack-fire
+  on_boot:
+    priority: 600.0
+    then:
+      - delay: 45s
+      - if:
+          condition:
+            not:
+              - wifi.connected:
+          then:
+            - switch.turn_on: sleep_toggle
 
 wifi:
   ssid: !secret wifi_ssid
@@ -15,7 +22,11 @@ wifi:
     ssid: "${friendly_name} Fallback"
     password: !secret wifi_fallback_password
 
-external_components: #include homething, and esphome-components
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ssieb/custom_components
+    components: [ ip5306 ]
   - source:
       type: git
       url: https://github.com/landonr/homeThing
@@ -36,7 +47,6 @@ external_components: #include homething, and esphome-components
       media_player_source_custom
     ]
 
-
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
@@ -45,12 +55,17 @@ packages: # maybe modify: include default ipod controls
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
-      common/settings.yaml # settings screen
+      common/settings.yaml, # settings screen
+      common/m5stack-fire/ip5306.yaml, # power management and screen backlight
+      common/m5stack-fire/sleep.yaml, # deep sleep
+      common/m5stack-fire/binary_sensor.yaml, # buttons
+      common/m5stack-fire/backlight.yaml, # backlight
+      common/m5stack-fire/sidelight.yaml, # sidelight
     ]
     refresh: 0s
 
 substitutions:
-  friendly_name: "tdisplayT4"
+  friendly_name: "homeThing Fire"
   large_heavy_font_size: "24"
   large_font_size: "24"
   medium_font_size: "20"
@@ -59,110 +74,11 @@ substitutions:
   material_font_large_size: "28"
   material_font_small_size: "24"
 
-sensor:
-  - platform: rotary_encoder
-    filters:
-    - throttle: 0.01s
-    name: "Rotary Encoder"
-    internal: true
-    pin_a:
-      number: 26
-      mode:
-        input: true
-        pullup: true
-    pin_b:
-      number: 33
-      mode:
-        input: true
-        pullup: true
-    id: rotary
-    on_clockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
-    on_anticlockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
-  - platform: template
-    name: Battery Percent
-    id: batteryPercent
-    unit_of_measurement: '%'
-
-binary_sensor:
-  - platform: gpio
-    internal: true
-    pin:
-      number: 00
-      inverted: true
-      mode:
-        input: true
-        pullup: true
-    id: sw1
-    on_click:
-      min_length: 5ms
-      max_length: 350ms
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
-    on_multi_click:
-    - timing:
-        - ON for at least 0.5s
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
-  - platform: gpio
-    id: T4_BtnA
-    pin:
-      number: 39
-      inverted: true
-    on_click:
-      then:
-        - lambda: |-
-            id(homeThingMenu)->rotaryScrollCounterClockwise(0);
-  - platform: gpio
-    id: T4_BtnB
-    pin:
-      number: 37
-      inverted: true
-    on_click:
-      then:
-        - lambda: |-
-            id(homeThingMenu)->buttonPressSelect();
-  - platform: gpio
-    id: T4_BtnC
-    pin:
-      number: 38
-      inverted: true
-    on_click:
-      then:
-        - lambda: |-
-            id(homeThingMenu)->rotaryScrollClockwise(0);
-
-switch:
-  - platform: gpio
-    pin:
-      number: 27
-      inverted: false
-    id: comb
-    internal: true
-  - platform: gpio
-    pin:
-      number: 26
-      inverted: false
-    id: coma
-    internal: true
-
-spi:
-  clk_pin: 18
-  miso_pin: 12
-  mosi_pin: 23
-
 color: # setup primary accent color
   - id: my_primary_accent
-    red_int: 75
-    green_int: 45
-    blue_int: 209
+    red_int: 255
+    green_int: 25
+    blue_int: 25
 
 light: # home assistant lights
   - platform: homeassistant_component
@@ -286,15 +202,19 @@ homeThing:
         - id: wifi_ip
           type: text_sensor
 
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
+
 display:
   - platform: ili9xxx
+    model: M5STACK
+    cs_pin: 14
+    dc_pin: 27
+    reset_pin: 33
     id: my_display
-    model: TFT_2.4
-    cs_pin: 27
-    dc_pin: 32
-    reset_pin: 05
-    update_interval: 3600s
-    rotation: 270
+    update_interval: 3600s 
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
