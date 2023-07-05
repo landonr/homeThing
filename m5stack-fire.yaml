@@ -1,0 +1,220 @@
+esphome:
+  name: fireremote
+  platform: ESP32
+  board: m5stack-fire
+  on_boot:
+    priority: 600.0
+    then:
+      - delay: 45s
+      - if:
+          condition:
+            not:
+              - wifi.connected:
+          then:
+            - switch.turn_on: sleep_toggle
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  id: wifi_id
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret wifi_fallback_password
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ssieb/custom_components
+    components: [ ip5306 ]
+  - source:
+      type: git
+      url: https://github.com/landonr/homeThing
+      ref: main
+    refresh: 0s
+    components: [homeThing]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+
+packages: # maybe modify: include default ipod controls
+  remote_package:
+    url: https://github.com/landonr/homeThing
+    ref: main
+    files: [
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml, # material icons
+      common/settings.yaml, # settings screen
+      common/m5stack-fire/ip5306.yaml, # power management and screen backlight
+      common/m5stack-fire/sleep.yaml, # deep sleep
+      common/m5stack-fire/binary_sensor.yaml, # buttons
+      common/m5stack-fire/backlight.yaml, # backlight
+      common/m5stack-fire/sidelight.yaml, # sidelight
+    ]
+    refresh: 0s
+
+substitutions:
+  friendly_name: "homeThing Fire"
+  large_heavy_font_size: "24"
+  large_font_size: "24"
+  medium_font_size: "20"
+  small_font_size: "18"
+  home_thing_logo_size: "64"
+  material_font_large_size: "28"
+  material_font_small_size: "24"
+
+color: # setup primary accent color
+  - id: my_primary_accent
+    red_int: 255
+    green_int: 25
+    blue_int: 25
+
+light: # home assistant lights
+  - platform: homeassistant_component
+    id: light_desk_lamp
+    entity_id: light.desk_lamp
+    name: Desk Lamp
+  - platform: homeassistant_component
+    id: light_all_lights
+    entity_id: light.all_lights
+    name: All Lights
+
+media_player_source_sonos: # sonos favorite source
+  id: sonos
+
+media_player: # home assistant media players
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+  - platform: homeassistant_media_player
+    name: TV
+    entity_id: "media_player.55_tcl_roku_tv"
+    id: media_player_tv
+    type: roku
+    soundbar:
+      speaker: media_player_beam
+
+homeassistant_media_player: # media player menu
+  id: media_group_component
+  media_players:
+    - id: media_player_beam
+      type: speaker
+    - id: media_player_tv
+      type: roku
+
+number: # home assistant number
+  - platform: homeassistant_component
+    entity_id: number.desk_height_cm
+    name: desk height
+    id: desk_height_number
+    min_value: 61.0
+    max_value: 105.0
+    step: 1
+
+cover: # home assistant cover
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
+
+homeThing:
+  id: homeThingMenu
+  settings:
+    sleep_after: 14400
+  media_player_group: media_group_component
+  display: my_display
+  on_redraw:
+    then:
+      component.update: my_display
+  display_state:
+    colors:
+      accent_primary: my_primary_accent
+    draw_battery_level: true
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_heavy_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small
+    font_logo: home_thing_logo
+  screens:
+    - name: Desk Screen
+      entities:
+        - type: cover
+          id: cover_megadesk
+        - type: number
+          id: desk_height_number
+        - type: command
+          name: "desk nudge up"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_up"
+        - type: command
+          name: "desk nudge down"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_down"
+        - id: light_desk_lamp
+          type: light
+    - name: Lights Screen
+      entities:
+        - id: light_all_lights
+          type: light
+        - type: command
+          name: "color lights"
+          command:
+            - homeassistant.service:
+                service: script.colors
+        - type: command
+          name: "lights off"
+          command:
+            - homeassistant.service:
+                service: script.off_script
+    - name: Settings Screen
+      show_version: True
+      entities:
+        - id: "restart_switch"
+          type: switch
+        - id: wifi_ssid
+          type: text_sensor
+        - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
+
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
+
+display:
+  - platform: ili9xxx
+    model: M5STACK
+    cs_pin: 14
+    dc_pin: 27
+    reset_pin: 33
+    id: my_display
+    update_interval: 3600s 
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;

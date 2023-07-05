@@ -1,0 +1,350 @@
+esphome:
+  name: "mega-homething"
+  friendly_name: mega-homething
+  includes:
+    - megadesk.h
+  on_boot:
+    - priority: -100
+      then:
+        - delay: 1s
+        - uart.write: "<C0.0."
+        - delay: 1s
+        - uart.write: "<R0.11."
+        - delay: 1s
+        - uart.write: "<R0.12."
+
+esp32:
+  board: featheresp32
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  id: wifi_id
+  power_save_mode: HIGH
+
+substitutions:
+  friendly_name: "mega homething"
+  log_level: "WARN"
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/landonr/homeThing
+      ref: main
+    refresh: 0s
+    components: [homeThing]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+  
+packages: # maybe modify: include default ipod controls
+  remote_package:
+    url: https://github.com/landonr/homeThing
+    ref: main
+    files: [
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml, # material icons
+      common/settings.yaml # settings screen
+    ]
+    refresh: 0s
+
+media_player_source_sonos:
+  id: sonos
+
+media_player:
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+    commands:
+      name: "group all"
+      command:
+        - homeassistant.service:
+            service: script.sonos_group_all
+
+color:
+  - id: my_primary_accent
+    red_int: 75
+    green_int: 45
+    blue_int: 209
+
+light:
+  - platform: homeassistant_component
+    id: light_desk_lamp
+    entity_id: light.desk_lamp
+    name: Desk Lamp
+
+homeassistant_media_player:
+  id: media_group_component
+  media_players:
+    - id: media_player_beam
+      type: speaker
+
+homeThing:
+  id: homeThingMenu
+  settings:
+    sleep_after: 14400
+    mode: rotary
+    menu_rollback: true
+    menu_rollover: true
+  backlight: backlight
+  media_player_group: media_group_component
+  display: my_display
+  header:
+    time_id: esptime
+  on_redraw:
+    then:
+      component.update: my_display
+  display_state:
+    colors:
+      accent_primary: my_primary_accent
+    draw_now_playing_bottom_menu: true
+    font_small: small_font
+    font_medium: medium_font
+    font_large: large_font
+    font_large_heavy: large_font
+    font_material_large: material_font_large
+    font_material_small: material_font_small
+    font_logo: home_thing_logo
+  screens:
+    - name: Desk Screen
+      entities:
+        - type: cover
+          id: cover_megadesk
+        - type: number
+          id: megadesk_height
+        - id: light_desk_lamp
+          type: light
+        - type: command
+          name: "color lights"
+          command:
+            - homeassistant.service:
+                service: script.colors
+        - type: command
+          name: "hell lights"
+          command:
+            - homeassistant.service:
+                service: scene.turn_on
+                data:
+                  entity_id: "scene.hell"
+        - type: command
+          name: "lights off"
+          command:
+            - homeassistant.service:
+                service: script.off_script
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+display:
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
+    id: my_display
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    rotation: 90
+    update_interval: 10s
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
+
+cover:
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
+    
+uart:
+  id: uart_desk
+  baud_rate: 115200
+  rx_pin: GPIO12
+  tx_pin: GPIO13
+  debug:
+    direction: RX
+    dummy_receiver: false
+    after:
+      delimiter: "\n"
+    sequence:
+      - lambda: UARTDebug::log_string(direction, bytes);
+
+binary_sensor:
+  - platform: gpio
+    internal: true
+    pin:
+      number: 17
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    id: sw1
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelect();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelectHold();
+
+sensor:
+  - platform: rotary_encoder
+    filters:
+    - throttle: 0.01s
+    name: "Rotary Encoder"
+    internal: true
+    pin_a:
+      number: 21
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: 22
+      mode:
+        input: true
+        pullup: true
+    id: rotary
+    on_clockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+    on_anticlockwise:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
+  - platform: custom
+    lambda: |-
+      auto megadesk = new Megadesk(id(uart_desk));
+      App.register_component(megadesk);
+      return { megadesk->raw_height, megadesk->min_height, megadesk->max_height };
+    sensors:
+    - id: megadesk_raw
+      internal: true
+      on_value:
+        then:
+          - component.update: megadesk_height
+          - component.update: megadesk_height_raw
+    - name: "Megadesk Minimum Height"
+    - name: "Megadesk Maximum Height"
+
+number:
+  - platform: template
+    name: "Desk Height (cm)"
+    id: megadesk_height
+    min_value: 58.42
+    max_value: 118.745
+    step: 0.53
+    mode: slider
+    update_interval: never
+    unit_of_measurement: 'cm'
+    #NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+    lambda: |-
+      return ((((id(megadesk_raw).state - 299) * (119.38 - 58.42)) / (6914 - 299)) + 58.42);
+    set_action:
+      - number.set:
+          id: megadesk_height_raw
+          value: !lambda "return int((((x - 58.42) * (6640 - 299)) / (119.38 - 58.42)) + 299);"
+  - platform: template
+    name: "Megadesk Height (raw)"
+    id: megadesk_height_raw
+    internal: true
+    min_value: 299
+    max_value: 6640
+    step: 1
+    mode: slider
+    update_interval: never
+    lambda: |-
+      return id(megadesk_raw).state;
+    set_action:
+      - uart.write: !lambda |-
+          char buf[20];
+          sprintf(buf, "<=%i,.", int(x));
+          std::string s = buf;
+          return std::vector<unsigned char>( s.begin(), s.end() );
+
+button:
+  - platform: template
+    name: "Desk position up"
+    on_press:
+      then:
+        - uart.write: '<L0,3.'
+  - platform: template
+    name: "Desk position down"
+    on_press:
+      then:
+        - uart.write: '<L0,2.'
+  - platform: template
+    name: "Desk get position"
+    on_press:
+      then:
+        - uart.write: '<C0,0.'
+  - platform: template
+    name: "Desk position nudge up"
+    on_press:
+      then:
+        - uart.write: '<+200..'
+  - platform: template
+    name: "Desk position nudge down"
+    on_press:
+      then:
+        - uart.write: '<-200..'
+  - platform: template
+    name: "Toggle Minimum Desk Height"
+    on_press:
+      then:
+        - uart.write: "<L0,11."
+        - uart.write: "<R0,11."
+  - platform: template
+    name: "Toggle Maximum Desk Height"
+    on_press:
+      then:
+        - uart.write: "<L0,12."
+        - uart.write: "<R0,12."
+  - platform: template
+    name: "Recalibrate Desk"
+    on_press:
+      then:
+        - uart.write: "<L0,14."
+  - platform: template
+    name: "Reboot Megadesk"
+    on_press:
+      then:
+        - uart.write: "<L0,15."
+  - platform: template
+    name: "Toggle Audio feedback"
+    on_press:
+      then:
+        - uart.write: "<L0,17."
+  - platform: template
+    name: "Toggle both-button mode"
+    on_press:
+      then:
+        - uart.write: "<L0,18."
+
+interval:
+  - interval: 300s
+    then:
+      - uart.write: "<C0.0."
