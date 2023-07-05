@@ -8,7 +8,7 @@ ttyUSBDevice=""
 
 if [ ! -z $1 ]; then
     if [ $1 == "all" ]; then
-        for device in m5stickc m5stickcplus tdisplayt4 tdisplayremote fireremote homething-lilygo
+        for device in tdisplay-ipod tdisplay-megadesk tdisplay-t4 m5stack-fire m5stack-stickc m5stack-stickcplus-rotary lilygos3
         do
             echo building $device
             esphome run --no-logs $device.yaml
