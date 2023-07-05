@@ -11,6 +11,7 @@ axp192: # setup backlight and charging
  charge_voltage: 4150mV
  dcdc1_voltage: 3300mv
  dcdc3_voltage: 1.5V
+ i2c_id: bus_a
 
 sensor: # AXP192 power management - must be present to initialize TFT power on
  - platform: axp192
