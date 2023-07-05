@@ -50,32 +50,19 @@ external_components:
       media_player_source_custom
     ]
   
-packages:
-  device_base: !include ../homeThing/common/device_base.yaml
-  # settings: !include ../homeThing/common/settings.yaml
-  ipod_control_backlight: !include ../homeThing/common/ipod/lilygo_tdisplay_ipod_backlight.yaml
-  # ipod_control_battery: !include ../homeThing/common/ipod/lilygo_tdisplay_ipod_battery.yaml
-  # ipod_control_binary_sensor: !include ../homeThing/common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml
-  # ipod_control_rotary: !include ../homeThing/common/ipod/lilygo_tdisplay_ipod_rotary.yaml
-  # ipod_control_sleep: !include ../homeThing/common/ipod/lilygo_tdisplay_ipod_sleep.yaml
-  # home_media_player: !include ../homeThing/homeConfig/media_player.yaml
-  # home_switch: !include ../homeThing/homeConfig/switch.yaml
-  fonts: !include ../homeThing/common/fonts-light.yaml
-  icon_fonts: !include ../homeThing/common/icon_fonts.yaml
-  # debug: !include ../homeThing/common/debugging.yaml
+packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
     ref: main
     files: [
-      # ../homeThing/common/device_base.yaml, # defines api, ota, free memory and uptime sensor
-      ../homeThing/common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
-      # ../homeThing/common/ipod/lilygo_tdisplay_ipod_binary_sensor.yaml, # used for button controls
-      # ../homeThing/common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for rotary controls
-      ../homeThing/common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
-      ../homeThing/common/fonts.yaml, # default font
-      ../homeThing/common/icon_fonts.yaml, # material icons
-      # ../homeThing/homeConfig/media_player.yaml
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml, # material icons
+      common/settings.yaml # settings screen
     ]
+    refresh: 0s
 
 media_player_source_sonos:
   id: sonos
