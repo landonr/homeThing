@@ -30,7 +30,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: lando/july-bugs
+      ref: main
     refresh: 0s
     components: [homeThing]
   - source:
