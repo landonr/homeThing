@@ -58,7 +58,7 @@ HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
   auto supported_features = get_supported_feature_options(player);
   if (supported_features.size() > position) {
-    ESP_LOGD(TAG, "tap_option_menu: %d - %s", static_cast<int>(position),
+    ESP_LOGI(TAG, "tap_option_menu: %d - %s", static_cast<int>(position),
              homeassistant_media_player::supported_feature_string(
                  supported_features[static_cast<int>(position)]
                      .command->get_feature())

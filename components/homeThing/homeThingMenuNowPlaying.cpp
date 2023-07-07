@@ -42,7 +42,12 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
     std::vector<CircleOptionMenuItem> supported_features) {
   int y_pos =
       (display_buffer_->get_height() - display_state_->get_header_height());
-  int radius = y_pos * 0.4;
+  int radius;
+  if (display_buffer_->get_height() > display_buffer_->get_width()) {
+    radius = display_buffer_->get_width() * 0.25;
+  } else {
+    radius = y_pos * 0.4;
+  }
   y_pos = (y_pos * 0.5) + display_state_->get_header_height();
   display_buffer_->circle(display_buffer_->get_width() * 0.5, y_pos, radius,
                           display_state_->get_color_palette()->get_gray());
@@ -349,7 +354,7 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
           getWrappedTitles(display_buffer_->get_width() / 2,
                            display_state_->get_font_large()->get_baseline(),
                            display::TextAlign::TOP_CENTER,
-                           media_player_group_->new_source_name());
+                           media_player_group_->get_new_source_name());
       drawTextWrapped(
           display_buffer_->get_width() / 2,
           display_state_->get_header_height() +

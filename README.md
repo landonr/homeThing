@@ -87,7 +87,7 @@ Supports many different hardware configurations:
 </table>
 
 ## Media Control 🔊📺
-### 1. Control Sonos speakers
+### 1. Control Home Assistsant media players (Sonos, Spotify, Google Home, etc)
 |Play / pause, next track, previous track, toggle shuffle and mute|Scroll for volume (with scroll wheel)|
 |--|--|
 |![Shuffle Gif](docs/shuffleTDisplay.gif)|![Scroll Volume Demo Gif](docs/volumeScrollTDisplay.gif)|

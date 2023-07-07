@@ -606,6 +606,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
         if (HomeThingMenuControls::editingScrollBack(
                 active_menu_screen->get_selected_entity(), menuIndex,
                 editing_menu_item)) {
+          reload_menu_items_ = true;
           debounceUpdateDisplay();
           return;
         }
@@ -678,6 +679,7 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
         if (HomeThingMenuControls::editingScrollForward(
                 active_menu_screen->get_selected_entity(), menuIndex,
                 editing_menu_item)) {
+          reload_menu_items_ = true;
           debounceUpdateDisplay();
           return;
         }
