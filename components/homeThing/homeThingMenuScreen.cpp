@@ -211,7 +211,7 @@ bool HomeThingMenuScreen::select_menu(int index) {
       break;
     }
     case MenuItemTypeButton: {
-#ifdef USE_BUTTON      
+#ifdef USE_BUTTON
       ESP_LOGI(TAG, "selected button %d", index);
       auto button = static_cast<button::Button*>(std::get<1>(entity));
       button->press();
