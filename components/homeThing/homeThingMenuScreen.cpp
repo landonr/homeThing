@@ -120,6 +120,19 @@ void HomeThingMenuScreen::menu_titles(
 #endif
         break;
       }
+      case MenuItemTypeButton: {
+#ifdef USE_BUTTON
+        auto button = static_cast<button::Button*>(std::get<1>(entity));
+        if (button->get_name() != "") {
+          menu_titles->push_back(
+              new MenuTitleBase(button->get_name(), "", NoMenuTitleRightIcon));
+        } else {
+          menu_titles->push_back(new MenuTitleBase(button->get_object_id(), "",
+                                                   NoMenuTitleRightIcon));
+        }
+#endif
+        break;
+      }
     }
   }
 }
@@ -189,10 +202,21 @@ bool HomeThingMenuScreen::select_menu(int index) {
       return true;
     }
     case MenuItemTypeNumber: {
+#ifdef USE_NUMBER
       ESP_LOGI(TAG, "selected number %d", index);
       auto entity = &entities_[index];
       set_selected_entity(entity);
       return true;
+#endif
+      break;
+    }
+    case MenuItemTypeButton: {
+#ifdef USE_BUTTON
+      ESP_LOGI(TAG, "selected button %d", index);
+      auto button = static_cast<button::Button*>(std::get<1>(entity));
+      button->press();
+#endif
+      return false;
     }
   }
   return false;

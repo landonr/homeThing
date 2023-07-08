@@ -32,6 +32,10 @@
 #include "esphome/components/cover/cover.h"
 #endif
 
+#ifdef USE_BUTTON
+#include "esphome/components/button/button.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -60,7 +64,8 @@ enum MenuItemType {
   MenuItemTypeSensor,
   MenuItemTypeLight,
   MenuItemTypeNumber,
-  MenuItemTypeCover
+  MenuItemTypeCover,
+  MenuItemTypeButton
 };
 
 class HomeThingMenuScreen {
@@ -131,6 +136,14 @@ class HomeThingMenuScreen {
     entities_.push_back(std::make_tuple(MenuItemTypeNumber, new_number));
     new_number->add_on_state_callback(
         [this, new_number](float state) { this->callback_.call(); });
+  }
+#endif
+
+#ifdef USE_BUTTON
+  void register_button(button::Button* new_button) {
+    entities_.push_back(std::make_tuple(MenuItemTypeButton, new_button));
+    new_button->add_on_press_callback(
+        [this, new_button]() { this->callback_.call(); });
   }
 #endif
 

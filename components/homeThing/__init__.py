@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
@@ -51,6 +51,7 @@ CONF_SWITCH = "switch"
 CONF_ENTITIES = "entities"
 CONF_COVER = "cover"
 CONF_NUMBER = "number"
+CONF_BUTTON = "button"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -282,6 +283,11 @@ MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.use_id(number.Number)
             }
         ),
+        CONF_BUTTON: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(button.Button)
+            }
+        ),
     },
     key=CONF_TYPE
 )
@@ -489,6 +495,9 @@ async def menu_screen_to_code(config):
         elif conf[CONF_TYPE] == CONF_NUMBER:
             new_number = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_number(new_number))
+        elif conf[CONF_TYPE] == CONF_BUTTON:
+            new_button = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_button(new_button))
     return menu_screen
 
 MENU_IDS = [
