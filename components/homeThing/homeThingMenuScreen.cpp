@@ -126,9 +126,8 @@ void HomeThingMenuScreen::menu_titles(
           menu_titles->push_back(
               new MenuTitleBase(button->get_name(), "", NoMenuTitleRightIcon));
         } else {
-          menu_titles->push_back(
-              new MenuTitleBase(button->get_object_id(), "",
-                                NoMenuTitleRightIcon));
+          menu_titles->push_back(new MenuTitleBase(button->get_object_id(), "",
+                                                   NoMenuTitleRightIcon));
         }
         break;
       }
