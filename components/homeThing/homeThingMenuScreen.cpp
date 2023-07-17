@@ -108,15 +108,11 @@ void HomeThingMenuScreen::menu_titles(
       case MenuItemTypeNumber: {
 #ifdef USE_NUMBER
         auto number = static_cast<number::Number*>(std::get<1>(entity));
-        auto state = to_string(number->state).c_str();
-        if (number->get_name() != "") {
-          menu_titles->push_back(new MenuTitleBase(
-              number->get_name() + ": " + state, "", NoMenuTitleRightIcon));
-        } else {
-          menu_titles->push_back(
-              new MenuTitleBase(number->get_object_id() + ": " + state, "",
-                                NoMenuTitleRightIcon));
-        }
+        auto name = number->get_name() == "" ? number->get_object_id()
+                                             : number->get_name();
+        auto title = name + ": " + value_accuracy_to_string(number->state, 1);
+        menu_titles->push_back(
+            new MenuTitleBase(title.c_str(), "", NoMenuTitleRightIcon));
 #endif
         break;
       }
