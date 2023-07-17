@@ -34,10 +34,18 @@ binary_sensor:
     name: "T-Display Button Input 1"
     id: tdisplay_button_input_1
     internal: true
-    on_press:
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
       then:
       - lambda: |-
           id(homeThingMenu)->buttonPressScreenRight();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->topMenu();
   - platform: gpio
     internal: true
     pin:
