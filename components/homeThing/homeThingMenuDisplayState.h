@@ -2,6 +2,7 @@
 
 #include <string>
 #include "esphome/components/display/display_buffer.h"
+#include "esphome/components/font/font.h"
 #include "homeThingColorPalette.h"
 
 namespace esphome {
@@ -11,34 +12,32 @@ enum DisplayIconEnabledState { OFF = 1, ON = 2, ALWAYS = 3 };
 
 class HomeThingMenuDisplayState {
  public:
-  display::Font* get_font_small() { return font_small_; }
-  void set_font_small(display::Font* font_small) { font_small_ = font_small; }
+  font::Font* get_font_small() { return font_small_; }
+  void set_font_small(font::Font* font_small) { font_small_ = font_small; }
 
-  display::Font* get_font_medium() { return font_medium_; }
-  void set_font_medium(display::Font* font_medium) {
-    font_medium_ = font_medium;
-  }
+  font::Font* get_font_medium() { return font_medium_; }
+  void set_font_medium(font::Font* font_medium) { font_medium_ = font_medium; }
 
-  display::Font* get_font_large() { return font_large_; }
-  void set_font_large(display::Font* font_large) { font_large_ = font_large; }
+  font::Font* get_font_large() { return font_large_; }
+  void set_font_large(font::Font* font_large) { font_large_ = font_large; }
 
-  display::Font* get_font_large_heavy() { return font_large_heavy_; }
-  void set_font_large_heavy(display::Font* font_large_heavy) {
+  font::Font* get_font_large_heavy() { return font_large_heavy_; }
+  void set_font_large_heavy(font::Font* font_large_heavy) {
     font_large_heavy_ = font_large_heavy;
   }
 
-  display::Font* get_font_material_large() { return font_material_large_; }
-  void set_font_material_large(display::Font* font_material_large) {
+  font::Font* get_font_material_large() { return font_material_large_; }
+  void set_font_material_large(font::Font* font_material_large) {
     font_material_large_ = font_material_large;
   }
 
-  display::Font* get_font_material_small() { return font_material_small_; }
-  void set_font_material_small(display::Font* font_material_small) {
+  font::Font* get_font_material_small() { return font_material_small_; }
+  void set_font_material_small(font::Font* font_material_small) {
     font_material_small_ = font_material_small;
   }
 
-  display::Font* get_font_logo() { return font_logo_; }
-  void set_font_logo(display::Font* font_logo) { font_logo_ = font_logo; }
+  font::Font* get_font_logo() { return font_logo_; }
+  void set_font_logo(font::Font* font_logo) { font_logo_ = font_logo; }
 
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
@@ -119,13 +118,13 @@ class HomeThingMenuDisplayState {
 
  private:
   HomeThingColorPalette* color_palette_;
-  display::Font* font_small_{nullptr};
-  display::Font* font_medium_{nullptr};
-  display::Font* font_large_{nullptr};
-  display::Font* font_large_heavy_{nullptr};
-  display::Font* font_material_large_{nullptr};
-  display::Font* font_material_small_{nullptr};
-  display::Font* font_logo_{nullptr};
+  font::Font* font_small_{nullptr};
+  font::Font* font_medium_{nullptr};
+  font::Font* font_large_{nullptr};
+  font::Font* font_large_heavy_{nullptr};
+  font::Font* font_material_large_{nullptr};
+  font::Font* font_material_small_{nullptr};
+  font::Font* font_logo_{nullptr};
   int header_height_;
   int margin_size_;
   int bottom_bar_margin_;

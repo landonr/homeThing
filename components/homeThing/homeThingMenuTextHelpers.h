@@ -27,7 +27,7 @@ class HomeThingMenuTextHelpers {
   void set_display_buffer(display::DisplayBuffer* new_display_buffer) {
     display_buffer_ = new_display_buffer;
   }
-  int drawTextWrapped(int xPos, int yPos, display::Font* font, Color color,
+  int drawTextWrapped(int xPos, int yPos, font::Font* font, Color color,
                       display::TextAlign alignment, std::string text,
                       int maxLines);
 
