@@ -244,7 +244,7 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
 bool HomeThingMenuBase::selectRootMenu() {
   MenuStates currentMenu = rootMenuTitles()[menuIndex];
   ESP_LOGW(TAG, "select_root_menu: selecting menu %d %s", menuIndex,
-               menu_state_title(menuTree.back()).c_str());
+           menu_state_title(menuTree.back()).c_str());
   switch (currentMenu) {
     case sourcesMenu:
       menuTree.push_back(sourcesMenu);
@@ -270,7 +270,9 @@ bool HomeThingMenuBase::selectRootMenu() {
     }
     case settingsMenu: {
       menuTree.push_back(settingsMenu);
-      int offset = home_sceen_ ? home_sceen_->get_entity_count() + static_menu_titles : static_menu_titles;
+      int offset = home_sceen_
+                       ? home_sceen_->get_entity_count() + static_menu_titles
+                       : static_menu_titles;
       active_menu_screen = menu_screens_[menuIndex - offset];
       break;
     }
@@ -290,9 +292,10 @@ bool HomeThingMenuBase::selectRootMenu() {
 MenuTitleBase* HomeThingMenuBase::menuTitleForType(MenuStates stringType,
                                                    int index) {
   if (stringType == settingsMenu && menu_screens_.size() > 0) {
-    int offset = home_sceen_ ? home_sceen_->get_entity_count() + static_menu_titles : static_menu_titles;
-    HomeThingMenuScreen* menu_screen =
-        menu_screens_[index - offset];
+    int offset = home_sceen_
+                     ? home_sceen_->get_entity_count() + static_menu_titles
+                     : static_menu_titles;
+    HomeThingMenuScreen* menu_screen = menu_screens_[index - offset];
     std::string menu_name = menu_screen->get_name();
     return new MenuTitleBase(menu_name, "", ArrowMenuTitleRightIcon);
   } else if (stringType == entityMenu && home_sceen_) {

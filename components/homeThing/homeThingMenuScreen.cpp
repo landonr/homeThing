@@ -20,7 +20,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       if (textSensor->get_name() != "") {
         return textSensor->get_name() + " " + textSensor->get_state();
       } else {
-       return textSensor->state;
+        return textSensor->state;
       }
 #endif
       break;
@@ -38,7 +38,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
       auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
       if (sensor->get_name() != "") {
-      return sensor->get_name() + ": " + state;
+        return sensor->get_name() + ": " + state;
       } else {
         return sensor->get_object_id() + ": " + state;
       }
@@ -49,7 +49,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
 #ifdef USE_NUMBER
       auto number = static_cast<number::Number*>(std::get<1>(entity));
       auto name = number->get_name() == "" ? number->get_object_id()
-                                            : number->get_name();
+                                           : number->get_name();
       auto title = name + ": " + value_accuracy_to_string(number->state, 1);
       return title;
 #endif
@@ -59,8 +59,8 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
   return std::get<1>(entity)->get_name();
 }
 
-void HomeThingMenuScreen::menu_titles(
-    std::vector<MenuTitleBase*>* menu_titles, bool show_name) {
+void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
+                                      bool show_name) {
   if (show_name) {
     menu_titles->push_back(
         new MenuTitleBase(this->get_name(), "", NoMenuTitleRightIcon));
@@ -91,8 +91,7 @@ void HomeThingMenuScreen::menu_titles(
         MenuTitleRightIcon rightIcon = supportsBrightness(light)
                                            ? ArrowMenuTitleRightIcon
                                            : NoMenuTitleRightIcon;
-        menu_titles->push_back(new MenuTitleLight(title, "", state,
-                                                  rightIcon,
+        menu_titles->push_back(new MenuTitleLight(title, "", state, rightIcon,
                                                   light::rgbLightColor(light)));
 #endif
         break;
@@ -104,8 +103,8 @@ void HomeThingMenuScreen::menu_titles(
         MenuTitleLeftIcon state = coverObject->is_fully_closed()
                                       ? OffMenuTitleLeftIcon
                                       : OnMenuTitleLeftIcon;
-        menu_titles->push_back(new MenuTitleToggle(title, coverObject->get_object_id(), state,
-            NoMenuTitleRightIcon));
+        menu_titles->push_back(new MenuTitleToggle(
+            title, coverObject->get_object_id(), state, NoMenuTitleRightIcon));
 #endif
         break;
       }
@@ -116,8 +115,8 @@ void HomeThingMenuScreen::menu_titles(
       case MenuItemTypeSwitch:
       case MenuItemTypeTitle:
       case MenuItemTypeCommand:
-          menu_titles->push_back(new MenuTitleBase(title, "",
-                                                   NoMenuTitleRightIcon));
+        menu_titles->push_back(
+            new MenuTitleBase(title, "", NoMenuTitleRightIcon));
         break;
     }
     index++;
@@ -125,7 +124,7 @@ void HomeThingMenuScreen::menu_titles(
 }
 
 bool HomeThingMenuScreen::select_menu(int index) {
-  if(show_name_) {
+  if (show_name_) {
     if (index == 0) {
       ESP_LOGI(TAG, "selected name %d", index);
       return false;

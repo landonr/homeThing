@@ -158,7 +158,7 @@ class HomeThingMenuScreen {
   const std::tuple<MenuItemType, EntityBase*>* get_menu_item(int index);
 
  private:
- bool show_name_ = false;
+  bool show_name_ = false;
   int index_;
   bool show_version_ = false;
   std::string name_;
