@@ -83,6 +83,8 @@ class HomeThingMenuScreen {
   const std::tuple<MenuItemType, EntityBase*>* get_selected_entity() {
     return selected_entity_;
   }
+  int get_entity_count() { return entities_.size(); }
+  std::string entity_name_at_index(int index);
 
 #ifdef USE_SWITCH
   void register_switch(switch_::Switch* new_switch) {
@@ -150,12 +152,13 @@ class HomeThingMenuScreen {
   void add_on_state_callback(std::function<void()>&& callback) {
     this->callback_.add(std::move(callback));
   }
-  void menu_titles(std::vector<MenuTitleBase*>* menu_titles);
+  void menu_titles(std::vector<MenuTitleBase*>* menu_titles, bool show_name);
   bool select_menu(int index);
   bool select_menu_hold(int index);
   const std::tuple<MenuItemType, EntityBase*>* get_menu_item(int index);
 
  private:
+ bool show_name_ = false;
   int index_;
   bool show_version_ = false;
   std::string name_;

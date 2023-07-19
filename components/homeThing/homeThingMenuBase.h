@@ -59,6 +59,10 @@ class HomeThingMenuBase : public PollingComponent {
     menu_screens_.push_back(new_screen);
   }
 
+  void register_home_screen(HomeThingMenuScreen* new_screen) {
+    home_sceen_ = new_screen;
+  }
+
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group() {
@@ -167,6 +171,7 @@ class HomeThingMenuBase : public PollingComponent {
                          std::vector<MenuTitleBase*>* menu_titles);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
   std::vector<HomeThingMenuScreen*> menu_screens_;
+  HomeThingMenuScreen* home_sceen_{nullptr};
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP

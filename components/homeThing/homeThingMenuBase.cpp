@@ -230,7 +230,11 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
   }
 #endif
   static_menu_titles = out.size();
-
+  if (home_sceen_) {
+    for (int i = 0; i < home_sceen_->get_entity_count(); i++) {
+      out.push_back(entityMenu);
+    }
+  }
   for (auto& menu_screen : menu_screens_) {
     out.push_back(settingsMenu);
   }
@@ -239,6 +243,8 @@ std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
 
 bool HomeThingMenuBase::selectRootMenu() {
   MenuStates currentMenu = rootMenuTitles()[menuIndex];
+  ESP_LOGW(TAG, "select_root_menu: selecting menu %d %s", menuIndex,
+               menu_state_title(menuTree.back()).c_str());
   switch (currentMenu) {
     case sourcesMenu:
       menuTree.push_back(sourcesMenu);
@@ -249,15 +255,30 @@ bool HomeThingMenuBase::selectRootMenu() {
     case mediaPlayersMenu:
       menuTree.push_back(mediaPlayersMenu);
       break;
-    case settingsMenu:
+    case entityMenu: {
+      int offset = static_menu_titles;
+      if (home_sceen_ && home_sceen_->select_menu(menuIndex - offset)) {
+        // auto selected_entity = active_menu_screen->get_selected_entity();
+        // if (selected_entity) {
+        //   MenuItemType menu_item_type = std::get<0>(*selected_entity);
+        //   ESP_LOGI(TAG, "selectRootMenu: began editing type %d", menu_item_type);
+        //   editing_menu_item = true;
+        // }
+        update_display();
+      }
+      return false;
+    }
+    case settingsMenu: {
       menuTree.push_back(settingsMenu);
-      active_menu_screen = menu_screens_[menuIndex - static_menu_titles];
+      int offset = home_sceen_ ? home_sceen_->get_entity_count() + static_menu_titles : static_menu_titles;
+      active_menu_screen = menu_screens_[menuIndex - offset];
       break;
+    }
     case lightsDetailMenu:
     case groupMenu:
     case rootMenu:
     case bootMenu:
-      ESP_LOGD(TAG, "select_root_menu: selecting menu is bad %d %s", menuIndex,
+      ESP_LOGW(TAG, "select_root_menu: selecting menu is bad %d %s", menuIndex,
                menu_state_title(menuTree.back()).c_str());
       menuIndex = 0;
       return false;
@@ -269,10 +290,15 @@ bool HomeThingMenuBase::selectRootMenu() {
 MenuTitleBase* HomeThingMenuBase::menuTitleForType(MenuStates stringType,
                                                    int index) {
   if (stringType == settingsMenu && menu_screens_.size() > 0) {
+    int offset = home_sceen_ ? home_sceen_->get_entity_count() + static_menu_titles : static_menu_titles;
     HomeThingMenuScreen* menu_screen =
-        menu_screens_[index - static_menu_titles];
+        menu_screens_[index - offset];
     std::string menu_name = menu_screen->get_name();
     return new MenuTitleBase(menu_name, "", ArrowMenuTitleRightIcon);
+  } else if (stringType == entityMenu && home_sceen_) {
+    int offset = static_menu_titles;
+    std::string menu_name = home_sceen_->entity_name_at_index(index - offset);
+    return new MenuTitleBase(menu_name, "", NoMenuTitleRightIcon);
   }
   return new MenuTitleBase(menu_state_title(stringType), "",
                            menu_state_right_icon(stringType));
@@ -369,7 +395,7 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
     case bootMenu:
       break;
     case settingsMenu:
-      active_menu_screen->menu_titles(menu_titles);
+      active_menu_screen->menu_titles(menu_titles, true);
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menu_state_title(menuTree.back()).c_str());

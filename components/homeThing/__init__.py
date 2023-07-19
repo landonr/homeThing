@@ -39,6 +39,7 @@ CONF_HEADER = "header"
 CONF_MEDIA_PLAYERS = "media_player_group"
 CONF_ON_REDRAW = "on_redraw"
 CONF_SCREENS = "screens"
+CONF_HOME_SCREEN = "home_screen"
 CONF_COMMANDS = "commands"
 CONF_COMMAND = "command"
 CONF_SHOW_VERSION = "show_version"
@@ -324,12 +325,13 @@ CONFIG_SCHEMA =  cv.All(
                     )
                 }
             ),
+            cv.Optional(CONF_HOME_SCREEN): MENU_SCREEN_SCHEMA,
             cv.Optional(CONF_SCREENS): cv.All(
                 cv.ensure_list(MENU_SCREEN_SCHEMA), cv.Length(min=1)
             ),
         }
     ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS, CONF_SCREENS)
+    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS, CONF_HOME_SCREEN, CONF_SCREENS)
 )
 
 async def ids_to_code(config, var, types):
@@ -514,6 +516,10 @@ async def to_code(config):
 
     menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display)
     await cg.register_component(menu, config)
+
+    if CONF_HOME_SCREEN in config:
+        home_screen = await menu_screen_to_code(config[CONF_HOME_SCREEN])
+        cg.add(menu.register_home_screen(home_screen))
 
     for conf in config.get(CONF_SCREENS, []):
         menu_screen = await menu_screen_to_code(conf)

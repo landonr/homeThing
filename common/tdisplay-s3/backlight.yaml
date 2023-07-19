@@ -9,4 +9,12 @@ light:
     output: gpio38
     name: "Backlight"
     id: backlight
-    restore_mode: RESTORE_DEFAULT_ON
+    restore_mode: ALWAYS_ON
+
+switch: # needed to turn on backlight while plugged into battery
+  - platform: gpio
+    pin: GPIO15
+    name: "BacklightBattery"
+    id: backlightBattery
+    internal: true
+    restore_mode: ALWAYS_ON
