@@ -73,7 +73,7 @@ std::string HomeThingMenuTextHelpers::textWrap(std::string text,
 }
 
 int HomeThingMenuTextHelpers::drawTextWrapped(int xPos, int yPos,
-                                              display::Font* font, Color color,
+                                              font::Font* font, Color color,
                                               display::TextAlign alignment,
                                               std::string text, int maxLines) {
   int fontSize = font->get_baseline();
