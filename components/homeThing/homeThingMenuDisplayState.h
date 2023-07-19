@@ -16,9 +16,7 @@ class HomeThingMenuDisplayState {
   void set_font_small(font::Font* font_small) { font_small_ = font_small; }
 
   font::Font* get_font_medium() { return font_medium_; }
-  void set_font_medium(font::Font* font_medium) {
-    font_medium_ = font_medium;
-  }
+  void set_font_medium(font::Font* font_medium) { font_medium_ = font_medium; }
 
   font::Font* get_font_large() { return font_large_; }
   void set_font_large(font::Font* font_large) { font_large_ = font_large; }
