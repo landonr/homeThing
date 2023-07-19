@@ -391,7 +391,7 @@ std::vector<std::string>* HomeThingMenuNowPlaying::getWrappedTitles(
 }
 
 int HomeThingMenuNowPlaying::drawTextWrapped(
-    int xPos, int yPos, int fontSize, display::BaseFont* font, Color color,
+    int xPos, int yPos, int fontSize, font::Font* font, Color color,
     display::TextAlign alignment, std::vector<std::string> wrappedTitles,
     int maxLines) {
   int characterLimit =
