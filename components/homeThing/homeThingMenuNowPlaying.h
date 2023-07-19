@@ -49,7 +49,7 @@ class HomeThingMenuNowPlaying {
   std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
                                              display::TextAlign alignment,
                                              std::string text);
-  int drawTextWrapped(int xPos, int yPos, int fontSize, display::Font* font,
+  int drawTextWrapped(int xPos, int yPos, int fontSize, display::BaseFont* font,
                       Color color, display::TextAlign alignment,
                       std::vector<std::string> wrappedTitles, int maxLines);
   display::TextAlign text_align_for_circle_position(
