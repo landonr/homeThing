@@ -93,6 +93,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
 #endif
+  bool selectLightEntity(const std::tuple<MenuItemType, EntityBase*>* menu_item);
   bool upMenu();
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);

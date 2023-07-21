@@ -230,8 +230,10 @@ bool HomeThingMenuScreen::select_menu_hold(int index) {
 
 const std::tuple<MenuItemType, EntityBase*>* HomeThingMenuScreen::get_menu_item(
     int index) {
-  // name isnt an entity
-  index -= 1;
+  if(show_name_) {
+    // name isnt an entity
+    index -= 1;
+  }
 #ifdef SHOW_VERSION
   if (show_version_) {
     index -= 1;

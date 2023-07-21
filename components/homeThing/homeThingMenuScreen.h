@@ -68,6 +68,32 @@ enum MenuItemType {
   MenuItemTypeButton
 };
 
+static std::string nameForMenuItemType(MenuItemType type) {
+  switch(type) {
+    case MenuItemTypeNone:
+      return "None";
+    case MenuItemTypeTitle:
+      return "Title";
+    case MenuItemTypeSwitch:
+      return "Switch";
+    case MenuItemTypeTextSensor:
+      return "TextSensor";
+    case MenuItemTypeCommand:
+      return "Command";
+    case MenuItemTypeSensor:
+      return "Sensor";
+    case MenuItemTypeLight:
+      return "Light";
+    case MenuItemTypeNumber:
+      return "Number";
+    case MenuItemTypeCover:
+      return "Cover";
+    case MenuItemTypeButton:
+      return "Button";
+  }
+  return "default";
+}
+
 class HomeThingMenuScreen {
  public:
   HomeThingMenuScreen(std::string name) : name_(name) {}
