@@ -190,9 +190,11 @@ bool HomeThingMenuBase::selectMenu() {
 bool HomeThingMenuBase::selectLightEntity(
     const std::tuple<MenuItemType, EntityBase*>* menu_item) {
   MenuItemType menu_item_type = std::get<0>(*menu_item);
-  ESP_LOGW(TAG, "selectLightEntity: %d type: %d, static count: %d", menuIndex, menu_item_type, static_menu_titles);
+  ESP_LOGW(TAG, "selectLightEntity: %d type: %d, static count: %d", menuIndex,
+           menu_item_type, static_menu_titles);
   if (menu_item_type == MenuItemTypeLight) {
-      ESP_LOGW(TAG, "selectLightEntit2y: %d type: %d, static count: %d", menuIndex, menu_item_type, static_menu_titles);
+    ESP_LOGW(TAG, "selectLightEntit2y: %d type: %d, static count: %d",
+             menuIndex, menu_item_type, static_menu_titles);
 #ifdef USE_LIGHT
     auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
     ESP_LOGW(TAG, "selectMenuHold: name %s", light->get_name().c_str());
@@ -214,9 +216,11 @@ bool HomeThingMenuBase::selectMenuHold() {
     case rootMenu: {
       if (home_sceen_) {
         int index = menuIndex - static_menu_titles;
-        auto menu_item =
-            home_sceen_->get_menu_item(index);
-        ESP_LOGW(TAG, "selectMenuHold: %d type: %d, name %s type %s", index, std::get<0>(*menu_item), home_sceen_->entity_name_at_index(index).c_str(), nameForMenuItemType(std::get<0>(*menu_item)).c_str());
+        auto menu_item = home_sceen_->get_menu_item(index);
+        ESP_LOGW(TAG, "selectMenuHold: %d type: %d, name %s type %s", index,
+                 std::get<0>(*menu_item),
+                 home_sceen_->entity_name_at_index(index).c_str(),
+                 nameForMenuItemType(std::get<0>(*menu_item)).c_str());
         return selectLightEntity(menu_item);
       }
       break;

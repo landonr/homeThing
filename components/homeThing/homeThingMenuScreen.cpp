@@ -230,7 +230,7 @@ bool HomeThingMenuScreen::select_menu_hold(int index) {
 
 const std::tuple<MenuItemType, EntityBase*>* HomeThingMenuScreen::get_menu_item(
     int index) {
-  if(show_name_) {
+  if (show_name_) {
     // name isnt an entity
     index -= 1;
   }

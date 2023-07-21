@@ -69,7 +69,7 @@ enum MenuItemType {
 };
 
 static std::string nameForMenuItemType(MenuItemType type) {
-  switch(type) {
+  switch (type) {
     case MenuItemTypeNone:
       return "None";
     case MenuItemTypeTitle:
