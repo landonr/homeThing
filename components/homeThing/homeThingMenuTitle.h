@@ -23,7 +23,8 @@ enum MenuStates {
   mediaPlayersMenu,
   lightsDetailMenu,
   nowPlayingMenu,
-  settingsMenu
+  settingsMenu,
+  entityMenu
 };
 
 enum MenuTitleLeftIcon {
@@ -53,6 +54,8 @@ static std::string menu_state_title(MenuStates menu_state) {
       return "Boot";
     case settingsMenu:
       return "Settings";
+    case entityMenu:
+      return "Entity";
   }
   return "";
 }
@@ -75,6 +78,8 @@ static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
       return NoMenuTitleRightIcon;
     case settingsMenu:
       return ArrowMenuTitleRightIcon;
+    case entityMenu:
+      return NoMenuTitleRightIcon;
   }
   return NoMenuTitleRightIcon;
 }
