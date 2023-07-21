@@ -27,6 +27,17 @@ void HomeThingMenuBase::setup() {
       }
     });
   }
+  if (home_sceen_) {
+    home_sceen_->add_on_state_callback([this]() {
+      switch (menuTree.back()) {
+        case rootMenu:
+          reload_menu_items_ = true;
+          this->update_display();
+        default:
+          break;
+      }
+    });
+  }
 #ifdef USE_MEDIA_PLAYER_GROUP
   circle_menu_->set_bottom_menu(menu_display_->get_draw_now_playing_menu());
   if (this->media_player_group_) {
