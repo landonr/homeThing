@@ -1,0 +1,7 @@
+substitutions:
+  launch_icon_size: "48x48"
+image:
+  - id: launch_image
+    file: "docs/homeThing logo.svg"
+    resize: $launch_icon_size
+    type: rgb565
