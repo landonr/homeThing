@@ -38,7 +38,9 @@ class HomeThingMenuDisplayState {
   }
 
   image::Image* get_launch_image() { return launch_image_; }
-  void set_launch_image(image::Image* launch_image) { launch_image_ = launch_image; }
+  void set_launch_image(image::Image* launch_image) {
+    launch_image_ = launch_image;
+  }
 
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {

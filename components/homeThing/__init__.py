@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, image, button
 from esphome.components.light import LightState
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID, CONF_URL, CONF_RAW_DATA_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
@@ -112,6 +112,46 @@ CONF_WHITE = "white"
 CONF_PINK = "pink"
 CONF_YELLOW = "yellow"
 
+from pathlib import Path
+from esphome.core import CORE, HexInt
+def _compute_local_icon_path() -> Path:
+    base_dir = Path(CORE.config_dir) / ".esphome" / DOMAIN / "svg"
+    return base_dir / f"{CONF_LAUNCH_IMAGE}.svg"
+
+import logging
+_LOGGER = logging.getLogger(__name__)
+DOMAIN = "image"
+SVG_DOWNLOAD_TIMEOUT = 30  # seconds
+
+import requests
+def download_svg(value):
+    svg_id = CONF_LAUNCH_IMAGE
+    path = _compute_local_icon_path()
+    if path.is_file():
+        return value
+    url = value[CONF_URL]
+    _LOGGER.debug("Downloading %s SVG image from %s", svg_id, url)
+    try:
+        req = requests.get(url, timeout=SVG_DOWNLOAD_TIMEOUT)
+        req.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise cv.Invalid(f"Could not download SVG image {svg_id} from {url}: {e}")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(req.content)
+    return value
+
+image_ns = cg.esphome_ns.namespace("image")
+Image_ = image_ns.class_("Image")
+ONLINE_SVG_SCHEMA = cv.All(
+    {
+        cv.GenerateID(CONF_ID): cv.declare_id(Image_),
+        cv.Optional(CONF_URL, default="https://upload.wikimedia.org/wikipedia/commons/b/bd/Test.svg"): cv.string,
+        cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
+    },
+    download_svg,
+)
+
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
@@ -204,7 +244,7 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
         cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
-        cv.Required(CONF_LAUNCH_IMAGE): cv.use_id(image.Image_),
+        cv.Optional(CONF_LAUNCH_IMAGE, default={}): ONLINE_SVG_SCHEMA,
         cv.Optional(CONF_HEADER_HEIGHT, default=16): cv.int_,
         cv.Optional(CONF_MARGIN_SIZE, default=4): cv.int_,
         cv.Optional(CONF_BOTTOM_BAR_MARGIN, default=1): cv.int_,
@@ -366,8 +406,7 @@ DISPLAY_STATE_IDS = [
     CONF_FONT_LARGE,
     CONF_FONT_LARGE_HEAVY,
     CONF_FONT_MATERIAL_LARGE,
-    CONF_FONT_MATERIAL_SMALL,
-    CONF_LAUNCH_IMAGE
+    CONF_FONT_MATERIAL_SMALL
 ]
 
 DISPLAY_STATE_TYPES = [
@@ -390,8 +429,32 @@ DISPLAY_STATE_TYPES = [
     CONF_BOOT_DEVICE_NAME
 ]
 
-async def display_state_to_code(config):
+import io
+def load_svg_image(file: str, resize: tuple[int, int]):
+    from PIL import Image
 
+    # This import is only needed in case of SVG images; adding it
+    # to the top would force configurations not using SVG to also have it
+    # installed for no reason.
+    from cairosvg import svg2png
+
+    if resize:
+        req_width, req_height = resize
+        svg_image = svg2png(
+            url=file,
+            output_width=req_width,
+            output_height=req_height,
+        )
+    else:
+        svg_image = svg2png(url=file)
+
+    return Image.open(io.BytesIO(svg_image))
+
+from esphome import core
+ImageType = image_ns.enum("ImageType")
+async def display_state_to_code(config):
+    width = 50
+    height = 50
     display_state = cg.new_Pvariable(config[CONF_ID])
     keys_to_code(config, display_state, DISPLAY_STATE_TYPES)
     await ids_to_code(config, display_state, DISPLAY_STATE_IDS)
@@ -401,6 +464,43 @@ async def display_state_to_code(config):
         await ids_to_code(config[CONF_COLORS], color_palette, COLOR_PALETTE_IDS)
         cg.add(display_state.set_color_palette(color_palette))
 
+    if CONF_LAUNCH_IMAGE in config:
+        from PIL import Image
+        conf_file = config[CONF_LAUNCH_IMAGE]
+        path = _compute_local_icon_path().as_posix()
+
+        try:
+            # resize = config.get(CONF_RESIZE)
+            # if path.lower().endswith(".svg"):
+                image = load_svg_image(path, (50, 50))
+            # else:
+                # image = Image.open(path)
+                # if resize:
+                #     image.thumbnail(resize)
+        except Exception as e:
+            raise core.EsphomeError(f"Could not load image file {path}: {e}")
+        
+        image = image.convert("RGBA")
+        pixels = list(image.getdata())
+        data = [0 for _ in range(height * width * 4)]
+        pos = 0
+        for r, g, b, a in pixels:
+            data[pos] = r
+            pos += 1
+            data[pos] = g
+            pos += 1
+            data[pos] = b
+            pos += 1
+            data[pos] = a
+            pos += 1
+
+        rhs = [HexInt(x) for x in data]
+        prog_arr = cg.progmem_array(config[CONF_LAUNCH_IMAGE][CONF_RAW_DATA_ID], rhs)
+        var = cg.new_Pvariable(
+            config[CONF_LAUNCH_IMAGE][CONF_ID], prog_arr, 50, 50, ImageType.IMAGE_TYPE_RGB24
+        )
+
+        cg.add(display_state.set_launch_image(var))
     return display_state
 
 async def text_helpers_to_code(config, display_buffer, display_state):

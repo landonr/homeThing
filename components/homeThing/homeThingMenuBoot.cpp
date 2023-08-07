@@ -59,9 +59,11 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
     int colorValue =
         (static_cast<float>(animationTick - delayTime) / animationLength) * 255;
     auto color = Color(colorValue, colorValue, colorValue);
-    display_buffer_->image(xPos, imageYPos, display_state_->get_launch_image(), color);
+    display_buffer_->image(xPos, imageYPos, display_state_->get_launch_image(),
+                           color);
   } else if (animationTick >= totalDuration) {
-    display_buffer_->image(xPos, imageYPos, display_state_->get_launch_image(), Color(255, 255, 255));
+    display_buffer_->image(xPos, imageYPos, display_state_->get_launch_image(),
+                           Color(255, 255, 255));
   }
   return totalDuration;
 }

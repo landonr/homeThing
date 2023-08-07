@@ -1,6 +1,9 @@
 echo "formatting"
 bash formatFiles.sh &> /dev/null
 
+echo "updating version"
+bash updateVersion.sh
+
 defaultDevice="homething-lilygo.yaml"
 hasTTYUSB=0
 moreThanOne=0
