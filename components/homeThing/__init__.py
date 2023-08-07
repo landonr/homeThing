@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome import automation
 from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, image, button
 from esphome.components.light import LightState
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID, CONF_URL, CONF_RAW_DATA_ID
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID, CONF_URL, CONF_RAW_DATA_ID, CONF_WIDTH, CONF_HEIGHT
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
@@ -146,8 +146,11 @@ Image_ = image_ns.class_("Image")
 ONLINE_SVG_SCHEMA = cv.All(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(Image_),
-        cv.Optional(CONF_URL, default="https://upload.wikimedia.org/wikipedia/commons/b/bd/Test.svg"): cv.string,
+        cv.Optional(CONF_URL, default="https://raw.githubusercontent.com/landonr/homeThing/main/docs/homeThing%20logo.svg"): cv.string,
         cv.GenerateID(CONF_RAW_DATA_ID): cv.declare_id(cg.uint8),
+        cv.Optional(CONF_WIDTH, default=50): cv.int_,
+        cv.Optional(CONF_HEIGHT, default=50): cv.int_,
+
     },
     download_svg,
 )
@@ -432,12 +435,7 @@ DISPLAY_STATE_TYPES = [
 import io
 def load_svg_image(file: str, resize: tuple[int, int]):
     from PIL import Image
-
-    # This import is only needed in case of SVG images; adding it
-    # to the top would force configurations not using SVG to also have it
-    # installed for no reason.
     from cairosvg import svg2png
-
     if resize:
         req_width, req_height = resize
         svg_image = svg2png(
@@ -453,8 +451,6 @@ def load_svg_image(file: str, resize: tuple[int, int]):
 from esphome import core
 ImageType = image_ns.enum("ImageType")
 async def display_state_to_code(config):
-    width = 50
-    height = 50
     display_state = cg.new_Pvariable(config[CONF_ID])
     keys_to_code(config, display_state, DISPLAY_STATE_TYPES)
     await ids_to_code(config, display_state, DISPLAY_STATE_IDS)
@@ -467,37 +463,38 @@ async def display_state_to_code(config):
     if CONF_LAUNCH_IMAGE in config:
         from PIL import Image
         conf_file = config[CONF_LAUNCH_IMAGE]
+        width = conf_file[CONF_WIDTH]
+        height = conf_file[CONF_HEIGHT]
         path = _compute_local_icon_path().as_posix()
 
         try:
-            # resize = config.get(CONF_RESIZE)
-            # if path.lower().endswith(".svg"):
-                image = load_svg_image(path, (50, 50))
-            # else:
-                # image = Image.open(path)
-                # if resize:
-                #     image.thumbnail(resize)
+            image = load_svg_image(path, (width, height))
         except Exception as e:
             raise core.EsphomeError(f"Could not load image file {path}: {e}")
-        
-        image = image.convert("RGBA")
-        pixels = list(image.getdata())
-        data = [0 for _ in range(height * width * 4)]
-        pos = 0
-        for r, g, b, a in pixels:
-            data[pos] = r
-            pos += 1
-            data[pos] = g
-            pos += 1
-            data[pos] = b
-            pos += 1
-            data[pos] = a
-            pos += 1
+        transparent = True
+        dither = Image.NONE
+        if transparent:
+            alpha = image.split()[-1]
+            has_alpha = alpha.getextrema()[0] < 0xFF
+            _LOGGER.debug("%s Has alpha: %s", config[CONF_ID], has_alpha)
+        image = image.convert("1", dither=dither)
+        width8 = ((width + 7) // 8) * 8
+        data = [0 for _ in range(height * width8 // 8)]
+        for y in range(height):
+            for x in range(width):
+                if transparent and has_alpha:
+                    a = alpha.getpixel((x, y))
+                    if not a:
+                        continue
+                elif image.getpixel((x, y)):
+                    continue
+                pos = x + y * width8
+                data[pos // 8] |= 0x80 >> (pos % 8)
 
         rhs = [HexInt(x) for x in data]
-        prog_arr = cg.progmem_array(config[CONF_LAUNCH_IMAGE][CONF_RAW_DATA_ID], rhs)
+        prog_arr = cg.progmem_array(conf_file[CONF_RAW_DATA_ID], rhs)
         var = cg.new_Pvariable(
-            config[CONF_LAUNCH_IMAGE][CONF_ID], prog_arr, 50, 50, ImageType.IMAGE_TYPE_RGB24
+            conf_file[CONF_ID], prog_arr, width, height, ImageType.IMAGE_TYPE_BINARY
         )
 
         cg.add(display_state.set_launch_image(var))
