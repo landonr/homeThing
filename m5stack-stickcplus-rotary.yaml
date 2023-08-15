@@ -49,6 +49,8 @@ external_components: #include homething, and esphome-components
       media_player_source_custom,
       MiniEncoderC
     ]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
 
 packages: # maybe modify: include default ipod controls
   remote_package:
@@ -62,7 +64,8 @@ packages: # maybe modify: include default ipod controls
       common/m5stack-stickc/axp192.yaml, # power management and screen backlight
       common/m5stack-stickc/sleep.yaml, # deep sleep
       common/m5stack-stickc/binary_sensor.yaml, # buttons
-      common/m5stack-stickc/MiniEncoderC.yaml # rotary encoder and built in led
+      common/m5stack-stickc/MiniEncoderC.yaml, # rotary encoder and built in led
+      common/images.yaml # boot screen image
     ]
     refresh: 0s
 
@@ -147,7 +150,7 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    font_logo: home_thing_logo
+    launch_image: launch_image
   screens:
     - name: Desk Screen
       entities:

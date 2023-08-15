@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
@@ -82,7 +82,7 @@ CONF_FONT_LARGE = "font_large"
 CONF_FONT_LARGE_HEAVY = "font_large_heavy"
 CONF_FONT_MATERIAL_LARGE = "font_material_large"
 CONF_FONT_MATERIAL_SMALL = "font_material_small"
-CONF_FONT_LOGO = "font_logo"
+CONF_LAUNCH_IMAGE = "launch_image"
 CONF_DRAW_NOW_PLAYING_BOTTOM_MENU = "draw_now_playing_bottom_menu"
 CONF_HEADER_HEIGHT = "header_height"
 CONF_MARGIN_SIZE = "margin_size"
@@ -204,7 +204,7 @@ DISPLAY_STATE_SCHEMA = cv.Schema(
         cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
-        cv.Required(CONF_FONT_LOGO): cv.use_id(font.Font),
+        cv.Optional(CONF_LAUNCH_IMAGE, default={}): cv.use_id(image.Image_),
         cv.Optional(CONF_HEADER_HEIGHT, default=16): cv.int_,
         cv.Optional(CONF_MARGIN_SIZE, default=4): cv.int_,
         cv.Optional(CONF_BOTTOM_BAR_MARGIN, default=1): cv.int_,
@@ -367,7 +367,7 @@ DISPLAY_STATE_IDS = [
     CONF_FONT_LARGE_HEAVY,
     CONF_FONT_MATERIAL_LARGE,
     CONF_FONT_MATERIAL_SMALL,
-    CONF_FONT_LOGO
+    CONF_LAUNCH_IMAGE
 ]
 
 DISPLAY_STATE_TYPES = [
@@ -400,7 +400,6 @@ async def display_state_to_code(config):
         color_palette = cg.new_Pvariable(config[CONF_COLORS][CONF_ID])
         await ids_to_code(config[CONF_COLORS], color_palette, COLOR_PALETTE_IDS)
         cg.add(display_state.set_color_palette(color_palette))
-
     return display_state
 
 async def text_helpers_to_code(config, display_buffer, display_state):

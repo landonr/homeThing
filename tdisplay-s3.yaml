@@ -52,6 +52,8 @@ external_components:
   - source: github://landonr/lilygo-tdisplays3-esphome
     components: [tdisplays3]
     refresh: 0s
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
   
 packages: # maybe modify: include default ipod controls
   remote_package:
@@ -66,7 +68,8 @@ packages: # maybe modify: include default ipod controls
       common/tdisplay-s3/backlight.yaml, # backlight
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
-      common/settings.yaml # settings screen
+      common/settings.yaml, # settings screen
+      common/images.yaml # boot screen image
     ]
     refresh: 0s
 
@@ -166,7 +169,7 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    font_logo: home_thing_logo
+    launch_image: launch_image
   screens:
     - name: Desk Screen
       entities:

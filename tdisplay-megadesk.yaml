@@ -47,6 +47,8 @@ external_components:
       media_player_source_spotify,
       media_player_source_custom
     ]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
   
 packages: # maybe modify: include default ipod controls
   remote_package:
@@ -58,7 +60,8 @@ packages: # maybe modify: include default ipod controls
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
-      common/settings.yaml # settings screen
+      common/settings.yaml, # settings screen
+      common/images.yaml # boot screen image
     ]
     refresh: 0s
 
@@ -123,7 +126,7 @@ homeThing:
     font_large_heavy: large_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    font_logo: home_thing_logo
+    launch_image: launch_image
   screens:
     - name: Desk Screen
       entities:

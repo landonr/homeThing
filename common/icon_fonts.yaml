@@ -4,12 +4,6 @@ substitutions:
   material_font_small_size: "18"
 
 font:
-  - file: 'fonts/homeThingFontLogo.ttf' 
-    id: home_thing_logo
-    size: $home_thing_logo_size
-    glyphs: [
-      '',
-    ]  
   - file: 'fonts/materialdesignicons-webfont.ttf' 
     id: material_font_large
     size: $material_font_large_size
