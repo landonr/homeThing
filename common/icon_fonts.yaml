@@ -4,7 +4,7 @@ substitutions:
   material_font_small_size: "18"
 
 font:
-  - file: 'fonts/materialdesignicons-webfont.ttf' 
+  - file: "https://github.com/landonr/homeThing/raw/main/fonts/materialdesignicons-webfont.ttf" 
     id: material_font_large
     size: $material_font_large_size
     glyphs: [
@@ -28,7 +28,7 @@ font:
       '󰑘', # mdi-repeat-once
       '󰑖', # mdi-repeat
     ]  
-  - file: 'fonts/materialdesignicons-webfont.ttf' 
+  - file: "https://github.com/landonr/homeThing/raw/main/fonts/materialdesignicons-webfont.ttf"
     id: material_font_small
     size: $material_font_small_size
     glyphs: [
