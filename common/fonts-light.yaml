@@ -5,17 +5,17 @@ substitutions:
   small_font_size: "14"
 
 font:
-    - file: "fonts/iosevka.ttf"
+    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
       id: large_font
       size: $large_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "fonts/iosevka.ttf"
+    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
       id: medium_font
       size: $medium_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "fonts/iosevka.ttf"
+    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
       id: small_font
       size: $small_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
