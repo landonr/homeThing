@@ -3,6 +3,7 @@
 #include <string>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/font/font.h"
+#include "esphome/components/image/image.h"
 #include "homeThingColorPalette.h"
 
 namespace esphome {
@@ -36,8 +37,10 @@ class HomeThingMenuDisplayState {
     font_material_small_ = font_material_small;
   }
 
-  font::Font* get_font_logo() { return font_logo_; }
-  void set_font_logo(font::Font* font_logo) { font_logo_ = font_logo; }
+  image::Image* get_launch_image() { return launch_image_; }
+  void set_launch_image(image::Image* launch_image) {
+    launch_image_ = launch_image;
+  }
 
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
@@ -124,7 +127,7 @@ class HomeThingMenuDisplayState {
   font::Font* font_large_heavy_{nullptr};
   font::Font* font_material_large_{nullptr};
   font::Font* font_material_small_{nullptr};
-  font::Font* font_logo_{nullptr};
+  image::Image* launch_image_{nullptr};
   int header_height_;
   int margin_size_;
   int bottom_bar_margin_;

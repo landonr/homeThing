@@ -24,7 +24,7 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    font_logo: home_thing_logo
+    launch_image: launch_image
     header_height: 24
     margin_size: 8
     slider_margin_size: 6

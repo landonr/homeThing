@@ -1,0 +1,5 @@
+image:
+  id: launch_image
+  file: "https://raw.githubusercontent.com/landonr/homeThing/main/docs/homeThing%20logo.svg"
+  resize: 48x48
+  type: TRANSPARENT_BINARY

@@ -157,7 +157,7 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    font_logo: home_thing_logo
+    launch_image: launch_image
   screens:	# you can have multiple screens
     - name: Kitchen Screen
       entities:
