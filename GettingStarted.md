@@ -21,7 +21,7 @@
 2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
 3. [Setup Device](#3-setup-device "Setup Device")
 4. [Setup Home](#4-setup-your-home-config "Setup Home")
-5. [Setup Menu](#5-set-up-the-media-player-group "Setup Media Player Group")
+5. [Setup Media Player Group](#5-set-up-the-media-player-group)
 6. [Setup homeThing](#6-set-up-the-homething-menu "Setup homeThing")
 7. [Upload](#7-install-on-your-device "Upload")
 8. [Connect](#8-add-the-device-to-home-assistant "Connect")
