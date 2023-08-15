@@ -3,6 +3,13 @@
 <h2 align = "center">
 <a href="https://github.com/landonr/homeThing/blob/main/example-homeThing.yaml">see a Full Example Config here 📦</a></h2>
 
+<h1 align="center"><a href="https://www.youtube.com/watch?v=LEmA9E3Gzkk">
+	Watch on YouTube!
+	<br>
+	<img src="https://github.com/landonr/homeThing/assets/2607659/e96cb4d9-3e7b-4c9f-aabb-ac2efdb432ca"/>
+</a></h1>
+
+
 ### Required
 -  Hardware (pick one):
 	- LilyGo T-Display
