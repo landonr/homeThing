@@ -21,9 +21,8 @@
 2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
 3. [Setup Device](#3-setup-device "Setup Device")
 4. [Setup Home](#4-setup-your-home-config "Setup Home")
-5. [Setup Menu](#5-set-up-the-menu-groups "Setup Menu")
+5. [Setup Menu](#5-set-up-the-media-player-group "Setup Media Player Group")
 6. [Setup homeThing](#6-set-up-the-homething-menu "Setup homeThing")
-7. [Download Fonts](#7-download-fonts "Download Fonts")
 7. [Upload](#7-install-on-your-device "Upload")
 8. [Connect](#8-add-the-device-to-home-assistant "Connect")
 9. **Done!**
@@ -51,6 +50,10 @@ external_components:
       media_player_source_spotify, # loads spotify playlists from Spotcast sensor into a list
       media_player_source_custom # define custom source lists
     ]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font ]
 ```
 
 ### 3. Setup Device
@@ -179,21 +182,9 @@ homeThing:
         - id: wifi_ip
           type: text_sensor
 ```
-
-### 7. Download Fonts
-This step needs improvement because the files need to be checked out manually. You can either
-1. run this on home assistant
-```
-curl -LJO https://github.com/landonr/homeThing/archive/refs/heads/main.zip && \
-unzip -j main.zip "homeThing-main/fonts/*" -d esphome/fonts/ && \
-rm main.zip
-```
-
-2. or download the fonts from here https://github.com/landonr/homeThing/tree/main/fonts
-and copy to **esphome/fonts**. You can do this by uploading to the folder using the **File Editor** add-on
-### 8. Install on your device
-### 9. Add the device to Home Assistant
-### 10. **Done! 🎉**
+### 7. Install on your device
+### 8. Add the device to Home Assistant
+### 9. **Done! 🎉**
 
 ---
 
