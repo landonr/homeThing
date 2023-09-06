@@ -38,7 +38,7 @@ external_components: #include homething, and esphome-components
   - source: github://pr#5214 # used to load images on compile
     components: [ image ]
   - source: github://pr#5254 # used to load fonts on compile
-    components: [ font ]
+    components: [ font, external_files ]
 
 
 packages: # maybe modify: include default ipod controls
