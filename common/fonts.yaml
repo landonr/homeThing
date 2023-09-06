@@ -6,22 +6,33 @@ substitutions:
 
 font:
   ## Font needs to be monospace!
-    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka-heavy.ttf"
+    - file:
+        url: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka-heavy.ttf"
+        # refresh: 10s
+        type: web
       id: large_heavy_font
       size: $large_heavy_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
-
-    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
+    - file: 
+        url: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
+        # refresh: 10s
+        type: web
       id: large_font
       size: $large_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
+    - file: 
+        url: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
+        # refresh: 10s
+        type: web
       id: medium_font
       size: $medium_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
+    - file: 
+        url: "https://github.com/landonr/homeThing/raw/main/fonts/iosevka.ttf"
+        # refresh: 10s
+        type: web
       id: small_font
       size: $small_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
