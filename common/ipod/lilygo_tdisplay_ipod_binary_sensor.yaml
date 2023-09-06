@@ -46,6 +46,11 @@ binary_sensor:
       then:
       - lambda: |-
           id(homeThingMenu)->topMenu();
+    - timing:
+        - ON for at least 3s
+      then:
+      - lambda: |-
+          id(sleep_toggle)->toggle();
   - platform: gpio
     internal: true
     pin:
