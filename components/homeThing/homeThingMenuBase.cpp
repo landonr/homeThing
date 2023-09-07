@@ -120,6 +120,7 @@ void HomeThingMenuBase::topMenu() {
   }
   menuTree.assign(1, rootMenu);
   reset_menu();
+  update_display();
 }
 
 void HomeThingMenuBase::update() {
