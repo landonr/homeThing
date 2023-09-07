@@ -23,7 +23,7 @@ binary_sensor:
    on_press:
      then:
        lambda: |-
-           id(homeThingMenu)->buttonPressSelect();
+           id(homeThingMenu)->topMenu(); 
            auto call = id(led1).turn_on();
            call.set_transition_length(0);
            call.perform();
