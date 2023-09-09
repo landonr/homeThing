@@ -1,3 +1,5 @@
+// https://gitlab.com/geiseri/esphome_extras/-/tree/main/components/axp192
+
 i2c:
   - id: bus_a
     sda: GPIO21
