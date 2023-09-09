@@ -1,4 +1,4 @@
-// https://github.com/martydingo/esphome-axp192
+# https://github.com/martydingo/esphome-axp192
 
 i2c:
   - id: bus_a
