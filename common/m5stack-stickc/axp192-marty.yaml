@@ -1,0 +1,118 @@
+# i2c:
+#   - id: bus_a
+#     sda: GPIO21
+#     scl: GPIO22
+#     scan: true
+
+# axp192: # setup backlight and charging
+#   id: axp
+#   address: 0x34
+#   update_interval: 60s
+#   charge_voltage: 4150mV
+#   dcdc1_voltage: 3300mv
+#   dcdc3_voltage: 1.5V
+#   i2c_id: bus_a
+
+# sensor: # AXP192 power management - must be present to initialize TFT power on
+#  - platform: axp192
+#    axp192_id: axp
+#    id: batteryPercent
+#    type: battery_power
+
+# light: # internal LED
+#  - platform: monochromatic
+#    output:  builtin_led
+#    name: Led
+#    id: led1
+#    internal: True
+#  - platform: monochromatic
+#    output: axp_ldo3
+#    restore_mode: ALWAYS_ON
+#    name: "${friendly_name} Backlight"
+#    id: backlight
+#    internal: True
+
+# output:
+#  - platform: ledc
+#    pin: 10
+#    inverted: true
+#    id: builtin_led
+#  - platform: axp192
+#    axp192_id: axp
+#    output: ldo3
+#    id: axp_ldo3  
+
+# binary_sensor:
+#  - platform: axp192
+#    axp192_id: axp
+#    type: charge_indicate
+#    id: axp_charger
+#    name: "${friendly_name} Charging"
+#    on_state:
+#      then:
+#        lambda: |-
+#         //  charging = x;
+
+# switch:
+# - platform: axp192
+#   axp192_id: axp
+#   output: ldo3
+#   name: LDO3
+
+i2c:
+  - id: bus_a
+    sda: GPIO21
+    scl: GPIO22
+    scan: True
+
+sensor:
+- platform: axp192
+  model: M5STICKC
+  id: axp_192
+  address: 0x34
+  i2c_id: bus_a
+  update_interval: 1s
+  brightness: 1.0
+  charging:
+    name: "${friendly_name} Charging"
+    id: axp_charger
+  battery_level:
+    name: "${friendly_name} Battery Percent"
+    id: batteryPercent
+  
+  # internal LED
+light:
+  - platform: monochromatic
+    output:  builtin_led
+    name: "${friendly_name} Led"
+    id: led1
+  - platform: monochromatic
+    output: backlight_output
+    restore_mode: ALWAYS_ON
+    name: "${friendly_name} Backlight"
+    id: backlight
+  
+output:
+  - platform: ledc
+    pin: 10
+    inverted: true
+    id: builtin_led
+  - platform: ledc
+    pin: GPIO4
+    id: gpio4
+  - platform: template
+    id: backlight_output
+    type: float
+    write_action:
+      then:
+        - lambda: |-
+            ESP_LOGD("backlight", "Setting brightness to %f", state);
+            if(id(backlight) == nullptr) return;
+            auto light = id(backlight);
+            auto light_on = light->remote_values.is_on() == true;
+            ESP_LOGD("backlight", "Backlight %d, setting brightness to %f", light_on, state);
+            if(light_on) {
+              id(axp_192).set_brightness(state);
+            } else {
+              id(axp_192).set_brightness(0.0f);
+            }

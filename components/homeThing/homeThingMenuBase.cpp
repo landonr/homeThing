@@ -455,6 +455,7 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
       update_display();
       return true;
     } else if (backlight_->remote_values.get_brightness() < 1) {
+      ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display 2");
       backlight_->turn_on()
           .set_transition_length(250)
           .set_brightness(1)
@@ -1091,20 +1092,34 @@ void HomeThingMenuBase::debounceUpdateDisplay() {
   }
 }
 
+bool HomeThingMenuBase::display_can_fade_out() {
+  int display_timeout_while_charging =
+      menu_settings_->get_display_timeout_while_charging();
+  if (get_charging()) {
+    if (display_timeout_while_charging > 0)
+      return idleTime == display_timeout_while_charging - 4;
+    else
+      return false;
+  }
+  return idleTime == menu_settings_->get_display_timeout() - 4;
+}
+
 bool HomeThingMenuBase::display_can_sleep() {
   int timeout = menu_settings_->get_display_timeout();
   bool idle_timeout = timeout != 0 && idleTime >= timeout;
 
-  bool display_timeout_while_charging = false;
-  bool charging_timeout =
-      display_timeout_while_charging ? get_charging() : false;
+  int display_timeout_while_charging =
+      menu_settings_->get_display_timeout_while_charging();
 
-  ESP_LOGD(TAG, "screen timeout %d, charging %d, charging timeout %d idle %d",
-           idle_timeout, get_charging(), charging_timeout, idle_timeout);
+  ESP_LOGI(TAG,
+           "screen timeout %d, charging %d, display_timeout_while_charging %d "
+           "idle %d",
+           idle_timeout, get_charging(), display_timeout_while_charging,
+           idleTime);
 
   if (get_charging()) {
-    if (display_timeout_while_charging)
-      return idle_timeout;
+    if (display_timeout_while_charging > 0)
+      return idleTime >= display_timeout_while_charging;
     else
       return false;
   } else {
@@ -1116,36 +1131,46 @@ void HomeThingMenuBase::turn_on_backlight() {
 #ifdef USE_LIGHT
   if (backlight_ && !backlight_->remote_values.is_on()) {
     ESP_LOGI(TAG, "turn_on_backlight: turning on display");
-    auto call = backlight_->turn_on();
-    call.set_transition_length(250);
-    call.set_brightness(1);
-    call.perform();
+    backlight_->turn_on()
+        .set_transition_length(250)
+        .set_brightness(1)
+        .perform();
   }
 #endif
 }
 
 void HomeThingMenuBase::sleep_display() {
 #ifdef USE_LIGHT
-  if (backlight_ && backlight_->remote_values.is_on()) {
-    ESP_LOGI(TAG, "sleep_display: turning off display");
-    auto call = backlight_->turn_off();
-    call.set_transition_length(500);
-    call.perform();
+  if (backlight_ != nullptr &&
+      (backlight_->remote_values.is_on() ||
+       backlight_->remote_values.get_brightness() > 0)) {
+    ESP_LOGI(TAG, "sleep_display: turning off display %d, %d, %f",
+             backlight_ == nullptr, backlight_->remote_values.is_on(),
+             backlight_->remote_values.get_brightness());
+    backlight_->turn_off()
+        .set_brightness(0)
+        .set_transition_length(500)
+        .perform();
   } else {
-    ESP_LOGD(TAG, "sleep_display: NOT turning off display %d, %d", backlight_,
-             backlight_->remote_values.is_on());
+    ESP_LOGI(TAG, "sleep_display: NOT turning off display %d, %d, %f",
+             backlight_ == nullptr, backlight_->remote_values.is_on(),
+             backlight_->remote_values.get_brightness());
   }
 #endif
 }
 
 void HomeThingMenuBase::fade_out_display() {
 #ifdef USE_LIGHT
-  if (backlight_ && backlight_->remote_values.is_on()) {
-    ESP_LOGI(TAG, "fade_out_display: fading out display");
-    auto call = backlight_->turn_on();
-    call.set_brightness(0.3);
-    call.set_transition_length(500);
-    call.perform();
+  auto brightness = backlight_->remote_values.get_brightness();
+  if (backlight_ != nullptr && backlight_->remote_values.is_on() &&
+      brightness > 0.3f) {
+    ESP_LOGI(TAG, "fade_out_display: fading out display %d, %d, %f",
+             backlight_ == nullptr, backlight_->remote_values.is_on(),
+             brightness);
+    backlight_->turn_on()
+        .set_brightness(0.3)
+        .set_transition_length(500)
+        .perform();
   }
 #endif
 }
@@ -1178,7 +1203,7 @@ void HomeThingMenuBase::idleTick() {
     circle_menu_->clear_active_menu();
 #endif
     update_display();
-  } else if (idleTime == menu_settings_->get_display_timeout() - 4) {
+  } else if (display_can_fade_out()) {
     fade_out_display();
   } else if (idleTime == menu_settings_->get_display_timeout()) {
 #ifdef USE_MEDIA_PLAYER_GROUP
