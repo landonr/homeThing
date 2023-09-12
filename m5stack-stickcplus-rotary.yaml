@@ -38,7 +38,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: sept-update
+      ref: main
     refresh: 0s
     components: [homeThing]
   - source:
@@ -63,7 +63,7 @@ external_components: #include homething, and esphome-components
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: sept-update
+    ref: main
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font
