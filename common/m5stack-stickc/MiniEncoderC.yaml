@@ -12,9 +12,18 @@ MiniEncoderC:
     id: rotary_button
     internal: True
     on_press:
+      # min_length: 0ms
+      # max_length: 350ms
       then:
-        - lambda: |-
-            id(homeThingMenu)->buttonPressSelect();
+      - lambda: |-
+          id(homeThingMenu)->buttonPressWakeUpDisplay();
+          id(homeThingMenu)->buttonPressSelect();
+    # on_multi_click:
+    # - timing:
+    #     - ON for at least 0.5s
+    #   then:
+    #   - lambda: |-
+    #       id(homeThingMenu)->buttonPressSelectHold();
   encoder:
     name: "${friendly_name} Rotary Encoder"
     id: rotary

@@ -155,6 +155,7 @@ class HomeThingMenuBase : public PollingComponent {
   }
   void fade_out_display();
   void sleep_display();
+  bool display_can_fade_out();
   bool display_can_sleep();
 
   int idleTime = -2;

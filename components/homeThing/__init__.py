@@ -71,6 +71,7 @@ CONF_SLEEP_SWITCH = "sleep_switch"
 CONF_SLEEP_AFTER = "sleep_after"
 CONF_BACKLIGHT = "backlight"
 CONF_LOCK_AFTER = "lock_after"
+CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
 
 # display state
 CONF_OFF = "off"
@@ -152,6 +153,7 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.Optional(CONF_MENU_ROLLOVER_ON, default=False): cv.boolean,
         cv.Optional(CONF_MENU_ROLLBACK_ON, default=False): cv.boolean,
         cv.Optional(CONF_LOCK_AFTER, default=0): cv.int_,
+        cv.Optional(CONF_DISPLAY_TIMEOUT_WHILE_CHARGING, default=0): cv.int_,
     }
 )
 
@@ -352,7 +354,8 @@ MENU_SETTING_TYPES = [
     CONF_SLEEP_AFTER,
     CONF_MENU_ROLLOVER_ON,
     CONF_MENU_ROLLBACK_ON,
-    CONF_LOCK_AFTER
+    CONF_LOCK_AFTER,
+    CONF_DISPLAY_TIMEOUT_WHILE_CHARGING
 ]
 
 async def menu_settings_to_code(config):

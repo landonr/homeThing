@@ -25,7 +25,12 @@ class HomeThingMenuSettings {
   void set_sleep_after(int sleep_after) { sleep_after_ = sleep_after; }
   int get_lock_after() { return lock_after_; }
   void set_lock_after(int lock_after) { lock_after_ = lock_after; }
-
+  int get_display_timeout_while_charging() {
+    return display_timeout_while_charging_;
+  }
+  void set_display_timeout_while_charging(int display_timeout_while_charging) {
+    display_timeout_while_charging_ = display_timeout_while_charging;
+  }
 #ifdef USE_SWITCH
   switch_::Switch* get_sleep_switch() { return sleep_switch_; }
   void set_sleep_switch(switch_::Switch* sleep_switch) {
@@ -42,10 +47,10 @@ class HomeThingMenuSettings {
  private:
   MenuMode mode_;
   int display_timeout_;
+  int display_timeout_while_charging_;
   int sleep_after_;
   bool menu_rollover_;
   bool menu_rollback_;
-
 #ifdef USE_SWITCH
   switch_::Switch* sleep_switch_;
 #endif

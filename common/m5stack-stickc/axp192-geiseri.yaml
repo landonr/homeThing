@@ -1,3 +1,5 @@
+# https://gitlab.com/geiseri/esphome_extras/-/tree/main/components/axp192
+
 i2c:
   - id: bus_a
     sda: GPIO21
@@ -5,13 +7,13 @@ i2c:
     scan: true
 
 axp192: # setup backlight and charging
- id: axp
- address: 0x34
- update_interval: 60s
- charge_voltage: 4150mV
- dcdc1_voltage: 3300mv
- dcdc3_voltage: 1.5V
- i2c_id: bus_a
+  id: axp
+  address: 0x34
+  update_interval: 60s
+  charge_voltage: 4150mV
+  dcdc1_voltage: 3300mv
+  dcdc3_voltage: 1.5V
+  i2c_id: bus_a
 
 sensor: # AXP192 power management - must be present to initialize TFT power on
  - platform: axp192
@@ -26,11 +28,10 @@ light: # internal LED
    id: led1
    internal: True
  - platform: monochromatic
-   output: axp_ldo3
+   output: axp_ldo2
    restore_mode: ALWAYS_ON
-   name: "Backlight"
+   name: "${friendly_name} Backlight"
    id: backlight
-   internal: True
 
 output:
  - platform: ledc
@@ -39,15 +40,15 @@ output:
    id: builtin_led
  - platform: axp192
    axp192_id: axp
-   output: ldo3
-   id: axp_ldo3  
+   output: ldo2
+   id: axp_ldo2  
 
 binary_sensor:
  - platform: axp192
    axp192_id: axp
    type: charge_indicate
    id: axp_charger
-   name: "Charger"
+   name: "${friendly_name} Charging"
    on_state:
      then:
        lambda: |-

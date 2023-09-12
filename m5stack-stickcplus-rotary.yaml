@@ -24,11 +24,17 @@ wifi: # setup wifi, make sure secrets.yaml exists!
   power_save_mode: HIGH
 
 external_components: #include homething, and esphome-components
-  - source:
+  # - source:
+  #     type: git
+  #     url: https://gitlab.com/geiseri/esphome_extras.git
+  #   refresh: 0s
+  #   components: [axp192]
+  - source: 
       type: git
-      url: https://gitlab.com/geiseri/esphome_extras.git
-    refresh: 0s
+      url: https://github.com/landonr/esphome-axp192
+      ref: "lando/add-charging-indicator"
     components: [axp192]
+    refresh: 0s
   - source:
       type: git
       url: https://github.com/landonr/homeThing
@@ -63,7 +69,7 @@ packages: # maybe modify: include default ipod controls
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/m5stack-stickc/axp192.yaml, # power management and screen backlight
+      common/m5stack-stickc/axp192-marty.yaml, # power management and screen backlight
       common/m5stack-stickc/sleep.yaml, # deep sleep
       common/m5stack-stickc/binary_sensor.yaml, # buttons
       common/m5stack-stickc/MiniEncoderC.yaml, # rotary encoder and built in led
@@ -137,8 +143,13 @@ homeThing:
   id: homeThingMenu
   settings:
     sleep_after: 14400
+    display_timeout_while_charging: 30
   media_player_group: media_group_component
   display: my_display
+  backlight: backlight
+  battery:
+    battery_percent: batteryPercent
+    charging: axp_charger
   on_redraw:
     then:
       component.update: my_display
