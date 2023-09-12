@@ -1,3 +1,9 @@
+i2c:
+    - id: bus_a
+      sda: 21
+      scl: 22
+      scan: True
+
 UnitEncoderC:
   id: encoder_base
   i2c_id: bus_a
