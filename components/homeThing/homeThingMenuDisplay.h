@@ -48,10 +48,11 @@ class HomeThingMenuDisplay {
         header_(header) {}
   void setup();
   void draw_lock_screen(int unlock_presses);
-  bool draw_menu_screen(MenuStates* activeMenuState,
-                        const std::vector<MenuTitleBase*>* active_menu,
-                        const int menuIndex, HomeThingOptionMenu* option_menu,
-                        bool editing_menu_item);
+  bool draw_menu_screen(
+      MenuStates* activeMenuState,
+      const std::vector<MenuTitleBase*>* active_menu, const int menuIndex,
+      homething_menu_now_playing::HomeThingOptionMenu* option_menu,
+      bool editing_menu_item);
   void updateDisplay(bool force);
 
   void set_animation(HomeThingMenuAnimation* animation) {
@@ -71,7 +72,8 @@ class HomeThingMenuDisplay {
           media_player_group) {
     media_player_group_ = media_player_group;
   }
-  void set_now_playing(HomeThingMenuNowPlaying* now_playing) {
+  void set_now_playing(
+      homething_menu_now_playing::HomeThingMenuNowPlaying* now_playing) {
     now_playing_ = now_playing;
   }
 #endif
@@ -107,7 +109,7 @@ class HomeThingMenuDisplay {
       int characterCount, int yPos,
       const homeassistant_media_player::RemotePlayerState& titleState,
       bool selected);
-  HomeThingMenuNowPlaying* now_playing_{nullptr};
+  homething_menu_now_playing::HomeThingMenuNowPlaying* now_playing_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
 #endif

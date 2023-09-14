@@ -2,7 +2,7 @@
 #include "homeThingMenuNowPlayingOptionMenu.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_menu_now_playing {
 
 void HomeThingMenuNowPlayingOptionMenu::set_active_menu(
     const HomeThingOptionMenuType type,
@@ -67,7 +67,7 @@ HomeThingMenuNowPlayingOptionMenu::tap_option_menu(
   }
   return nullptr;
 }
-}  // namespace homething_menu_base
+}  // namespace homething_menu_now_playing
 }  // namespace esphome
 
 #endif

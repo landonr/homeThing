@@ -184,7 +184,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState, const std::vector<MenuTitleBase*>* active_menu,
-    const int menuIndex, HomeThingOptionMenu* option_menu,
+    const int menuIndex,
+    homething_menu_now_playing::HomeThingOptionMenu* option_menu,
     bool editing_menu_item) {
   bool boot_complete = boot_->boot_complete();
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {

@@ -250,19 +250,19 @@ bool HomeThingMenuBase::selectMenuHold() {
   return false;
 }
 
-std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
-  std::vector<MenuStates> out;
-#ifdef USE_MEDIA_PLAYER_GROUP
-  if (media_player_group_) {
-    if (media_player_group_->totalPlayers() > 1) {
-      out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
-    } else {
-      out.insert(out.end(), {nowPlayingMenu, sourcesMenu});
-    }
-  }
-#endif
-  return out;
-}
+// std::vector<MenuStates> HomeThingMenuBase::rootMenuTitles() {
+//   std::vector<MenuStates> out;
+// #ifdef USE_MEDIA_PLAYER_GROUP
+//   if (media_player_group_) {
+//     if (media_player_group_->totalPlayers() > 1) {
+//       out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
+//     } else {
+//       out.insert(out.end(), {nowPlayingMenu, sourcesMenu});
+//     }
+//   }
+// #endif
+//   return out;
+// }
 
 bool HomeThingMenuBase::selectRootMenu() {
   if (menuIndex < static_menu_titles) {
@@ -466,88 +466,88 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
   return false;
 }
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-void HomeThingMenuBase::selectNowPlayingMenu() {
-  if (menu_titles.size() <= 0 && menuIndex < menu_titles.size()) {
-    ESP_LOGI(TAG, "selectNowPlayingMenu: select menu %d", menuIndex);
-    return;
-  }
-  auto features = media_player_group_->active_player_->get_option_menu_features(
-      menu_display_->get_draw_now_playing_menu());
-  auto active_feature = (*features)[menuIndex];
-  ESP_LOGI(TAG, "selectNowPlayingMenu: %d, %s", menuIndex,
-           active_feature->get_title().c_str());
-  switch (active_feature->get_feature()) {
-    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
-    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_UP:
-    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_DOWN:
-      circle_menu_->set_active_menu(volumeOptionMenu,
-                                    media_player_group_->active_player_);
-      break;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
-      menuIndex = 0;
-      menuTree.push_back(groupMenu);
-      break;
-    default:
-      break;
-  }
-  select_media_player_feature(active_feature);
-  update_display();
-}
+// #ifdef USE_MEDIA_PLAYER_GROUP
+// void HomeThingMenuBase::selectNowPlayingMenu() {
+//   if (menu_titles.size() <= 0 && menuIndex < menu_titles.size()) {
+//     ESP_LOGI(TAG, "selectNowPlayingMenu: select menu %d", menuIndex);
+//     return;
+//   }
+//   auto features = media_player_group_->active_player_->get_option_menu_features(
+//       menu_display_->get_draw_now_playing_menu());
+//   auto active_feature = (*features)[menuIndex];
+//   ESP_LOGI(TAG, "selectNowPlayingMenu: %d, %s", menuIndex,
+//            active_feature->get_title().c_str());
+//   switch (active_feature->get_feature()) {
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_UP:
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_DOWN:
+//       circle_menu_->set_active_menu(volumeOptionMenu,
+//                                     media_player_group_->active_player_);
+//       break;
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
+//       menuIndex = 0;
+//       menuTree.push_back(groupMenu);
+//       break;
+//     default:
+//       break;
+//   }
+//   select_media_player_feature(active_feature);
+//   update_display();
+// }
 
-bool HomeThingMenuBase::select_media_player_feature(
-    homeassistant_media_player::MediaPlayerFeatureCommand* command) {
-  auto feature = command->get_feature();
-  switch (feature) {
-    case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
-      topMenu();
-      return true;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
-      menuIndex = 0;
-      menuTree.push_back(groupMenu);
-      return true;
-    case homeassistant_media_player::MediaPlayerSupportedFeature::
-        CUSTOM_COMMAND: {
-      auto feature_command = command->get_command();
-      if (feature_command != nullptr) {
-        feature_command->on_command();
-        return true;
-      }
-    }
+// bool HomeThingMenuBase::select_media_player_feature(
+//     homeassistant_media_player::MediaPlayerFeatureCommand* command) {
+//   auto feature = command->get_feature();
+//   switch (feature) {
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
+//       topMenu();
+//       return true;
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
+//       menuIndex = 0;
+//       menuTree.push_back(groupMenu);
+//       return true;
+//     case homeassistant_media_player::MediaPlayerSupportedFeature::
+//         CUSTOM_COMMAND: {
+//       auto feature_command = command->get_command();
+//       if (feature_command != nullptr) {
+//         feature_command->on_command();
+//         return true;
+//       }
+//     }
 
-    default:
-      media_player_group_->call_feature(feature);
-      break;
-  }
-  return false;
-}
+//     default:
+//       media_player_group_->call_feature(feature);
+//       break;
+//   }
+//   return false;
+// }
 
-bool HomeThingMenuBase::button_press_now_playing_option_continue(
-    CircleOptionMenuPosition position) {
-  if (circle_menu_->get_active_menu()) {
-    auto feature = circle_menu_->tap_option_menu(
-        position, media_player_group_->get_active_player());
-    if (feature) {
-      ESP_LOGI(
-          TAG,
-          "button_press_now_playing_option_continue: option menu selected %d",
-          feature->get_feature());
-      circle_menu_->clear_active_menu();
-      if (!select_media_player_feature(feature)) {
-        return false;
-      }
-      reload_menu_items_ = true;
-      update_display();
-      return false;
-    }
-    ESP_LOGW(
-        TAG,
-        "button_press_now_playing_option_continue: option menu NOT selected");
-    return false;
-  }
-  return true;
-}
-#endif
+// bool HomeThingMenuBase::button_press_now_playing_option_continue(
+//     CircleOptionMenuPosition position) {
+//   if (circle_menu_->get_active_menu()) {
+//     auto feature = circle_menu_->tap_option_menu(
+//         position, media_player_group_->get_active_player());
+//     if (feature) {
+//       ESP_LOGI(
+//           TAG,
+//           "button_press_now_playing_option_continue: option menu selected %d",
+//           feature->get_feature());
+//       circle_menu_->clear_active_menu();
+//       if (!select_media_player_feature(feature)) {
+//         return false;
+//       }
+//       reload_menu_items_ = true;
+//       update_display();
+//       return false;
+//     }
+//     ESP_LOGW(
+//         TAG,
+//         "button_press_now_playing_option_continue: option menu NOT selected");
+//     return false;
+//   }
+//   return true;
+// }
+// #endif
 
 void HomeThingMenuBase::buttonPressSelect() {
   if (!button_press_and_continue())
@@ -567,22 +567,24 @@ void HomeThingMenuBase::buttonPressSelect() {
         break;
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-        if (!button_press_now_playing_option_continue(
-                CircleOptionMenuPosition::CENTER))
-          return;
+        if (now_playing_control_ != nullptr)
+          return now_playing_control_->buttonPressSelect();
+          // if (!button_press_now_playing_option_continue(
+          //         CircleOptionMenuPosition::CENTER))
+          //   return;
 
-        switch (media_player_group_->active_player_->get_player_type()) {
-          case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-            media_player_group_->sendActivePlayerRemoteCommand(
-                homeassistant_media_player::MediaPlayerTVRemoteCommand::SELECT);
-            break;
-          case homeassistant_media_player::RemotePlayerType::
-              SpeakerRemotePlayerType:
-            break;
-        }
-        if (menu_display_->get_draw_now_playing_menu()) {
-          selectNowPlayingMenu();
-        }
+          // switch (media_player_group_->active_player_->get_player_type()) {
+          //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+          //     media_player_group_->sendActivePlayerRemoteCommand(
+          //         homeassistant_media_player::MediaPlayerTVRemoteCommand::SELECT);
+          //     break;
+          //   case homeassistant_media_player::RemotePlayerType::
+          //       SpeakerRemotePlayerType:
+          //     break;
+          // }
+          // if (menu_display_->get_draw_now_playing_menu()) {
+          //   selectNowPlayingMenu();
+          // }
 #endif
         return;
       default:
@@ -658,13 +660,15 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
     switch (menuTree.back()) {
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-        if (menu_display_->get_draw_now_playing_menu()) {
-          break;
-        }
-        media_player_group_->decreaseSpeakerVolume();
-        circle_menu_->set_active_menu(volumeOptionMenu,
-                                      media_player_group_->active_player_);
-        debounceUpdateDisplay();
+        if (now_playing_control_ != nullptr)
+          return now_playing_control_->rotaryScrollCounterClockwise(rotary);
+          // if (menu_display_->get_draw_now_playing_menu()) {
+          //   break;
+          // }
+          // media_player_group_->decreaseSpeakerVolume();
+          // circle_menu_->set_active_menu(volumeOptionMenu,
+          //                               media_player_group_->active_player_);
+          // debounceUpdateDisplay();
 #endif
         return;
       case lightsDetailMenu:
@@ -731,13 +735,15 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
     switch (menuTree.back()) {
       case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-        if (menu_display_->get_draw_now_playing_menu()) {
-          break;
-        }
-        media_player_group_->increaseSpeakerVolume();
-        circle_menu_->set_active_menu(volumeOptionMenu,
-                                      media_player_group_->active_player_);
-        debounceUpdateDisplay();
+        if (now_playing_control_ != nullptr)
+          return now_playing_control_->rotaryScrollClockwise(rotary);
+          // if (menu_display_->get_draw_now_playing_menu()) {
+          //   break;
+          // }
+          // media_player_group_->increaseSpeakerVolume();
+          // circle_menu_->set_active_menu(volumeOptionMenu,
+          //                               media_player_group_->active_player_);
+          // debounceUpdateDisplay();
 #endif
         return;
       case lightsDetailMenu:
@@ -802,19 +808,21 @@ void HomeThingMenuBase::buttonPressUp() {
   switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      if (!button_press_now_playing_option_continue(
-              CircleOptionMenuPosition::TOP))
-        return;
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonPressUp();
+        // if (!button_press_now_playing_option_continue(
+        //         CircleOptionMenuPosition::TOP))
+        //   return;
 
-      switch (media_player_group_->active_player_->get_player_type()) {
-        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand(
-              homeassistant_media_player::MediaPlayerTVRemoteCommand::UP);
-          return;
-        case homeassistant_media_player::RemotePlayerType::
-            SpeakerRemotePlayerType:
-          break;
-      }
+        // switch (media_player_group_->active_player_->get_player_type()) {
+        //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+        //     media_player_group_->sendActivePlayerRemoteCommand(
+        //         homeassistant_media_player::MediaPlayerTVRemoteCommand::UP);
+        //     return;
+        //   case homeassistant_media_player::RemotePlayerType::
+        //       SpeakerRemotePlayerType:
+        //     break;
+        // }
 #endif
       break;
     case groupMenu:
@@ -872,20 +880,22 @@ void HomeThingMenuBase::buttonPressDown() {
   switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      // if (option_menu_ == tvOptionMenu) {
-      if (!button_press_now_playing_option_continue(
-              CircleOptionMenuPosition::BOTTOM))
-        return;
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonPressDown();
+        // // if (option_menu_ == tvOptionMenu) {
+        // if (!button_press_now_playing_option_continue(
+        //         CircleOptionMenuPosition::BOTTOM))
+        //   return;
 
-      switch (media_player_group_->active_player_->get_player_type()) {
-        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand(
-              homeassistant_media_player::MediaPlayerTVRemoteCommand::DOWN);
-          return;
-        case homeassistant_media_player::RemotePlayerType::
-            SpeakerRemotePlayerType:
-          media_player_group_->active_player_->playPause();
-      }
+        // switch (media_player_group_->active_player_->get_player_type()) {
+        //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+        //     media_player_group_->sendActivePlayerRemoteCommand(
+        //         homeassistant_media_player::MediaPlayerTVRemoteCommand::DOWN);
+        //     return;
+        //   case homeassistant_media_player::RemotePlayerType::
+        //       SpeakerRemotePlayerType:
+        //     media_player_group_->active_player_->playPause();
+        // }
 #endif
       break;
     default:
@@ -899,26 +909,29 @@ void HomeThingMenuBase::buttonPressLeft() {
   switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      // if (option_menu_ == tvOptionMenu) {
-      if (!button_press_now_playing_option_continue(
-              CircleOptionMenuPosition::LEFT))
-        return;
-      // option_menu_ = noOptionMenu;
-      // media_player_group_->sendActivePlayerRemoteCommand("back");
-      // update_display();
-      // return;
-      // }
 
-      switch (media_player_group_->active_player_->get_player_type()) {
-        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand(
-              homeassistant_media_player::MediaPlayerTVRemoteCommand::LEFT);
-          return;
-        case homeassistant_media_player::RemotePlayerType::
-            SpeakerRemotePlayerType:
-          circle_menu_->clear_active_menu();
-          break;
-      }
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonPressLeft();
+        // // if (option_menu_ == tvOptionMenu) {
+        // if (!button_press_now_playing_option_continue(
+        //         CircleOptionMenuPosition::LEFT))
+        //   return;
+        // // option_menu_ = noOptionMenu;
+        // // media_player_group_->sendActivePlayerRemoteCommand("back");
+        // // update_display();
+        // // return;
+        // // }
+
+        // switch (media_player_group_->active_player_->get_player_type()) {
+        //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+        //     media_player_group_->sendActivePlayerRemoteCommand(
+        //         homeassistant_media_player::MediaPlayerTVRemoteCommand::LEFT);
+        //     return;
+        //   case homeassistant_media_player::RemotePlayerType::
+        //       SpeakerRemotePlayerType:
+        //     circle_menu_->clear_active_menu();
+        //     break;
+        // }
 #endif
       break;
     default:
@@ -963,30 +976,32 @@ void HomeThingMenuBase::buttonPressRight() {
   switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      // if (option_menu_ == tvOptionMenu) {
-      if (!button_press_now_playing_option_continue(
-              CircleOptionMenuPosition::RIGHT))
-        return;
-      // option_menu_ = noOptionMenu;
-      // media_player_group_->sendActivePlayerRemoteCommand("menu");
-      // update_display();
-      // return;
-      // }
-      switch (media_player_group_->active_player_->get_player_type()) {
-        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          media_player_group_->sendActivePlayerRemoteCommand(
-              homeassistant_media_player::MediaPlayerTVRemoteCommand::RIGHT);
-          return;
-        case homeassistant_media_player::RemotePlayerType::
-            SpeakerRemotePlayerType:
-          // if (option_menu_ == speakerOptionMenu) {
-          //   media_player_group_->toggle_mute();
-          //   update_display();
-          // } else {
-          media_player_group_->active_player_->nextTrack();
-          // }
-          break;
-      }
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonPressRight();
+        // // if (option_menu_ == tvOptionMenu) {
+        // if (!button_press_now_playing_option_continue(
+        //         CircleOptionMenuPosition::RIGHT))
+        //   return;
+        // // option_menu_ = noOptionMenu;
+        // // media_player_group_->sendActivePlayerRemoteCommand("menu");
+        // // update_display();
+        // // return;
+        // // }
+        // switch (media_player_group_->active_player_->get_player_type()) {
+        //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+        //     media_player_group_->sendActivePlayerRemoteCommand(
+        //         homeassistant_media_player::MediaPlayerTVRemoteCommand::RIGHT);
+        //     return;
+        //   case homeassistant_media_player::RemotePlayerType::
+        //       SpeakerRemotePlayerType:
+        //     // if (option_menu_ == speakerOptionMenu) {
+        //     //   media_player_group_->toggle_mute();
+        //     //   update_display();
+        //     // } else {
+        //     media_player_group_->active_player_->nextTrack();
+        //     // }
+        //     break;
+        // }
 #endif
       break;
     default:
@@ -1000,14 +1015,16 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
   switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      switch (media_player_group_->active_player_->get_player_type()) {
-        case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-          update_display();
-          break;
-        case homeassistant_media_player::RemotePlayerType::
-            SpeakerRemotePlayerType:
-          break;
-      }
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonReleaseScreenLeft();
+        // switch (media_player_group_->active_player_->get_player_type()) {
+        //   case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+        //     update_display();
+        //     break;
+        //   case homeassistant_media_player::RemotePlayerType::
+        //       SpeakerRemotePlayerType:
+        //     break;
+        // }
 #endif
       break;
     default:
@@ -1038,12 +1055,14 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
   switch (menuTree.back()) {
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      if (circle_menu_->get_active_menu()) {
-        circle_menu_->clear_active_menu();
-      } else {
-        circle_menu_->set_active_menu(speakerOptionMenu,
-                                      media_player_group_->active_player_);
-      }
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonPressScreenLeft();
+        // if (circle_menu_->get_active_menu()) {
+        //   circle_menu_->clear_active_menu();
+        // } else {
+        //   circle_menu_->set_active_menu(speakerOptionMenu,
+        //                                 media_player_group_->active_player_);
+        // }
 #endif
       update_display();
       break;
@@ -1063,7 +1082,9 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     case settingsMenu:
     case nowPlayingMenu:
 #ifdef USE_MEDIA_PLAYER_GROUP
-      media_player_group_->selectNextMediaPlayer();
+      if (now_playing_control_ != nullptr)
+        return now_playing_control_->buttonPressScreenRight();
+        // media_player_group_->selectNextMediaPlayer();
 #endif
       update_display();
       break;

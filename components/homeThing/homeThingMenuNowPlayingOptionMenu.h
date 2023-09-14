@@ -13,7 +13,7 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_menu_now_playing {
 
 class HomeThingMenuNowPlayingOptionMenu {
  public:
@@ -35,7 +35,7 @@ class HomeThingMenuNowPlayingOptionMenu {
   const char* const TAG = "homething.menu.option";
   bool bottomMenu_ = false;
 };
-}  // namespace homething_menu_base
+}  // namespace homething_menu_now_playing
 }  // namespace esphome
 
 #endif

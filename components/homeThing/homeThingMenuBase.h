@@ -16,10 +16,11 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
-#include "esphome/components/homeThing/homeThingOptionMenu.h"
-#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#include "esphome/components/homeThing/homeThingMenuNowPlayingControl.h"
+// #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
+// #include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
+// #include "esphome/components/homeThing/homeThingOptionMenu.h"
+// #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
 #include "esphome/core/automation.h"
@@ -63,17 +64,17 @@ class HomeThingMenuBase : public PollingComponent {
     home_sceen_ = new_screen;
   }
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-  get_media_player_group() {
-    return media_player_group_;
-  }
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
-#endif
+  // #ifdef USE_MEDIA_PLAYER_GROUP
+  //   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+  //   get_media_player_group() {
+  //     return media_player_group_;
+  //   }
+  //   void set_media_player_group(
+  //       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+  //           media_player_group) {
+  //     media_player_group_ = media_player_group;
+  //   }
+  // #endif
 
   void draw_menu_screen();
   void topMenu();
@@ -85,14 +86,6 @@ class HomeThingMenuBase : public PollingComponent {
   void idleTick();
   bool buttonPressWakeUpDisplay();
   void idleMenu(bool force);
-
-  // controls
-#ifdef USE_MEDIA_PLAYER_GROUP
-  bool select_media_player_feature(
-      homeassistant_media_player::MediaPlayerFeatureCommand* command);
-  bool button_press_now_playing_option_continue(
-      CircleOptionMenuPosition position);
-#endif
   bool selectLightEntity(
       const std::tuple<MenuItemType, EntityBase*>* menu_item);
   bool upMenu();
@@ -178,11 +171,13 @@ class HomeThingMenuBase : public PollingComponent {
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-      media_player_group_{nullptr};
-  void selectNowPlayingMenu();
-  HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
-      new HomeThingMenuNowPlayingOptionMenu();
+  // homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+  //     media_player_group_{nullptr};
+  // void selectNowPlayingMenu();
+  // HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
+  //     new HomeThingMenuNowPlayingOptionMenu();
+  homething_menu_now_playing::HomeThingMenuNowPlayingControl
+      now_playing_control_;
 #endif
 
   void update_display() { this->on_redraw_callbacks_.call(); }
@@ -196,7 +191,7 @@ class HomeThingMenuBase : public PollingComponent {
     reload_menu_items_ = true;
     editing_menu_item = false;
 #ifdef USE_MEDIA_PLAYER_GROUP
-    circle_menu_->clear_active_menu();
+    homething_menu_now_playing::circle_menu_->clear_active_menu();
 #endif
     if (menuTree.front() != bootMenu) {
       menuTree.assign(1, rootMenu);

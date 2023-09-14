@@ -6,7 +6,7 @@
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_menu_now_playing {
 
 PositionCoordinate HomeThingMenuNowPlaying::get_coordinate(double radius,
                                                            double angle) {
@@ -86,7 +86,8 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
 }
 
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
-    const std::vector<MenuTitleBase*>* menu_titles, int menu_index) {
+    const std::vector<homething_menu_base::MenuTitleBase*>* menu_titles,
+    int menu_index) {
   int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
              display_state_->get_font_large()->get_baseline();
   auto menuTitlesSize = menu_titles->size();
@@ -132,7 +133,7 @@ void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
 
 void HomeThingMenuNowPlaying::drawNowPlaying(
     int menuIndex, HomeThingOptionMenu* option_menu,
-    const std::vector<MenuTitleBase*>* active_menu) {
+    const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
   if ((option_menu && drawOptionMenuAndStop(option_menu)) ||
       display_state_ == nullptr) {
     return;
@@ -416,6 +417,6 @@ int HomeThingMenuNowPlaying::drawTextWrapped(
   }
   return yPos + (max * fontSize);
 }
-}  // namespace homething_menu_base
+}  // namespace homething_menu_now_playing
 }  // namespace esphome
 #endif

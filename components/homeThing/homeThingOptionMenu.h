@@ -3,7 +3,7 @@
 #include <vector>
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_menu_now_playing {
 
 struct PositionCoordinate {
   double x;
@@ -40,5 +40,5 @@ struct HomeThingOptionMenu {
     circle_options = std::vector<CircleOptionMenuItem>();
   }
 };
-}  // namespace homething_menu_base
+}  // namespace homething_menu_now_playing
 }  // namespace esphome
