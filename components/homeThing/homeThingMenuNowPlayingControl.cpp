@@ -33,6 +33,16 @@ void HomeThingMenuNowPlayingControl::rootMenuTitles(
   }
 }
 
+int HomeThingMenuNowPlayingControl::root_menu_size() {
+  if (media_player_group_ != nullptr) {
+    if (media_player_group_->totalPlayers() > 1) {
+      return 3;
+    }
+    return 2;
+  }
+  return 0;
+}
+
 void HomeThingMenuNowPlayingControl::idleTick(int idleTime,
                                               int display_timeout) {
   ESP_LOGD(TAG, "idleTick: idle %d", idleTime);

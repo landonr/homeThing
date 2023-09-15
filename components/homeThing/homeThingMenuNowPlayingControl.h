@@ -20,6 +20,7 @@ class HomeThingMenuNowPlayingControl {
   void rootMenuTitles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
   void idleTick(int idleTime, int display_timeout);
+  int root_menu_size();
   void selectNowPlayingMenu();
   void reset_menu();
 

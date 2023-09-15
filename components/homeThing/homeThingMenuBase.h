@@ -73,7 +73,7 @@ class HomeThingMenuBase : public PollingComponent {
   }
 
   void register_home_screen(HomeThingMenuScreen* new_screen) {
-    home_sceen_ = new_screen;
+    home_screen_ = new_screen;
   }
 
   void draw_menu_screen();
@@ -164,7 +164,7 @@ class HomeThingMenuBase : public PollingComponent {
   HomeThingMenuDisplay* menu_display_{nullptr};
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
   std::vector<HomeThingMenuScreen*> menu_screens_;
-  HomeThingMenuScreen* home_sceen_{nullptr};
+  HomeThingMenuScreen* home_screen_{nullptr};
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP

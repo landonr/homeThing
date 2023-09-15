@@ -62,8 +62,9 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
 void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
                                       bool show_name) {
   if (show_name) {
+    ESP_LOGI(TAG, "menu_titles name %s", this->get_name().c_str());
     menu_titles->push_back(
-        new MenuTitleBase(this->get_name(), "", NoMenuTitleRightIcon));
+        new MenuTitleBase(this->get_name().c_str(), "", NoMenuTitleRightIcon));
     show_name_ = true;
   }
 #ifdef SHOW_VERSION

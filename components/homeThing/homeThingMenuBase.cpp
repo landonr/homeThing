@@ -27,8 +27,8 @@ void HomeThingMenuBase::setup() {
       }
     });
   }
-  if (home_sceen_) {
-    home_sceen_->add_on_state_callback([this]() {
+  if (home_screen_) {
+    home_screen_->add_on_state_callback([this]() {
       switch (menuTree.back()) {
         case rootMenu:
           reload_menu_items_ = true;
@@ -79,8 +79,9 @@ void HomeThingMenuBase::draw_menu_screen() {
   auto title_name = menu_state_title(activeMenuState);
   if (reload_menu_items_ ||
       (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
-    ESP_LOGD(TAG, "draw_menu_screen: reload %d %s #%d", menuIndex,
-             title_name.c_str(), menu_titles.size());
+    ESP_LOGI(TAG, "draw_menu_screen: reload %d index %d %s #%d",
+             reload_menu_items_, menuIndex, title_name.c_str(),
+             menu_titles.size());
     for (auto title : menu_titles) {
       delete title;
     }
@@ -222,12 +223,12 @@ bool HomeThingMenuBase::selectMenuHold() {
   ESP_LOGW(TAG, "selectMenuHold: %d", menuIndex);
   switch (menuTree.back()) {
     case rootMenu: {
-      if (home_sceen_) {
+      if (home_screen_) {
         int index = menuIndex;
-        auto menu_item = home_sceen_->get_menu_item(index);
+        auto menu_item = home_screen_->get_menu_item(index);
         ESP_LOGW(TAG, "selectMenuHold: %d type: %d, name %s type %s", index,
                  std::get<0>(*menu_item),
-                 home_sceen_->entity_name_at_index(index).c_str(),
+                 home_screen_->entity_name_at_index(index).c_str(),
                  nameForMenuItemType(std::get<0>(*menu_item)).c_str());
         return selectLightEntity(menu_item);
       }
@@ -247,46 +248,64 @@ bool HomeThingMenuBase::selectMenuHold() {
 }
 
 bool HomeThingMenuBase::selectRootMenu() {
-  // if (menuIndex < static_menu_titles) {
-  // MenuStates currentMenu = rootMenuTitles()[menuIndex];
-  // ESP_LOGW(TAG, "select_root_menu: selecting menu %d %s of %d", menuIndex,
-  //          menu_state_title(menuTree.back()).c_str(), rootMenuTitles().size());
-  // switch (currentMenu) {
-  //   // case sourcesMenu:
-  //   //   menuTree.push_back(sourcesMenu);
-  //   //   break;
-  //   // case nowPlayingMenu:
-  //   //   menuTree.push_back(nowPlayingMenu);
-  //   //   break;
-  //   // case mediaPlayersMenu:
-  //   //   menuTree.push_back(mediaPlayersMenu);
-  //   //   break;
-  //   // case groupMenu:
-  //   case entityMenu:
-  //   case settingsMenu:
-  //   case lightsDetailMenu:
-  //   case rootMenu:
-  //   case bootMenu:
-  //     ESP_LOGW(TAG, "select_root_menu: selecting menu is bad %d %s", menuIndex,
-  //              menu_state_title(menuTree.back()).c_str());
-  //     menuIndex = 0;
-  //     return false;
-  // }
-  // } else {
-  //   int index = menuIndex - static_menu_titles;
-  //   if (home_sceen_ && index < home_sceen_->get_entity_count()) {
-  //     if (home_sceen_->select_menu(index)) {
-  //       update_display();
+  // if (menuIndex < menu_titles.size()) {
+  //   MenuStates currentMenu = menu_titles[menuIndex];
+  //   ESP_LOGW(TAG, "select_root_menu: selecting menu %d %s of %d", menuIndex,
+  //            menu_state_title(menuTree.back()).c_str(),
+  //            menu_titles.size());
+  //   switch (currentMenu) {
+  //     // case sourcesMenu:
+  //     //   menuTree.push_back(sourcesMenu);
+  //     //   break;
+  //     // case nowPlayingMenu:
+  //     //   menuTree.push_back(nowPlayingMenu);
+  //     //   break;
+  //     // case mediaPlayersMenu:
+  //     //   menuTree.push_back(mediaPlayersMenu);
+  //     //   break;
+  //     // case groupMenu:
+  //     case entityMenu:
+  //     case settingsMenu:
+  //     case lightsDetailMenu:
+  //     case rootMenu:
+  //     case bootMenu:
+  //       ESP_LOGW(TAG, "select_root_menu: selecting menu is bad %d %s",
+  //                menuIndex, menu_state_title(menuTree.back()).c_str());
+  //       menuIndex = 0;
   //       return false;
-  //     }
-  //   } else {
-  //     menuTree.push_back(settingsMenu);
-  //     int offset = home_sceen_
-  //                      ? home_sceen_->get_entity_count() + static_menu_titles
-  //                      : static_menu_titles;
-  //     active_menu_screen = menu_screens_[menuIndex - offset];
   //   }
   // }
+  int offset =
+      now_playing_control_ ? now_playing_control_->root_menu_size() : 0;
+  int index = menuIndex - offset;
+  if (menuIndex < offset) {
+    ESP_LOGI(TAG, "selectRootMenu: now playing %d offset %d", menuIndex,
+             offset);
+    // if (now_playing_control_ &&
+    //     now_playing_control_->select_root_menu(menuIndex)) {
+    //   update_display();
+    //   return false;
+    // }
+    return false;
+  } else if (home_screen_ && index < home_screen_->get_entity_count()) {
+    ESP_LOGI(TAG, "selectRootMenu: home screen 2 %d offset %d", menuIndex,
+             offset);
+    if (home_screen_->select_menu(index)) {
+      update_display();
+      return false;
+    }
+  } else {
+    ESP_LOGI(TAG, "selectRootMenu: 3 %d offset %d", menuIndex, offset);
+    menuTree.push_back(settingsMenu);
+    int home_screen_count = home_screen_ ? home_screen_->get_entity_count() : 0;
+    offset = home_screen_count + offset;
+    index = menuIndex - offset;
+    ESP_LOGI(TAG,
+             "selectRootMenu: 3 %d new offset %d menu screens %d index %d home "
+             "screen count %d",
+             menuIndex, offset, menu_screens_.size(), index, home_screen_count);
+    active_menu_screen = menu_screens_[index];
+  }
   menuIndex = 0;
   return true;
 }
@@ -294,12 +313,12 @@ bool HomeThingMenuBase::selectRootMenu() {
 MenuTitleBase* HomeThingMenuBase::menuTitleForType(MenuStates stringType,
                                                    int index) {
   if (stringType == settingsMenu && menu_screens_.size() > 0) {
-    int offset = home_sceen_ ? home_sceen_->get_entity_count() : 0;
+    int offset = home_screen_ ? home_screen_->get_entity_count() : 0;
     HomeThingMenuScreen* menu_screen = menu_screens_[index - offset];
     std::string menu_name = menu_screen->get_name();
     return new MenuTitleBase(menu_name, "", ArrowMenuTitleRightIcon);
-  } else if (stringType == entityMenu && home_sceen_) {
-    std::string menu_name = home_sceen_->entity_name_at_index(index);
+  } else if (stringType == entityMenu && home_screen_) {
+    std::string menu_name = home_screen_->entity_name_at_index(index);
     return new MenuTitleBase(menu_name, "", NoMenuTitleRightIcon);
   }
   return new MenuTitleBase(menu_state_title(stringType), "",
@@ -325,13 +344,13 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
       if (now_playing_control_ != nullptr) {
         now_playing_control_->rootMenuTitles(menu_titles);
       }
-      if (home_sceen_) {
-        // for (int i = 0; i < home_sceen_->get_entity_count(); i++) {
-        //   out.push_back(entityMenu);
-        // }
-        home_sceen_->menu_titles(menu_titles, false);
-        active_menu_screen = home_sceen_;
-      }
+      // if (home_screen_) {
+      //   // for (int i = 0; i < home_screen_->get_entity_count(); i++) {
+      //   //   out.push_back(entityMenu);
+      //   // }
+      //   home_screen_->menu_titles(menu_titles, false);
+      //   active_menu_screen = home_screen_;
+      // }
       for (auto& menu_screen : menu_screens_) {
         std::string menu_name = menu_screen->get_name();
         menu_titles->push_back(
