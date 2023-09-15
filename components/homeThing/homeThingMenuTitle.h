@@ -18,11 +18,11 @@ static const char* const MENU_TITLE_TAG = "homething.menutitle";
 enum MenuStates {
   bootMenu,
   rootMenu,
-  sourcesMenu,
-  groupMenu,
-  mediaPlayersMenu,
+  // sourcesMenu,
+  // groupMenu,
+  // mediaPlayersMenu,
   lightsDetailMenu,
-  nowPlayingMenu,
+  // nowPlayingMenu,
   settingsMenu,
   entityMenu
 };
@@ -38,18 +38,18 @@ enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
 static std::string menu_state_title(MenuStates menu_state) {
   switch (menu_state) {
-    case nowPlayingMenu:
-      return "Now Playing";
-    case sourcesMenu:
-      return "Sources";
-    case mediaPlayersMenu:
-      return "Media Players";
+    // case nowPlayingMenu:
+    //   return "Now Playing";
+    // case sourcesMenu:
+    //   return "Sources";
+    // case mediaPlayersMenu:
+    //   return "Media Players";
+    // case groupMenu:
+    //   return "Speaker Group";
     case lightsDetailMenu:
       return "Light Detail";
     case rootMenu:
       return "Home";
-    case groupMenu:
-      return "Speaker Group";
     case bootMenu:
       return "Boot";
     case settingsMenu:
@@ -62,18 +62,18 @@ static std::string menu_state_title(MenuStates menu_state) {
 
 static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
   switch (menu_state) {
-    case nowPlayingMenu:
-      return ArrowMenuTitleRightIcon;
-    case sourcesMenu:
-      return ArrowMenuTitleRightIcon;
-    case mediaPlayersMenu:
-      return ArrowMenuTitleRightIcon;
+    // case nowPlayingMenu:
+    //   return ArrowMenuTitleRightIcon;
+    // case sourcesMenu:
+    //   return ArrowMenuTitleRightIcon;
+    // case mediaPlayersMenu:
+    //   return ArrowMenuTitleRightIcon;
+    // case groupMenu:
+    //   return ArrowMenuTitleRightIcon;
     case lightsDetailMenu:
       return ArrowMenuTitleRightIcon;
     case rootMenu:
       return NoMenuTitleRightIcon;
-    case groupMenu:
-      return ArrowMenuTitleRightIcon;
     case bootMenu:
       return NoMenuTitleRightIcon;
     case settingsMenu:

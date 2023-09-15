@@ -18,8 +18,11 @@ HomeThingMenuDisplayState = homething_menu_base_ns.class_("HomeThingMenuDisplayS
 HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
-HomeThingMenuNowPlaying = homething_menu_base_ns.class_("HomeThingMenuNowPlaying")
 HomeThingColorPalette = homething_menu_base_ns.class_("HomeThingColorPalette")
+
+homething_menu_now_playing_ns = cg.esphome_ns.namespace("homething_menu_now_playing")
+HomeThingMenuNowPlaying = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlaying")
+HomeThingMenuNowPlayingControl = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlayingControl")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
@@ -113,6 +116,8 @@ CONF_WHITE = "white"
 CONF_PINK = "pink"
 CONF_YELLOW = "yellow"
 
+CONF_NOW_PLAYING = "now_playing"
+
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
@@ -134,6 +139,13 @@ BATTERY_SCHEMA = cv.Schema(
     {
         cv.Required(CONF_CHARGING): cv.use_id(binary_sensor.BinarySensor),
         cv.Required(CONF_BATTERY_PERCENT): cv.use_id(sensor.Sensor),
+    }
+)
+
+NOW_PLAYING_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.declare_id(HomeThingMenuNowPlayingControl),
+        cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup)
     }
 )
 
@@ -318,7 +330,7 @@ CONFIG_SCHEMA =  cv.All(
             cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
             cv.Optional(CONF_MENU_DISPLAY, default={}): MENU_DISPLAY_SCHEMA,
-            cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
+            cv.Optional(CONF_NOW_PLAYING, default={}): NOW_PLAYING_SCHEMA,
             cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
                 {
@@ -333,7 +345,7 @@ CONFIG_SCHEMA =  cv.All(
             ),
         }
     ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS, CONF_HOME_SCREEN, CONF_SCREENS)
+    cv.has_at_least_one_key(CONF_HOME_SCREEN, CONF_SCREENS)
 )
 
 async def ids_to_code(config, var, types):
@@ -507,7 +519,7 @@ async def menu_screen_to_code(config):
 MENU_IDS = [
     CONF_BACKLIGHT,
     CONF_SLEEP_SWITCH,
-    CONF_MEDIA_PLAYERS
+    # CONF_MEDIA_PLAYERS
 ]
 
 async def to_code(config):
@@ -526,6 +538,13 @@ async def to_code(config):
     for conf in config.get(CONF_SCREENS, []):
         menu_screen = await menu_screen_to_code(conf)
         cg.add(menu.register_screen(menu_screen))
+
+    if CONF_NOW_PLAYING in config:
+        now_playing_control = cg.new_Pvariable(config[CONF_NOW_PLAYING][CONF_ID])
+        if CONF_MEDIA_PLAYERS in config[CONF_NOW_PLAYING]:
+            media_player_group = await cg.get_variable(config[CONF_NOW_PLAYING][CONF_MEDIA_PLAYERS])
+            cg.add(now_playing_control.set_media_player_group(media_player_group))
+        cg.add(menu.set_now_playing_control(now_playing_control))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

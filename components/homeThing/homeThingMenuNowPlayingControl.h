@@ -11,7 +11,17 @@ namespace homething_menu_now_playing {
 
 class HomeThingMenuNowPlayingControl {
  public:
+  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+  get_media_player_group();
+  void set_media_player_group(
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          media_player_group);
+
+  void rootMenuTitles(
+      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
+  void idleTick(int idleTime, int display_timeout);
   void selectNowPlayingMenu();
+  void reset_menu();
 
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);

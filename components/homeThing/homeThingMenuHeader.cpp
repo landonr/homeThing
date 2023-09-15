@@ -36,28 +36,30 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
   switch (activeMenuState) {
     case rootMenu:
     case settingsMenu:
-    case nowPlayingMenu: {
-#ifdef USE_MEDIA_PLAYER_GROUP
-      if (media_player_group_ && media_player_group_->active_player_) {
-        auto headerMenuTitle =
-            headerMediaPlayerTitle(media_player_group_->active_player_);
-        xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
-        drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
-      } else {
-        drawHeaderTitleWithString("Remote", xPos);
-      }
-#endif
+      drawHeaderTitleWithString("Remote", xPos);
       break;
-    }
-    case sourcesMenu:
-      drawHeaderTitleWithString("Sources", xPos);
-      break;
-    case groupMenu:
-      drawHeaderTitleWithString("Group Speakers", xPos);
-      break;
-    case mediaPlayersMenu:
-      drawHeaderTitleWithString("Media Players", xPos);
-      break;
+      //     case nowPlayingMenu: {
+      // #ifdef USE_MEDIA_PLAYER_GROUP
+      //       if (media_player_group_ && media_player_group_->active_player_) {
+      //         auto headerMenuTitle =
+      //             headerMediaPlayerTitle(media_player_group_->active_player_);
+      //         xPos = drawPlayPauseIcon(xPos, headerMenuTitle);
+      //         drawHeaderTitleWithString((headerMenuTitle).get_name(), xPos);
+      //       } else {
+      //         drawHeaderTitleWithString("Remote", xPos);
+      //       }
+      // #endif
+      //       break;
+      //     }
+      //     case sourcesMenu:
+      //       drawHeaderTitleWithString("Sources", xPos);
+      //       break;
+      //     case groupMenu:
+      //       drawHeaderTitleWithString("Group Speakers", xPos);
+      //       break;
+      //     case mediaPlayersMenu:
+      //       drawHeaderTitleWithString("Media Players", xPos);
+      //       break;
     case lightsDetailMenu: {
 #ifdef USE_LIGHT
       auto selectedEntity = (*active_menu_screen_)->get_selected_entity();

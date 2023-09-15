@@ -3,16 +3,83 @@
 namespace esphome {
 namespace homething_menu_now_playing {
 
-std::vector<MenuStates> HomeThingMenuNowPlayingControl::rootMenuTitles() {
-  std::vector<MenuStates> out;
-  if (media_player_group_) {
+homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+HomeThingMenuNowPlayingControl::get_media_player_group() {
+  ESP_LOGI(TAG, "get_media_player_group null %d",
+           media_player_group_ == nullptr);
+  return media_player_group_;
+}
+
+void HomeThingMenuNowPlayingControl::set_media_player_group(
+    homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+        media_player_group) {
+  ESP_LOGI(TAG, "set_media_player_group null %d",
+           media_player_group_ == nullptr);
+  media_player_group_ = media_player_group;
+}
+
+void HomeThingMenuNowPlayingControl::rootMenuTitles(
+    std::vector<homething_menu_base::MenuTitleBase*>* menu_titles) {
+  ESP_LOGI(TAG, "rootMenuTitles null %d", media_player_group_ == nullptr);
+  if (media_player_group_ != nullptr) {
+    menu_titles->push_back(new homething_menu_base::MenuTitleBase(
+        "Now Playing", "", homething_menu_base::NoMenuTitleRightIcon));
+    menu_titles->push_back(new homething_menu_base::MenuTitleBase(
+        "Sources", "", homething_menu_base::NoMenuTitleRightIcon));
     if (media_player_group_->totalPlayers() > 1) {
-      out.insert(out.end(), {nowPlayingMenu, sourcesMenu, mediaPlayersMenu});
-    } else {
-      out.insert(out.end(), {nowPlayingMenu, sourcesMenu});
+      menu_titles->push_back(new homething_menu_base::MenuTitleBase(
+          "Media Players", "", homething_menu_base::NoMenuTitleRightIcon));
     }
   }
-  return out;
+}
+
+void HomeThingMenuNowPlayingControl::idleTick(int idleTime,
+                                              int display_timeout) {
+  ESP_LOGD(TAG, "idleTick: idle %d", idleTime);
+  if (idleTime == 3) {
+    circle_menu_->clear_active_menu();
+  } else if (idleTime == display_timeout) {
+    if (media_player_group_ != NULL &&
+        media_player_group_->playerSearchFinished) {
+      // if (get_charging() && menuTree.back() != bootMenu) {
+      //   idleTime++;
+      //   return;
+      // }
+      // ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
+      // menuTree.assign(1, rootMenu);
+      // animation_->resetAnimation();
+      // idleMenu(false);
+      // menu_display_->updateDisplay(false);
+    }
+    return;
+  }
+  if (media_player_group_ != NULL) {
+    bool updatedMediaPositions = media_player_group_->updateMediaPosition();
+    if (updatedMediaPositions) {
+      // switch (menuTree.back()) {
+      //   case nowPlayingMenu: {
+      //     ESP_LOGD(TAG, "idleTick: update media positions %d",
+      //              display_can_sleep());
+      //     if (!display_can_sleep()) {
+      //       update_display();
+      //     } else {
+      //       if (!get_charging())
+      //         sleep_display();
+      //     }
+      //     break;
+      //   }
+      //   default:
+      //     break;
+      // }
+    }
+  }
+}
+
+void HomeThingMenuNowPlayingControl::reset_menu() {
+  if (media_player_group_) {
+    media_player_group_->newSpeakerGroupParent = NULL;
+    media_player_group_->set_active_player_source_index(-1);
+  }
 }
 
 // void HomeThingMenuNowPlayingControl::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
@@ -158,13 +225,13 @@ void HomeThingMenuNowPlayingControl::buttonPressSelect(int menuIndex) {
       break;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menuIndex = 0;
-      menuTree.push_back(groupMenu);
+      // menuTree.push_back(groupMenu);
       break;
     default:
       break;
   }
   select_media_player_feature(active_feature);
-  update_display();
+  // update_display();
 }
 
 void HomeThingMenuNowPlayingControl::buttonPressSelectHold() {}
@@ -181,7 +248,7 @@ void HomeThingMenuNowPlayingControl::buttonPressScreenLeft() {
 void HomeThingMenuNowPlayingControl::buttonReleaseScreenLeft() {
   switch (media_player_group_->active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-      update_display();
+      // update_display();
       break;
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
       break;

@@ -55,6 +55,18 @@ class HomeThingMenuBase : public PollingComponent {
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
 #endif
 
+#ifdef USE_MEDIA_PLAYER_GROUP
+  void set_now_playing_control(
+      homething_menu_now_playing::HomeThingMenuNowPlayingControl*
+          now_playing_control) {
+    now_playing_control_ = now_playing_control;
+  }
+  homething_menu_now_playing::HomeThingMenuNowPlayingControl*
+  get_now_playing_control() {
+    return now_playing_control_;
+  }
+#endif
+
   void register_screen(HomeThingMenuScreen* new_screen) {
     new_screen->set_index(menu_screens_.size());
     menu_screens_.push_back(new_screen);
@@ -63,18 +75,6 @@ class HomeThingMenuBase : public PollingComponent {
   void register_home_screen(HomeThingMenuScreen* new_screen) {
     home_sceen_ = new_screen;
   }
-
-  // #ifdef USE_MEDIA_PLAYER_GROUP
-  //   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-  //   get_media_player_group() {
-  //     return media_player_group_;
-  //   }
-  //   void set_media_player_group(
-  //       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-  //           media_player_group) {
-  //     media_player_group_ = media_player_group;
-  //   }
-  // #endif
 
   void draw_menu_screen();
   void topMenu();
@@ -152,7 +152,6 @@ class HomeThingMenuBase : public PollingComponent {
   bool display_can_sleep();
 
   int idleTime = -2;
-  int static_menu_titles = 0;
   std::vector<MenuStates> menuTree = {bootMenu};
 #ifdef USE_LIGHT
   light::LightState* backlight_{nullptr};
@@ -163,8 +162,6 @@ class HomeThingMenuBase : public PollingComponent {
 #endif
   HomeThingMenuSettings* menu_settings_{nullptr};
   HomeThingMenuDisplay* menu_display_{nullptr};
-  void menuTypesToTitles(std::vector<MenuStates> menu,
-                         std::vector<MenuTitleBase*>* menu_titles);
   HomeThingMenuAnimation* animation_ = new HomeThingMenuAnimation();
   std::vector<HomeThingMenuScreen*> menu_screens_;
   HomeThingMenuScreen* home_sceen_{nullptr};
@@ -176,34 +173,27 @@ class HomeThingMenuBase : public PollingComponent {
   // void selectNowPlayingMenu();
   // HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
   //     new HomeThingMenuNowPlayingOptionMenu();
-  homething_menu_now_playing::HomeThingMenuNowPlayingControl
-      now_playing_control_;
+  homething_menu_now_playing::HomeThingMenuNowPlayingControl*
+      now_playing_control_{nullptr};
 #endif
 
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();
   void activeMenu(std::vector<MenuTitleBase*>*);
-  std::vector<MenuStates> rootMenuTitles();
   void reset_menu() {
     menuIndex = 0;
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
     editing_menu_item = false;
-#ifdef USE_MEDIA_PLAYER_GROUP
-    homething_menu_now_playing::circle_menu_->clear_active_menu();
-#endif
+    // #ifdef USE_MEDIA_PLAYER_GROUP
+    //     homething_menu_now_playing::circle_menu_->clear_active_menu();
+    // #endif
     if (menuTree.front() != bootMenu) {
       menuTree.assign(1, rootMenu);
       ESP_LOGD(TAG, "reset_menu: reset animation %d", menuTree.front());
       animation_->resetAnimation();
     }
-#ifdef USE_MEDIA_PLAYER_GROUP
-    if (media_player_group_) {
-      media_player_group_->newSpeakerGroupParent = NULL;
-      media_player_group_->set_active_player_source_index(-1);
-    }
-#endif
   }
   void turn_on_backlight();
 

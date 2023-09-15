@@ -204,11 +204,11 @@ bool HomeThingMenuDisplay::draw_menu_screen(
 
   bool animating = false;
   switch (*activeMenuState) {
-    case nowPlayingMenu:
-#ifdef USE_MEDIA_PLAYER_GROUP
-      now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
-#endif
-      break;
+      //     case nowPlayingMenu:
+      // #ifdef USE_MEDIA_PLAYER_GROUP
+      //       now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
+      // #endif
+      //       break;
     default:
       animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
       break;
