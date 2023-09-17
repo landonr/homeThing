@@ -424,13 +424,16 @@ async def text_helpers_to_code(config, display_buffer, display_state):
     return text_helpers
 
 MENU_BOOT_IDS = [
-    CONF_API,
-    CONF_MEDIA_PLAYERS
+    CONF_API
 ]
 
 async def menu_boot_to_code(config, display_buffer, display_state, menu_header, text_helpers):
-    menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header, text_helpers)
-    await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
+    menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header, text_helpers)
+    await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
+    if CONF_NOW_PLAYING in config:
+        if CONF_MEDIA_PLAYERS in config[CONF_NOW_PLAYING]:
+            media_player_group = await cg.get_variable(config[CONF_NOW_PLAYING][CONF_MEDIA_PLAYERS])
+            cg.add(menu_boot.set_media_player_group(media_player_group))
     return menu_boot
 
 BATTERY_IDS = [
@@ -464,7 +467,7 @@ async def menu_display_to_code(config, display_buffer):
         time_ = await cg.get_variable(config[CONF_HEADER][CONF_TIME_ID])
         cg.add(menu_header.set_time_id(time_))
     await battery_to_code(config, menu_header)
-    menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header, text_helpers)
+    menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header, text_helpers)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
     menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, text_helpers, refactor, menu_header)
@@ -544,7 +547,7 @@ async def to_code(config):
         if CONF_MEDIA_PLAYERS in config[CONF_NOW_PLAYING]:
             media_player_group = await cg.get_variable(config[CONF_NOW_PLAYING][CONF_MEDIA_PLAYERS])
             cg.add(now_playing_control.set_media_player_group(media_player_group))
-        cg.add(menu.set_now_playing_control(now_playing_control))
+            cg.add(menu.set_now_playing_control(now_playing_control))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

@@ -191,8 +191,14 @@ bool HomeThingMenuBase::selectMenu() {
         update_display();
       }
       break;
+    case appMenu:
+      ESP_LOGI(TAG, "selectMenu: select app menu %d", menuIndex);
+      if (active_app_) {
+        return active_app_->app_menu_select(menuIndex);
+      }
+      return false;
     default:
-      ESP_LOGW(TAG, "menu state is bad but its an enum");
+      ESP_LOGW(TAG, "selectMenu: menu state is bad but its an enum");
       return false;
   }
   return true;
@@ -281,21 +287,20 @@ bool HomeThingMenuBase::selectRootMenu() {
   if (menuIndex < offset) {
     ESP_LOGI(TAG, "selectRootMenu: now playing %d offset %d", menuIndex,
              offset);
-    // if (now_playing_control_ &&
-    //     now_playing_control_->select_root_menu(menuIndex)) {
-    //   update_display();
-    //   return false;
-    // }
-    return false;
+    if (now_playing_control_) {
+      active_app_ = now_playing_control_;
+      active_app_->set_app_menu_index(menuIndex);
+      menuTree.push_back(appMenu);
+    }
   } else if (home_screen_ && index < home_screen_->get_entity_count()) {
-    ESP_LOGI(TAG, "selectRootMenu: home screen 2 %d offset %d", menuIndex,
+    ESP_LOGI(TAG, "selectRootMenu: home screen %d offset %d", menuIndex,
              offset);
-    if (home_screen_->select_menu(index)) {
-      update_display();
+    if (!home_screen_->select_menu(index)) {
+      // update_display();
       return false;
     }
   } else {
-    ESP_LOGI(TAG, "selectRootMenu: 3 %d offset %d", menuIndex, offset);
+    ESP_LOGI(TAG, "selectRootMenu: screen %d offset %d", menuIndex, offset);
     menuTree.push_back(settingsMenu);
     int home_screen_count = home_screen_ ? home_screen_->get_entity_count() : 0;
     offset = home_screen_count + offset;
@@ -425,6 +430,10 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
       break;
     case settingsMenu:
       active_menu_screen->menu_titles(menu_titles, true);
+    case appMenu:
+      if (active_app_) {
+        active_app_->app_menu_titles(menu_titles);
+      }
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menu_state_title(menuTree.back()).c_str());

@@ -175,6 +175,8 @@ class HomeThingMenuBase : public PollingComponent {
   //     new HomeThingMenuNowPlayingOptionMenu();
   homething_menu_now_playing::HomeThingMenuNowPlayingControl*
       now_playing_control_{nullptr};
+  homething_menu_now_playing::HomeThingMenuNowPlayingControl* active_app_{
+      nullptr};
 #endif
 
   void update_display() { this->on_redraw_callbacks_.call(); }
@@ -194,6 +196,10 @@ class HomeThingMenuBase : public PollingComponent {
       ESP_LOGD(TAG, "reset_menu: reset animation %d", menuTree.front());
       animation_->resetAnimation();
     }
+    if (active_app_) {
+      active_app_->reset_menu();
+    }
+    active_app_ = nullptr;
   }
   void turn_on_backlight();
 

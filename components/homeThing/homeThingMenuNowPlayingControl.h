@@ -16,14 +16,18 @@ class HomeThingMenuNowPlayingControl {
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group);
-
   void rootMenuTitles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
+  void app_menu_titles(
+      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
+  void sourceMenuTitles(
+      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
+  bool app_menu_select(int index);
   void idleTick(int idleTime, int display_timeout);
   int root_menu_size();
   void selectNowPlayingMenu();
   void reset_menu();
-
+  void set_app_menu_index(int app_menu_index);
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
   void buttonPressUp();
@@ -47,6 +51,8 @@ class HomeThingMenuNowPlayingControl {
       media_player_group_{nullptr};
   HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
       new HomeThingMenuNowPlayingOptionMenu();
+  void select_source_menu(int index);
+  int app_menu_index_ = 0;
 
  private:
   const char* const TAG = "homething.nowplaying.control";

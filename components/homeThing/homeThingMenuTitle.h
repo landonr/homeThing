@@ -18,6 +18,7 @@ static const char* const MENU_TITLE_TAG = "homething.menutitle";
 enum MenuStates {
   bootMenu,
   rootMenu,
+  appMenu,
   // sourcesMenu,
   // groupMenu,
   // mediaPlayersMenu,
@@ -38,6 +39,8 @@ enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
 static std::string menu_state_title(MenuStates menu_state) {
   switch (menu_state) {
+    case appMenu:
+      return "App";
     // case nowPlayingMenu:
     //   return "Now Playing";
     // case sourcesMenu:
@@ -62,6 +65,8 @@ static std::string menu_state_title(MenuStates menu_state) {
 
 static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
   switch (menu_state) {
+    case appMenu:
+      return ArrowMenuTitleRightIcon;
     // case nowPlayingMenu:
     //   return ArrowMenuTitleRightIcon;
     // case sourcesMenu:

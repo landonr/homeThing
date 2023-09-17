@@ -33,6 +33,95 @@ void HomeThingMenuNowPlayingControl::rootMenuTitles(
   }
 }
 
+void HomeThingMenuNowPlayingControl::app_menu_titles(
+    std::vector<homething_menu_base::MenuTitleBase*>* menu_titles) {
+  ESP_LOGI(TAG, "menu_titles null %d app menu index %d",
+           media_player_group_ == nullptr, app_menu_index_);
+  if (media_player_group_ != nullptr) {
+    if (app_menu_index_ == 0) {
+      return;
+    } else if (app_menu_index_ == 1) {
+      sourceMenuTitles(menu_titles);
+    } else if (app_menu_index_ == 2) {
+      // media_player_group_->menuTitles(menu_titles);
+    }
+  }
+}
+
+void HomeThingMenuNowPlayingControl::select_source_menu(int index) {
+  // const auto sourceTitleState = static_cast<MenuTitleSource*>(activeMenuTitle);
+  // auto source = sourceTitleState->media_source_;
+  auto player_source_index =
+      media_player_group_->get_active_player_source_index();
+  if (player_source_index == -1) {
+    ESP_LOGI(TAG, "select_source_menu: set player source index %d", index);
+    media_player_group_->set_active_player_source_index(index);
+    return;
+  }
+
+  const auto sources = media_player_group_->activePlayerSources();
+  if (sources->size() == 0) {
+    return;
+  }
+  int active_player_source_index =
+      sources->size() == 1 ? 0 : player_source_index;
+  auto playerSources = (*sources)[active_player_source_index]->get_sources();
+  media_player_source::MediaPlayerSourceItem* source = (*playerSources)[index];
+  media_player_group_->playSource(source);
+  ESP_LOGI(TAG, "select_source_menu: set player source index %d",
+           active_player_source_index);
+  // const auto new_source = new media_player_source::MediaPlayerSourceItem(
+  //     source->get_name(), source->get_media_content_id(),
+  //     source->get_media_type());
+  // media_player_group_->playSource(new_source);
+  // idleMenu(true);
+  // circle_menu_->set_active_menu(playingNewSourceMenu,
+  //                               media_player_group_->active_player_);
+}
+
+bool HomeThingMenuNowPlayingControl::app_menu_select(int index) {
+  ESP_LOGI(TAG, "app_menu_select null %d app menu index %d",
+           media_player_group_ == nullptr, app_menu_index_);
+  switch (app_menu_index_) {
+    case 0:
+      break;
+    case 1:
+      select_source_menu(index);
+      return true;
+    case 2:
+      // media_player_group_->selectMediaPlayer(index);
+      break;
+  }
+  return false;
+}
+
+void HomeThingMenuNowPlayingControl::sourceMenuTitles(
+    std::vector<homething_menu_base::MenuTitleBase*>* menu_titles) {
+  if (media_player_group_ == nullptr) {
+    return;
+  }
+  if (media_player_group_->active_player_ == nullptr) {
+    media_player_group_->selectNextMediaPlayer();
+    if (media_player_group_->active_player_ == nullptr) {
+      return;
+    }
+  }
+  const auto sources = media_player_group_->activePlayerSources();
+  const auto index = media_player_group_->get_active_player_source_index();
+  if (index == -1 && sources->size() > 1) {
+    activePlayerSourceTitles(sources, menu_titles);
+    return;
+  } else if (index == -1 && sources->size() == 1) {
+    auto playerSources = (*sources)[0]->get_sources();
+    activePlayerSourceItemTitles(playerSources, menu_titles);
+    return;
+  } else if (sources->size() > 1) {
+    auto playerSources = (*sources)[index]->get_sources();
+    activePlayerSourceItemTitles(playerSources, menu_titles);
+    return;
+  }
+}
+
 int HomeThingMenuNowPlayingControl::root_menu_size() {
   if (media_player_group_ != nullptr) {
     if (media_player_group_->totalPlayers() > 1) {
@@ -41,6 +130,13 @@ int HomeThingMenuNowPlayingControl::root_menu_size() {
     return 2;
   }
   return 0;
+}
+
+void HomeThingMenuNowPlayingControl::set_app_menu_index(int app_menu_index) {
+  if (app_menu_index_ >= root_menu_size()) {
+    return;
+  }
+  app_menu_index_ = app_menu_index;
 }
 
 void HomeThingMenuNowPlayingControl::idleTick(int idleTime,
@@ -90,6 +186,7 @@ void HomeThingMenuNowPlayingControl::reset_menu() {
     media_player_group_->newSpeakerGroupParent = NULL;
     media_player_group_->set_active_player_source_index(-1);
   }
+  app_menu_index_ = -1;
 }
 
 // void HomeThingMenuNowPlayingControl::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
