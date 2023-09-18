@@ -7,6 +7,10 @@
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
+#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
+#include "esphome/components/homeThing/homeThingMenuScreen.h"
+#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+
 namespace esphome {
 namespace homething_menu_now_playing {
 
@@ -81,6 +85,26 @@ class HomeThingMenuNowPlayingControl
         new HomeThingMenuNowPlaying(new_display_buffer, new_display_state,
                                     new_text_helpers, new_media_player_group);
   }
+
+  // header
+  int draw_header_details(
+      int xPos, int yPos, display::DisplayBuffer* display_buffer,
+      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
+  int drawPlayPauseIcon(
+      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
+  int drawShuffle(int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+                  homething_menu_base::HomeThingMenuDisplayState* display_state,
+                  homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
+  int drawRepeat(int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+                 homething_menu_base::HomeThingMenuDisplayState* display_state,
+                 homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
+  int drawHeaderVolumeLevel(
+      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
 
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*

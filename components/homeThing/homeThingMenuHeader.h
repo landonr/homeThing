@@ -22,6 +22,12 @@ namespace homething_menu_base {
 class HomeThingMenuHeaderSource {
  public:
   virtual std::string get_header_title() { return "xx"; }
+  virtual int draw_header_details(
+      int xPos, int yPosOffset, display::DisplayBuffer* display_buffer,
+      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+    return 0;
+  }
 };
 
 class HomeThingMenuHeader {
@@ -67,13 +73,6 @@ class HomeThingMenuHeader {
   int drawBattery(int oldXPos, int yPosOffset);
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);
   int drawHeaderTime(int oldXPos, int yPosOffset);
-
-  // #ifdef USE_MEDIA_PLAYER_GROUP
-  //   int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
-  //   int drawShuffle(int oldXPos, int yPosOffset);
-  //   int drawRepeat(int oldXPos, int yPosOffset);
-  //   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
-  // #endif
 
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};

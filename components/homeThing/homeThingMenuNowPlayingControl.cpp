@@ -22,8 +22,12 @@ void HomeThingMenuNowPlayingControl::rootMenuTitles(
     std::vector<homething_menu_base::MenuTitleBase*>* menu_titles) {
   ESP_LOGI(TAG, "rootMenuTitles null %d", media_player_group_ == nullptr);
   if (media_player_group_ != nullptr) {
+    std::string title = "Now Playing";
+    if (media_player_group_->active_player_ != nullptr) {
+      title = media_player_group_->active_player_->get_name();
+    }
     menu_titles->push_back(new homething_menu_base::MenuTitleBase(
-        "Now Playing", "", homething_menu_base::NoMenuTitleRightIcon));
+        title, "", homething_menu_base::NoMenuTitleRightIcon));
     menu_titles->push_back(new homething_menu_base::MenuTitleBase(
         "Sources", "", homething_menu_base::NoMenuTitleRightIcon));
     if (media_player_group_->totalPlayers() > 1) {
@@ -541,6 +545,170 @@ bool HomeThingMenuNowPlayingControl::buttonReleaseScreenLeft() {
 bool HomeThingMenuNowPlayingControl::buttonPressScreenRight() {
   media_player_group_->selectNextMediaPlayer();
   return true;
+}
+
+// header
+
+int HomeThingMenuNowPlayingControl::draw_header_details(
+    int xPos, int yPos, display::DisplayBuffer* display_buffer,
+    homething_menu_base::HomeThingMenuDisplayState* display_state,
+    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+  xPos = xPos - drawPlayPauseIcon(xPos, yPos, display_buffer, display_state,
+                                  text_helpers);
+  xPos = xPos -
+         drawRepeat(xPos, yPos, display_buffer, display_state, text_helpers);
+  xPos = xPos -
+         drawShuffle(xPos, yPos, display_buffer, display_state, text_helpers);
+  return xPos;
+}
+
+int HomeThingMenuNowPlayingControl::drawPlayPauseIcon(
+    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    homething_menu_base::HomeThingMenuDisplayState* display_state,
+    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+  int iconWidth =
+      display_state->get_icon_size() + (display_state->get_margin_size() / 2);
+  int xPos = oldXPos - iconWidth + (display_state->get_margin_size() / 2);
+  auto active_player = media_player_group_->active_player_;
+  if (active_player == NULL) {
+    return 0;
+  }
+  auto menuTitle = homething_menu_base::headerMediaPlayerTitle(active_player);
+  switch (active_player->playerState) {
+    case homeassistant_media_player::RemotePlayerState::
+        PlayingRemotePlayerState: {
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          menuTitle.mediaSourceIconColor(
+              display_state->get_color_palette()->get_accent_primary()),
+          menuTitle.mediaSourceIcon().c_str());
+      break;
+    }
+    case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰏤");
+      break;
+    case homeassistant_media_player::RemotePlayerState::
+        StoppedRemotePlayerState:
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰓛");
+      break;
+    case homeassistant_media_player::RemotePlayerState::
+        PowerOffRemotePlayerState:
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰽥");
+      break;
+    default:
+      return 0;
+  }
+  return iconWidth;
+}
+
+int HomeThingMenuNowPlayingControl::drawShuffle(
+    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    homething_menu_base::HomeThingMenuDisplayState* display_state,
+    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+  if (!media_player_group_ || media_player_group_->active_player_ == NULL ||
+      display_state->get_draw_shuffle() ==
+          homething_menu_base::DisplayIconEnabledState::OFF) {
+    return 0;
+  }
+  auto active_player = media_player_group_->active_player_;
+  if (active_player->get_player_type() ==
+          homeassistant_media_player::RemotePlayerType::TVRemotePlayerType ||
+      !active_player->supports(homeassistant_media_player::
+                                   MediaPlayerSupportedFeature::SHUFFLE_SET)) {
+    return 0;
+  }
+  if (active_player->playerState !=
+      homeassistant_media_player::RemotePlayerState::StoppedRemotePlayerState) {
+    int xPos = oldXPos - display_state->get_icon_size() +
+               display_state->get_margin_size() / 2;
+    if (media_player_group_->mediaShuffling()) {
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰒝");
+    } else if (display_state->get_draw_shuffle() ==
+               homething_menu_base::DisplayIconEnabledState::ALWAYS) {
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰒞");
+    } else {
+      return 0;
+    }
+    return display_state->get_margin_size() / 2;
+  }
+  return 0;
+}
+
+int HomeThingMenuNowPlayingControl::drawRepeat(
+    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    homething_menu_base::HomeThingMenuDisplayState* display_state,
+    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+  if (display_state->get_draw_repeat() ==
+          homething_menu_base::DisplayIconEnabledState::OFF ||
+      !media_player_group_ || media_player_group_->active_player_ == NULL) {
+    return 0;
+  }
+  auto active_player = media_player_group_->active_player_;
+  if (active_player->get_player_type() ==
+          homeassistant_media_player::RemotePlayerType::TVRemotePlayerType ||
+      !active_player->supports(homeassistant_media_player::
+                                   MediaPlayerSupportedFeature::REPEAT_SET) ||
+      active_player->playerState ==
+          homeassistant_media_player::RemotePlayerState::
+              StoppedRemotePlayerState) {
+    return 0;
+  }
+  int xPos = oldXPos - display_state->get_icon_size() +
+             display_state->get_margin_size() / 2;
+  switch (media_player_group_->get_repeat_mode()) {
+    case homeassistant_media_player::MediaPlayerRepeatMode::ALL:
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰑖");
+      break;
+    case homeassistant_media_player::MediaPlayerRepeatMode::ONE:
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰑘");
+      break;
+    case homeassistant_media_player::MediaPlayerRepeatMode::OFF:
+      if (display_state->get_draw_repeat() !=
+          homething_menu_base::DisplayIconEnabledState::ALWAYS) {
+        return 0;
+      }
+      display_buffer->printf(
+          xPos, yPos, display_state->get_font_material_small(),
+          display_state->get_color_palette()->get_accent_primary(), "󰑗");
+      break;
+    default:
+      return 0;
+  }
+  return display_state->get_margin_size() / 2;
+}
+
+int HomeThingMenuNowPlayingControl::drawHeaderVolumeLevel(
+    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    homething_menu_base::HomeThingMenuDisplayState* display_state,
+    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+  if (media_player_group_ == nullptr ||
+      media_player_group_->active_player_ == nullptr) {
+    return 0;
+  }
+  if (!display_state->get_draw_volume_level()) {
+    return 0;
+  }
+  int xPos = oldXPos - display_state->get_margin_size() / 2;
+  display_buffer->printf(
+      xPos, yPos, display_state->get_font_small(),
+      text_helpers->primaryTextColor(display_state->get_dark_mode()),
+      display::TextAlign::TOP_RIGHT, "%.0f%%",
+      media_player_group_->getVolumeLevel());
+  return 24;
 }
 
 }  // namespace homething_menu_now_playing
