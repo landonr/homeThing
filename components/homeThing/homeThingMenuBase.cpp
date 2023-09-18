@@ -75,6 +75,9 @@ void HomeThingMenuBase::draw_menu_screen() {
   //                                       circle_menu_->get_active_menu(),
   //                                       editing_menu_item)) {
   // #else
+  if (active_app_ != nullptr) {
+    menu_display_->draw_menu_header(active_app_);
+  }
   if (active_app_ != nullptr && active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
   } else if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,

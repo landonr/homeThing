@@ -1,5 +1,6 @@
 #pragma once
 
+#include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
@@ -9,7 +10,8 @@
 namespace esphome {
 namespace homething_menu_now_playing {
 
-class HomeThingMenuNowPlayingControl {
+class HomeThingMenuNowPlayingControl
+    : public homething_menu_base::HomeThingMenuHeaderSource {
  public:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group();
@@ -43,6 +45,9 @@ class HomeThingMenuNowPlayingControl {
   bool buttonPressScreenLeft();
   bool buttonReleaseScreenLeft();
   bool buttonPressScreenRight();
+
+  // header
+  std::string get_header_title();
 
   // controls
   bool select_media_player_feature(

@@ -19,6 +19,11 @@
 namespace esphome {
 namespace homething_menu_base {
 
+class HomeThingMenuHeaderSource {
+ public:
+  virtual std::string get_header_title() { return "xx"; }
+};
+
 class HomeThingMenuHeader {
  public:
   HomeThingMenuHeader(display::DisplayBuffer* new_display_buffer,
@@ -28,6 +33,7 @@ class HomeThingMenuHeader {
         display_state_(new_display_state),
         text_helpers_(new_text_helpers) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
+  void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void set_battery_percent(sensor::Sensor* battery_percent) {
     battery_percent_ = battery_percent;
   }
@@ -38,14 +44,6 @@ class HomeThingMenuHeader {
     active_menu_screen_ = active_menu_screen;
   }
   void set_time_id(time::RealTimeClock* time_id) { this->esp_time_ = time_id; }
-
-#ifdef USE_MEDIA_PLAYER_GROUP
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
-#endif
 
  private:
   float get_battery_percent() {
@@ -70,17 +68,12 @@ class HomeThingMenuHeader {
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);
   int drawHeaderTime(int oldXPos, int yPosOffset);
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-  int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
-  int drawShuffle(int oldXPos, int yPosOffset);
-  int drawRepeat(int oldXPos, int yPosOffset);
-  int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
-#endif
-
-#ifdef USE_MEDIA_PLAYER_GROUP
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-      media_player_group_{nullptr};
-#endif
+  // #ifdef USE_MEDIA_PLAYER_GROUP
+  //   int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
+  //   int drawShuffle(int oldXPos, int yPosOffset);
+  //   int drawRepeat(int oldXPos, int yPosOffset);
+  //   int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
+  // #endif
 
   display::DisplayBuffer* display_buffer_{nullptr};
   HomeThingMenuDisplayState* display_state_{nullptr};

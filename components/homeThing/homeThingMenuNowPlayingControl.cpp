@@ -289,6 +289,32 @@ bool HomeThingMenuNowPlayingControl::button_press_now_playing_option_continue(
   return true;
 }
 
+// MARK: Header
+
+std::string HomeThingMenuNowPlayingControl::get_header_title() {
+  switch (app_menu_index_) {
+    case 0: {
+      if (media_player_group_ == nullptr) {
+        return "Now Playing";
+      }
+      if (media_player_group_->active_player_ == nullptr) {
+        return "Loading...";
+      }
+      return media_player_group_->active_player_->get_name();
+      break;
+    }
+    case 1:
+      return "Sources";
+      break;
+    case 2:
+      return "Media Players";
+      break;
+    default:
+      break;
+  }
+  return "xx2";
+}
+
 // MARK: Buttons
 
 void HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {

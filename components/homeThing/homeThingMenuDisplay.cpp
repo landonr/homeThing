@@ -207,6 +207,11 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   return animating;
 }
 
+void HomeThingMenuDisplay::draw_menu_header(
+    HomeThingMenuHeaderSource* header_source) {
+  header_->draw_menu_header(header_source);
+}
+
 void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
                                          int menuIndex) {
   int scrollBarMargin = 1;

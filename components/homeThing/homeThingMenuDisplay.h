@@ -53,6 +53,7 @@ class HomeThingMenuDisplay {
       const std::vector<MenuTitleBase*>* active_menu, const int menuIndex,
       homething_menu_now_playing::HomeThingOptionMenu* option_menu,
       bool editing_menu_item);
+  void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void updateDisplay(bool force);
 
   void set_animation(HomeThingMenuAnimation* animation) {
