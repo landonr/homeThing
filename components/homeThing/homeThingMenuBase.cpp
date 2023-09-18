@@ -659,7 +659,8 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonReleaseScreenLeft();
+        if (active_app_->buttonReleaseScreenLeft())
+          update_display();
       }
       break;
     default:
@@ -690,7 +691,8 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonPressScreenLeft();
+        if (active_app_->buttonPressScreenLeft())
+          update_display();
       }
       break;
     default:
@@ -707,7 +709,8 @@ void HomeThingMenuBase::buttonPressScreenRight() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonPressScreenRight();
+        if (active_app_->buttonPressScreenRight())
+          update_display();
       }
       break;
     case rootMenu:

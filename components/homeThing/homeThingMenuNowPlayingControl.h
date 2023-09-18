@@ -34,15 +34,15 @@ class HomeThingMenuNowPlayingControl {
   void set_app_menu_index(int app_menu_index);
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
-  void buttonPressUp();
-  void buttonPressDown();
-  void buttonPressLeft();
-  void buttonPressRight();
-  void buttonPressSelect(int menuIndex);
-  void buttonPressSelectHold();
-  void buttonPressScreenLeft();
-  void buttonReleaseScreenLeft();
-  void buttonPressScreenRight();
+  bool buttonPressUp();
+  bool buttonPressDown();
+  bool buttonPressLeft();
+  bool buttonPressRight();
+  bool buttonPressSelect(int menuIndex);
+  bool buttonPressSelectHold();
+  bool buttonPressScreenLeft();
+  bool buttonReleaseScreenLeft();
+  bool buttonPressScreenRight();
 
   // controls
   bool select_media_player_feature(
