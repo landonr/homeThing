@@ -66,18 +66,6 @@ class HomeThingMenuDisplay {
     return false;
   }
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
-  void set_now_playing(
-      homething_menu_now_playing::HomeThingMenuNowPlaying* now_playing) {
-    now_playing_ = now_playing;
-  }
-#endif
-
   HomeThingMenuBoot* boot_{nullptr};
   void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
     header_->set_active_menu_screen(active_menu_screen);
@@ -109,7 +97,6 @@ class HomeThingMenuDisplay {
       int characterCount, int yPos,
       const homeassistant_media_player::RemotePlayerState& titleState,
       bool selected);
-  homething_menu_now_playing::HomeThingMenuNowPlaying* now_playing_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
 #endif

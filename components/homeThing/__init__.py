@@ -455,11 +455,9 @@ MENU_DISPLAY_IDS = [
     CONF_MEDIA_PLAYERS
 ]
 
-async def menu_display_to_code(config, display_buffer):
+async def menu_display_to_code(config, display_buffer, display_state, text_helpers):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
-    display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
-    text_helpers = await text_helpers_to_code(menu_display_conf[CONF_TEXT_HELPERS], display_buffer, display_state)
     refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
     menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
     await ids_to_code(config, menu_header, MENU_HEADER_IDS)
@@ -473,10 +471,10 @@ async def menu_display_to_code(config, display_buffer):
     menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, text_helpers, refactor, menu_header)
     await ids_to_code(config, menu_display, MENU_DISPLAY_IDS)
     
-    if CONF_MEDIA_PLAYERS in config:
-        now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
-        await ids_to_code(config, now_playing, NOW_PLAYING_IDS)
-        cg.add(menu_display.set_now_playing(now_playing))
+    # if CONF_MEDIA_PLAYERS in config:
+    #     now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
+    #     await ids_to_code(config, now_playing, NOW_PLAYING_IDS)
+    #     cg.add(menu_display.set_now_playing(now_playing))
     return menu_display
 
 async def menu_screen_to_code(config):
@@ -527,7 +525,9 @@ MENU_IDS = [
 
 async def to_code(config):
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
-    menu_display = await menu_display_to_code(config, display_buffer)
+    display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
+    text_helpers = await text_helpers_to_code(config[CONF_MENU_DISPLAY][CONF_TEXT_HELPERS], display_buffer, display_state)
+    menu_display = await menu_display_to_code(config, display_buffer, display_state, text_helpers)
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
 
@@ -544,10 +544,12 @@ async def to_code(config):
 
     if CONF_NOW_PLAYING in config:
         now_playing_control = cg.new_Pvariable(config[CONF_NOW_PLAYING][CONF_ID])
+
         if CONF_MEDIA_PLAYERS in config[CONF_NOW_PLAYING]:
             media_player_group = await cg.get_variable(config[CONF_NOW_PLAYING][CONF_MEDIA_PLAYERS])
             cg.add(now_playing_control.set_media_player_group(media_player_group))
-            cg.add(menu.set_now_playing_control(now_playing_control))
+            cg.add(now_playing_control.set_now_playing_display(display_buffer, display_state, text_helpers, media_player_group))
+        cg.add(menu.set_now_playing_control(now_playing_control))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

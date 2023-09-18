@@ -19,20 +19,17 @@ class HomeThingMenuNowPlaying {
   HomeThingMenuNowPlaying(
       display::DisplayBuffer* new_display_buffer,
       homething_menu_base::HomeThingMenuDisplayState* new_display_state,
-      homething_menu_base::HomeThingMenuTextHelpers* new_text_helpers)
+      homething_menu_base::HomeThingMenuTextHelpers* new_text_helpers,
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          new_media_player_group)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        text_helpers_(new_text_helpers) {}
+        text_helpers_(new_text_helpers),
+        media_player_group_(new_media_player_group) {}
   PositionCoordinate get_coordinate(double radius, double angle);
   void drawNowPlaying(
       int menuIndex, HomeThingOptionMenu* option_menu,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
-
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
 
  private:
   display::DisplayBuffer* display_buffer_{nullptr};

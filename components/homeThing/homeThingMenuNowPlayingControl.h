@@ -23,6 +23,10 @@ class HomeThingMenuNowPlayingControl {
   void sourceMenuTitles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
   bool app_menu_select(int index);
+  bool should_draw_app();
+  void draw_app(
+      int menuIndex,
+      const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
   void idleTick(int idleTime, int display_timeout);
   int root_menu_size();
   void selectNowPlayingMenu();
@@ -46,11 +50,24 @@ class HomeThingMenuNowPlayingControl {
   bool button_press_now_playing_option_continue(
       CircleOptionMenuPosition position);
 
+  // display
+  void set_now_playing_display(
+      display::DisplayBuffer* new_display_buffer,
+      homething_menu_base::HomeThingMenuDisplayState* new_display_state,
+      homething_menu_base::HomeThingMenuTextHelpers* new_text_helpers,
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          new_media_player_group) {
+    now_playing_display_ =
+        new HomeThingMenuNowPlaying(new_display_buffer, new_display_state,
+                                    new_text_helpers, new_media_player_group);
+  }
+
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
   HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
       new HomeThingMenuNowPlayingOptionMenu();
+  HomeThingMenuNowPlaying* now_playing_display_{nullptr};
   void select_source_menu(int index);
   int app_menu_index_ = 0;
 

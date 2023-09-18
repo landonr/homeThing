@@ -202,17 +202,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
              boot_complete, *activeMenuState);
   }
 
-  bool animating = false;
-  switch (*activeMenuState) {
-      //     case nowPlayingMenu:
-      // #ifdef USE_MEDIA_PLAYER_GROUP
-      //       now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
-      // #endif
-      //       break;
-    default:
-      animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
-      break;
-  }
+  bool animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
   header_->drawHeader(0, *activeMenuState);
   return animating;
 }

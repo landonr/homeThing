@@ -75,8 +75,9 @@ void HomeThingMenuNowPlayingControl::select_source_menu(int index) {
   //     source->get_media_type());
   // media_player_group_->playSource(new_source);
   // idleMenu(true);
-  // circle_menu_->set_active_menu(playingNewSourceMenu,
-  //                               media_player_group_->active_player_);
+  circle_menu_->set_active_menu(playingNewSourceMenu,
+                                media_player_group_->active_player_);
+  app_menu_index_ = 0;
 }
 
 bool HomeThingMenuNowPlayingControl::app_menu_select(int index) {
@@ -137,6 +138,26 @@ void HomeThingMenuNowPlayingControl::set_app_menu_index(int app_menu_index) {
     return;
   }
   app_menu_index_ = app_menu_index;
+}
+
+bool HomeThingMenuNowPlayingControl::should_draw_app() {
+  if (app_menu_index_ == 0) {
+    return true;
+  }
+  return false;
+}
+
+void HomeThingMenuNowPlayingControl::draw_app(
+    int menuIndex,
+    const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
+  switch (app_menu_index_) {
+    case 0:
+      now_playing_display_->drawNowPlaying(
+          menuIndex, circle_menu_->get_active_menu(), active_menu);
+      break;
+    default:
+      break;
+  }
 }
 
 void HomeThingMenuNowPlayingControl::idleTick(int idleTime,
@@ -215,6 +236,35 @@ void HomeThingMenuNowPlayingControl::reset_menu() {
 //   }
 // }
 
+bool HomeThingMenuNowPlayingControl::select_media_player_feature(
+    homeassistant_media_player::MediaPlayerFeatureCommand* command) {
+  auto feature = command->get_feature();
+  switch (feature) {
+    case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
+      // topMenu();
+      return true;
+    case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
+      // menuIndex = 0;
+      // menuTree.push_back(groupMenu);
+      return true;
+    case homeassistant_media_player::MediaPlayerSupportedFeature::
+        CUSTOM_COMMAND: {
+      auto feature_command = command->get_command();
+      if (feature_command != nullptr) {
+        feature_command->on_command();
+        return true;
+      }
+    }
+
+    default:
+      media_player_group_->call_feature(feature);
+      break;
+  }
+  return false;
+}
+
+// MARK: Buttons
+
 void HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {
   //   if (menu_display_->get_draw_now_playing_menu()) {
   //     break;
@@ -233,6 +283,7 @@ void HomeThingMenuNowPlayingControl::rotaryScrollCounterClockwise(int rotary) {
                                 media_player_group_->active_player_);
   // debounceUpdateDisplay();
 }
+
 
 void HomeThingMenuNowPlayingControl::buttonPressUp() {
   if (!button_press_now_playing_option_continue(CircleOptionMenuPosition::TOP))
