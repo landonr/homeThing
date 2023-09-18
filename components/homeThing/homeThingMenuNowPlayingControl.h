@@ -10,6 +10,13 @@
 namespace esphome {
 namespace homething_menu_now_playing {
 
+enum NavigationCoordination {
+  NavigationCoordinationNone,
+  NavigationCoordinationPop,
+  NavigationCoordinationRoot,
+  NavigationCoordinationUpdate
+};
+
 class HomeThingMenuNowPlayingControl
     : public homething_menu_base::HomeThingMenuHeaderSource {
  public:
@@ -18,13 +25,19 @@ class HomeThingMenuNowPlayingControl
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group);
+
+  // menu titles
   void rootMenuTitles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
   void app_menu_titles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
   void sourceMenuTitles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-  bool app_menu_select(int index);
+  void media_player_menu_titles(
+      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
+
+  // menu screens
+  NavigationCoordination app_menu_select(int index);
   bool should_draw_app();
   void draw_app(
       int menuIndex,
@@ -34,6 +47,8 @@ class HomeThingMenuNowPlayingControl
   void selectNowPlayingMenu();
   void reset_menu();
   void set_app_menu_index(int app_menu_index);
+
+  // buttons
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
   bool buttonPressUp();

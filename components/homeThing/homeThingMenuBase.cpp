@@ -70,11 +70,6 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
            title_name.c_str(), menu_titles.size());
-  // #ifdef USE_MEDIA_PLAYER_GROUP
-  //   if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
-  //                                       circle_menu_->get_active_menu(),
-  //                                       editing_menu_item)) {
-  // #else
   if (active_app_ != nullptr) {
     menu_display_->draw_menu_header(active_app_);
   }
@@ -136,7 +131,27 @@ bool HomeThingMenuBase::selectMenu() {
     case appMenu:
       ESP_LOGI(TAG, "selectMenu: select app menu %d", menuIndex);
       if (active_app_) {
-        return active_app_->app_menu_select(menuIndex);
+        switch (active_app_->app_menu_select(menuIndex)) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            return false;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            return true;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            menuTree.pop_back();
+            menuIndex = 0;
+            if (menuTree.size() == 1) {
+              reset_menu();
+              return false;
+            }
+            return true;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return true;
+        }
       }
       return false;
     default:

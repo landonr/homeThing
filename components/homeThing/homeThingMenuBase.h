@@ -168,11 +168,6 @@ class HomeThingMenuBase : public PollingComponent {
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-  // homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-  //     media_player_group_{nullptr};
-  // void selectNowPlayingMenu();
-  // HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
-  //     new HomeThingMenuNowPlayingOptionMenu();
   homething_menu_now_playing::HomeThingMenuNowPlayingControl*
       now_playing_control_{nullptr};
   homething_menu_now_playing::HomeThingMenuNowPlayingControl* active_app_{
