@@ -1,5 +1,6 @@
 #pragma once
 
+#include "esphome/components/homeThing/homeThingMenuApp.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
 #include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
@@ -7,6 +8,7 @@
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
+#include "esphome/components/homeThing/HomeThingMenuNowPlayingHeader.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
@@ -14,16 +16,8 @@
 namespace esphome {
 namespace homething_menu_now_playing {
 
-enum NavigationCoordination {
-  NavigationCoordinationNone,
-  NavigationCoordinationPop,
-  NavigationCoordinationRoot,
-  NavigationCoordinationUpdate,
-  NavigationCoordinationReturn
-};
-
 class HomeThingMenuNowPlayingControl
-    : public homething_menu_base::HomeThingMenuHeaderSource {
+    : public homething_menu_app::HomeThingMenuApp {
  public:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group();
@@ -36,43 +30,36 @@ class HomeThingMenuNowPlayingControl
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
   void app_menu_titles(
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-  void sourceMenuTitles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-  void media_player_menu_titles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
 
   // menu screens
-  NavigationCoordination app_menu_select(int index);
+  homething_menu_app::NavigationCoordination app_menu_select(int index);
   bool should_draw_app();
   void draw_app(
       int menuIndex,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
   void idleTick(int idleTime, int display_timeout);
   int root_menu_size();
-  void selectNowPlayingMenu();
+  //   void selectNowPlayingMenu();
   void reset_menu();
   void set_app_menu_index(int app_menu_index);
 
   // buttons
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
-  NavigationCoordination buttonPressUp();
-  NavigationCoordination buttonPressDown();
-  NavigationCoordination buttonPressLeft();
-  NavigationCoordination buttonPressRight();
-  NavigationCoordination buttonPressSelect(int menuIndex);
-  NavigationCoordination buttonPressSelectHold();
-  NavigationCoordination buttonPressScreenLeft();
-  NavigationCoordination buttonReleaseScreenLeft();
-  NavigationCoordination buttonPressScreenRight();
-
-  // header
-  std::string get_header_title();
+  homething_menu_app::NavigationCoordination buttonPressUp();
+  homething_menu_app::NavigationCoordination buttonPressDown();
+  homething_menu_app::NavigationCoordination buttonPressLeft();
+  homething_menu_app::NavigationCoordination buttonPressRight();
+  homething_menu_app::NavigationCoordination buttonPressSelect(int menuIndex);
+  homething_menu_app::NavigationCoordination buttonPressSelectHold();
+  homething_menu_app::NavigationCoordination buttonPressScreenLeft();
+  homething_menu_app::NavigationCoordination buttonReleaseScreenLeft();
+  homething_menu_app::NavigationCoordination buttonPressScreenRight();
 
   // controls
   bool select_media_player_feature(
       homeassistant_media_player::MediaPlayerFeatureCommand* command);
-  NavigationCoordination button_press_now_playing_option(
+  homething_menu_app::NavigationCoordination button_press_now_playing_option(
       CircleOptionMenuPosition position);
 
   // display
@@ -87,25 +74,10 @@ class HomeThingMenuNowPlayingControl
                                     new_text_helpers, new_media_player_group);
   }
 
-  // header
-  int draw_header_details(
-      int xPos, int yPos, display::DisplayBuffer* display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* display_state,
-      homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
-  int drawPlayPauseIcon(
-      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* display_state,
-      homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
-  int drawShuffle(int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-                  homething_menu_base::HomeThingMenuDisplayState* display_state,
-                  homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
-  int drawRepeat(int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-                 homething_menu_base::HomeThingMenuDisplayState* display_state,
-                 homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
-  int drawHeaderVolumeLevel(
-      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* display_state,
-      homething_menu_base::HomeThingMenuTextHelpers* text_helpers);
+  homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
+    return header_source_;
+  }
+  HomeThingMenuHeaderSource* header_source_{nullptr};
 
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
@@ -118,6 +90,13 @@ class HomeThingMenuNowPlayingControl
 
  private:
   const char* const TAG = "homething.nowplaying.control";
+
+  // menu titles
+
+  void sourceMenuTitles(
+      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
+  void media_player_menu_titles(
+      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

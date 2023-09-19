@@ -170,10 +170,9 @@ class HomeThingMenuBase : public PollingComponent {
 #ifdef USE_MEDIA_PLAYER_GROUP
   homething_menu_now_playing::HomeThingMenuNowPlayingControl*
       now_playing_control_{nullptr};
-  homething_menu_now_playing::HomeThingMenuNowPlayingControl* active_app_{
-      nullptr};
 #endif
 
+  homething_menu_app::HomeThingMenuApp* active_app_{nullptr};
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();

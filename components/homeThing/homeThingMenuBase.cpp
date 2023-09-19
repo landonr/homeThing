@@ -71,7 +71,9 @@ void HomeThingMenuBase::draw_menu_screen() {
   ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
            title_name.c_str(), menu_titles.size());
   if (active_app_ != nullptr) {
-    menu_display_->draw_menu_header(active_app_);
+    ESP_LOGI(TAG, "draw_menu_screen: draw header %d %s #%d", menuIndex,
+             title_name.c_str(), menu_titles.size());
+    menu_display_->draw_menu_header(active_app_->get_header_source());
   }
   if (active_app_ != nullptr && active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
@@ -132,13 +134,13 @@ bool HomeThingMenuBase::selectMenu() {
       ESP_LOGI(TAG, "selectMenu: select app menu %d", menuIndex);
       if (active_app_) {
         switch (active_app_->app_menu_select(menuIndex)) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             return false;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             return true;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             menuTree.pop_back();
             menuIndex = 0;
@@ -147,7 +149,7 @@ bool HomeThingMenuBase::selectMenu() {
               return true;
             }
             return true;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return true;
@@ -379,21 +381,21 @@ void HomeThingMenuBase::buttonPressSelect() {
       case appMenu:
         if (active_app_ && active_app_->should_draw_app()) {
           switch (active_app_->buttonPressSelect(menuIndex)) {
-            case homething_menu_now_playing::NavigationCoordination::
+            case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationReturn:
               return;
-            case homething_menu_now_playing::NavigationCoordination::
+            case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationNone:
               break;
-            case homething_menu_now_playing::NavigationCoordination::
+            case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationUpdate:
               update_display();
               return;
-            case homething_menu_now_playing::NavigationCoordination::
+            case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationPop:
               upMenu();
               return;
-            case homething_menu_now_playing::NavigationCoordination::
+            case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationRoot:
               topMenu();
               return;
@@ -611,21 +613,21 @@ void HomeThingMenuBase::buttonPressUp() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressUp()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn:
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
@@ -669,21 +671,21 @@ void HomeThingMenuBase::buttonPressDown() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressDown()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn:
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
@@ -702,21 +704,21 @@ void HomeThingMenuBase::buttonPressLeft() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressLeft()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn:
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
@@ -737,21 +739,21 @@ void HomeThingMenuBase::buttonPressRight() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressRight()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn:
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
@@ -770,21 +772,21 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonReleaseScreenLeft()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn:
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
@@ -820,18 +822,18 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressScreenLeft()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
@@ -850,18 +852,18 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressScreenRight()) {
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationNone:
             break;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             update_display();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop:
             upMenu();
             return;
-          case homething_menu_now_playing::NavigationCoordination::
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
             return;
