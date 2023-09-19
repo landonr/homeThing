@@ -71,7 +71,7 @@ class HomeThingMenuNowPlayingControl
   // controls
   bool select_media_player_feature(
       homeassistant_media_player::MediaPlayerFeatureCommand* command);
-  bool button_press_now_playing_option_continue(
+  NavigationCoordination button_press_now_playing_option(
       CircleOptionMenuPosition position);
 
   // display

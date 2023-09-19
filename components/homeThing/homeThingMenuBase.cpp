@@ -591,7 +591,8 @@ void HomeThingMenuBase::buttonPressUp() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonPressUp();
+        if (active_app_->buttonPressUp())
+          update_display();
       }
       break;
     case lightsDetailMenu:
@@ -630,9 +631,9 @@ void HomeThingMenuBase::buttonPressDown() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonPressDown();
+        if (active_app_->buttonPressDown())
+          update_display();
       }
-      break;
       break;
     default:
       break;
@@ -645,9 +646,9 @@ void HomeThingMenuBase::buttonPressLeft() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonPressLeft();
+        if (active_app_->buttonPressLeft())
+          update_display();
       }
-      break;
       break;
     default:
       break;
@@ -662,9 +663,9 @@ void HomeThingMenuBase::buttonPressRight() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        active_app_->buttonPressRight();
+        if (active_app_->buttonPressRight())
+          update_display();
       }
-      break;
       break;
     default:
       break;
