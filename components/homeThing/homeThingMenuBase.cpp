@@ -144,7 +144,7 @@ bool HomeThingMenuBase::selectMenu() {
             menuIndex = 0;
             if (menuTree.size() == 1) {
               reset_menu();
-              return false;
+              return true;
             }
             return true;
           case homething_menu_now_playing::NavigationCoordination::
@@ -378,7 +378,26 @@ void HomeThingMenuBase::buttonPressSelect() {
     switch (menuTree.back()) {
       case appMenu:
         if (active_app_ && active_app_->should_draw_app()) {
-          active_app_->buttonPressSelect(menuIndex);
+          switch (active_app_->buttonPressSelect(menuIndex)) {
+            case homething_menu_now_playing::NavigationCoordination::
+                NavigationCoordinationReturn:
+              return;
+            case homething_menu_now_playing::NavigationCoordination::
+                NavigationCoordinationNone:
+              break;
+            case homething_menu_now_playing::NavigationCoordination::
+                NavigationCoordinationUpdate:
+              update_display();
+              return;
+            case homething_menu_now_playing::NavigationCoordination::
+                NavigationCoordinationPop:
+              upMenu();
+              return;
+            case homething_menu_now_playing::NavigationCoordination::
+                NavigationCoordinationRoot:
+              topMenu();
+              return;
+          }
         }
         break;
       case lightsDetailMenu:
@@ -591,8 +610,26 @@ void HomeThingMenuBase::buttonPressUp() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonPressUp())
-          update_display();
+        switch (active_app_->buttonPressUp()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationReturn:
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     case lightsDetailMenu:
@@ -631,8 +668,26 @@ void HomeThingMenuBase::buttonPressDown() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonPressDown())
-          update_display();
+        switch (active_app_->buttonPressDown()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationReturn:
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     default:
@@ -646,8 +701,26 @@ void HomeThingMenuBase::buttonPressLeft() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonPressLeft())
-          update_display();
+        switch (active_app_->buttonPressLeft()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationReturn:
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     default:
@@ -663,8 +736,26 @@ void HomeThingMenuBase::buttonPressRight() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonPressRight())
-          update_display();
+        switch (active_app_->buttonPressRight()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationReturn:
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     default:
@@ -678,8 +769,26 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonReleaseScreenLeft())
-          update_display();
+        switch (active_app_->buttonReleaseScreenLeft()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationReturn:
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     default:
@@ -710,8 +819,23 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonPressScreenLeft())
-          update_display();
+        switch (active_app_->buttonPressScreenLeft()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     default:
@@ -722,14 +846,26 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
 void HomeThingMenuBase::buttonPressScreenRight() {
   if (!button_press_and_continue())
     return;
-  // #ifdef USE_MEDIA_PLAYER_GROUP
-  //   circle_menu_->clear_active_menu();
-  // #endif
   switch (menuTree.back()) {
     case appMenu:
       if (active_app_ && active_app_->should_draw_app()) {
-        if (active_app_->buttonPressScreenRight())
-          update_display();
+        switch (active_app_->buttonPressScreenRight()) {
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_now_playing::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+        }
       }
       break;
     case rootMenu:

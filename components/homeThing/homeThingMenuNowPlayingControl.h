@@ -18,7 +18,8 @@ enum NavigationCoordination {
   NavigationCoordinationNone,
   NavigationCoordinationPop,
   NavigationCoordinationRoot,
-  NavigationCoordinationUpdate
+  NavigationCoordinationUpdate,
+  NavigationCoordinationReturn
 };
 
 class HomeThingMenuNowPlayingControl
@@ -55,15 +56,15 @@ class HomeThingMenuNowPlayingControl
   // buttons
   void rotaryScrollClockwise(int rotary);
   void rotaryScrollCounterClockwise(int rotary);
-  bool buttonPressUp();
-  bool buttonPressDown();
-  bool buttonPressLeft();
-  bool buttonPressRight();
-  bool buttonPressSelect(int menuIndex);
-  bool buttonPressSelectHold();
-  bool buttonPressScreenLeft();
-  bool buttonReleaseScreenLeft();
-  bool buttonPressScreenRight();
+  NavigationCoordination buttonPressUp();
+  NavigationCoordination buttonPressDown();
+  NavigationCoordination buttonPressLeft();
+  NavigationCoordination buttonPressRight();
+  NavigationCoordination buttonPressSelect(int menuIndex);
+  NavigationCoordination buttonPressSelectHold();
+  NavigationCoordination buttonPressScreenLeft();
+  NavigationCoordination buttonReleaseScreenLeft();
+  NavigationCoordination buttonPressScreenRight();
 
   // header
   std::string get_header_title();
