@@ -16,11 +16,7 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeThing/homeThingMenuNowPlayingControl.h"
-// #include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
-// #include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
-// #include "esphome/components/homeThing/homeThingOptionMenu.h"
-// #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#include "esphome/components/homeThing/homeThingNowPlayingControl.h"
 #endif
 
 #include "esphome/core/automation.h"

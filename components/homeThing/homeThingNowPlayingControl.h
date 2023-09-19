@@ -2,13 +2,13 @@
 
 #include "esphome/components/homeThing/homeThingMenuApp.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
-#include "esphome/components/homeThing/homeThingMenuNowPlayingOptionMenu.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingNowPlayingDisplay.h"
+#include "esphome/components/homeThing/homeThingNowPlayingOptionMenu.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
-#include "esphome/components/homeThing/HomeThingMenuNowPlayingHeader.h"
+#include "esphome/components/homeThing/HomeThingNowPlayingHeader.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"

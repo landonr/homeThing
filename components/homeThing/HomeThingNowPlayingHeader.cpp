@@ -1,4 +1,4 @@
-#include "esphome/components/homeThing/HomeThingMenuNowPlayingHeader.h"
+#include "esphome/components/homeThing/HomeThingNowPlayingHeader.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {

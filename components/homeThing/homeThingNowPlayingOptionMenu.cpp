@@ -1,5 +1,5 @@
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "homeThingMenuNowPlayingOptionMenu.h"
+#include "homeThingNowPlayingOptionMenu.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {

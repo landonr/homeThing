@@ -18,7 +18,7 @@
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeThing/homeThingMenuNowPlaying.h"
+#include "esphome/components/homeThing/homeThingNowPlayingDisplay.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 

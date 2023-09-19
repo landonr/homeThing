@@ -1,4 +1,4 @@
-#include "homeThingMenuNowPlayingControl.h"
+#include "homeThingNowPlayingControl.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {

@@ -1,5 +1,5 @@
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "homeThingMenuNowPlaying.h"
+#include "homeThingNowPlayingDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
