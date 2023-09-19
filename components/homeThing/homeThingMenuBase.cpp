@@ -80,7 +80,6 @@ void HomeThingMenuBase::draw_menu_screen() {
   } else if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
                                              menuIndex, nullptr,
                                              editing_menu_item)) {
-    // #endif
     this->animation_->tickAnimation();
     this->animation_->animating = true;
   } else {
@@ -213,18 +212,21 @@ bool HomeThingMenuBase::selectMenuHold() {
 }
 
 bool HomeThingMenuBase::selectRootMenu() {
-  int offset =
-      now_playing_control_ ? now_playing_control_->root_menu_size() : 0;
-  int index = menuIndex - offset;
-  if (menuIndex < offset) {
-    ESP_LOGI(TAG, "selectRootMenu: now playing %d offset %d", menuIndex,
-             offset);
-    if (now_playing_control_) {
-      active_app_ = now_playing_control_;
-      active_app_->set_app_menu_index(menuIndex);
+  int offset = 0;
+  for (auto& menu_app : menu_apps_) {
+    int appMenuSize = menu_app->root_menu_size();
+    if (menuIndex < (offset + appMenuSize)) {
+      ESP_LOGI(TAG, "selectRootMenu: app %d offset %d", menuIndex, offset);
       menuTree.push_back(appMenu);
+      active_app_ = menu_app;
+      active_app_->set_app_menu_index(menuIndex - offset);
+      menuIndex = 0;
+      return true;
     }
-  } else if (home_screen_ && index < home_screen_->get_entity_count()) {
+    offset += appMenuSize;
+  }
+  int index = menuIndex - offset;
+  if (home_screen_ && index < home_screen_->get_entity_count()) {
     ESP_LOGI(TAG, "selectRootMenu: home screen %d offset %d", menuIndex,
              offset);
     if (!home_screen_->select_menu(index)) {
@@ -272,16 +274,16 @@ void HomeThingMenuBase::finish_boot() {
 void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
   switch (menuTree.back()) {
     case rootMenu: {
-      if (now_playing_control_ != nullptr) {
-        now_playing_control_->rootMenuTitles(menu_titles);
+      for (auto& menu_app : menu_apps_) {
+        menu_app->rootMenuTitles(menu_titles);
       }
-      // if (home_screen_) {
-      //   // for (int i = 0; i < home_screen_->get_entity_count(); i++) {
-      //   //   out.push_back(entityMenu);
-      //   // }
-      //   home_screen_->menu_titles(menu_titles, false);
-      //   active_menu_screen = home_screen_;
-      // }
+      if (home_screen_) {
+        // for (int i = 0; i < home_screen_->get_entity_count(); i++) {
+        //   out.push_back(entityMenu);
+        // }
+        home_screen_->menu_titles(menu_titles, false);
+        active_menu_screen = home_screen_;
+      }
       for (auto& menu_screen : menu_screens_) {
         std::string menu_name = menu_screen->get_name();
         menu_titles->push_back(

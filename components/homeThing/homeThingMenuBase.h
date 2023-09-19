@@ -51,17 +51,9 @@ class HomeThingMenuBase : public PollingComponent {
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
 #endif
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-  void set_now_playing_control(
-      homething_menu_now_playing::HomeThingMenuNowPlayingControl*
-          now_playing_control) {
-    now_playing_control_ = now_playing_control;
+  void register_app(homething_menu_app::HomeThingMenuApp* newApp) {
+    menu_apps_.push_back(newApp);
   }
-  homething_menu_now_playing::HomeThingMenuNowPlayingControl*
-  get_now_playing_control() {
-    return now_playing_control_;
-  }
-#endif
 
   void register_screen(HomeThingMenuScreen* new_screen) {
     new_screen->set_index(menu_screens_.size());
@@ -163,11 +155,7 @@ class HomeThingMenuBase : public PollingComponent {
   HomeThingMenuScreen* home_screen_{nullptr};
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-  homething_menu_now_playing::HomeThingMenuNowPlayingControl*
-      now_playing_control_{nullptr};
-#endif
-
+  std::vector<homething_menu_app::HomeThingMenuApp*> menu_apps_;
   homething_menu_app::HomeThingMenuApp* active_app_{nullptr};
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
@@ -178,9 +166,6 @@ class HomeThingMenuBase : public PollingComponent {
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
     editing_menu_item = false;
-    // #ifdef USE_MEDIA_PLAYER_GROUP
-    //     homething_menu_now_playing::circle_menu_->clear_active_menu();
-    // #endif
     if (menuTree.front() != bootMenu) {
       menuTree.assign(1, rootMenu);
       ESP_LOGD(TAG, "reset_menu: reset animation %d", menuTree.front());
