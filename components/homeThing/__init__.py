@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image, remote_transmitter
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
@@ -25,6 +25,7 @@ HomeThingMenuNowPlaying = homething_menu_now_playing_ns.class_("HomeThingMenuNow
 HomeThingMenuNowPlayingControl = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlayingControl")
 
 HomeThingMenuApp = cg.esphome_ns.namespace("homething_menu_app").class_("HomeThingMenuApp")
+HomeThingCatToyApp = cg.esphome_ns.namespace("homething_cattoy_app").class_("HomeThingCatToyApp")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
@@ -60,6 +61,8 @@ CONF_NUMBER = "number"
 CONF_BUTTON = "button"
 CONF_APPS = "apps"
 CONF_APP = "app"
+CONF_CATTOY_APP = "cattoy_app"
+CONF_REMOTE_TRANSMITTER = "remote_transmitter"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -132,7 +135,6 @@ MENU_DISPLAY_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(HomeThingMenuDisplay),
         cv.GenerateID(CONF_TEXT_HELPERS): cv.declare_id(HomeThingMenuTextHelpers),
         cv.GenerateID(CONF_REFACTOR): cv.declare_id(HomeThingMenuRefactor),
-        cv.GenerateID(CONF_NOW_PLAYING): cv.declare_id(HomeThingMenuNowPlaying),
         cv.GenerateID(CONF_HEADER): cv.use_id(HomeThingMenuHeader),
     }
 )
@@ -157,6 +159,12 @@ APP_TYPED_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeThingMenuApp),
             }
         ),
+        CONF_CATTOY_APP: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.declare_id(HomeThingCatToyApp),
+                cv.Required(CONF_REMOTE_TRANSMITTER): cv.use_id(remote_transmitter.RemoteTransmitterComponent)
+            }
+        )
     }
 )
 
@@ -549,7 +557,15 @@ async def to_code(config):
                     cg.add(now_playing_control.set_media_player_group(media_player_group))
                     cg.add(now_playing_control.set_now_playing_display(display_buffer, display_state, text_helpers, media_player_group))
                     cg.add(menu.register_app(now_playing_control))
-            elif app[CONF_TYPE] == CONF_APP:
+            elif app[CONF_TYPE] == CONF_CATTOY_APP:
+                cattoy_app = cg.new_Pvariable(app[CONF_ID])
+                remote_transmitter = await cg.get_variable(app[CONF_REMOTE_TRANSMITTER])
+                cg.add(cattoy_app.set_remote_transmitter(remote_transmitter))
+                cg.add(cattoy_app.set_display_buffer(display_buffer))
+                cg.add(cattoy_app.set_display_state(display_state))
+                cg.add(cattoy_app.set_text_helpers(text_helpers))
+                cg.add(menu.register_app(cattoy_app))
+            else:
                 app = cg.new_Pvariable(app[CONF_ID])
                 cg.add(menu.register_app(app))
 
