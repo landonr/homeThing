@@ -11,9 +11,8 @@ void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
                           : (display_state_->get_font_medium()->get_baseline() +
                              display_state_->get_margin_size()) /
                                 2;
-  display_buffer_->line(
-      xPos, yPos, xPos, yPos + lineHeight,
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+  display_buffer_->line(xPos, yPos, xPos, yPos + lineHeight,
+                        display_state_->primaryTextColor());
   display_buffer_->line(
       xPos,
       yPos + (display_state_->get_font_medium()->get_baseline() +
@@ -23,7 +22,7 @@ void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {
       yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+      display_state_->primaryTextColor());
 }
 
 void HomeThingMenuRefactor::drawLightSliderRGBBar(int xPos, int yPos,
@@ -186,13 +185,11 @@ void HomeThingMenuRefactor::drawSwitch(bool switchState, int yPos) {
   int centerYPos = yPos + (display_state_->get_font_medium()->get_baseline() +
                            display_state_->get_margin_size()) /
                               2;
-  display_buffer_->circle(
-      xPos, centerYPos, circleSize,
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+  display_buffer_->circle(xPos, centerYPos, circleSize,
+                          display_state_->primaryTextColor());
   if (switchState) {
-    display_buffer_->filled_circle(
-        xPos, centerYPos, circleSize - 2,
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+    display_buffer_->filled_circle(xPos, centerYPos, circleSize - 2,
+                                   display_state_->primaryTextColor());
   }
 }
 
@@ -230,7 +227,7 @@ void HomeThingMenuRefactor::drawArrow(int yPos, int menuTitlesCount,
       yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+      display_state_->primaryTextColor());
   display_buffer_->line(
       xPos,
       yPos +
@@ -241,7 +238,7 @@ void HomeThingMenuRefactor::drawArrow(int yPos, int menuTitlesCount,
       yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()));
+      display_state_->primaryTextColor());
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

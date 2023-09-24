@@ -15,10 +15,8 @@ int HomeThingMenuHeader::getHeaderTextYPos(int yPosOffset) {
 void HomeThingMenuHeader::drawHeaderTitleWithString(std::string title, int xPos,
                                                     int yPosOffset) {
   int yPos = getHeaderTextYPos(yPosOffset);
-  display_buffer_->printf(
-      xPos, yPos, display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      title.c_str());
+  display_buffer_->printf(xPos, yPos, display_state_->get_font_small(),
+                          display_state_->primaryTextColor(), title.c_str());
 }
 
 int HomeThingMenuHeader::drawHeaderIcon(std::string title, int xPos,
@@ -104,8 +102,7 @@ void HomeThingMenuHeader::draw_menu_header(
   xPos = drawHeaderTime(xPos, yPosOffset);
   if (header_source != nullptr) {
     xPos = header_source->draw_header_details(xPos, getHeaderTextYPos(0),
-                                              display_buffer_, display_state_,
-                                              text_helpers_);
+                                              display_buffer_, display_state_);
   }
 }
 
@@ -122,13 +119,12 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
   if (timeString.length() > 0 && timeString[0] == '0') {
     timeString.erase(0, 1);
   }
-  int xPos = oldXPos - text_helpers_->getTextWidth(
+  int xPos = oldXPos - display_state_->getTextWidth(
                            display_state_->get_font_small()->get_baseline(),
                            timeString.length());
-  display_buffer_->printf(
-      xPos, yPos, display_state_->get_font_small(),
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-      timeString.c_str());
+  display_buffer_->printf(xPos, yPos, display_state_->get_font_small(),
+                          display_state_->primaryTextColor(),
+                          timeString.c_str());
   return xPos - display_state_->get_margin_size() / 2;
 }
 

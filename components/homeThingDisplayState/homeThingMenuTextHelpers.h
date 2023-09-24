@@ -1,40 +1,31 @@
-
 #pragma once
 
 #include <string>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
-#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/font/font.h"
 #include "esphome/core/color.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_display_state {
 
 class HomeThingMenuTextHelpers {
  public:
-  // HomeThingMenuTextHelpers(display::DisplayBuffer* new_display_buffer,
-  //                          HomeThingDisplayState* new_display_state)
-  //     : display_buffer_(new_display_buffer),
-  //       display_state_(new_display_state) {}
-  Color primaryTextColor(bool dark_mode);
-  Color secondaryTextColor(bool dark_mode);
-  int getCharacterLimit(int xPos, int fontSize, display::TextAlign alignment);
-  int getTextWidth(int fontSize, int characterCount);
+  Color primaryTextColor(bool dark_mode, Color lightColor, Color darkColor);
+  Color secondaryTextColor(bool dark_mode, Color lightColor, Color darkColor);
+  int getCharacterLimit(int xPos, int fontSize, display::TextAlign alignment,
+                        int displayWidth, float widthRatio);
+  int getTextWidth(int fontSize, int characterCount, float widthRatio);
   std::string textWrap(std::string text, unsigned per_line);
-  void set_display_state(
-      homething_display_state::HomeThingDisplayState* new_display_state) {
-    display_state_ = new_display_state;
-  }
   void set_display_buffer(display::DisplayBuffer* new_display_buffer) {
     display_buffer_ = new_display_buffer;
   }
   int drawTextWrapped(int xPos, int yPos, font::Font* font, Color color,
                       display::TextAlign alignment, std::string text,
-                      int maxLines);
+                      int maxLines, display::DisplayBuffer* display_buffer,
+                      float widthRatio);
 
  private:
-  display::DisplayBuffer* display_buffer_{nullptr};
-  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   const char* const TAG = "homething.menu.text_helpers";
 
   void tokenize(std::string const& str, std::string delim,
@@ -48,5 +39,6 @@ class HomeThingMenuTextHelpers {
     }
   }
 };
-}  // namespace homething_menu_base
+
+}  // namespace homething_display_state
 }  // namespace esphome

@@ -2,7 +2,6 @@
 
 #include <string>
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
@@ -24,8 +23,7 @@ class HomeThingMenuHeaderSource {
   virtual std::string get_header_title() { return "xx"; }
   virtual int draw_header_details(
       int xPos, int yPosOffset, display::DisplayBuffer* display_buffer,
-      homething_display_state::HomeThingDisplayState* display_state,
-      homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+      homething_display_state::HomeThingDisplayState* display_state) {
     return 0;
   }
 };
@@ -34,11 +32,9 @@ class HomeThingMenuHeader {
  public:
   HomeThingMenuHeader(
       display::DisplayBuffer* new_display_buffer,
-      homething_display_state::HomeThingDisplayState* new_display_state,
-      HomeThingMenuTextHelpers* new_text_helpers)
+      homething_display_state::HomeThingDisplayState* new_display_state)
       : display_buffer_(new_display_buffer),
-        display_state_(new_display_state),
-        text_helpers_(new_text_helpers) {}
+        display_state_(new_display_state) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
   void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void set_battery_percent(sensor::Sensor* battery_percent) {
@@ -77,7 +73,6 @@ class HomeThingMenuHeader {
 
   display::DisplayBuffer* display_buffer_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
-  HomeThingMenuTextHelpers* text_helpers_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};
   time::RealTimeClock* esp_time_{nullptr};

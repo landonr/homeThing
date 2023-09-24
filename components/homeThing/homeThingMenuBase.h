@@ -16,8 +16,10 @@
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeThing/homeThingNowPlayingControl.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingControl.h"
 #endif
+
+#include "esphome/components/homeThingApp/homeThingApp.h"
 
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
@@ -51,7 +53,7 @@ class HomeThingMenuBase : public PollingComponent {
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
 #endif
 
-  void register_app(homething_menu_app::HomeThingMenuApp* newApp) {
+  void register_app(homething_menu_app::HomeThingApp* newApp) {
     menu_apps_.push_back(newApp);
   }
 
@@ -155,8 +157,8 @@ class HomeThingMenuBase : public PollingComponent {
   HomeThingMenuScreen* home_screen_{nullptr};
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
-  std::vector<homething_menu_app::HomeThingMenuApp*> menu_apps_;
-  homething_menu_app::HomeThingMenuApp* active_app_{nullptr};
+  std::vector<homething_menu_app::HomeThingApp*> menu_apps_;
+  homething_menu_app::HomeThingApp* active_app_{nullptr};
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();

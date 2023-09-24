@@ -1,11 +1,12 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image, remote_transmitter
+from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeThingDisplayState import homething_display_state_ns
+from esphome.components.homeThingApp import homething_app_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
@@ -16,14 +17,12 @@ HomeThingMenuSettings = homething_menu_base_ns.class_("HomeThingMenuSettings")
 HomeThingMenuAnimation = homething_menu_base_ns.class_("HomeThingMenuAnimation")
 HomeThingMenuDisplay = homething_menu_base_ns.class_("HomeThingMenuDisplay")
 HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
-HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
 
 homething_menu_now_playing_ns = cg.esphome_ns.namespace("homething_menu_now_playing")
 HomeThingMenuNowPlaying = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlaying")
 HomeThingMenuNowPlayingControl = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlayingControl")
 
-HomeThingMenuApp = cg.esphome_ns.namespace("homething_menu_app").class_("HomeThingMenuApp")
 HomeThingCatToyApp = cg.esphome_ns.namespace("homething_cattoy_app").class_("HomeThingCatToyApp")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
@@ -37,7 +36,6 @@ DEPENDENCIES = ["wifi", "api"]
 CONF_DISPLAY = "display"
 CONF_MENU_DISPLAY = "menu_display"
 CONF_DISPLAY_STATE = "display_state"
-CONF_TEXT_HELPERS = "text_helpers"
 CONF_REFACTOR = "refactor_me"
 CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
@@ -95,7 +93,6 @@ BOOT_SCHEMA = cv.Schema(
 MENU_DISPLAY_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuDisplay),
-        cv.GenerateID(CONF_TEXT_HELPERS): cv.declare_id(HomeThingMenuTextHelpers),
         cv.GenerateID(CONF_REFACTOR): cv.declare_id(HomeThingMenuRefactor),
         cv.GenerateID(CONF_HEADER): cv.use_id(HomeThingMenuHeader),
     }
@@ -105,33 +102,6 @@ BATTERY_SCHEMA = cv.Schema(
     {
         cv.Required(CONF_CHARGING): cv.use_id(binary_sensor.BinarySensor),
         cv.Required(CONF_BATTERY_PERCENT): cv.use_id(sensor.Sensor),
-    }
-)
-
-APP_TYPED_SCHEMA = cv.typed_schema(
-    {
-        CONF_NOW_PLAYING: cv.Schema(
-            {
-                cv.GenerateID(CONF_ID): cv.declare_id(HomeThingMenuNowPlayingControl),
-                cv.Required(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup)
-            }
-        ),
-        CONF_APP: cv.Schema(
-            {
-                cv.GenerateID(CONF_ID): cv.declare_id(HomeThingMenuApp),
-            }
-        ),
-        CONF_CATTOY_APP: cv.Schema(
-            {
-                cv.GenerateID(CONF_ID): cv.declare_id(HomeThingCatToyApp),
-                cv.Required(CONF_REMOTE_TRANSMITTER): cv.use_id(remote_transmitter.RemoteTransmitterComponent)
-            }
-        ),
-        CONF_SNAKE: cv.Schema(
-            {
-                cv.GenerateID(CONF_ID): cv.declare_id(HomeThingAppSnake)
-            }
-        )
     }
 )
 
@@ -246,7 +216,7 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
             cv.Optional(CONF_MENU_DISPLAY, default={}): MENU_DISPLAY_SCHEMA,
             cv.Optional(CONF_APPS): cv.All(
-                cv.ensure_list(APP_TYPED_SCHEMA), cv.Length(min=1)
+                cv.ensure_list(cv.use_id(homething_app_ns.HomeThingApp)), cv.Length(min=1)
             ),
             cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
@@ -292,25 +262,13 @@ async def menu_settings_to_code(config):
     keys_to_code(config, menu_settings, MENU_SETTING_TYPES)
     return menu_settings
 
-async def text_helpers_to_code(config, display_buffer, display_state):
-    text_helpers = cg.new_Pvariable(config)
-    cg.add(text_helpers.set_display_buffer(display_buffer))
-    cg.add(text_helpers.set_display_state(display_state))
-    return text_helpers
-
 MENU_BOOT_IDS = [
     CONF_API
 ]
 
-async def menu_boot_to_code(config, display_buffer, display_state, menu_header, text_helpers):
-    menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header, text_helpers)
+async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
+    menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header)
     await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
-    if CONF_APPS in config:
-        for app in config[CONF_APPS]:
-            if app[CONF_TYPE] == CONF_NOW_PLAYING:
-                if CONF_MEDIA_PLAYERS in app:
-                    media_player_group = await cg.get_variable(app[CONF_MEDIA_PLAYERS])
-                    cg.add(menu_boot.set_media_player_group(media_player_group))
     return menu_boot
 
 BATTERY_IDS = [
@@ -322,19 +280,19 @@ async def battery_to_code(config, var):
     if CONF_BATTERY in config:
         await ids_to_code(config[CONF_BATTERY], var, BATTERY_IDS)
 
-async def menu_display_to_code(config, display_buffer, display_state, text_helpers):
+async def menu_display_to_code(config, display_buffer, display_state):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
-    refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
-    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
+    refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state)
+    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state)
     if CONF_TIME_ID in config[CONF_HEADER]:
         time_ = await cg.get_variable(config[CONF_HEADER][CONF_TIME_ID])
         cg.add(menu_header.set_time_id(time_))
     await battery_to_code(config, menu_header)
-    menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header, text_helpers)
+    menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, text_helpers, refactor, menu_header)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, refactor, menu_header)
 
     return menu_display
 
@@ -386,8 +344,7 @@ MENU_IDS = [
 async def to_code(config):
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
     display_state = await cg.get_variable(config[CONF_DISPLAY_STATE])
-    text_helpers = await text_helpers_to_code(config[CONF_MENU_DISPLAY][CONF_TEXT_HELPERS], display_buffer, display_state)
-    menu_display = await menu_display_to_code(config, display_buffer, display_state, text_helpers)
+    menu_display = await menu_display_to_code(config, display_buffer, display_state)
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
 
@@ -404,30 +361,8 @@ async def to_code(config):
 
     if CONF_APPS in config:
         for app in config[CONF_APPS]:
-            if app[CONF_TYPE] == CONF_NOW_PLAYING:
-                now_playing_control = cg.new_Pvariable(app[CONF_ID])
-                if CONF_MEDIA_PLAYERS in app:
-                    media_player_group = await cg.get_variable(app[CONF_MEDIA_PLAYERS])
-                    cg.add(now_playing_control.set_media_player_group(media_player_group))
-                    cg.add(now_playing_control.set_now_playing_display(display_buffer, display_state, text_helpers, media_player_group))
-                    cg.add(menu.register_app(now_playing_control))
-            elif app[CONF_TYPE] == CONF_CATTOY_APP:
-                cattoy_app = cg.new_Pvariable(app[CONF_ID])
-                remote_transmitter = await cg.get_variable(app[CONF_REMOTE_TRANSMITTER])
-                cg.add(cattoy_app.set_remote_transmitter(remote_transmitter))
-                cg.add(cattoy_app.set_display_buffer(display_buffer))
-                cg.add(cattoy_app.set_display_state(display_state))
-                cg.add(cattoy_app.set_text_helpers(text_helpers))
-                cg.add(menu.register_app(cattoy_app))
-            elif app[CONF_TYPE] == CONF_SNAKE:
-                snake_app = cg.new_Pvariable(app[CONF_ID])
-                cg.add(snake_app.set_display_buffer(display_buffer))
-                cg.add(snake_app.set_display_state(display_state))
-                cg.add(snake_app.set_text_helpers(text_helpers))
-                cg.add(menu.register_app(snake_app))
-            else:
-                app = cg.new_Pvariable(app[CONF_ID])
-                cg.add(menu.register_app(app))
+            new_app = await cg.get_variable(app)
+            cg.add(menu.register_app(new_app))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

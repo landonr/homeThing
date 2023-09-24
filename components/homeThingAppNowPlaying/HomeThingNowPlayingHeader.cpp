@@ -1,4 +1,4 @@
-#include "esphome/components/homeThing/HomeThingNowPlayingHeader.h"
+#include "esphome/components/homeThingAppNowPlaying/HomeThingNowPlayingHeader.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {
@@ -29,27 +29,22 @@ std::string HomeThingMenuNowPlayingHeader::get_header_title() {
 
 int HomeThingMenuNowPlayingHeader::draw_header_details(
     int xPos, int yPos, display::DisplayBuffer* display_buffer,
-    homething_display_state::HomeThingDisplayState* display_state,
-    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+    homething_display_state::HomeThingDisplayState* display_state) {
   switch (*app_menu_index_) {
     case 0:
       break;
     default:
       return 0;
   }
-  xPos = xPos - drawPlayPauseIcon(xPos, yPos, display_buffer, display_state,
-                                  text_helpers);
-  xPos = xPos -
-         drawRepeat(xPos, yPos, display_buffer, display_state, text_helpers);
-  xPos = xPos -
-         drawShuffle(xPos, yPos, display_buffer, display_state, text_helpers);
+  xPos = xPos - drawPlayPauseIcon(xPos, yPos, display_buffer, display_state);
+  xPos = xPos - drawRepeat(xPos, yPos, display_buffer, display_state);
+  xPos = xPos - drawShuffle(xPos, yPos, display_buffer, display_state);
   return xPos;
 }
 
 int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
     int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-    homething_display_state::HomeThingDisplayState* display_state,
-    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+    homething_display_state::HomeThingDisplayState* display_state) {
   int iconWidth =
       display_state->get_icon_size() + (display_state->get_margin_size() / 2);
   int xPos = oldXPos - iconWidth + (display_state->get_margin_size() / 2);
@@ -93,8 +88,7 @@ int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
 
 int HomeThingMenuNowPlayingHeader::drawShuffle(
     int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-    homething_display_state::HomeThingDisplayState* display_state,
-    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+    homething_display_state::HomeThingDisplayState* display_state) {
   if (!media_player_group_ || media_player_group_->active_player_ == NULL ||
       display_state->get_draw_shuffle() ==
           homething_display_state::DisplayIconEnabledState::OFF) {
@@ -135,8 +129,7 @@ int HomeThingMenuNowPlayingHeader::drawShuffle(
 
 int HomeThingMenuNowPlayingHeader::drawRepeat(
     int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-    homething_display_state::HomeThingDisplayState* display_state,
-    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+    homething_display_state::HomeThingDisplayState* display_state) {
   if (display_state->get_draw_repeat() ==
           homething_display_state::DisplayIconEnabledState::OFF ||
       !media_player_group_ || media_player_group_->active_player_ == NULL) {
@@ -183,8 +176,7 @@ int HomeThingMenuNowPlayingHeader::drawRepeat(
 
 int HomeThingMenuNowPlayingHeader::drawHeaderVolumeLevel(
     int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
-    homething_display_state::HomeThingDisplayState* display_state,
-    homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
+    homething_display_state::HomeThingDisplayState* display_state) {
   if (media_player_group_ == nullptr ||
       media_player_group_->active_player_ == nullptr) {
     return 0;
@@ -193,11 +185,10 @@ int HomeThingMenuNowPlayingHeader::drawHeaderVolumeLevel(
     return 0;
   }
   int xPos = oldXPos - display_state->get_margin_size() / 2;
-  display_buffer->printf(
-      xPos, yPos, display_state->get_font_small(),
-      text_helpers->primaryTextColor(display_state->get_dark_mode()),
-      display::TextAlign::TOP_RIGHT, "%.0f%%",
-      media_player_group_->getVolumeLevel());
+  display_buffer->printf(xPos, yPos, display_state->get_font_small(),
+                         display_state->primaryTextColor(),
+                         display::TextAlign::TOP_RIGHT, "%.0f%%",
+                         media_player_group_->getVolumeLevel());
   return 24;
 }
 }  // namespace homething_menu_now_playing

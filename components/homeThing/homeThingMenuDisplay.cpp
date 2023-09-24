@@ -16,8 +16,9 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
   int textYPos = yPos + (display_state_->get_margin_size() / 4);
   if (menuState == i) {
     int characterHeight = display_state_->get_font_medium()->get_baseline();
-    int characterLimit = text_helpers_->getCharacterLimit(
-        xPos, characterHeight, display::TextAlign::TOP_LEFT);
+    int characterLimit = display_state_->getCharacterLimit(
+        xPos, characterHeight, display::TextAlign::TOP_LEFT,
+        display_buffer_->get_width());
     ESP_LOGD(TAG, "characterLimit %d, title %d height %d", characterLimit,
              title.length(), characterHeight);
 
@@ -38,15 +39,14 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
         display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
         display_state_->get_color_palette()->get_accent_primary());
-    display_buffer_->printf(
-        xPos, textYPos, display_state_->get_font_medium(),
-        text_helpers_->secondaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
+    display_buffer_->printf(xPos, textYPos, display_state_->get_font_medium(),
+                            display_state_->secondaryTextColor(),
+                            display::TextAlign::TOP_LEFT, "%s",
+                            marqueeTitle.c_str());
   } else {
-    display_buffer_->printf(
-        xPos, textYPos, display_state_->get_font_medium(),
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_LEFT, "%s", title.c_str());
+    display_buffer_->printf(xPos, textYPos, display_state_->get_font_medium(),
+                            display_state_->primaryTextColor(),
+                            display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
   return animating;
 }
@@ -60,8 +60,7 @@ void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
   auto number_font = display_state_->get_font_large_heavy();
   auto background_color =
       display_state_->get_color_palette()->get_accent_primary();
-  auto text_color =
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode());
+  auto text_color = display_state_->primaryTextColor();
   display_buffer_->filled_rectangle(xPos - box_size_width / 2,
                                     yPos - box_size_height / 2, box_size_width,
                                     box_size_height, background_color);
@@ -321,10 +320,9 @@ void HomeThingMenuDisplay::drawTitleImage(
               (display_state_->get_font_medium()->get_baseline() *
                display_state_->get_font_size_width_ratio())) +
              4;
-  auto color =
-      selected
-          ? text_helpers_->primaryTextColor(display_state_->get_dark_mode())
-          : display_state_->get_color_palette()->get_accent_primary();
+  auto color = selected
+                   ? display_state_->primaryTextColor()
+                   : display_state_->get_color_palette()->get_accent_primary();
   switch (titleState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:

@@ -2,11 +2,11 @@
 
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
-#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
+#include "esphome/core/component.h"
 
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 
 namespace esphome {
 namespace homething_menu_app {
@@ -19,7 +19,8 @@ enum NavigationCoordination {
   NavigationCoordinationReturn
 };
 
-class HomeThingMenuApp : public homething_menu_base::HomeThingMenuHeaderSource {
+class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
+                     public Component {
  public:
   // menu titles
   virtual void rootMenuTitles(
@@ -80,8 +81,19 @@ class HomeThingMenuApp : public homething_menu_base::HomeThingMenuHeaderSource {
 
   virtual bool is_animating() { return false; }
 
+  void set_display_buffer(display::DisplayBuffer* display_buffer) {
+    display_buffer_ = display_buffer;
+  }
+
+  void set_display_state(
+      homething_display_state::HomeThingDisplayState* display_state) {
+    display_state_ = display_state;
+  }
+
  protected:
   homething_menu_base::HomeThingMenuHeaderSource* header_source_{nullptr};
+  display::DisplayBuffer* display_buffer_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
 
  private:
   const char* const TAG = "homething.menu.app";

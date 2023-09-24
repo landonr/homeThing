@@ -278,6 +278,7 @@ void HomeThingMenuBase::finish_boot() {
 void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
   switch (menuTree.back()) {
     case rootMenu: {
+      ESP_LOGD(TAG, "activeMenu: root menu apps %d", menu_apps_.size());
       for (auto& menu_app : menu_apps_) {
         menu_app->rootMenuTitles(menu_titles);
       }

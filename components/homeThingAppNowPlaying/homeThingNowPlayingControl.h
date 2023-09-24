@@ -1,23 +1,22 @@
 #pragma once
 
-#include "esphome/components/homeThing/homeThingMenuApp.h"
-#include "esphome/components/homeThing/homeThingMenuHeader.h"
+#include "esphome/components/homeThingApp/HomeThingApp.h"
+// #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
-#include "esphome/components/homeThing/homeThingNowPlayingDisplay.h"
-#include "esphome/components/homeThing/homeThingNowPlayingOptionMenu.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingDisplay.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
-#include "esphome/components/homeThing/HomeThingNowPlayingHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+#include "esphome/components/homeThingAppNowPlaying/HomeThingNowPlayingHeader.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {
 
-class HomeThingMenuNowPlayingControl
-    : public homething_menu_app::HomeThingMenuApp {
+class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
  public:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
   get_media_player_group();
@@ -66,12 +65,10 @@ class HomeThingMenuNowPlayingControl
   void set_now_playing_display(
       display::DisplayBuffer* new_display_buffer,
       homething_display_state::HomeThingDisplayState* new_display_state,
-      homething_menu_base::HomeThingMenuTextHelpers* new_text_helpers,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_media_player_group) {
-    now_playing_display_ =
-        new HomeThingMenuNowPlaying(new_display_buffer, new_display_state,
-                                    new_text_helpers, new_media_player_group);
+    now_playing_display_ = new HomeThingMenuNowPlaying(
+        new_display_buffer, new_display_state, new_media_player_group);
   }
 
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {

@@ -8,17 +8,16 @@
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuRefactor.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeThing/homeThingNowPlayingDisplay.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 
@@ -37,12 +36,10 @@ class HomeThingMenuDisplay {
   HomeThingMenuDisplay(
       HomeThingMenuBoot* boot, display::DisplayBuffer* display_buffer,
       homething_display_state::HomeThingDisplayState* display_state,
-      HomeThingMenuTextHelpers* text_helpers, HomeThingMenuRefactor* refactor,
-      HomeThingMenuHeader* header)
+      HomeThingMenuRefactor* refactor, HomeThingMenuHeader* header)
       : boot_(boot),
         display_buffer_(display_buffer),
         display_state_(display_state),
-        text_helpers_(text_helpers),
         refactor_(refactor),
         header_(header) {}
   void setup();
@@ -87,7 +84,6 @@ class HomeThingMenuDisplay {
 
   display::DisplayBuffer* display_buffer_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
-  HomeThingMenuTextHelpers* text_helpers_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};

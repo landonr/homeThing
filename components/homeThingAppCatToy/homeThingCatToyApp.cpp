@@ -26,8 +26,7 @@ void HomeThingCatToyApp::draw_app(
     return;
   }
   auto largeFont = display_state_->get_font_large();
-  auto primaryTextColor =
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode());
+  auto primaryTextColor = display_state_->primaryTextColor();
 
   auto color = Color(128, 0, 128);
   int yPos = display_buffer_->get_height() * 0.1;

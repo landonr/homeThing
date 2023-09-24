@@ -420,6 +420,11 @@ HomeThingMenuNowPlayingControl::buttonPressUp() {
       break;
   }
 
+  if (media_player_group_ == nullptr) {
+    return homething_menu_app::NavigationCoordination::
+        NavigationCoordinationPop;
+  }
+
   switch (media_player_group_->active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
       media_player_group_->sendActivePlayerRemoteCommand(
