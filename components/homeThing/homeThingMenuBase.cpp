@@ -197,13 +197,21 @@ bool HomeThingMenuBase::selectMenuHold() {
   switch (menuTree.back()) {
     case rootMenu: {
       if (home_screen_) {
-        int index = menuIndex;
-        auto menu_item = home_screen_->get_menu_item(index);
-        ESP_LOGW(TAG, "selectMenuHold: %d type: %d, name %s type %s", index,
-                 std::get<0>(*menu_item),
-                 home_screen_->entity_name_at_index(index).c_str(),
-                 nameForMenuItemType(std::get<0>(*menu_item)).c_str());
-        return selectLightEntity(menu_item);
+        int offset = 0;
+        for (auto& menu_app : menu_apps_) {
+          offset = offset + menu_app->root_menu_size();
+        }
+        int index = menuIndex - offset;
+        ESP_LOGW(TAG, "selectMenuHold: %d offset %d index %d", menuIndex,
+                 offset, index);
+        if (menuIndex >= offset && index < home_screen_->get_entity_count()) {
+          auto menu_item = home_screen_->get_menu_item(index);
+          ESP_LOGW(TAG, "selectMenuHold: %d type: %d, name %s type %s", index,
+                   std::get<0>(*menu_item),
+                   home_screen_->entity_name_at_index(index).c_str(),
+                   nameForMenuItemType(std::get<0>(*menu_item)).c_str());
+          return selectLightEntity(menu_item);
+        }
       }
       break;
     }
@@ -928,7 +936,7 @@ bool HomeThingMenuBase::display_can_sleep() {
   int display_timeout_while_charging =
       menu_settings_->get_display_timeout_while_charging();
 
-  ESP_LOGI(TAG,
+  ESP_LOGD(TAG,
            "screen timeout %d, charging %d, display_timeout_while_charging %d "
            "idle %d",
            idle_timeout, get_charging(), display_timeout_while_charging,

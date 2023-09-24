@@ -18,7 +18,7 @@ CONFIG_SCHEMA = homeThingApp.BASE_SCHEMA.extend(
 )
 
 async def to_code(config):
-    var = homeThingApp.new_app_base(config)
+    var = await homeThingApp.new_app_base(config)
     remote_transmitter = await cg.get_variable(config[CONF_REMOTE_TRANSMITTER])
     cg.add(var.set_remote_transmitter(remote_transmitter))
     await cg.register_component(var, config)

@@ -367,12 +367,12 @@ bool HomeThingMenuDisplay::boot_complete() {
   return true;
 }
 
-bool HomeThingMenuDisplay::bootSequenceCanSkip(
+BootMenuSkipState HomeThingMenuDisplay::bootSequenceCanSkip(
     const MenuStates activeMenuState) {
   if (boot_ != nullptr) {
     return boot_->bootSequenceCanSkip(activeMenuState);
   }
-  return true;
+  return BootMenuSkipState::BOOT_MENU_SKIP_STATE_NONE;
 }
 }  // namespace homething_menu_base
 }  // namespace esphome
