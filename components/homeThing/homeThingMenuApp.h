@@ -76,6 +76,10 @@ class HomeThingMenuApp : public homething_menu_base::HomeThingMenuHeaderSource {
     return header_source_;
   }
 
+  // display
+
+  virtual bool is_animating() { return false; }
+
  protected:
   homething_menu_base::HomeThingMenuHeaderSource* header_source_{nullptr};
 

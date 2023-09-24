@@ -30,6 +30,8 @@ HomeThingCatToyApp = cg.esphome_ns.namespace("homething_cattoy_app").class_("Hom
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
+HomeThingAppSnake = cg.esphome_ns.namespace("homething_app_snake").class_("HomeThingAppSnake")
+
 AUTO_LOAD = ["sensor"]
 DEPENDENCIES = ["wifi", "api"]
 
@@ -63,6 +65,7 @@ CONF_APPS = "apps"
 CONF_APP = "app"
 CONF_CATTOY_APP = "cattoy_app"
 CONF_REMOTE_TRANSMITTER = "remote_transmitter"
+CONF_SNAKE = "snake"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -163,6 +166,11 @@ APP_TYPED_SCHEMA = cv.typed_schema(
             {
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeThingCatToyApp),
                 cv.Required(CONF_REMOTE_TRANSMITTER): cv.use_id(remote_transmitter.RemoteTransmitterComponent)
+            }
+        ),
+        CONF_SNAKE: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.declare_id(HomeThingAppSnake)
             }
         )
     }
@@ -565,6 +573,12 @@ async def to_code(config):
                 cg.add(cattoy_app.set_display_state(display_state))
                 cg.add(cattoy_app.set_text_helpers(text_helpers))
                 cg.add(menu.register_app(cattoy_app))
+            elif app[CONF_TYPE] == CONF_SNAKE:
+                snake_app = cg.new_Pvariable(app[CONF_ID])
+                cg.add(snake_app.set_display_buffer(display_buffer))
+                cg.add(snake_app.set_display_state(display_state))
+                cg.add(snake_app.set_text_helpers(text_helpers))
+                cg.add(menu.register_app(snake_app))
             else:
                 app = cg.new_Pvariable(app[CONF_ID])
                 cg.add(menu.register_app(app))

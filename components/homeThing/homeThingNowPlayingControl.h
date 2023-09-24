@@ -79,6 +79,8 @@ class HomeThingMenuNowPlayingControl
   }
   HomeThingMenuHeaderSource* header_source_{nullptr};
 
+  bool is_animating() { return false; }
+
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};

@@ -77,6 +77,10 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   if (active_app_ != nullptr && active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
+    this->animation_->animating = active_app_->is_animating();
+    if (this->animation_->animating) {
+      this->animation_->tickAnimation();
+    }
   } else if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
                                              menuIndex, nullptr,
                                              editing_menu_item)) {
@@ -314,6 +318,7 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
       if (active_app_) {
         active_app_->app_menu_titles(menu_titles);
       }
+      return;
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
                menu_state_title(menuTree.back()).c_str());
@@ -881,7 +886,8 @@ void HomeThingMenuBase::buttonPressScreenRight() {
 }
 
 void HomeThingMenuBase::displayUpdateDebounced() {
-  if (idleTime < 2 || animation_->animating || get_charging()) {
+  if (idleTime < 2 || animation_->animating || get_charging() ||
+      (active_app_ != nullptr && active_app_->is_animating())) {
     update_display();
   }
 }
