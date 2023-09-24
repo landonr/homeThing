@@ -6,12 +6,12 @@
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuRefactor.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
@@ -34,12 +34,11 @@ namespace homething_menu_base {
 
 class HomeThingMenuDisplay {
  public:
-  HomeThingMenuDisplay(HomeThingMenuBoot* boot,
-                       display::DisplayBuffer* display_buffer,
-                       HomeThingMenuDisplayState* display_state,
-                       HomeThingMenuTextHelpers* text_helpers,
-                       HomeThingMenuRefactor* refactor,
-                       HomeThingMenuHeader* header)
+  HomeThingMenuDisplay(
+      HomeThingMenuBoot* boot, display::DisplayBuffer* display_buffer,
+      homething_display_state::HomeThingDisplayState* display_state,
+      HomeThingMenuTextHelpers* text_helpers, HomeThingMenuRefactor* refactor,
+      HomeThingMenuHeader* header)
       : boot_(boot),
         display_buffer_(display_buffer),
         display_state_(display_state),
@@ -87,7 +86,7 @@ class HomeThingMenuDisplay {
                           int i, int menuState, int yPos);
 
   display::DisplayBuffer* display_buffer_{nullptr};
-  HomeThingMenuDisplayState* display_state_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
   HomeThingMenuHeader* header_{nullptr};

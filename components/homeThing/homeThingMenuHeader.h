@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
@@ -24,7 +24,7 @@ class HomeThingMenuHeaderSource {
   virtual std::string get_header_title() { return "xx"; }
   virtual int draw_header_details(
       int xPos, int yPosOffset, display::DisplayBuffer* display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_display_state::HomeThingDisplayState* display_state,
       homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
     return 0;
   }
@@ -32,9 +32,10 @@ class HomeThingMenuHeaderSource {
 
 class HomeThingMenuHeader {
  public:
-  HomeThingMenuHeader(display::DisplayBuffer* new_display_buffer,
-                      HomeThingMenuDisplayState* new_display_state,
-                      HomeThingMenuTextHelpers* new_text_helpers)
+  HomeThingMenuHeader(
+      display::DisplayBuffer* new_display_buffer,
+      homething_display_state::HomeThingDisplayState* new_display_state,
+      HomeThingMenuTextHelpers* new_text_helpers)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
         text_helpers_(new_text_helpers) {}
@@ -75,7 +76,7 @@ class HomeThingMenuHeader {
   int drawHeaderTime(int oldXPos, int yPosOffset);
 
   display::DisplayBuffer* display_buffer_{nullptr};
-  HomeThingMenuDisplayState* display_state_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};

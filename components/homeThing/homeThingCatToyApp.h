@@ -15,7 +15,7 @@ class HomeThingCatToyAppHeader
 
   int draw_header_details(
       int xPos, int yPos, display::DisplayBuffer* display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_display_state::HomeThingDisplayState* display_state,
       homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
     return 0;
   }
@@ -73,7 +73,7 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingMenuApp {
   }
 
   void set_display_state(
-      homething_menu_base::HomeThingMenuDisplayState* display_state) {
+      homething_display_state::HomeThingDisplayState* display_state) {
     display_state_ = display_state;
   }
 
@@ -90,7 +90,7 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingMenuApp {
 
   // display
   display::DisplayBuffer* display_buffer_{nullptr};
-  homething_menu_base::HomeThingMenuDisplayState* display_state_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   homething_menu_base::HomeThingMenuTextHelpers* text_helpers_{nullptr};
 
   // menu titles

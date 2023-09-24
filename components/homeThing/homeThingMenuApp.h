@@ -4,9 +4,9 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 namespace esphome {
 namespace homething_menu_app {

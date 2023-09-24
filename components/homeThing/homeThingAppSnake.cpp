@@ -21,8 +21,10 @@ Coordinate HomeThingAppSnake::get_random_coordinate() {
 }
 
 Coordinate HomeThingAppSnake::get_display_bounds() {
-  int widthBounds = (display_buffer_->get_width() - (margin * 2)) / displayScale;
-  int heightBounds = (display_buffer_->get_height() - (margin * 2)) / displayScale;
+  int widthBounds =
+      (display_buffer_->get_width() - (margin * 2)) / displayScale;
+  int heightBounds =
+      (display_buffer_->get_height() - (margin * 2)) / displayScale;
   return Coordinate(widthBounds, heightBounds);
 }
 
@@ -64,11 +66,12 @@ void HomeThingAppSnake::draw_app(
     draw_resized_pixel(segment.x, segment.y, Color(255, 255, 255));
   }
   draw_resized_pixel(fruit_position_.x, fruit_position_.y, Color(255, 0, 0));
-  display_buffer_->rectangle(margin, margin, get_display_bounds().x * displayScale, get_display_bounds().y * displayScale, Color(255, 255, 255));
+  display_buffer_->rectangle(
+      margin, margin, get_display_bounds().x * displayScale,
+      get_display_bounds().y * displayScale, Color(255, 255, 255));
 }
 
-void HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {
-}
+void HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {}
 
 void HomeThingAppSnake::active_tick() {
   if (fruit_position_.x == -1) {
@@ -85,7 +88,8 @@ void HomeThingAppSnake::active_tick() {
     auto newFruitPosition = get_random_coordinate();
     fruit_position_.x = newFruitPosition.x;
     fruit_position_.y = newFruitPosition.y;
-    ESP_LOGW(TAG, "Snake ate the fruit %d %d, %d %d", newHeadX, newHeadY, widthBounds, heightBounds);
+    ESP_LOGW(TAG, "Snake ate the fruit %d %d, %d %d", newHeadX, newHeadY,
+             widthBounds, heightBounds);
     return;
   } else {
     // Move the snake
@@ -100,14 +104,16 @@ void HomeThingAppSnake::active_tick() {
   // Check for collisions with the snake's body
   for (int i = 1; i < snake.size(); ++i) {
     if (snake[i].x == newHeadX && snake[i].y == newHeadY) {
-      ESP_LOGW(TAG, "Snake hit itself %d %d, %d %d", newHeadX, newHeadY, widthBounds, heightBounds);
+      ESP_LOGW(TAG, "Snake hit itself %d %d, %d %d", newHeadX, newHeadY,
+               widthBounds, heightBounds);
       reset();
     }
   }
   // Check for collisions with the window boundaries
-  if (newHeadX < 0 || newHeadX >= bounds.x || newHeadY < 0 || newHeadY >= bounds.y)
-  {
-    ESP_LOGW(TAG, "Snake hit the wall %d %d, %d %d", newHeadX, newHeadY, bounds.x, bounds.y);
+  if (newHeadX < 0 || newHeadX >= bounds.x || newHeadY < 0 ||
+      newHeadY >= bounds.y) {
+    ESP_LOGW(TAG, "Snake hit the wall %d %d, %d %d", newHeadX, newHeadY,
+             bounds.x, bounds.y);
     reset();
   }
 }

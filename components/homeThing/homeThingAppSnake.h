@@ -14,7 +14,7 @@ class HomeThingAppSnakeHeader
 
   int draw_header_details(
       int xPos, int yPos, display::DisplayBuffer* display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* display_state,
+      homething_display_state::HomeThingDisplayState* display_state,
       homething_menu_base::HomeThingMenuTextHelpers* text_helpers) {
     return 0;
   }
@@ -76,7 +76,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingMenuApp {
   }
 
   void set_display_state(
-      homething_menu_base::HomeThingMenuDisplayState* display_state) {
+      homething_display_state::HomeThingDisplayState* display_state) {
     display_state_ = display_state;
   }
 
@@ -93,7 +93,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingMenuApp {
 
   // display
   display::DisplayBuffer* display_buffer_{nullptr};
-  homething_menu_base::HomeThingMenuDisplayState* display_state_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   homething_menu_base::HomeThingMenuTextHelpers* text_helpers_{nullptr};
 
   // menu titles
@@ -104,7 +104,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingMenuApp {
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
 
   void draw_resized_pixel(int coordinateX, int coordinateY, Color color);
-Coordinate get_display_bounds();
+  Coordinate get_display_bounds();
   void create_new_fruit();
   Coordinate get_random_coordinate();
   Coordinate fruit_position_ = Coordinate(-1, -1);

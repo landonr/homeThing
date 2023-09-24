@@ -9,9 +9,9 @@
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
 #include "esphome/components/homeThing/HomeThingNowPlayingHeader.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {
@@ -65,7 +65,7 @@ class HomeThingMenuNowPlayingControl
   // display
   void set_now_playing_display(
       display::DisplayBuffer* new_display_buffer,
-      homething_menu_base::HomeThingMenuDisplayState* new_display_state,
+      homething_display_state::HomeThingDisplayState* new_display_state,
       homething_menu_base::HomeThingMenuTextHelpers* new_text_helpers,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_media_player_group) {

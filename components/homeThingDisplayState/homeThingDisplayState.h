@@ -3,15 +3,15 @@
 #include <string>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/font/font.h"
+#include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
 #include "esphome/components/image/image.h"
-#include "homeThingColorPalette.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_display_state {
 
 enum DisplayIconEnabledState { OFF = 1, ON = 2, ALWAYS = 3 };
 
-class HomeThingMenuDisplayState {
+class HomeThingDisplayState {
  public:
   font::Font* get_font_small() { return font_small_; }
   void set_font_small(font::Font* font_small) { font_small_ = font_small; }
@@ -146,5 +146,5 @@ class HomeThingMenuDisplayState {
   bool draw_now_playing_menu_;
   std::string boot_device_name_ = "homeThing";
 };
-}  // namespace homething_menu_base
+}  // namespace homething_display_state
 }  // namespace esphome

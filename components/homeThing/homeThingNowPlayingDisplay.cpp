@@ -1,8 +1,8 @@
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "homeThingNowPlayingDisplay.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/core/log.h"
 
 namespace esphome {

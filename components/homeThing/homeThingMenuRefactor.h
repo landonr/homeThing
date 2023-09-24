@@ -1,9 +1,9 @@
 
 #pragma once
 #include "esphome/components/display/display_buffer.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
@@ -14,9 +14,10 @@ namespace homething_menu_base {
 
 class HomeThingMenuRefactor {
  public:
-  HomeThingMenuRefactor(display::DisplayBuffer* new_display_buffer,
-                        HomeThingMenuDisplayState* new_display_state,
-                        HomeThingMenuTextHelpers* new_text_helpers)
+  HomeThingMenuRefactor(
+      display::DisplayBuffer* new_display_buffer,
+      homething_display_state::HomeThingDisplayState* new_display_state,
+      HomeThingMenuTextHelpers* new_text_helpers)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
         text_helpers_(new_text_helpers) {}
@@ -42,7 +43,7 @@ class HomeThingMenuRefactor {
 
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
-  HomeThingMenuDisplayState* display_state_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuTextHelpers* text_helpers_{nullptr};
   const char* const TAG = "homething.menu.refactor";
 };
