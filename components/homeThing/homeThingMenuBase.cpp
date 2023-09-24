@@ -996,15 +996,15 @@ void HomeThingMenuBase::lockDevice() {
 
 void HomeThingMenuBase::idleTick() {
   ESP_LOGD(TAG, "idleTick: idle %d", idleTime);
-  if (active_app_) {
-    active_app_->idleTick(idleTime, menu_settings_->get_display_timeout());
-  }
   if (menuTree.back() == bootMenu) {
     if (display_can_sleep()) {
       sleep_display();
     }
     idleTime++;
     return;
+  }
+  for (auto app : menu_apps_) {
+    app->idleTick(idleTime, menu_settings_->get_display_timeout());
   }
   if (menu_settings_->get_lock_after() != 0 &&
       idleTime >= menu_settings_->get_lock_after()) {

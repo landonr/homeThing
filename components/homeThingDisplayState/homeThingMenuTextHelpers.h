@@ -17,9 +17,6 @@ class HomeThingMenuTextHelpers {
                         int displayWidth, float widthRatio);
   int getTextWidth(int fontSize, int characterCount, float widthRatio);
   std::string textWrap(std::string text, unsigned per_line);
-  void set_display_buffer(display::DisplayBuffer* new_display_buffer) {
-    display_buffer_ = new_display_buffer;
-  }
   int drawTextWrapped(int xPos, int yPos, font::Font* font, Color color,
                       display::TextAlign alignment, std::string text,
                       int maxLines, display::DisplayBuffer* display_buffer,

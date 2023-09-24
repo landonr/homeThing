@@ -1,9 +1,9 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
+from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
 from esphome.components.light import LightState
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeThingDisplayState import homething_display_state_ns
 from esphome.components.homeThingApp import homething_app_ns
@@ -87,6 +87,7 @@ BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
         cv.Optional(CONF_API, default="api_connected"): cv.use_id(binary_sensor.BinarySensor),
+        cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
     }
 )
 
@@ -263,7 +264,8 @@ async def menu_settings_to_code(config):
     return menu_settings
 
 MENU_BOOT_IDS = [
-    CONF_API
+    CONF_API,
+    CONF_MEDIA_PLAYERS
 ]
 
 async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
