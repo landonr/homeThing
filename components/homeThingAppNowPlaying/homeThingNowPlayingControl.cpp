@@ -263,8 +263,7 @@ void HomeThingMenuNowPlayingControl::draw_app(
 void HomeThingMenuNowPlayingControl::idleTick(int idleTime,
                                               int display_timeout) {
   ESP_LOGI(TAG, "idleTick: idle %d", idleTime);
-  if (media_player_group_ != nullptr &&
-      media_player_group_->active_player_ == nullptr) {
+  if (media_player_group_ != nullptr) {
     media_player_group_->findActivePlayer();
   }
   if (idleTime == 3) {

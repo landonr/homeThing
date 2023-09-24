@@ -10,7 +10,7 @@ class HomeThingAppSnakeHeader
     : public homething_menu_base::HomeThingMenuHeaderSource {
  public:
   // header
-  std::string get_header_title() { return "Big Slime"; }
+  std::string get_header_title() { return "Snake"; }
 
   int draw_header_details(
       int xPos, int yPos, display::DisplayBuffer* display_buffer,
@@ -105,7 +105,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   Coordinate snake_direction_ = Coordinate(1, 0);
   std::vector<Coordinate> snake = {Coordinate(30, 30)};
   double displayScale = 16;
-  int margin = 10;
+  int margin = 4;
 };
 }  // namespace homething_app_snake
 }  // namespace esphome

@@ -7,6 +7,11 @@ namespace homething_menu_base {
 
 void HomeThingMenuBase::setup() {
   menu_display_->set_animation(animation_);
+  menu_display_->add_on_state_callback([this]() {
+    ESP_LOGI(TAG, "menu_display_->add_on_state_callback");
+    this->update_display();
+  });
+
   this->animation_->animationTick->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
 
@@ -50,7 +55,7 @@ void HomeThingMenuBase::draw_menu_screen() {
   if (menu_drawing_) {
     return;
   }
-  if (menuTree.front() == bootMenu && menu_display_->boot_->boot_complete()) {
+  if (menuTree.front() == bootMenu && menu_display_->boot_complete()) {
     finish_boot();
     return;
   }
@@ -273,6 +278,7 @@ void HomeThingMenuBase::finish_boot() {
   menuTree.assign(1, rootMenu);
   idleTime = 0;
   topMenu();
+  menu_display_->clearBoot();
 }
 
 void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
@@ -330,7 +336,7 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
 bool HomeThingMenuBase::skipBootPressed() {
   switch (menuTree.back()) {
     case bootMenu: {
-      switch (menu_display_->boot_->bootSequenceCanSkip(menuTree.back())) {
+      switch (menu_display_->bootSequenceCanSkip(menuTree.back())) {
         case BOOT_MENU_SKIP_STATE_SLEEP:
           ESP_LOGI(TAG, "skipBootPressed: sleep");
 #ifdef USE_SWITCH

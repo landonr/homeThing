@@ -23,8 +23,9 @@ Coordinate HomeThingAppSnake::get_random_coordinate() {
 Coordinate HomeThingAppSnake::get_display_bounds() {
   int widthBounds =
       (display_buffer_->get_width() - (margin * 2)) / displayScale;
-  int heightBounds =
-      (display_buffer_->get_height() - (margin * 2)) / displayScale;
+  int heightBounds = (display_buffer_->get_height() -
+                      ((margin * 2) + display_state_->get_header_height())) /
+                     displayScale;
   return Coordinate(widthBounds, heightBounds);
 }
 
@@ -53,7 +54,9 @@ void HomeThingAppSnake::draw_resized_pixel(int coordinateX, int coordinateY,
   int y = coordinateY * displayScale;
   for (int i = 0; i < displayScale; ++i) {
     for (int j = 0; j < displayScale; ++j) {
-      display_buffer_->draw_pixel_at(x + i + margin, y + j + margin, color);
+      display_buffer_->draw_pixel_at(
+          x + i + margin, y + j + margin + display_state_->get_header_height(),
+          color);
     }
   }
 }
@@ -67,7 +70,8 @@ void HomeThingAppSnake::draw_app(
   }
   draw_resized_pixel(fruit_position_.x, fruit_position_.y, Color(255, 0, 0));
   display_buffer_->rectangle(
-      margin, margin, get_display_bounds().x * displayScale,
+      margin, margin + display_state_->get_header_height(),
+      get_display_bounds().x * displayScale,
       get_display_bounds().y * displayScale, Color(255, 255, 255));
 }
 
@@ -153,7 +157,7 @@ homething_menu_app::NavigationCoordination HomeThingAppSnake::buttonPressSelect(
     int menuIndex) {
   reset();
   if (displayScale < 20) {
-    displayScale = displayScale + 1;
+    displayScale = displayScale + 2;
   } else {
     displayScale = 2;
   }

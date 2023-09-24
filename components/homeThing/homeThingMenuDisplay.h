@@ -41,7 +41,9 @@ class HomeThingMenuDisplay {
         display_buffer_(display_buffer),
         display_state_(display_state),
         refactor_(refactor),
-        header_(header) {}
+        header_(header) {
+    setup();
+  }
   void setup();
   void draw_lock_screen(int unlock_presses);
   bool draw_menu_screen(
@@ -63,12 +65,21 @@ class HomeThingMenuDisplay {
     return false;
   }
 
-  HomeThingMenuBoot* boot_{nullptr};
   void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
     header_->set_active_menu_screen(active_menu_screen);
   }
 
+  void clearBoot() { boot_ = nullptr; }
+
+  bool boot_complete();
+  bool bootSequenceCanSkip(const MenuStates activeMenuState);
+
+  void add_on_state_callback(std::function<void()>&& callback) {
+    this->callback_.add(std::move(callback));
+  }
+
  private:
+  HomeThingMenuBoot* boot_{nullptr};
   int scrollTop = 0;
   bool draw_menu_titles(const std::vector<MenuTitleBase*>* menuTitles,
                         const int menuIndex, bool editing_menu_item);
@@ -87,6 +98,7 @@ class HomeThingMenuDisplay {
   HomeThingMenuRefactor* refactor_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
+  CallbackManager<void()> callback_;
 
 #ifdef USE_MEDIA_PLAYER_GROUP
   void drawTitleImage(

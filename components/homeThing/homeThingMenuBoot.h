@@ -73,10 +73,12 @@ class HomeThingMenuBoot {
 #ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
+          media_player_group);
 #endif
+
+  void add_on_state_callback(std::function<void()>&& callback) {
+    this->callback_.add(std::move(callback));
+  }
 
  private:
   void drawBootSequenceLoadingBar(int yPosOffset, float progress);
@@ -104,6 +106,7 @@ class HomeThingMenuBoot {
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =
       HomeThingMenuBootAnimationConfig();
+  CallbackManager<void()> callback_;
   bool boot_animation_complete_ = false;
 };
 

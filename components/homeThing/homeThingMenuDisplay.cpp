@@ -4,7 +4,15 @@
 namespace esphome {
 namespace homething_menu_base {
 
-void HomeThingMenuDisplay::setup() {}
+void HomeThingMenuDisplay::setup() {
+  if (boot_ != nullptr) {
+    ESP_LOGW(TAG, "Boot setup");
+    boot_->add_on_state_callback([this]() {
+      ESP_LOGW(TAG, "Boot update");
+      this->callback_.call();
+    });
+  }
+}
 
 bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
                                            std::string title, int yPos,
@@ -186,19 +194,18 @@ bool HomeThingMenuDisplay::draw_menu_screen(
     const int menuIndex,
     homething_menu_now_playing::HomeThingOptionMenu* option_menu,
     bool editing_menu_item) {
-  bool boot_complete = boot_->boot_complete();
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
   }
-  if (!boot_complete && *activeMenuState == bootMenu) {
+  if (!boot_complete() && *activeMenuState == bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
-  } else if (boot_complete && *activeMenuState == bootMenu) {
+  } else if (boot_complete() && *activeMenuState == bootMenu) {
     ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
     return true;
-  } else if (!boot_complete && *activeMenuState != bootMenu) {
+  } else if (!boot_complete() && *activeMenuState != bootMenu) {
     ESP_LOGW(TAG, "boot not complete but we got to the menu %d state %d",
-             boot_complete, *activeMenuState);
+             boot_complete(), *activeMenuState);
   }
 
   bool animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
@@ -351,6 +358,21 @@ void HomeThingMenuDisplay::drawTitleImage(
 
 void HomeThingMenuDisplay::updateDisplay(bool force) {
   // displayUpdate->updateDisplay(force);
+}
+
+bool HomeThingMenuDisplay::boot_complete() {
+  if (boot_ != nullptr) {
+    return boot_->boot_complete();
+  }
+  return true;
+}
+
+bool HomeThingMenuDisplay::bootSequenceCanSkip(
+    const MenuStates activeMenuState) {
+  if (boot_ != nullptr) {
+    return boot_->bootSequenceCanSkip(activeMenuState);
+  }
+  return true;
 }
 }  // namespace homething_menu_base
 }  // namespace esphome
