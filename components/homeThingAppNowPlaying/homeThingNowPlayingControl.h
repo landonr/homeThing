@@ -1,8 +1,8 @@
 #pragma once
 
-#include "esphome/components/homeThingApp/homeThingApp.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/components/homeThingApp/homeThingApp.h"
 #include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingDisplay.h"
 #include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
