@@ -25,7 +25,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: lando/refactor-now-playing
     refresh: 0s
     components: [homeThing]
   - source:
