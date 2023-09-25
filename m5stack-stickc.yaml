@@ -40,7 +40,7 @@ packages: # maybe modify: include default ipod controls
   # axp192: !include ../homeThing/common/m5stack-stickc/axp192-marty.yaml # power management and screen backlight
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: main
+    ref: lando/refactor-now-playing
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font

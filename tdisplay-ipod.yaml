@@ -24,7 +24,7 @@ wifi: # setup wifi, make sure secrets.yaml exists!
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: main
+    ref: lando/refactor-now-playing
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
