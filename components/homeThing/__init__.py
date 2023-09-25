@@ -6,7 +6,7 @@ from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeThingDisplayState import homething_display_state_ns
-from esphome.components.homeThingApp import homething_app_ns
+# from esphome.components.homeThingApp import homething_app_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
@@ -19,19 +19,13 @@ HomeThingMenuDisplay = homething_menu_base_ns.class_("HomeThingMenuDisplay")
 HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
 
-homething_menu_now_playing_ns = cg.esphome_ns.namespace("homething_menu_now_playing")
-HomeThingMenuNowPlaying = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlaying")
-HomeThingMenuNowPlayingControl = homething_menu_now_playing_ns.class_("HomeThingMenuNowPlayingControl")
-
-HomeThingCatToyApp = cg.esphome_ns.namespace("homething_cattoy_app").class_("HomeThingCatToyApp")
-
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
-HomeThingAppSnake = cg.esphome_ns.namespace("homething_app_snake").class_("HomeThingAppSnake")
+homething_app_ns = cg.esphome_ns.namespace("homething_menu_app")
 
 AUTO_LOAD = ["sensor"]
-DEPENDENCIES = ["wifi", "api"]
+DEPENDENCIES = ["wifi", "api", "homeThingDisplayState"]
 
 CONF_DISPLAY = "display"
 CONF_MENU_DISPLAY = "menu_display"
@@ -59,10 +53,6 @@ CONF_COVER = "cover"
 CONF_NUMBER = "number"
 CONF_BUTTON = "button"
 CONF_APPS = "apps"
-CONF_APP = "app"
-CONF_CATTOY_APP = "cattoy_app"
-CONF_REMOTE_TRANSMITTER = "remote_transmitter"
-CONF_SNAKE = "snake"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -361,10 +351,10 @@ async def to_code(config):
         menu_screen = await menu_screen_to_code(conf)
         cg.add(menu.register_screen(menu_screen))
 
-    if CONF_APPS in config:
-        for app in config[CONF_APPS]:
-            new_app = await cg.get_variable(app)
-            cg.add(menu.register_app(new_app))
+    # if CONF_APPS in config:
+    #     for app in config[CONF_APPS]:
+    #         new_app = await cg.get_variable(app)
+    #         cg.add(menu.register_app(new_app))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

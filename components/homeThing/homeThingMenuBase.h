@@ -15,11 +15,9 @@
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingControl.h"
-#endif
-
+#ifdef USE_HOMETHING_APP
 #include "esphome/components/homeThingApp/homeThingApp.h"
+#endif
 
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
@@ -53,9 +51,11 @@ class HomeThingMenuBase : public PollingComponent {
   void set_backlight(light::LightState* backlight) { backlight_ = backlight; }
 #endif
 
+#ifdef USE_HOMETHING_APP
   void register_app(homething_menu_app::HomeThingApp* newApp) {
     menu_apps_.push_back(newApp);
   }
+#endif
 
   void register_screen(HomeThingMenuScreen* new_screen) {
     new_screen->set_index(menu_screens_.size());
@@ -157,8 +157,11 @@ class HomeThingMenuBase : public PollingComponent {
   HomeThingMenuScreen* home_screen_{nullptr};
   HomeThingMenuScreen* active_menu_screen{nullptr};
 
+#ifdef USE_HOMETHING_APP
   std::vector<homething_menu_app::HomeThingApp*> menu_apps_;
   homething_menu_app::HomeThingApp* active_app_{nullptr};
+#endif
+
   void update_display() { this->on_redraw_callbacks_.call(); }
   void debounceUpdateDisplay();
   void update();
@@ -173,10 +176,12 @@ class HomeThingMenuBase : public PollingComponent {
       ESP_LOGD(TAG, "reset_menu: reset animation %d", menuTree.front());
       animation_->resetAnimation();
     }
+#ifdef USE_HOMETHING_APP
     if (active_app_) {
       active_app_->reset_menu();
     }
     active_app_ = nullptr;
+#endif
   }
   void turn_on_backlight();
 

@@ -27,29 +27,6 @@ external_components:
       type: git
       url: https://github.com/ssieb/custom_components
     components: [ ip5306 ]
-  - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: lando/refactor-now-playing
-    refresh: 0s
-    components: [homeThing]
-  - source:
-      type: git
-      url: https://github.com/landonr/esphome-components
-      ref: main
-    refresh: 0s
-    components: [
-      homeassistant_component,
-      homeassistant_media_player,
-      media_player_source,
-      media_player_source_sonos,
-      media_player_source_spotify,
-      media_player_source_custom
-    ]
-  - source: github://pr#5214 # used to load images on compile
-    components: [ image ]
-  - source: github://pr#5254 # used to load fonts on compile
-    components: [ font, external_files ]
 
 packages: # maybe modify: include default ipod controls
   remote_package:
@@ -65,7 +42,9 @@ packages: # maybe modify: include default ipod controls
       common/m5stack-fire/binary_sensor.yaml, # buttons
       common/m5stack-fire/backlight.yaml, # backlight
       common/m5stack-fire/sidelight.yaml, # sidelight
-      common/images.yaml # boot screen image
+      common/images.yaml, # boot screen image
+      common/homeThingBase.yaml, # homeThing base components
+      common/homethingMediaPlayerComponents.yaml # homeThing media player components
     ]
     refresh: 0s
 
@@ -138,26 +117,28 @@ cover: # home assistant cover
     name: "Megadesk"
     id: cover_megadesk
 
+homeThingDisplayState:
+  id: display_state_id
+  colors:
+    accent_primary: my_primary_accent
+  draw_battery_level: true
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_heavy_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
+  launch_image: launch_image
+
 homeThing:
   id: homeThingMenu
   settings:
     sleep_after: 14400
-  media_player_group: media_group_component
   display: my_display
   on_redraw:
     then:
       component.update: my_display
-  display_state:
-    colors:
-      accent_primary: my_primary_accent
-    draw_battery_level: true
-    font_small: small_font
-    font_medium: medium_font
-    font_large: large_font
-    font_large_heavy: large_heavy_font
-    font_material_large: material_font_large
-    font_material_small: material_font_small
-    launch_image: launch_image
+  display_state: display_state_id
   screens:
     - name: Desk Screen
       entities:

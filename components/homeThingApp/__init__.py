@@ -19,6 +19,7 @@ BASE_SCHEMA = cv.Schema(
 ).extend(cv.COMPONENT_SCHEMA)
 
 async def new_app_base(config):
+    cg.add_build_flag("-DUSE_HOMETHING_APP")
     var = cg.new_Pvariable(config[CONF_ID])
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
     cg.add(var.set_display_buffer(display_buffer))

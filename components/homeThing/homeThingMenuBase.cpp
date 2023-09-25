@@ -75,6 +75,8 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
            title_name.c_str(), menu_titles.size());
+
+#ifdef USE_HOMETHING_APP
   if (active_app_ != nullptr) {
     ESP_LOGI(TAG, "draw_menu_screen: draw header %d %s #%d", menuIndex,
              title_name.c_str(), menu_titles.size());
@@ -86,9 +88,13 @@ void HomeThingMenuBase::draw_menu_screen() {
     if (this->animation_->animating) {
       this->animation_->tickAnimation();
     }
-  } else if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles,
-                                             menuIndex, nullptr,
-                                             editing_menu_item)) {
+    menu_drawing_ = false;
+    return;
+  }
+#endif
+
+  if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
+                                      nullptr, editing_menu_item)) {
     this->animation_->tickAnimation();
     this->animation_->animating = true;
   } else {
@@ -139,6 +145,7 @@ bool HomeThingMenuBase::selectMenu() {
       }
       break;
     case appMenu:
+#ifdef USE_HOMETHING_APP
       ESP_LOGI(TAG, "selectMenu: select app menu %d", menuIndex);
       if (active_app_) {
         switch (active_app_->app_menu_select(menuIndex)) {
@@ -163,6 +170,7 @@ bool HomeThingMenuBase::selectMenu() {
             return true;
         }
       }
+#endif
       return false;
     default:
       ESP_LOGW(TAG, "selectMenu: menu state is bad but its an enum");
@@ -198,9 +206,11 @@ bool HomeThingMenuBase::selectMenuHold() {
     case rootMenu: {
       if (home_screen_) {
         int offset = 0;
+#ifdef USE_HOMETHING_APP
         for (auto& menu_app : menu_apps_) {
           offset = offset + menu_app->root_menu_size();
         }
+#endif
         int index = menuIndex - offset;
         ESP_LOGW(TAG, "selectMenuHold: %d offset %d index %d", menuIndex,
                  offset, index);
@@ -230,6 +240,7 @@ bool HomeThingMenuBase::selectMenuHold() {
 
 bool HomeThingMenuBase::selectRootMenu() {
   int offset = 0;
+#ifdef USE_HOMETHING_APP
   for (auto& menu_app : menu_apps_) {
     int appMenuSize = menu_app->root_menu_size();
     if (menuIndex < (offset + appMenuSize)) {
@@ -242,6 +253,7 @@ bool HomeThingMenuBase::selectRootMenu() {
     }
     offset += appMenuSize;
   }
+#endif
   int index = menuIndex - offset;
   if (home_screen_ && index < home_screen_->get_entity_count()) {
     ESP_LOGI(TAG, "selectRootMenu: home screen %d offset %d", menuIndex,
@@ -292,10 +304,12 @@ void HomeThingMenuBase::finish_boot() {
 void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
   switch (menuTree.back()) {
     case rootMenu: {
+#ifdef USE_HOMETHING_APP
       ESP_LOGD(TAG, "activeMenu: root menu apps %d", menu_apps_.size());
       for (auto& menu_app : menu_apps_) {
         menu_app->rootMenuTitles(menu_titles);
       }
+#endif
       if (home_screen_) {
         // for (int i = 0; i < home_screen_->get_entity_count(); i++) {
         //   out.push_back(entityMenu);
@@ -329,10 +343,13 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
       break;
     case settingsMenu:
       active_menu_screen->menu_titles(menu_titles, true);
+      break;
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_) {
         active_app_->app_menu_titles(menu_titles);
       }
+#endif
       return;
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
@@ -401,6 +418,7 @@ void HomeThingMenuBase::buttonPressSelect() {
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
+#ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
           switch (active_app_->buttonPressSelect(menuIndex)) {
             case homething_menu_app::NavigationCoordination::
@@ -423,6 +441,7 @@ void HomeThingMenuBase::buttonPressSelect() {
               return;
           }
         }
+#endif
         break;
       case lightsDetailMenu:
       case settingsMenu:
@@ -501,9 +520,11 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
+#ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
           active_app_->rotaryScrollCounterClockwise(rotary);
         }
+#endif
         break;
       case lightsDetailMenu:
 #ifdef USE_LIGHT
@@ -568,9 +589,11 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
+#ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
           active_app_->rotaryScrollClockwise(rotary);
         }
+#endif
         break;
       case lightsDetailMenu:
 #ifdef USE_LIGHT
@@ -633,6 +656,7 @@ void HomeThingMenuBase::buttonPressUp() {
     return;
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressUp()) {
           case homething_menu_app::NavigationCoordination::
@@ -655,6 +679,7 @@ void HomeThingMenuBase::buttonPressUp() {
             return;
         }
       }
+#endif
       break;
     case lightsDetailMenu:
 #ifdef USE_LIGHT
@@ -691,6 +716,7 @@ void HomeThingMenuBase::buttonPressDown() {
     return;
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressDown()) {
           case homething_menu_app::NavigationCoordination::
@@ -713,6 +739,7 @@ void HomeThingMenuBase::buttonPressDown() {
             return;
         }
       }
+#endif
       break;
     default:
       break;
@@ -724,6 +751,7 @@ void HomeThingMenuBase::buttonPressLeft() {
     return;
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressLeft()) {
           case homething_menu_app::NavigationCoordination::
@@ -746,6 +774,7 @@ void HomeThingMenuBase::buttonPressLeft() {
             return;
         }
       }
+#endif
       break;
     default:
       break;
@@ -759,6 +788,7 @@ void HomeThingMenuBase::buttonPressRight() {
     return;
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressRight()) {
           case homething_menu_app::NavigationCoordination::
@@ -781,6 +811,7 @@ void HomeThingMenuBase::buttonPressRight() {
             return;
         }
       }
+#endif
       break;
     default:
       break;
@@ -792,6 +823,7 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
     return;
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonReleaseScreenLeft()) {
           case homething_menu_app::NavigationCoordination::
@@ -814,6 +846,7 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
             return;
         }
       }
+#endif
       break;
     default:
       break;
@@ -842,6 +875,7 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
   }
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressScreenLeft()) {
           case homething_menu_app::NavigationCoordination::
@@ -861,6 +895,7 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
             return;
         }
       }
+#endif
       break;
     default:
       break;
@@ -872,6 +907,7 @@ void HomeThingMenuBase::buttonPressScreenRight() {
     return;
   switch (menuTree.back()) {
     case appMenu:
+#ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {
         switch (active_app_->buttonPressScreenRight()) {
           case homething_menu_app::NavigationCoordination::
@@ -891,6 +927,7 @@ void HomeThingMenuBase::buttonPressScreenRight() {
             return;
         }
       }
+#endif
       break;
     case rootMenu:
     case settingsMenu:
@@ -901,8 +938,14 @@ void HomeThingMenuBase::buttonPressScreenRight() {
 }
 
 void HomeThingMenuBase::displayUpdateDebounced() {
+  bool app_animating = false;
+#ifdef USE_HOMETHING_APP
+  if (active_app_ != nullptr && active_app_->is_animating()) {
+    app_animating = true;
+  }
+#endif
   if (idleTime < 2 || animation_->animating || get_charging() ||
-      (active_app_ != nullptr && active_app_->is_animating())) {
+      app_animating) {
     update_display();
   }
 }
@@ -1017,9 +1060,11 @@ void HomeThingMenuBase::idleTick() {
     idleTime++;
     return;
   }
+#ifdef USE_HOMETHING_APP
   for (auto app : menu_apps_) {
     app->idleTick(idleTime, menu_settings_->get_display_timeout());
   }
+#endif
   if (menu_settings_->get_lock_after() != 0 &&
       idleTime >= menu_settings_->get_lock_after()) {
     lockDevice();
