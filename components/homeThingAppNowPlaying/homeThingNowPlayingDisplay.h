@@ -7,35 +7,31 @@
 #include <string>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_menu_now_playing {
 class HomeThingMenuNowPlaying {
  public:
-  HomeThingMenuNowPlaying(display::DisplayBuffer* new_display_buffer,
-                          HomeThingMenuDisplayState* new_display_state,
-                          HomeThingMenuTextHelpers* new_text_helpers)
+  HomeThingMenuNowPlaying(
+      display::DisplayBuffer* new_display_buffer,
+      homething_display_state::HomeThingDisplayState* new_display_state,
+      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+          new_media_player_group)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        text_helpers_(new_text_helpers) {}
+        media_player_group_(new_media_player_group) {}
   PositionCoordinate get_coordinate(double radius, double angle);
-  void drawNowPlaying(int menuIndex, HomeThingOptionMenu* option_menu,
-                      const std::vector<MenuTitleBase*>* active_menu);
-
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
+  void drawNowPlaying(
+      int menuIndex, HomeThingOptionMenu* option_menu,
+      const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
 
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
-  HomeThingMenuDisplayState* display_state_{nullptr};
-  HomeThingMenuTextHelpers* text_helpers_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
   void drawCircleOptionMenu(
@@ -44,8 +40,9 @@ class HomeThingMenuNowPlaying {
   std::string secondsToString(int seconds);
   void drawMediaDuration();
   bool drawOptionMenuAndStop(const HomeThingOptionMenu* option_menu);
-  void drawNowPlayingSelectMenu(const std::vector<MenuTitleBase*>* menu_titles,
-                                int menu_index);
+  void drawNowPlayingSelectMenu(
+      const std::vector<homething_menu_base::MenuTitleBase*>* menu_titles,
+      int menu_index);
   std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
                                              display::TextAlign alignment,
                                              std::string text);
@@ -67,6 +64,6 @@ class HomeThingMenuNowPlaying {
 
   const char* const TAG = "homething.menu.now_playing";
 };
-}  // namespace homething_menu_base
+}  // namespace homething_menu_now_playing
 }  // namespace esphome
 #endif

@@ -3,15 +3,16 @@
 #include <string>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/font/font.h"
+#include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
 #include "esphome/components/image/image.h"
-#include "homeThingColorPalette.h"
+#include "homeThingMenuTextHelpers.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_display_state {
 
 enum DisplayIconEnabledState { OFF = 1, ON = 2, ALWAYS = 3 };
 
-class HomeThingMenuDisplayState {
+class HomeThingDisplayState {
  public:
   font::Font* get_font_small() { return font_small_; }
   void set_font_small(font::Font* font_small) { font_small_ = font_small; }
@@ -119,7 +120,39 @@ class HomeThingMenuDisplayState {
     color_palette_ = color_palette;
   }
 
+  HomeThingMenuTextHelpers* get_text_helpers() { return text_helpers_; }
+
+  Color primaryTextColor() {
+    return text_helpers_->primaryTextColor(dark_mode_,
+                                           get_color_palette()->get_white(),
+                                           get_color_palette()->get_black());
+  }
+  Color secondaryTextColor() {
+    return text_helpers_->primaryTextColor(dark_mode_,
+                                           get_color_palette()->get_white(),
+                                           get_color_palette()->get_white());
+  }
+
+  int getCharacterLimit(int xPos, int fontSize, display::TextAlign alignment,
+                        int displayWidth) {
+    return text_helpers_->getCharacterLimit(
+        xPos, fontSize, alignment, displayWidth, get_font_size_width_ratio());
+  }
+  int getTextWidth(int fontSize, int characterCount) {
+    return text_helpers_->getTextWidth(fontSize, characterCount,
+                                       get_font_size_width_ratio());
+  }
+
+  int drawTextWrapped(int xPos, int yPos, font::Font* font, Color color,
+                      display::TextAlign alignment, std::string text,
+                      int maxLines, display::DisplayBuffer* display_buffer) {
+    return text_helpers_->drawTextWrapped(xPos, yPos, font, color, alignment,
+                                          text, maxLines, display_buffer,
+                                          get_font_size_width_ratio());
+  }
+
  private:
+  HomeThingMenuTextHelpers* text_helpers_ = new HomeThingMenuTextHelpers();
   HomeThingColorPalette* color_palette_;
   font::Font* font_small_{nullptr};
   font::Font* font_medium_{nullptr};
@@ -146,5 +179,5 @@ class HomeThingMenuDisplayState {
   bool draw_now_playing_menu_;
   std::string boot_device_name_ = "homeThing";
 };
-}  // namespace homething_menu_base
+}  // namespace homething_display_state
 }  // namespace esphome

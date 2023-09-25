@@ -1,0 +1,143 @@
+#include "homeThingCatToyApp.h"
+
+namespace esphome {
+namespace homething_cattoy_app {
+
+void HomeThingCatToyApp::rootMenuTitles(
+    std::vector<homething_menu_base::MenuTitleBase*>* menu_titles) {
+  menu_titles->push_back(new homething_menu_base::MenuTitleBase(
+      "Cat toy", "", homething_menu_base::ArrowMenuTitleRightIcon));
+}
+void HomeThingCatToyApp::app_menu_titles(
+    std::vector<homething_menu_base::MenuTitleBase*>* menu_titles) {}
+
+// menu screens
+homething_menu_app::NavigationCoordination HomeThingCatToyApp::app_menu_select(
+    int index) {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+bool HomeThingCatToyApp::should_draw_app() {
+  return true;
+}
+void HomeThingCatToyApp::draw_app(
+    int menuIndex,
+    const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
+  if (display_buffer_ == nullptr) {
+    return;
+  }
+  auto largeFont = display_state_->get_font_large();
+  auto primaryTextColor = display_state_->primaryTextColor();
+
+  auto color = Color(128, 0, 128);
+  int yPos = display_buffer_->get_height() * 0.1;
+  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+                          color, display::TextAlign::TOP_CENTER, "Cat Toy!");
+
+  color = Color(255, 50, 100);
+  display_buffer_->printf((display_buffer_->get_width() * 0.5) + 1, yPos + 1,
+                          largeFont, color, display::TextAlign::TOP_CENTER,
+                          "Cat Toy!");
+
+  yPos = display_buffer_->get_height() * 0.3;
+  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+                          primaryTextColor, display::TextAlign::TOP_CENTER,
+                          "Scroll Right");
+
+  yPos = display_buffer_->get_height() * 0.4;
+  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+                          primaryTextColor, display::TextAlign::TOP_CENTER,
+                          "Drive");
+
+  yPos = display_buffer_->get_height() * 0.6;
+  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+                          primaryTextColor, display::TextAlign::TOP_CENTER,
+                          "Scroll Left");
+
+  yPos = display_buffer_->get_height() * 0.7;
+  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+                          primaryTextColor, display::TextAlign::TOP_CENTER,
+                          "Reverse");
+}
+
+void HomeThingCatToyApp::idleTick(int idleTime, int display_timeout) {}
+int HomeThingCatToyApp::root_menu_size() {
+  return 1;
+}
+void HomeThingCatToyApp::reset_menu() {}
+void HomeThingCatToyApp::set_app_menu_index(int app_menu_index) {}
+
+// buttons
+void HomeThingCatToyApp::rotaryScrollClockwise(int rotary) {
+  auto call = remote_transmitter_->transmit();
+  esphome::remote_base::ProntoData data = {
+      "0000 006D 0022 0000 0143 00A0 0015 0014 0015 0014 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 003A 0015 003A 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A "
+      "0015 06C3"};
+  esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
+  call.set_send_times(1);
+  call.perform();
+}
+
+void HomeThingCatToyApp::rotaryScrollCounterClockwise(int rotary) {
+  auto call = remote_transmitter_->transmit();
+  esphome::remote_base::ProntoData data = {
+      "0000 006D 0022 0000 0145 009D 0017 0011 0018 0011 0018 0011 0018 0011 "
+      "0017 0011 0018 0011 0018 0011 0018 0011 0017 0037 0018 0037 0017 0037 "
+      "0017 0037 0017 0037 0017 0037 0017 0037 0017 0037 0017 0011 0018 0011 "
+      "0017 0011 0017 0011 0017 0037 0017 0037 0017 0011 0017 0011 0017 0037 "
+      "0017 0037 0017 0037 0017 0037 0017 0011 0018 0011 0017 0037 0018 0036 "
+      "0019 06C3"};
+  esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
+  call.set_send_times(1);
+  call.perform();
+}
+
+homething_menu_app::NavigationCoordination HomeThingCatToyApp::buttonPressUp() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationPop;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressDown() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressLeft() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressRight() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressSelect(int menuIndex) {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressSelectHold() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressScreenLeft() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonReleaseScreenLeft() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::buttonPressScreenRight() {
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
+}  // namespace homething_cattoy_app
+}  // namespace esphome

@@ -21,13 +21,19 @@ wifi: # setup wifi, make sure secrets.yaml exists!
   id: wifi_id
   power_save_mode: HIGH
 
-external_components: #include homething, and esphome-components
+external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
       ref: main
+      # type: local
+      # path: components
     refresh: 0s
-    components: [homeThing]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font, external_files ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -41,11 +47,6 @@ external_components: #include homething, and esphome-components
       media_player_source_spotify,
       media_player_source_custom
     ]
-  - source: github://pr#5214 # used to load images on compile
-    components: [ image ]
-  - source: github://pr#5254 # used to load fonts on compile
-    components: [ font, external_files ]
-
 
 packages: # maybe modify: include default ipod controls
   remote_package:
@@ -61,7 +62,7 @@ packages: # maybe modify: include default ipod controls
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/images.yaml # boot screen image
+      common/images.yaml, # boot screen image
     ]
     refresh: 0s
 
@@ -131,6 +132,23 @@ cover: # home assistant cover
     name: "Megadesk"
     id: cover_megadesk
 
+homeThingAppNowPlaying:
+  id: now_playing
+  media_player_group: media_group_component
+  display: my_display
+  display_state: display_state_id
+
+homeThingDisplayState:
+  id: display_state_id
+  draw_battery_level: true
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
+  launch_image: launch_image
+
 homeThing:
   id: homeThingMenu
   settings:
@@ -140,23 +158,13 @@ homeThing:
   battery:
     battery_percent: battery_percent
     charging: charging
-  media_player_group: media_group_component
   display: my_display
+  display_state: display_state_id
+  apps:
+    - now_playing
   on_redraw:
     then:
       component.update: my_display
-  display_state:
-    colors:
-      accent_primary: my_primary_accent
-    draw_battery_level: true
-    font_small: small_font
-    font_medium: medium_font
-    font_large: large_font
-    font_large_heavy: large_heavy_font
-    font_material_large: material_font_large
-    font_material_small: material_font_small
-    launch_image: launch_image
-    boot_device_name: "cool remote"
   screens:
     - name: Desk Screen
       entities:

@@ -5,9 +5,9 @@
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
@@ -52,14 +52,13 @@ class HomeThingMenuBootAnimationConfig {
 
 class HomeThingMenuBoot {
  public:
-  HomeThingMenuBoot(display::DisplayBuffer* new_display_buffer,
-                    HomeThingMenuDisplayState* new_display_state,
-                    HomeThingMenuHeader* new_header,
-                    HomeThingMenuTextHelpers* new_text_helpers)
+  HomeThingMenuBoot(
+      display::DisplayBuffer* new_display_buffer,
+      homething_display_state::HomeThingDisplayState* new_display_state,
+      HomeThingMenuHeader* new_header)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        header_(new_header),
-        text_helpers_(new_text_helpers) {}
+        header_(new_header) {}
   bool drawBootSequence(const MenuStates activeMenuState);
   BootMenuSkipState bootSequenceCanSkip(const MenuStates activeMenuState);
   void set_api_connected(binary_sensor::BinarySensor* api_connected) {
@@ -74,10 +73,12 @@ class HomeThingMenuBoot {
 #ifdef USE_MEDIA_PLAYER_GROUP
   void set_media_player_group(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
+          media_player_group);
 #endif
+
+  void add_on_state_callback(std::function<void()>&& callback) {
+    this->callback_.add(std::move(callback));
+  }
 
  private:
   void drawBootSequenceLoadingBar(int yPosOffset, float progress);
@@ -94,10 +95,9 @@ class HomeThingMenuBoot {
 
   BootMenuState get_boot_menu_state();
   display::DisplayBuffer* display_buffer_{nullptr};
-  HomeThingMenuDisplayState* display_state_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-  HomeThingMenuTextHelpers* text_helpers_{nullptr};
 #ifdef USE_MEDIA_PLAYER_GROUP
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
@@ -106,6 +106,7 @@ class HomeThingMenuBoot {
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =
       HomeThingMenuBootAnimationConfig();
+  CallbackManager<void()> callback_;
   bool boot_animation_complete_ = false;
 };
 

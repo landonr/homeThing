@@ -6,14 +6,14 @@
 #include <string>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
+#include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_menu_now_playing {
 
 class HomeThingMenuNowPlayingOptionMenu {
  public:
@@ -35,7 +35,7 @@ class HomeThingMenuNowPlayingOptionMenu {
   const char* const TAG = "homething.menu.option";
   bool bottomMenu_ = false;
 };
-}  // namespace homething_menu_base
+}  // namespace homething_menu_now_playing
 }  // namespace esphome
 
 #endif

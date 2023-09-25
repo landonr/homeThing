@@ -4,7 +4,15 @@
 namespace esphome {
 namespace homething_menu_base {
 
-void HomeThingMenuDisplay::setup() {}
+void HomeThingMenuDisplay::setup() {
+  if (boot_ != nullptr) {
+    ESP_LOGW(TAG, "Boot setup");
+    boot_->add_on_state_callback([this]() {
+      ESP_LOGW(TAG, "Boot update");
+      this->callback_.call();
+    });
+  }
+}
 
 bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
                                            std::string title, int yPos,
@@ -16,8 +24,9 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
   int textYPos = yPos + (display_state_->get_margin_size() / 4);
   if (menuState == i) {
     int characterHeight = display_state_->get_font_medium()->get_baseline();
-    int characterLimit = text_helpers_->getCharacterLimit(
-        xPos, characterHeight, display::TextAlign::TOP_LEFT);
+    int characterLimit = display_state_->getCharacterLimit(
+        xPos, characterHeight, display::TextAlign::TOP_LEFT,
+        display_buffer_->get_width());
     ESP_LOGD(TAG, "characterLimit %d, title %d height %d", characterLimit,
              title.length(), characterHeight);
 
@@ -38,15 +47,14 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
         display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
         display_state_->get_color_palette()->get_accent_primary());
-    display_buffer_->printf(
-        xPos, textYPos, display_state_->get_font_medium(),
-        text_helpers_->secondaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
+    display_buffer_->printf(xPos, textYPos, display_state_->get_font_medium(),
+                            display_state_->secondaryTextColor(),
+                            display::TextAlign::TOP_LEFT, "%s",
+                            marqueeTitle.c_str());
   } else {
-    display_buffer_->printf(
-        xPos, textYPos, display_state_->get_font_medium(),
-        text_helpers_->primaryTextColor(display_state_->get_dark_mode()),
-        display::TextAlign::TOP_LEFT, "%s", title.c_str());
+    display_buffer_->printf(xPos, textYPos, display_state_->get_font_medium(),
+                            display_state_->primaryTextColor(),
+                            display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
   return animating;
 }
@@ -60,8 +68,7 @@ void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
   auto number_font = display_state_->get_font_large_heavy();
   auto background_color =
       display_state_->get_color_palette()->get_accent_primary();
-  auto text_color =
-      text_helpers_->primaryTextColor(display_state_->get_dark_mode());
+  auto text_color = display_state_->primaryTextColor();
   display_buffer_->filled_rectangle(xPos - box_size_width / 2,
                                     yPos - box_size_height / 2, box_size_width,
                                     box_size_height, background_color);
@@ -184,36 +191,31 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState, const std::vector<MenuTitleBase*>* active_menu,
-    const int menuIndex, HomeThingOptionMenu* option_menu,
+    const int menuIndex,
+    homething_menu_now_playing::HomeThingOptionMenu* option_menu,
     bool editing_menu_item) {
-  bool boot_complete = boot_->boot_complete();
   if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
     display_buffer_->fill(display_state_->get_color_palette()->get_white());
   }
-  if (!boot_complete && *activeMenuState == bootMenu) {
+  if (!boot_complete() && *activeMenuState == bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
-  } else if (boot_complete && *activeMenuState == bootMenu) {
+  } else if (boot_complete() && *activeMenuState == bootMenu) {
     ESP_LOGW(TAG, "finished boot");
     *activeMenuState = rootMenu;
     return true;
-  } else if (!boot_complete && *activeMenuState != bootMenu) {
+  } else if (!boot_complete() && *activeMenuState != bootMenu) {
     ESP_LOGW(TAG, "boot not complete but we got to the menu %d state %d",
-             boot_complete, *activeMenuState);
+             boot_complete(), *activeMenuState);
   }
 
-  bool animating = false;
-  switch (*activeMenuState) {
-    case nowPlayingMenu:
-#ifdef USE_MEDIA_PLAYER_GROUP
-      now_playing_->drawNowPlaying(menuIndex, option_menu, active_menu);
-#endif
-      break;
-    default:
-      animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
-      break;
-  }
+  bool animating = draw_menu_titles(active_menu, menuIndex, editing_menu_item);
   header_->drawHeader(0, *activeMenuState);
   return animating;
+}
+
+void HomeThingMenuDisplay::draw_menu_header(
+    HomeThingMenuHeaderSource* header_source) {
+  header_->draw_menu_header(header_source);
 }
 
 void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
@@ -325,10 +327,9 @@ void HomeThingMenuDisplay::drawTitleImage(
               (display_state_->get_font_medium()->get_baseline() *
                display_state_->get_font_size_width_ratio())) +
              4;
-  auto color =
-      selected
-          ? text_helpers_->primaryTextColor(display_state_->get_dark_mode())
-          : display_state_->get_color_palette()->get_accent_primary();
+  auto color = selected
+                   ? display_state_->primaryTextColor()
+                   : display_state_->get_color_palette()->get_accent_primary();
   switch (titleState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
@@ -357,6 +358,21 @@ void HomeThingMenuDisplay::drawTitleImage(
 
 void HomeThingMenuDisplay::updateDisplay(bool force) {
   // displayUpdate->updateDisplay(force);
+}
+
+bool HomeThingMenuDisplay::boot_complete() {
+  if (boot_ != nullptr) {
+    return boot_->boot_complete();
+  }
+  return true;
+}
+
+BootMenuSkipState HomeThingMenuDisplay::bootSequenceCanSkip(
+    const MenuStates activeMenuState) {
+  if (boot_ != nullptr) {
+    return boot_->bootSequenceCanSkip(activeMenuState);
+  }
+  return BootMenuSkipState::BOOT_MENU_SKIP_STATE_NONE;
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

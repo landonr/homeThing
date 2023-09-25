@@ -18,11 +18,12 @@ static const char* const MENU_TITLE_TAG = "homething.menutitle";
 enum MenuStates {
   bootMenu,
   rootMenu,
-  sourcesMenu,
-  groupMenu,
-  mediaPlayersMenu,
+  appMenu,
+  // sourcesMenu,
+  // groupMenu,
+  // mediaPlayersMenu,
   lightsDetailMenu,
-  nowPlayingMenu,
+  // nowPlayingMenu,
   settingsMenu,
   entityMenu
 };
@@ -38,18 +39,20 @@ enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
 static std::string menu_state_title(MenuStates menu_state) {
   switch (menu_state) {
-    case nowPlayingMenu:
-      return "Now Playing";
-    case sourcesMenu:
-      return "Sources";
-    case mediaPlayersMenu:
-      return "Media Players";
+    case appMenu:
+      return "App";
+    // case nowPlayingMenu:
+    //   return "Now Playing";
+    // case sourcesMenu:
+    //   return "Sources";
+    // case mediaPlayersMenu:
+    //   return "Media Players";
+    // case groupMenu:
+    //   return "Speaker Group";
     case lightsDetailMenu:
       return "Light Detail";
     case rootMenu:
       return "Home";
-    case groupMenu:
-      return "Speaker Group";
     case bootMenu:
       return "Boot";
     case settingsMenu:
@@ -62,18 +65,20 @@ static std::string menu_state_title(MenuStates menu_state) {
 
 static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
   switch (menu_state) {
-    case nowPlayingMenu:
+    case appMenu:
       return ArrowMenuTitleRightIcon;
-    case sourcesMenu:
-      return ArrowMenuTitleRightIcon;
-    case mediaPlayersMenu:
-      return ArrowMenuTitleRightIcon;
+    // case nowPlayingMenu:
+    //   return ArrowMenuTitleRightIcon;
+    // case sourcesMenu:
+    //   return ArrowMenuTitleRightIcon;
+    // case mediaPlayersMenu:
+    //   return ArrowMenuTitleRightIcon;
+    // case groupMenu:
+    //   return ArrowMenuTitleRightIcon;
     case lightsDetailMenu:
       return ArrowMenuTitleRightIcon;
     case rootMenu:
       return NoMenuTitleRightIcon;
-    case groupMenu:
-      return ArrowMenuTitleRightIcon;
     case bootMenu:
       return NoMenuTitleRightIcon;
     case settingsMenu:
@@ -256,95 +261,6 @@ class MenuTitleSource : public MenuTitleBase {
 
   std::string sourceTypeString() { return media_source_->sourceTypeString(); }
 };
-
-static void mediaPlayersTitleString(
-    const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
-        media_players,
-    std::vector<MenuTitleBase*>* menu_titles) {
-
-  std::map<
-      homeassistant_media_player::HomeAssistantBaseMediaPlayer*,
-      std::vector<homeassistant_media_player::HomeAssistantBaseMediaPlayer*>>
-      tree;
-
-  for (const auto media_player : (*media_players)) {
-    auto parent = media_player->get_parent_media_player();
-    auto groupMembers = media_player->get_group_members();
-    ESP_LOGD(
-        MENU_TITLE_TAG,
-        "mediaPlayersTitleString: player %s parent set %d group members %d",
-        media_player->get_entity_id().c_str(), parent != NULL,
-        groupMembers->size());
-    if (parent != NULL) {
-      // ignore parent if its a soundbar because the tv is the root parent
-      if (parent->mediaSource ==
-              homeassistant_media_player::RemotePlayerMediaSource::
-                  TVRemotePlayerMediaSource &&
-          parent->get_parent_media_player() != NULL) {
-        auto grand_parent = parent->get_parent_media_player();
-        // grand parent is tv, parent is soundbar, mediaplayer is grouped speaker
-        if (tree.find(grand_parent) == tree.end()) {
-          ESP_LOGD(MENU_TITLE_TAG,
-                   "mediaPlayersTitleString: adding grandparent1 %s player %s",
-                   grand_parent->get_entity_id().c_str(),
-                   media_player->get_entity_id().c_str());
-          tree[grand_parent] = {media_player};
-        } else {
-          ESP_LOGD(MENU_TITLE_TAG,
-                   "mediaPlayersTitleString: adding grandparent2 %s player %s",
-                   grand_parent->get_entity_id().c_str(),
-                   media_player->get_entity_id().c_str());
-          tree[grand_parent].push_back(media_player);
-        }
-      } else if (tree.find(parent) == tree.end()) {
-        // dont add soundbar to tv if it's not playing
-        if (parent->get_player_type() ==
-                homeassistant_media_player::RemotePlayerType::
-                    TVRemotePlayerType &&
-            media_player->mediaSource !=
-                homeassistant_media_player::RemotePlayerMediaSource::
-                    TVRemotePlayerMediaSource) {
-          ESP_LOGD(MENU_TITLE_TAG,
-                   "mediaPlayersTitleString: adding player %s no parent",
-                   parent->get_entity_id().c_str(),
-                   media_player->get_entity_id().c_str());
-          tree[media_player] = {};
-        } else {
-          ESP_LOGD(MENU_TITLE_TAG,
-                   "mediaPlayersTitleString: adding parent2 %s player %s",
-                   parent->get_entity_id().c_str(),
-                   media_player->get_entity_id().c_str());
-          tree[parent] = {media_player};
-        }
-      } else {
-        ESP_LOGD(MENU_TITLE_TAG,
-                 "mediaPlayersTitleString: adding parent3 %s player %s",
-                 parent->get_entity_id().c_str(),
-                 media_player->get_entity_id().c_str());
-        tree[parent].push_back(media_player);
-      }
-    } else {
-      if (tree.find(media_player) == tree.end()) {
-        ESP_LOGD(MENU_TITLE_TAG, "mediaPlayersTitleString: player set %s",
-                 media_player->get_entity_id().c_str());
-        tree[media_player] = {};
-      }
-    }
-  }
-  ESP_LOGD(MENU_TITLE_TAG, "mediaPlayersTitleString: ------");
-  for (auto tree_item : tree) {
-    auto parent = tree_item.first;
-    menu_titles->push_back(
-        new MenuTitlePlayer(parent->get_name(), parent->get_entity_id(),
-                            NoMenuTitleLeftIcon, NoMenuTitleRightIcon, parent));
-    for (const auto media_player : tree_item.second) {
-      menu_titles->push_back(new MenuTitlePlayer(
-          media_player->get_name(), media_player->get_entity_id(),
-          GroupedMenuTitleLeftIcon, NoMenuTitleRightIcon, media_player));
-    }
-  }
-}
 
 static void activePlayerSourceTitles(
     std::vector<media_player_source::MediaPlayerSourceBase*>* sources,

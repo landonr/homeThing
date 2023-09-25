@@ -6,6 +6,15 @@
 
 namespace esphome {
 namespace homething_menu_base {
+void HomeThingMenuBoot::set_media_player_group(
+    homeassistant_media_player::HomeAssistantMediaPlayerGroup*
+        media_player_group) {
+  media_player_group_ = media_player_group;
+  if (media_player_group_) {
+    media_player_group_->add_on_state_callback(
+        [this](float state) { this->callback_(); });
+  }
+}
 int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
     int xPos, int yPos, const MenuStates activeMenuState) {
   std::string bootTitle = "homeThing";
@@ -209,10 +218,11 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
   int maxAnimationDuration = 0;
   switch (get_boot_menu_state()) {
     case BOOT_MENU_STATE_API:
-      text_helpers_->drawTextWrapped(
+      display_state_->drawTextWrapped(
           xPos, yPos, display_state_->get_font_large_heavy(),
           display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "api connecting...", 4);
+          display::TextAlign::TOP_CENTER, "api connecting...", 4,
+          display_buffer_);
       break;
     case BOOT_MENU_STATE_PLAYERS:
     case BOOT_MENU_STATE_COMPLETE: {
@@ -223,24 +233,27 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
         auto playersLoadedString = to_string(loadedPlayers) + "/" +
                                    to_string(totalPlayers) +
                                    " media players loaded";
-        text_helpers_->drawTextWrapped(
+        display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, playersLoadedString, 5);
+            display::TextAlign::TOP_CENTER, playersLoadedString, 5,
+            display_buffer_);
       } else {
-        text_helpers_->drawTextWrapped(
+        display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, "api connected!", 4);
+            display::TextAlign::TOP_CENTER, "api connected!", 4,
+            display_buffer_);
       }
 #endif
       break;
     }
     case BOOT_MENU_STATE_NETWORK:
-      text_helpers_->drawTextWrapped(
+      display_state_->drawTextWrapped(
           xPos, yPos, display_state_->get_font_large_heavy(),
           display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "wifi connecting...", 4);
+          display::TextAlign::TOP_CENTER, "wifi connecting...", 4,
+          display_buffer_);
       break;
     case BOOT_MENU_STATE_START:
       maxAnimationDuration =

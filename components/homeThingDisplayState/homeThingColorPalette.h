@@ -3,7 +3,7 @@
 #include "esphome/core/color.h"
 
 namespace esphome {
-namespace homething_menu_base {
+namespace homething_display_state {
 
 class HomeThingColorPalette {
  public:
@@ -46,5 +46,5 @@ class HomeThingColorPalette {
   Color red_ = Color(255, 0, 0);
   Color yellow_ = Color(255, 191, 25);
 };
-}  // namespace homething_menu_base
+}  // namespace homething_display_state
 }  // namespace esphome

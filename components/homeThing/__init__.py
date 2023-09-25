@@ -1,10 +1,12 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import automation
-from esphome.components import display, font, color, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
+from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
 from esphome.components.light import LightState
-from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME, CONF_TYPE, CONF_TIME_ID
+from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
+from esphome.components.homeThingDisplayState import homething_display_state_ns
+# from esphome.components.homeThingApp import homething_app_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
@@ -14,23 +16,20 @@ HomeThingMenuBoot = homething_menu_base_ns.class_("HomeThingMenuBoot")
 HomeThingMenuSettings = homething_menu_base_ns.class_("HomeThingMenuSettings")
 HomeThingMenuAnimation = homething_menu_base_ns.class_("HomeThingMenuAnimation")
 HomeThingMenuDisplay = homething_menu_base_ns.class_("HomeThingMenuDisplay")
-HomeThingMenuDisplayState = homething_menu_base_ns.class_("HomeThingMenuDisplayState")
 HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
-HomeThingMenuTextHelpers = homething_menu_base_ns.class_("HomeThingMenuTextHelpers")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
-HomeThingMenuNowPlaying = homething_menu_base_ns.class_("HomeThingMenuNowPlaying")
-HomeThingColorPalette = homething_menu_base_ns.class_("HomeThingColorPalette")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
 HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
+homething_app_ns = cg.esphome_ns.namespace("homething_menu_app")
+
 AUTO_LOAD = ["sensor"]
-DEPENDENCIES = ["wifi", "api"]
+DEPENDENCIES = ["wifi", "api", "homeThingDisplayState"]
 
 CONF_DISPLAY = "display"
 CONF_MENU_DISPLAY = "menu_display"
 CONF_DISPLAY_STATE = "display_state"
-CONF_TEXT_HELPERS = "text_helpers"
 CONF_REFACTOR = "refactor_me"
 CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
@@ -53,6 +52,7 @@ CONF_ENTITIES = "entities"
 CONF_COVER = "cover"
 CONF_NUMBER = "number"
 CONF_BUTTON = "button"
+CONF_APPS = "apps"
 
 # battery settings
 CONF_CHARGING = "charging"
@@ -73,59 +73,18 @@ CONF_BACKLIGHT = "backlight"
 CONF_LOCK_AFTER = "lock_after"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
 
-# display state
-CONF_OFF = "off"
-CONF_ON = "on"
-CONF_ALWAYS = "always"
-CONF_FONT_SMALL = "font_small"
-CONF_FONT_MEDIUM = "font_medium"
-CONF_FONT_LARGE = "font_large"
-CONF_FONT_LARGE_HEAVY = "font_large_heavy"
-CONF_FONT_MATERIAL_LARGE = "font_material_large"
-CONF_FONT_MATERIAL_SMALL = "font_material_small"
-CONF_LAUNCH_IMAGE = "launch_image"
-CONF_DRAW_NOW_PLAYING_BOTTOM_MENU = "draw_now_playing_bottom_menu"
-CONF_HEADER_HEIGHT = "header_height"
-CONF_MARGIN_SIZE = "margin_size"
-CONF_BOTTOM_BAR_MARGIN = "bottom_bar_margin"
-CONF_SLIDER_MARGIN_SIZE = "slider_margin_size"
-CONF_ICON_SIZE = "icon_size"
-CONF_SCROLL_BAR_WIDTH = "scroll_bar_width"
-CONF_BOOT_LOGO_SIZE = "boot_logo_size"
-CONF_NOW_PLAYING_MAX_LINES = "now_playing_max_lines"
-CONF_FONT_SIZE_WIDTH_RATIO = "font_size_width_ratio"
-CONF_DRAW_SHUFFLE = "draw_shuffle"
-CONF_DRAW_REPEAT = "draw_repeat"
-CONF_DRAW_HEADER_TIME = "draw_header_time"
-CONF_DRAW_BATTERY_LEVEL = "draw_battery_level"
-CONF_DARK_MODE = "dark_mode"
-CONF_DRAW_VOLUME_LEVEL = "draw_volume_level"
-CONF_BOOT_DEVICE_NAME = "boot_device_name"
-
-# colors
-CONF_COLORS = "colors"
-CONF_GRAY_DARK = "gray_dark"
-CONF_GRAY_DARK_2 = "gray_dark_2"
-CONF_GRAY = "gray"
-CONF_ACCENT_PRIMARY = "accent_primary"
-CONF_BLACK = "black"
-CONF_WHITE = "white"
-CONF_PINK = "pink"
-CONF_YELLOW = "yellow"
-
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
         cv.Optional(CONF_API, default="api_connected"): cv.use_id(binary_sensor.BinarySensor),
+        cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
     }
 )
 
 MENU_DISPLAY_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuDisplay),
-        cv.GenerateID(CONF_TEXT_HELPERS): cv.declare_id(HomeThingMenuTextHelpers),
         cv.GenerateID(CONF_REFACTOR): cv.declare_id(HomeThingMenuRefactor),
-        cv.GenerateID(CONF_NOW_PLAYING): cv.declare_id(HomeThingMenuNowPlaying),
         cv.GenerateID(CONF_HEADER): cv.use_id(HomeThingMenuHeader),
     }
 )
@@ -154,77 +113,6 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.Optional(CONF_MENU_ROLLBACK_ON, default=False): cv.boolean,
         cv.Optional(CONF_LOCK_AFTER, default=0): cv.int_,
         cv.Optional(CONF_DISPLAY_TIMEOUT_WHILE_CHARGING, default=0): cv.int_,
-    }
-)
-
-COLOR_PALETTE_IDS = [
-    CONF_GRAY_DARK,
-    CONF_GRAY_DARK_2,
-    CONF_GRAY,
-    CONF_ACCENT_PRIMARY,
-    CONF_BLUE,
-    CONF_GREEN,
-    CONF_BLACK,
-    CONF_WHITE,
-    CONF_PINK,
-    CONF_RED,
-    CONF_YELLOW
-]
-
-COLOR_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(HomeThingColorPalette),
-        cv.Optional(CONF_GRAY_DARK): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_GRAY_DARK_2): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_GRAY): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_ACCENT_PRIMARY): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_BLUE): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_GREEN): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_BLACK): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_WHITE): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_PINK): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_RED): cv.use_id(color.ColorStruct),
-        cv.Optional(CONF_YELLOW): cv.use_id(color.ColorStruct),
-    },
-    cv.has_at_least_one_key()
-)
-
-DisplayIconEnabledState = homething_menu_base_ns.enum("DisplayIconEnabledState")
-
-DISPLAY_ICON_MODES = {
-    CONF_OFF: DisplayIconEnabledState.OFF,
-    CONF_ON: DisplayIconEnabledState.ON,
-    CONF_ALWAYS: DisplayIconEnabledState.ALWAYS,
-}
-
-DISPLAY_STATE_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(HomeThingMenuDisplayState),
-        cv.Required(CONF_FONT_SMALL): cv.use_id(font.Font),
-        cv.Required(CONF_FONT_MEDIUM): cv.use_id(font.Font),
-        cv.Required(CONF_FONT_LARGE): cv.use_id(font.Font),
-        cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
-        cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
-        cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
-        cv.Optional(CONF_LAUNCH_IMAGE, default={}): cv.use_id(image.Image_),
-        cv.Optional(CONF_HEADER_HEIGHT, default=16): cv.int_,
-        cv.Optional(CONF_MARGIN_SIZE, default=4): cv.int_,
-        cv.Optional(CONF_BOTTOM_BAR_MARGIN, default=1): cv.int_,
-        cv.Optional(CONF_SLIDER_MARGIN_SIZE, default=8): cv.int_,
-        cv.Optional(CONF_ICON_SIZE, default=18): cv.int_,
-        cv.Optional(CONF_SCROLL_BAR_WIDTH, default=6): cv.int_,
-        cv.Optional(CONF_BOOT_LOGO_SIZE, default=48): cv.int_,
-        cv.Optional(CONF_NOW_PLAYING_MAX_LINES, default=5): cv.int_,
-        cv.Optional(CONF_FONT_SIZE_WIDTH_RATIO, default=0.6): cv.float_,
-        cv.Optional(CONF_DRAW_SHUFFLE, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
-        cv.Optional(CONF_DRAW_REPEAT, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
-        cv.Optional(CONF_DRAW_HEADER_TIME, default=True): cv.boolean,
-        cv.Optional(CONF_DRAW_BATTERY_LEVEL, default=False): cv.boolean,
-        cv.Optional(CONF_DARK_MODE, default=True): cv.boolean,
-        cv.Optional(CONF_DRAW_VOLUME_LEVEL, default=False): cv.boolean,
-        cv.Optional(CONF_DRAW_NOW_PLAYING_BOTTOM_MENU, default=False): cv.boolean,
-        cv.Optional(CONF_BOOT_DEVICE_NAME, default="homeThing"): cv.string,
-        cv.Optional(CONF_COLORS, default={}): COLOR_SCHEMA,
     }
 )
 
@@ -315,10 +203,12 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
             cv.Optional(CONF_BATTERY): BATTERY_SCHEMA,
             cv.Optional(CONF_BACKLIGHT): cv.use_id(light.LightState),
-            cv.Required(CONF_DISPLAY_STATE): DISPLAY_STATE_SCHEMA,
+            cv.Required(CONF_DISPLAY_STATE): cv.use_id(homething_display_state_ns.HomeThingDisplayState),
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
             cv.Optional(CONF_MENU_DISPLAY, default={}): MENU_DISPLAY_SCHEMA,
-            cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
+            cv.Optional(CONF_APPS): cv.All(
+                cv.ensure_list(cv.use_id(homething_app_ns.HomeThingApp)), cv.Length(min=1)
+            ),
             cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
                 {
@@ -333,7 +223,7 @@ CONFIG_SCHEMA =  cv.All(
             ),
         }
     ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_MEDIA_PLAYERS, CONF_HOME_SCREEN, CONF_SCREENS)
+    cv.has_at_least_one_key(CONF_HOME_SCREEN, CONF_SCREENS)
 )
 
 async def ids_to_code(config, var, types):
@@ -363,62 +253,14 @@ async def menu_settings_to_code(config):
     keys_to_code(config, menu_settings, MENU_SETTING_TYPES)
     return menu_settings
 
-DISPLAY_STATE_IDS = [
-    CONF_FONT_SMALL,
-    CONF_FONT_MEDIUM,
-    CONF_FONT_LARGE,
-    CONF_FONT_LARGE_HEAVY,
-    CONF_FONT_MATERIAL_LARGE,
-    CONF_FONT_MATERIAL_SMALL,
-    CONF_LAUNCH_IMAGE
-]
-
-DISPLAY_STATE_TYPES = [
-    CONF_DRAW_NOW_PLAYING_BOTTOM_MENU,
-    CONF_HEADER_HEIGHT,
-    CONF_MARGIN_SIZE,
-    CONF_BOTTOM_BAR_MARGIN,
-    CONF_SLIDER_MARGIN_SIZE,
-    CONF_ICON_SIZE,
-    CONF_SCROLL_BAR_WIDTH,
-    CONF_BOOT_LOGO_SIZE,
-    CONF_NOW_PLAYING_MAX_LINES,
-    CONF_FONT_SIZE_WIDTH_RATIO,
-    CONF_DRAW_SHUFFLE,
-    CONF_DRAW_REPEAT,
-    CONF_DRAW_HEADER_TIME,
-    CONF_DRAW_BATTERY_LEVEL,
-    CONF_DARK_MODE,
-    CONF_DRAW_VOLUME_LEVEL,
-    CONF_BOOT_DEVICE_NAME
-]
-
-async def display_state_to_code(config):
-
-    display_state = cg.new_Pvariable(config[CONF_ID])
-    keys_to_code(config, display_state, DISPLAY_STATE_TYPES)
-    await ids_to_code(config, display_state, DISPLAY_STATE_IDS)
-    
-    if CONF_COLORS in config:
-        color_palette = cg.new_Pvariable(config[CONF_COLORS][CONF_ID])
-        await ids_to_code(config[CONF_COLORS], color_palette, COLOR_PALETTE_IDS)
-        cg.add(display_state.set_color_palette(color_palette))
-    return display_state
-
-async def text_helpers_to_code(config, display_buffer, display_state):
-    text_helpers = cg.new_Pvariable(config)
-    cg.add(text_helpers.set_display_buffer(display_buffer))
-    cg.add(text_helpers.set_display_state(display_state))
-    return text_helpers
-
 MENU_BOOT_IDS = [
     CONF_API,
     CONF_MEDIA_PLAYERS
 ]
 
-async def menu_boot_to_code(config, display_buffer, display_state, menu_header, text_helpers):
-    menu_boot = cg.new_Pvariable(config[CONF_ID], display_buffer, display_state, menu_header, text_helpers)
-    await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
+async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
+    menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header)
+    await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
     return menu_boot
 
 BATTERY_IDS = [
@@ -430,38 +272,20 @@ async def battery_to_code(config, var):
     if CONF_BATTERY in config:
         await ids_to_code(config[CONF_BATTERY], var, BATTERY_IDS)
 
-NOW_PLAYING_IDS = [
-    CONF_MEDIA_PLAYERS
-]
-MENU_HEADER_IDS = [
-    CONF_MEDIA_PLAYERS
-]
-MENU_DISPLAY_IDS = [
-    CONF_MEDIA_PLAYERS
-]
-
-async def menu_display_to_code(config, display_buffer):
+async def menu_display_to_code(config, display_buffer, display_state):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
-    display_state = await display_state_to_code(config[CONF_DISPLAY_STATE])
-    text_helpers = await text_helpers_to_code(menu_display_conf[CONF_TEXT_HELPERS], display_buffer, display_state)
-    refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state, text_helpers)
-    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state, text_helpers)
-    await ids_to_code(config, menu_header, MENU_HEADER_IDS)
+    refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state)
+    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state)
     if CONF_TIME_ID in config[CONF_HEADER]:
         time_ = await cg.get_variable(config[CONF_HEADER][CONF_TIME_ID])
         cg.add(menu_header.set_time_id(time_))
     await battery_to_code(config, menu_header)
-    menu_boot = await menu_boot_to_code(config[CONF_BOOT], display_buffer, display_state, menu_header, text_helpers)
+    menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header)
     await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, text_helpers, refactor, menu_header)
-    await ids_to_code(config, menu_display, MENU_DISPLAY_IDS)
-    
-    if CONF_MEDIA_PLAYERS in config:
-        now_playing = cg.new_Pvariable(menu_display_conf[CONF_NOW_PLAYING], display_buffer, display_state, text_helpers)
-        await ids_to_code(config, now_playing, NOW_PLAYING_IDS)
-        cg.add(menu_display.set_now_playing(now_playing))
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, refactor, menu_header)
+
     return menu_display
 
 async def menu_screen_to_code(config):
@@ -506,13 +330,13 @@ async def menu_screen_to_code(config):
 
 MENU_IDS = [
     CONF_BACKLIGHT,
-    CONF_SLEEP_SWITCH,
-    CONF_MEDIA_PLAYERS
+    CONF_SLEEP_SWITCH
 ]
 
 async def to_code(config):
     display_buffer = await cg.get_variable(config[CONF_DISPLAY])
-    menu_display = await menu_display_to_code(config, display_buffer)
+    display_state = await cg.get_variable(config[CONF_DISPLAY_STATE])
+    menu_display = await menu_display_to_code(config, display_buffer, display_state)
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
 
@@ -526,6 +350,11 @@ async def to_code(config):
     for conf in config.get(CONF_SCREENS, []):
         menu_screen = await menu_screen_to_code(conf)
         cg.add(menu.register_screen(menu_screen))
+
+    # if CONF_APPS in config:
+    #     for app in config[CONF_APPS]:
+    #         new_app = await cg.get_variable(app)
+    #         cg.add(menu.register_app(new_app))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)

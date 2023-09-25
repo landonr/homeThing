@@ -1,10 +1,9 @@
 #pragma once
 
 #include <string>
-#include "esphome/components/homeThing/homeThingMenuDisplayState.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThing/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
@@ -19,15 +18,25 @@
 namespace esphome {
 namespace homething_menu_base {
 
+class HomeThingMenuHeaderSource {
+ public:
+  virtual std::string get_header_title() { return "xx"; }
+  virtual int draw_header_details(
+      int xPos, int yPosOffset, display::DisplayBuffer* display_buffer,
+      homething_display_state::HomeThingDisplayState* display_state) {
+    return 0;
+  }
+};
+
 class HomeThingMenuHeader {
  public:
-  HomeThingMenuHeader(display::DisplayBuffer* new_display_buffer,
-                      HomeThingMenuDisplayState* new_display_state,
-                      HomeThingMenuTextHelpers* new_text_helpers)
+  HomeThingMenuHeader(
+      display::DisplayBuffer* new_display_buffer,
+      homething_display_state::HomeThingDisplayState* new_display_state)
       : display_buffer_(new_display_buffer),
-        display_state_(new_display_state),
-        text_helpers_(new_text_helpers) {}
+        display_state_(new_display_state) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
+  void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void set_battery_percent(sensor::Sensor* battery_percent) {
     battery_percent_ = battery_percent;
   }
@@ -38,14 +47,6 @@ class HomeThingMenuHeader {
     active_menu_screen_ = active_menu_screen;
   }
   void set_time_id(time::RealTimeClock* time_id) { this->esp_time_ = time_id; }
-
-#ifdef USE_MEDIA_PLAYER_GROUP
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group) {
-    media_player_group_ = media_player_group;
-  }
-#endif
 
  private:
   float get_battery_percent() {
@@ -70,21 +71,8 @@ class HomeThingMenuHeader {
   int drawHeaderIcon(std::string title, int xPos, Color iconColor);
   int drawHeaderTime(int oldXPos, int yPosOffset);
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-  int drawPlayPauseIcon(int oldXPos, MenuTitlePlayer menuTitle);
-  int drawShuffle(int oldXPos, int yPosOffset);
-  int drawRepeat(int oldXPos, int yPosOffset);
-  int drawHeaderVolumeLevel(int oldXPos, int yPosOffset);
-#endif
-
-#ifdef USE_MEDIA_PLAYER_GROUP
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-      media_player_group_{nullptr};
-#endif
-
   display::DisplayBuffer* display_buffer_{nullptr};
-  HomeThingMenuDisplayState* display_state_{nullptr};
-  HomeThingMenuTextHelpers* text_helpers_{nullptr};
+  homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
   binary_sensor::BinarySensor* charging_{nullptr};
   time::RealTimeClock* esp_time_{nullptr};

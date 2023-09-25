@@ -24,23 +24,18 @@ wifi: # setup wifi, make sure secrets.yaml exists!
   power_save_mode: HIGH
 
 external_components: #include homething, and esphome-components
-  # - source:
-    #   type: git
-    #   url: https://gitlab.com/geiseri/esphome_extras.git
-    # refresh: 0s
-    # components: [axp192]
-  - source: 
-      type: git
-      url: https://github.com/landonr/esphome-axp192
-      ref: "lando/add-charging-indicator"
-    components: [axp192]
-    refresh: 0s
   - source:
       type: git
       url: https://github.com/landonr/homeThing
       ref: main
+      # type: local
+      # path: components
     refresh: 0s
-    components: [homeThing]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font, external_files ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -54,10 +49,17 @@ external_components: #include homething, and esphome-components
       media_player_source_spotify,
       media_player_source_custom
     ]
-  - source: github://pr#5214 # used to load images on compile
-    components: [ image ]
-  - source: github://pr#5254 # used to load fonts on compile
-    components: [ font, external_files ]
+  # - source:
+    #   type: git
+    #   url: https://gitlab.com/geiseri/esphome_extras.git
+    # refresh: 0s
+    # components: [axp192]
+  - source: 
+      type: git
+      url: https://github.com/landonr/esphome-axp192
+      ref: "lando/add-charging-indicator"
+    components: [axp192]
+    refresh: 0s
 
 packages: # maybe modify: include default ipod controls
   # axp192: !include ../homeThing/common/m5stack-stickc/axp192-marty.yaml # power management and screen backlight
@@ -72,7 +74,7 @@ packages: # maybe modify: include default ipod controls
       common/m5stack-stickc/axp192-marty.yaml, # power management and screen backlight
       common/m5stack-stickc/sleep.yaml, # deep sleep
       common/m5stack-stickc/binary_sensor.yaml, # power management and screen backlight
-      common/images.yaml # boot screen image
+      common/images.yaml, # boot screen image
     ]
     refresh: 0s
 
@@ -138,12 +140,30 @@ cover: # home assistant cover
     name: "Megadesk"
     id: cover_megadesk
 
+homeThingAppNowPlaying:
+  id: now_playing
+  media_player_group: media_group_component
+  display: my_display
+  display_state: display_state_id
+
+homeThingDisplayState:
+  id: display_state_id
+  colors:
+    accent_primary: my_primary_accent
+  draw_battery_level: true
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_heavy_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
+  launch_image: launch_image
+
 homeThing:
   id: homeThingMenu
   settings:
     sleep_after: 14400
     display_timeout_while_charging: 30
-  media_player_group: media_group_component
   display: my_display
   backlight: backlight
   battery:
@@ -152,17 +172,9 @@ homeThing:
   on_redraw:
     then:
       component.update: my_display
-  display_state:
-    colors:
-      accent_primary: my_primary_accent
-    draw_battery_level: true
-    font_small: small_font
-    font_medium: medium_font
-    font_large: large_font
-    font_large_heavy: large_heavy_font
-    font_material_large: material_font_large
-    font_material_small: material_font_small
-    launch_image: launch_image
+  display_state: display_state_id
+  apps:
+    - now_playing
   screens:
     - name: Desk Screen
       entities:
