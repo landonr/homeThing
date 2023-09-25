@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
-#include "esphome/components/homeThingApp/HomeThingApp.h"
+#include "esphome/components/homeThingApp/homeThingApp.h"
 #include "esphome/components/remote_base/pronto_protocol.h"
 #include "esphome/components/remote_transmitter/remote_transmitter.h"
 namespace esphome {
