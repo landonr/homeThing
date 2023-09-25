@@ -24,6 +24,31 @@ wifi: # setup wifi, make sure secrets.yaml exists!
   power_save_mode: HIGH
 
 external_components: #include homething, and esphome-components
+  - source:
+      type: git
+      url: https://github.com/landonr/homeThing
+      ref: lando/refactor-now-playing
+      # type: local
+      # path: components
+    refresh: 0s
+    components: [homeThingDisplayState, homeThing]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font, external_files ]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
   # - source:
     #   type: git
     #   url: https://gitlab.com/geiseri/esphome_extras.git
@@ -50,8 +75,6 @@ packages: # maybe modify: include default ipod controls
       common/m5stack-stickc/sleep.yaml, # deep sleep
       common/m5stack-stickc/binary_sensor.yaml, # power management and screen backlight
       common/images.yaml, # boot screen image
-      common/homeThingBase.yaml, # homeThing base components
-      common/homethingMediaPlayerComponents.yaml # homeThing media player components
     ]
     refresh: 0s
 

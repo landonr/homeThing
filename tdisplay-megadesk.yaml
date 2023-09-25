@@ -27,6 +27,33 @@ substitutions:
   friendly_name: "mega homething"
   log_level: "WARN"
   
+external_components:
+  - source:
+      type: git
+      url: https://github.com/landonr/homeThing
+      ref: lando/refactor-now-playing
+      # type: local
+      # path: components
+    refresh: 0s
+    components: [homeThingDisplayState, homeThing]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font, external_files ]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
@@ -39,8 +66,6 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
       common/images.yaml, # boot screen image
-      common/homeThingBase.yaml, # homeThing base components
-      common/homethingMediaPlayerComponents.yaml # homeThing media player components
     ]
     refresh: 0s
 
