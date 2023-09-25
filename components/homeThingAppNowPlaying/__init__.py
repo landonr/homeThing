@@ -7,6 +7,7 @@ CONF_MEDIA_PLAYERS = "media_player_group"
 CONF_DISPLAY = "display"
 CONF_DISPLAY_STATE = "display_state"
 AUTO_LOAD = ["homeThingApp"]
+DEPENDENCIES = ["homeThingApp"]
 
 homething_menu_now_playing_ns = cg.esphome_ns.namespace("homething_menu_now_playing")
 
