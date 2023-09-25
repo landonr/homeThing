@@ -34,7 +34,7 @@ external_components:
       # type: local
       # path: components
     refresh: 0s
-    components: [homeThingDisplayState, homeThing]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
   - source: github://pr#5214 # used to load images on compile
     components: [ image ]
   - source: github://pr#5254 # used to load fonts on compile
@@ -68,8 +68,6 @@ packages: # maybe modify: include default ipod controls
       common/m5stack-fire/backlight.yaml, # backlight
       common/m5stack-fire/sidelight.yaml, # sidelight
       common/images.yaml, # boot screen image
-      # common/homeThingBase.yaml, # homeThing base components
-      # common/homethingMediaPlayerComponents.yaml # homeThing media player components
     ]
     refresh: 0s
 
@@ -142,6 +140,12 @@ cover: # home assistant cover
     name: "Megadesk"
     id: cover_megadesk
 
+homeThingAppNowPlaying:
+  id: now_playing
+  media_player_group: media_group_component
+  display: my_display
+  display_state: display_state_id
+
 homeThingDisplayState:
   id: display_state_id
   colors:
@@ -164,6 +168,8 @@ homeThing:
     then:
       component.update: my_display
   display_state: display_state_id
+  apps:
+    - now_playing
   screens:
     - name: Desk Screen
       entities:

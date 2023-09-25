@@ -35,7 +35,7 @@ external_components:
       # type: local
       # path: components
     refresh: 0s
-    components: [homeThingDisplayState, homeThing]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
   - source: github://pr#5214 # used to load images on compile
     components: [ image ]
   - source: github://pr#5254 # used to load fonts on compile
@@ -105,6 +105,12 @@ homeassistant_media_player:
     - id: media_player_beam
       type: speaker
 
+homeThingAppNowPlaying:
+  id: now_playing
+  media_player_group: media_group_component
+  display: my_display
+  display_state: display_state_id
+
 homeThingDisplayState:
   id: display_state_id
   colors:
@@ -133,6 +139,8 @@ homeThing:
     then:
       component.update: my_display
   display_state: display_state_id
+  apps:
+    - now_playing
   screens:
     - name: Desk Screen
       entities:
