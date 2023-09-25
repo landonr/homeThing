@@ -65,14 +65,18 @@ void HomeThingAppSnake::draw_app(
     int menuIndex,
     const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
   active_tick();
+  auto snakeColor = display_state_->get_color_palette()->get_green();
   for (auto segment : snake) {
-    draw_resized_pixel(segment.x, segment.y, Color(255, 255, 255));
+    draw_resized_pixel(segment.x, segment.y, snakeColor);
   }
-  draw_resized_pixel(fruit_position_.x, fruit_position_.y, Color(255, 0, 0));
+  auto fruitColor = display_state_->get_color_palette()->get_red();
+  draw_resized_pixel(fruit_position_.x, fruit_position_.y, fruitColor);
+
+  auto borderColor = display_state_->get_color_palette()->get_accent_primary();
   display_buffer_->rectangle(
       margin, margin + display_state_->get_header_height(),
       get_display_bounds().x * displayScale,
-      get_display_bounds().y * displayScale, Color(255, 255, 255));
+      get_display_bounds().y * displayScale, borderColor);
 }
 
 void HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {}

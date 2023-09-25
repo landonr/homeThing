@@ -26,14 +26,15 @@ void HomeThingCatToyApp::draw_app(
     return;
   }
   auto largeFont = display_state_->get_font_large();
-  auto primaryTextColor = display_state_->primaryTextColor();
+  auto primaryTextColor =
+      display_state_->get_color_palette()->get_accent_primary();
 
-  auto color = Color(128, 0, 128);
+  auto color = display_state_->get_color_palette()->get_pink();
   int yPos = display_buffer_->get_height() * 0.1;
   display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
                           color, display::TextAlign::TOP_CENTER, "Cat Toy!");
 
-  color = Color(255, 50, 100);
+  color = display_state_->get_color_palette()->get_red();
   display_buffer_->printf((display_buffer_->get_width() * 0.5) + 1, yPos + 1,
                           largeFont, color, display::TextAlign::TOP_CENTER,
                           "Cat Toy!");

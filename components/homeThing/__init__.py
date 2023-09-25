@@ -351,10 +351,10 @@ async def to_code(config):
         menu_screen = await menu_screen_to_code(conf)
         cg.add(menu.register_screen(menu_screen))
 
-    # if CONF_APPS in config:
-    #     for app in config[CONF_APPS]:
-    #         new_app = await cg.get_variable(app)
-    #         cg.add(menu.register_app(new_app))
+    if CONF_APPS in config:
+        for app in config[CONF_APPS]:
+            new_app = await cg.get_variable(app)
+            cg.add(menu.register_app(new_app))
 
     await battery_to_code(config, menu)
     await ids_to_code(config, menu, MENU_IDS)
