@@ -40,27 +40,29 @@
 ### 2. Include the homeThing components in your yaml
 ```yaml
 external_components:
-  - source:
+  - source: # homeThing, display setup, and now playing app
       type: git
       url: https://github.com/landonr/homeThing
       ref: main
-    components: [homeThing] # homething menu
+    refresh: 0s
+    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
+  - source: github://pr#5214 # used to load images on compile
+    components: [ image ]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font, external_files ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
       ref: main
+    refresh: 0s
     components: [
-      homeassistant_component, # base component to control home assistant entities. required for all
-      homeassistant_media_player, # only include if you use media players in menu
-      media_player_source, # required for all media player sources
-      media_player_source_sonos, # loads sonos favorites into a list
-      media_player_source_spotify, # loads spotify playlists from Spotcast sensor into a list
-      media_player_source_custom # define custom source lists
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
     ]
-  - source: github://pr#5214 # used to load images on compile
-    components: [ image ]
-  - source: github://pr#5254 # used to load fonts on compile
-    components: [ font ]
 ```
 
 ### 3. Setup Device
@@ -79,6 +81,7 @@ packages:
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/fonts.yaml, # default font
       common/icon_fonts.yaml # material icons
+      common/images.yaml, # boot screen image
     ]
     refresh: 0s
 ```
@@ -121,7 +124,7 @@ media_player:
     soundbar:
       speaker: media_player_beam
 ```
-### 5. Set up the media player group
+### 5. Set up the media player group and now playing app
 ```yaml
 # media player menu - replace with your IDs
 homeassistant_media_player:
@@ -136,6 +139,12 @@ homeassistant_media_player:
       command:
         - homeassistant.service:
             service: script.sonos_group_all
+
+homeThingAppNowPlaying:
+  id: now_playing
+  media_player_group: media_group_component
+  display: my_display
+  display_state: display_state_id
 ```
 
 ### 6. Set up the homeThing menu
@@ -144,7 +153,18 @@ full config documentation [here](MenuOptions.md)
 
 ```yaml
 # homeThing config
-# you only need one menu _group
+
+homeThingDisplayState:
+  id: display_state_id
+  draw_battery_level: true
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
+  launch_image: launch_image
+
 homeThing:
   id: homeThingMenu
   sleep_switch: sleep_toggle #optional
@@ -152,8 +172,9 @@ homeThing:
   battery: #optional
     battery_percent: battery_percent
     charging: charging
-   # need atleast 1 group_component
-  media_player_group: media_group_component
+  display_state: display_state_id
+  apps: # you can have multiple apps
+    - now_playing
   display: my_display # required
   on_redraw: # required
     then:
