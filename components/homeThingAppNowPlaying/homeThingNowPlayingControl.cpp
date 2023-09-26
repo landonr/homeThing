@@ -29,12 +29,12 @@ void HomeThingMenuNowPlayingControl::rootMenuTitles(
       title = media_player_group_->active_player_->get_name();
     }
     menu_titles->push_back(new homething_menu_base::MenuTitleBase(
-        title, "", homething_menu_base::NoMenuTitleRightIcon));
+        title, "", homething_menu_base::ArrowMenuTitleRightIcon));
     menu_titles->push_back(new homething_menu_base::MenuTitleBase(
-        "Sources", "", homething_menu_base::NoMenuTitleRightIcon));
+        "Sources", "", homething_menu_base::ArrowMenuTitleRightIcon));
     if (media_player_group_->totalPlayers() > 1) {
       menu_titles->push_back(new homething_menu_base::MenuTitleBase(
-          "Media Players", "", homething_menu_base::NoMenuTitleRightIcon));
+          "Media Players", "", homething_menu_base::ArrowMenuTitleRightIcon));
     }
   }
 }

@@ -499,6 +499,11 @@ bool HomeThingMenuBase::upMenu() {
   }
   if (menuTree.size() > 1) {
     menuTree.pop_back();
+    if (menuTree.back() == rootMenu) {
+      reset_menu();
+      update_display();
+      return true;
+    }
     menuIndex = 0;
     reload_menu_items_ = true;
     menu_titles.clear();
