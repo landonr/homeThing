@@ -1,6 +1,7 @@
 # Yaml options for homeThing
 
 ## Display State
+[Display State is a separate component so that it can be reused. It needs to be included separately, full readme](https://github.com/landonr/homeThing/tree/main/components/homeThingDisplayState)
 ### Required
 - **font_small**: required - id of the small font
 - **font_medium**: required - id of the medium font
