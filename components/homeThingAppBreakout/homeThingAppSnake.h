@@ -9,9 +9,8 @@ namespace homething_app_snake {
 class HomeThingAppSnakeHeader
     : public homething_menu_base::HomeThingMenuHeaderSource {
  public:
-  HomeThingAppSnakeHeader(int* score) : score(score) {}
   // header
-  std::string get_header_title() { return to_string(*score) + "pts"; }
+  std::string get_header_title() { return "Snake"; }
 
   int draw_header_details(
       int xPos, int yPos, display::DisplayBuffer* display_buffer,
@@ -23,18 +22,11 @@ class HomeThingAppSnakeHeader
  protected:
  private:
   const char* const TAG = "homething.app.snake.header";
-  int* score;
 };
 
 struct Coordinate {
   int x, y;
   Coordinate(int newX, int newY) : x(newX), y(newY) {}
-};
-
-enum GameState {
-  GAME_STATE_PLAYING,
-  GAME_STATE_GAME_OVER,
-  GAME_STATE_STARTING
 };
 
 class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
@@ -77,8 +69,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
     return header_source_;
   }
-  HomeThingMenuHeaderSource* header_source_ =
-      new HomeThingAppSnakeHeader(&score);
+  HomeThingMenuHeaderSource* header_source_ = new HomeThingAppSnakeHeader();
 
   void set_display_buffer(display::DisplayBuffer* display_buffer) {
     display_buffer_ = display_buffer;
@@ -115,16 +106,6 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   std::vector<Coordinate> snake = {Coordinate(30, 30)};
   double displayScale = 16;
   int margin = 4;
-  int score = 0;
-  GameState game_state_ = GAME_STATE_STARTING;
-
-  void active_tick_starting();
-  void active_tick_game_over();
-  void active_tick_playing();
-
-  void draw_app_starting();
-  void draw_app_game_over();
-  void draw_app_playing();
 };
 }  // namespace homething_app_snake
 }  // namespace esphome
