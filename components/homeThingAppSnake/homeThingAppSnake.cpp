@@ -7,12 +7,13 @@ namespace homething_app_snake {
 void HomeThingAppSnake::reset() {
   ESP_LOGI(TAG, "Resetting snake");
   const auto newFruitPosition = get_random_coordinate();
-  const auto newSnakePosition = get_random_coordinate();
+  const auto newSnakePosition = Coordinate(2, 2);
   fruit_position_.x = newFruitPosition.x;
   fruit_position_.y = newFruitPosition.y;
   snake.clear();
   snake.push_back(newSnakePosition);
   score = 0;
+  snake_direction_ = Coordinate(1, 0);
 }
 
 Coordinate HomeThingAppSnake::get_random_coordinate() {
@@ -94,7 +95,7 @@ void HomeThingAppSnake::draw_app_starting() {
       display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
       display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
 
-  text = "Center to start";
+  text = "Center to start. Up to escape.";
   yPos = display_buffer_->get_height() * 0.6;
   display_state_->drawTextWrapped(
       display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
@@ -125,7 +126,7 @@ void HomeThingAppSnake::draw_app_game_over() {
       display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
       display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
 
-  text = "Center to start";
+  text = "Center to continue";
   yPos = display_buffer_->get_height() * 0.6;
   display_state_->drawTextWrapped(
       display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
@@ -227,9 +228,9 @@ void HomeThingAppSnake::rotaryScrollCounterClockwise(int rotary) {}
 homething_menu_app::NavigationCoordination HomeThingAppSnake::buttonPressUp() {
   switch (game_state_) {
     case GameState::GAME_STATE_STARTING:
-    case GameState::GAME_STATE_GAME_OVER:
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationPop;
+    case GameState::GAME_STATE_GAME_OVER:
     case GameState::GAME_STATE_PLAYING:
       break;
   }
