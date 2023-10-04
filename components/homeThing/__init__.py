@@ -199,11 +199,11 @@ CONFIG_SCHEMA =  cv.All(
         {
             cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
             cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
+            cv.Required(CONF_DISPLAY_STATE): cv.use_id(homething_display_state_ns.HomeThingDisplayState),
             cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
             cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
             cv.Optional(CONF_BATTERY): BATTERY_SCHEMA,
             cv.Optional(CONF_BACKLIGHT): cv.use_id(light.LightState),
-            cv.Required(CONF_DISPLAY_STATE): cv.use_id(homething_display_state_ns.HomeThingDisplayState),
             cv.Optional(CONF_HEADER, default={}): HEADER_SCHEMA,
             cv.Optional(CONF_MENU_DISPLAY, default={}): MENU_DISPLAY_SCHEMA,
             cv.Optional(CONF_APPS): cv.All(

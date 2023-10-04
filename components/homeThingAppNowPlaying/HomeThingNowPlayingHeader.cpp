@@ -4,23 +4,20 @@ namespace esphome {
 namespace homething_menu_now_playing {
 
 std::string HomeThingMenuNowPlayingHeader::get_header_title() {
-  switch (*app_menu_index_) {
-    case 0: {
+  switch (*menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING: {
       if (media_player_group_ == nullptr) {
-        return "Now Playing";
+        return get_menu_title(*menu_state_);
       }
       if (media_player_group_->active_player_ == nullptr) {
         return "Loading...";
       }
       return media_player_group_->active_player_->get_name();
-      break;
     }
-    case 1:
-      return "Sources";
-      break;
-    case 2:
-      return "Media Players";
-      break;
+    case NOW_PLAYING_MENU_STATE_SOURCE:
+    case NOW_PLAYING_MENU_STATE_MEDIA_PLAYERS:
+    case NOW_PLAYING_MENU_STATE_GROUPING:
+      return get_menu_title(*menu_state_);
     default:
       break;
   }
@@ -30,7 +27,7 @@ std::string HomeThingMenuNowPlayingHeader::get_header_title() {
 int HomeThingMenuNowPlayingHeader::draw_header_details(
     int xPos, int yPos, display::DisplayBuffer* display_buffer,
     homething_display_state::HomeThingDisplayState* display_state) {
-  switch (*app_menu_index_) {
+  switch (*menu_state_) {
     case 0:
       break;
     default:

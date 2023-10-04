@@ -16,7 +16,8 @@ enum NavigationCoordination {
   NavigationCoordinationPop,
   NavigationCoordinationRoot,
   NavigationCoordinationUpdate,
-  NavigationCoordinationReturn
+  NavigationCoordinationReturn,
+  NavigationCoordinationReload,
 };
 
 class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,

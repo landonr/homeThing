@@ -290,64 +290,6 @@ static void activePlayerSourceItemTitles(
   }
 }
 
-static void groupTitleSwitches(
-    const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
-        media_players,
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer*
-        newSpeakerGroupParent,
-    std::vector<MenuTitleBase*>* menu_titles) {
-  std::vector<std::string> groupedMembers;
-  (*menu_titles)
-      .push_back(new MenuTitlePlayer(
-          "Group " + newSpeakerGroupParent->get_name(),
-          newSpeakerGroupParent->get_entity_id(), NoMenuTitleLeftIcon,
-          ArrowMenuTitleRightIcon, newSpeakerGroupParent));
-
-  for (auto& media_player : (*media_players)) {
-    if (newSpeakerGroupParent->get_entity_id() ==
-            media_player->get_entity_id() ||
-        media_player->get_player_type() !=
-            homeassistant_media_player::RemotePlayerType::
-                SpeakerRemotePlayerType ||
-        !media_player->supports(homeassistant_media_player::
-                                    MediaPlayerSupportedFeature::GROUPING)) {
-      continue;
-    } else {
-      auto speaker = static_cast<
-          homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-          media_player);
-      auto groupMembers = speaker->get_group_members();
-      if (std::find(groupMembers->begin(), groupMembers->end(),
-                    newSpeakerGroupParent->get_entity_id()) !=
-          groupMembers->end()) {
-        (*menu_titles)
-            .push_back(new MenuTitlePlayer(
-                speaker->get_name(), speaker->get_entity_id(),
-                OnMenuTitleLeftIcon, NoMenuTitleRightIcon, speaker));
-      } else {
-        (*menu_titles)
-            .push_back(new MenuTitlePlayer(
-                speaker->get_name(), speaker->get_entity_id(),
-                OffMenuTitleLeftIcon, NoMenuTitleRightIcon, speaker));
-      }
-    }
-  }
-}
-
-static std::string friendlyNameForEntityId(
-    std::string speakerentityId,
-    const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
-        media_players) {
-  for (auto& speaker : (*media_players)) {
-    if (speaker->get_entity_id() == speakerentityId) {
-      return speaker->get_name();
-    }
-  }
-  return "";
-}
-
 static void speakerNowPlayingMenuStates(
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* player,
     bool bottomMenu, std::vector<MenuTitleBase*>* menu_titles) {
@@ -402,64 +344,6 @@ static void speakerNowPlayingMenuStates(
             .push_back(
                 new MenuTitleBase(title, entity_id, NoMenuTitleRightIcon));
         break;
-    }
-  }
-}
-
-static void groupTitleString(
-    const std::vector<
-        homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
-        media_players,
-    std::vector<MenuTitleBase*>* menu_titles) {
-  std::vector<std::string> groupedMembers;
-  for (auto& media_player : (*media_players)) {
-    ESP_LOGD(MENU_TITLE_TAG, "groupTitleString: %s %s",
-             media_player->get_name().c_str(),
-             media_player->get_entity_id().c_str());
-    if (std::find(groupedMembers.begin(), groupedMembers.end(),
-                  media_player->get_entity_id()) != groupedMembers.end() ||
-        media_player->get_player_type() !=
-            homeassistant_media_player::RemotePlayerType::
-                SpeakerRemotePlayerType ||
-        !media_player->supports(homeassistant_media_player::
-                                    MediaPlayerSupportedFeature::GROUPING)) {
-      // skip grouped members that were already found
-      continue;
-    }
-    auto speaker = static_cast<
-        homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-        media_player);
-    auto groupMembers = speaker->get_group_members();
-    if (groupMembers->size() > 1) {
-      if ((*groupMembers)[0] != speaker->get_entity_id()) {
-        ESP_LOGD(MENU_TITLE_TAG, "%s not parent %s", (*groupMembers)[0].c_str(),
-                 speaker->get_entity_id().c_str());
-        // speaker isn't the group parent
-        continue;
-      }
-      (*menu_titles)
-          .push_back(new MenuTitlePlayer(
-              speaker->get_name(), speaker->get_entity_id(),
-              NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon, speaker));
-      for (auto& groupedSpeaker : (*groupMembers)) {
-        if (groupedSpeaker != speaker->get_entity_id()) {
-          groupedMembers.push_back(groupedSpeaker);
-          std::string groupedSpeakerName =
-              friendlyNameForEntityId(groupedSpeaker, media_players);
-          if (groupedSpeakerName != "") {
-            (*menu_titles)
-                .push_back(
-                    new MenuTitlePlayer(groupedSpeakerName, groupedSpeaker,
-                                        GroupedMenuTitleLeftIcon,
-                                        ArrowMenuTitleRightIcon, speaker));
-          }
-        }
-      }
-    } else {
-      (*menu_titles)
-          .push_back(new MenuTitlePlayer(
-              speaker->get_name(), speaker->get_entity_id(),
-              NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon, speaker));
     }
   }
 }
