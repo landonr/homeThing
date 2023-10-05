@@ -223,7 +223,7 @@ CONFIG_SCHEMA =  cv.All(
             ),
         }
     ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_HOME_SCREEN, CONF_SCREENS)
+    cv.has_at_least_one_key(CONF_HOME_SCREEN, CONF_SCREENS, CONF_APPS)
 )
 
 async def ids_to_code(config, var, types):
