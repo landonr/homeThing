@@ -6,6 +6,8 @@
 
 namespace esphome {
 namespace homething_menu_base {
+  
+#ifdef USE_MEDIA_PLAYER_GROUP
 void HomeThingMenuBoot::set_media_player_group(
     homeassistant_media_player::HomeAssistantMediaPlayerGroup*
         media_player_group) {
@@ -15,6 +17,8 @@ void HomeThingMenuBoot::set_media_player_group(
         [this](float state) { this->callback_(); });
   }
 }
+#endif
+
 int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
     int xPos, int yPos, const MenuStates activeMenuState) {
   std::string bootTitle = "homeThing";
