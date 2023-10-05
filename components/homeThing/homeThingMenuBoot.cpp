@@ -6,7 +6,7 @@
 
 namespace esphome {
 namespace homething_menu_base {
-  
+
 #ifdef USE_MEDIA_PLAYER_GROUP
 void HomeThingMenuBoot::set_media_player_group(
     homeassistant_media_player::HomeAssistantMediaPlayerGroup*

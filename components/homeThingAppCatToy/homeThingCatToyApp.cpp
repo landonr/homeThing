@@ -14,7 +14,20 @@ void HomeThingCatToyApp::app_menu_titles(
 // menu screens
 homething_menu_app::NavigationCoordination HomeThingCatToyApp::app_menu_select(
     int index) {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+
+  auto call = remote_transmitter_->transmit();
+  esphome::remote_base::ProntoData data = {
+      "0000 006D 0022 0000 0143 00A0 0015 0014 0015 0014 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 003A 0015 003A 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A "
+      "0015 06C3"};
+  esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
+  call.set_send_times(1);
+  call.perform();
+  return homething_menu_app::NavigationCoordination::
+      NavigationCoordinationReturn;
 }
 bool HomeThingCatToyApp::should_draw_app() {
   return true;
@@ -68,19 +81,7 @@ void HomeThingCatToyApp::reset_menu() {}
 void HomeThingCatToyApp::set_app_menu_index(int app_menu_index) {}
 
 // buttons
-void HomeThingCatToyApp::rotaryScrollClockwise(int rotary) {
-  auto call = remote_transmitter_->transmit();
-  esphome::remote_base::ProntoData data = {
-      "0000 006D 0022 0000 0143 00A0 0015 0014 0015 0014 0015 0014 0015 0014 "
-      "0015 0014 0015 0014 0015 0014 0015 0014 0015 003A 0015 003A 0015 003A "
-      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 0014 0015 0014 "
-      "0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 003A "
-      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A "
-      "0015 06C3"};
-  esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
-  call.set_send_times(1);
-  call.perform();
-}
+void HomeThingCatToyApp::rotaryScrollClockwise(int rotary) {}
 
 void HomeThingCatToyApp::rotaryScrollCounterClockwise(int rotary) {
   auto call = remote_transmitter_->transmit();
@@ -117,7 +118,19 @@ HomeThingCatToyApp::buttonPressRight() {
 
 homething_menu_app::NavigationCoordination
 HomeThingCatToyApp::buttonPressSelect(int menuIndex) {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+  auto call = remote_transmitter_->transmit();
+  esphome::remote_base::ProntoData data = {
+      "0000 006D 0022 0000 0143 00A0 0015 0014 0015 0014 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 003A 0015 003A 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A "
+      "0015 06C3"};
+  esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
+  call.set_send_times(1);
+  call.perform();
+  return homething_menu_app::NavigationCoordination::
+      NavigationCoordinationReturn;
 }
 
 homething_menu_app::NavigationCoordination
