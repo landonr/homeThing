@@ -2,6 +2,7 @@
 
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
+#include "esphome/components/homeThingAppNowPlaying/NowPlayingMenuState.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
@@ -15,9 +16,8 @@ class HomeThingMenuNowPlayingHeader
   HomeThingMenuNowPlayingHeader(
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group,
-      int* app_menu_index)
-      : media_player_group_(media_player_group),
-        app_menu_index_(app_menu_index) {}
+      NowPlayingMenuState* menu_state)
+      : media_player_group_(media_player_group), menu_state_(menu_state) {}
   // header
   std::string get_header_title();
 
@@ -42,7 +42,7 @@ class HomeThingMenuNowPlayingHeader
       int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
       homething_display_state::HomeThingDisplayState* display_state);
   const char* const TAG = "homething.nowplaying.control.header";
-  int* app_menu_index_;
+  NowPlayingMenuState* menu_state_;
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

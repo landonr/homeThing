@@ -168,6 +168,11 @@ bool HomeThingMenuBase::selectMenu() {
               NavigationCoordinationRoot:
             topMenu();
             return true;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            return true;
         }
       }
 #endif
@@ -439,6 +444,12 @@ void HomeThingMenuBase::buttonPressSelect() {
                 NavigationCoordinationRoot:
               topMenu();
               return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationReload:
+              menuIndex = 0;
+              reload_menu_items_ = true;
+              update_display();
+              return;
           }
         }
 #endif
@@ -662,7 +673,7 @@ void HomeThingMenuBase::buttonPressUp() {
   switch (menuTree.back()) {
     case appMenu:
 #ifdef USE_HOMETHING_APP
-      if (active_app_ && active_app_->should_draw_app()) {
+      if (active_app_) {
         switch (active_app_->buttonPressUp()) {
           case homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn:
@@ -681,6 +692,12 @@ void HomeThingMenuBase::buttonPressUp() {
           case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
             return;
         }
       }
@@ -742,6 +759,12 @@ void HomeThingMenuBase::buttonPressDown() {
               NavigationCoordinationRoot:
             topMenu();
             return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
+            return;
         }
       }
 #endif
@@ -776,6 +799,12 @@ void HomeThingMenuBase::buttonPressLeft() {
           case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
             return;
         }
       }
@@ -814,6 +843,12 @@ void HomeThingMenuBase::buttonPressRight() {
               NavigationCoordinationRoot:
             topMenu();
             return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
+            return;
         }
       }
 #endif
@@ -848,6 +883,12 @@ void HomeThingMenuBase::buttonReleaseScreenLeft() {
           case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
             return;
         }
       }
@@ -898,6 +939,12 @@ void HomeThingMenuBase::buttonPressScreenLeft() {
               NavigationCoordinationRoot:
             topMenu();
             return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
+            return;
         }
       }
 #endif
@@ -929,6 +976,12 @@ void HomeThingMenuBase::buttonPressScreenRight() {
           case homething_menu_app::NavigationCoordination::
               NavigationCoordinationRoot:
             topMenu();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
             return;
         }
       }

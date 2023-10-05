@@ -1,16 +1,23 @@
 #pragma once
 
+#include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
-#include "esphome/components/homeThingApp/homeThingApp.h"
-#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingDisplay.h"
-#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingOptionMenu.h"
-#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
-
-#include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThingAppNowPlaying/HomeThingNowPlayingHeader.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
+
+#include "esphome/components/homeThingApp/homeThingApp.h"
+
+#include "esphome/components/homeThingAppNowPlaying/HomeThingNowPlayingHeader.h"
+#include "esphome/components/homeThingAppNowPlaying/NowPlayingMenuState.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingDisplay.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingOptionMenu.h"
+
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingMenuGroup.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingMenuMediaPlayers.h"
+#include "esphome/components/homeThingAppNowPlaying/homeThingNowPlayingMenuSources.h"
+
+#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 
 namespace esphome {
 namespace homething_menu_now_playing {
@@ -83,18 +90,10 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   HomeThingMenuNowPlayingOptionMenu* circle_menu_ =
       new HomeThingMenuNowPlayingOptionMenu();
   HomeThingMenuNowPlaying* now_playing_display_{nullptr};
-  void select_source_menu(int index);
-  int app_menu_index_ = 0;
+  NowPlayingMenuState menu_state_ = NOW_PLAYING_MENU_STATE_NOW_PLAYING;
 
  private:
   const char* const TAG = "homething.nowplaying.control";
-
-  // menu titles
-
-  void sourceMenuTitles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-  void media_player_menu_titles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome
