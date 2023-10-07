@@ -94,8 +94,8 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
                                            : NoMenuTitleRightIcon;
         menu_titles->push_back(new MenuTitleLight(title, "", state, rightIcon,
                                                   light::rgbLightColor(light)));
-#endif
         break;
+#endif
       }
       case MenuItemTypeCover: {
 #ifdef USE_COVER
@@ -106,14 +106,25 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
                                       : OnMenuTitleLeftIcon;
         menu_titles->push_back(new MenuTitleToggle(
             title, coverObject->get_object_id(), state, NoMenuTitleRightIcon));
-#endif
         break;
+#endif
+      }
+      case MenuItemTypeSwitch: {
+#ifdef USE_SWITCH
+        auto switchObject = static_cast<switch_::Switch*>(std::get<1>(entity));
+        ESP_LOGD(TAG, "switch state %d", switchObject->state);
+        MenuTitleLeftIcon state = switchObject->state
+                                      ? OnMenuTitleLeftIcon
+                                      : OffMenuTitleLeftIcon;
+        menu_titles->push_back(new MenuTitleToggle(
+            title, switchObject->get_object_id(), state, NoMenuTitleRightIcon));
+        break;
+#endif
       }
       case MenuItemTypeNumber:
       case MenuItemTypeButton:
       case MenuItemTypeSensor:
       case MenuItemTypeTextSensor:
-      case MenuItemTypeSwitch:
       case MenuItemTypeTitle:
       case MenuItemTypeCommand:
         menu_titles->push_back(
@@ -153,7 +164,7 @@ bool HomeThingMenuScreen::select_menu(int index) {
       auto switchObject =
           static_cast<switch_::Switch*>(std::get<1>(entities_[index]));
       switchObject->toggle();
-      return true;
+      return false;
 #endif
       break;
     }
