@@ -202,7 +202,7 @@ void HomeThingMenuRefactor::drawLightSwitch(bool switchState, int yPos,
         xPos - 1, yPos, display_state_->get_icon_size() + 1,
         display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
-        display_state_->get_color_palette()->get_black());
+        display_state_->get_color_palette()->get_accent_primary());
   }
   yPos += (display_state_->get_margin_size() / 4);
   if (switchState) {
@@ -213,6 +213,13 @@ void HomeThingMenuRefactor::drawLightSwitch(bool switchState, int yPos,
     display_buffer_->printf(xPos, yPos,
                             display_state_->get_font_material_small(),
                             lightColor, "󰌶");
+  }
+  bool drawLightOutline = !display_state_->get_dark_mode() && !rowSelected &&
+                          lightColor == Color(255, 255, 255);
+  if (drawLightOutline) {
+    display_buffer_->printf(
+        xPos, yPos, display_state_->get_font_material_small(),
+        display_state_->get_color_palette()->get_black(), "󰌶");
   }
 }
 
@@ -227,7 +234,7 @@ void HomeThingMenuRefactor::drawArrow(int yPos, int menuTitlesCount,
       yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
-      display_state_->primaryTextColor());
+      display_state_->secondaryTextColor());
   display_buffer_->line(
       xPos,
       yPos +
@@ -238,7 +245,7 @@ void HomeThingMenuRefactor::drawArrow(int yPos, int menuTitlesCount,
       yPos + (display_state_->get_font_medium()->get_baseline() +
               display_state_->get_margin_size()) /
                  2,
-      display_state_->primaryTextColor());
+      display_state_->secondaryTextColor());
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

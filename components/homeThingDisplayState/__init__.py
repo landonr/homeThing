@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import font, color, image
-from esphome.const import  CONF_ID, CONF_RED, CONF_BLUE, CONF_GREEN
+from esphome.components import font, color, image, switch
+from esphome.const import  CONF_ID, CONF_RED, CONF_BLUE, CONF_GREEN, CONF_NAME
 
 homething_display_state_ns = cg.esphome_ns.namespace("homething_display_state")
 HomeThingDisplayState = homething_display_state_ns.class_("HomeThingDisplayState")
@@ -91,6 +91,7 @@ DISPLAY_ICON_MODES = {
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingDisplayState),
+        cv.Optional(CONF_DARK_MODE): cv.use_id(switch.Switch),
         cv.Required(CONF_FONT_SMALL): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MEDIUM): cv.use_id(font.Font),
         cv.Required(CONF_FONT_LARGE): cv.use_id(font.Font),
@@ -111,7 +112,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_DRAW_REPEAT, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
         cv.Optional(CONF_DRAW_HEADER_TIME, default=True): cv.boolean,
         cv.Optional(CONF_DRAW_BATTERY_LEVEL, default=False): cv.boolean,
-        cv.Optional(CONF_DARK_MODE, default=True): cv.boolean,
         cv.Optional(CONF_DRAW_VOLUME_LEVEL, default=False): cv.boolean,
         cv.Optional(CONF_DRAW_NOW_PLAYING_BOTTOM_MENU, default=False): cv.boolean,
         cv.Optional(CONF_BOOT_DEVICE_NAME, default="homeThing"): cv.string,
@@ -138,7 +138,7 @@ DISPLAY_STATE_IDS = [
     CONF_FONT_LARGE_HEAVY,
     CONF_FONT_MATERIAL_LARGE,
     CONF_FONT_MATERIAL_SMALL,
-    CONF_LAUNCH_IMAGE
+    CONF_LAUNCH_IMAGE,
 ]
 
 DISPLAY_STATE_TYPES = [
@@ -156,7 +156,6 @@ DISPLAY_STATE_TYPES = [
     CONF_DRAW_REPEAT,
     CONF_DRAW_HEADER_TIME,
     CONF_DRAW_BATTERY_LEVEL,
-    CONF_DARK_MODE,
     CONF_DRAW_VOLUME_LEVEL,
     CONF_BOOT_DEVICE_NAME
 ]
@@ -170,3 +169,7 @@ async def to_code(config):
         color_palette = cg.new_Pvariable(config[CONF_COLORS][CONF_ID])
         await ids_to_code(config[CONF_COLORS], color_palette, COLOR_PALETTE_IDS)
         cg.add(display_state.set_color_palette(color_palette))
+
+    if CONF_DARK_MODE in config:
+        dark_mode = await cg.get_variable(config[CONF_DARK_MODE])
+        cg.add(display_state.set_dark_mode_switch(dark_mode))

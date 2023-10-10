@@ -60,6 +60,7 @@ void HomeThingMenuBase::draw_menu_screen() {
     return;
   }
   menu_drawing_ = true;
+  menu_display_->draw_background();
   auto title_name = menu_state_title(activeMenuState);
   if (reload_menu_items_ ||
       (menu_titles.size() == 0 && activeMenuState != bootMenu)) {

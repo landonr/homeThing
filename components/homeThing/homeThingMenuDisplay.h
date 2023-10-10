@@ -45,6 +45,7 @@ class HomeThingMenuDisplay {
     setup();
   }
   void setup();
+  void draw_background();
   void draw_lock_screen(int unlock_presses);
   bool draw_menu_screen(
       MenuStates* activeMenuState,

@@ -189,14 +189,17 @@ bool HomeThingMenuDisplay::draw_menu_titles(
   return animating;
 }
 
+void HomeThingMenuDisplay::draw_background() {
+  if (!display_state_->get_dark_mode()) {
+    display_buffer_->fill(display_state_->get_color_palette()->get_white());
+  }
+}
+
 bool HomeThingMenuDisplay::draw_menu_screen(
     MenuStates* activeMenuState, const std::vector<MenuTitleBase*>* active_menu,
     const int menuIndex,
     homething_menu_now_playing::HomeThingOptionMenu* option_menu,
     bool editing_menu_item) {
-  if (!display_state_->get_dark_mode() && *activeMenuState != bootMenu) {
-    display_buffer_->fill(display_state_->get_color_palette()->get_white());
-  }
   if (!boot_complete() && *activeMenuState == bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
   } else if (boot_complete() && *activeMenuState == bootMenu) {
