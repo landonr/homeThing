@@ -62,8 +62,9 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   void set_app_menu_index(int app_menu_index);
 
   // buttons
-  void rotaryScrollClockwise(int rotary);
-  void rotaryScrollCounterClockwise(int rotary);
+  homething_menu_app::NavigationCoordination rotaryScrollClockwise(int rotary);
+  homething_menu_app::NavigationCoordination rotaryScrollCounterClockwise(
+      int rotary);
   homething_menu_app::NavigationCoordination buttonPressUp();
   homething_menu_app::NavigationCoordination buttonPressDown();
   homething_menu_app::NavigationCoordination buttonPressLeft();

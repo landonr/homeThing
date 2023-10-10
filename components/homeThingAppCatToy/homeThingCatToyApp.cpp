@@ -81,9 +81,25 @@ void HomeThingCatToyApp::reset_menu() {}
 void HomeThingCatToyApp::set_app_menu_index(int app_menu_index) {}
 
 // buttons
-void HomeThingCatToyApp::rotaryScrollClockwise(int rotary) {}
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::rotaryScrollClockwise(int rotary) {
+  auto call = remote_transmitter_->transmit();
+  esphome::remote_base::ProntoData data = {
+      "0000 006D 0022 0000 0143 00A0 0015 0014 0015 0014 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 003A 0015 003A 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 0014 0015 0014 "
+      "0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 0014 0015 003A "
+      "0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A 0015 003A "
+      "0015 06C3"};
+  esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
+  call.set_send_times(1);
+  call.perform();
+  return homething_menu_app::NavigationCoordination::
+      NavigationCoordinationReturn;
+}
 
-void HomeThingCatToyApp::rotaryScrollCounterClockwise(int rotary) {
+homething_menu_app::NavigationCoordination
+HomeThingCatToyApp::rotaryScrollCounterClockwise(int rotary) {
   auto call = remote_transmitter_->transmit();
   esphome::remote_base::ProntoData data = {
       "0000 006D 0022 0000 0145 009D 0017 0011 0018 0011 0018 0011 0018 0011 "
@@ -95,6 +111,8 @@ void HomeThingCatToyApp::rotaryScrollCounterClockwise(int rotary) {
   esphome::remote_base::ProntoProtocol().encode(call.get_data(), data);
   call.set_send_times(1);
   call.perform();
+  return homething_menu_app::NavigationCoordination::
+      NavigationCoordinationReturn;
 }
 
 homething_menu_app::NavigationCoordination HomeThingCatToyApp::buttonPressUp() {

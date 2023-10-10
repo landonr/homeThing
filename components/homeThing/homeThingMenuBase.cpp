@@ -539,7 +539,32 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
       case appMenu:
 #ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
-          active_app_->rotaryScrollCounterClockwise(rotary);
+          switch (active_app_->rotaryScrollCounterClockwise(rotary)) {
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationReturn:
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationNone:
+              break;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationUpdate:
+              update_display();
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationPop:
+              upMenu();
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationRoot:
+              topMenu();
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationReload:
+              menuIndex = 0;
+              reload_menu_items_ = true;
+              update_display();
+              return;
+          }
         }
 #endif
         break;
@@ -608,7 +633,32 @@ void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
       case appMenu:
 #ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
-          active_app_->rotaryScrollClockwise(rotary);
+          switch (active_app_->rotaryScrollClockwise(rotary)) {
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationReturn:
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationNone:
+              break;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationUpdate:
+              update_display();
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationPop:
+              upMenu();
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationRoot:
+              topMenu();
+              return;
+            case homething_menu_app::NavigationCoordination::
+                NavigationCoordinationReload:
+              menuIndex = 0;
+              reload_menu_items_ = true;
+              update_display();
+              return;
+          }
         }
 #endif
         break;

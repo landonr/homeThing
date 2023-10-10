@@ -36,15 +36,19 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   virtual bool should_draw_app() { return false; }
   virtual void draw_app(
       int menuIndex,
-      const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
+      const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {}
   virtual void idleTick(int idleTime, int display_timeout) {}
   virtual int root_menu_size() { return 0; }
   virtual void reset_menu() {}
   virtual void set_app_menu_index(int app_menu_index) {}
 
   // buttons
-  virtual void rotaryScrollClockwise(int rotary) {}
-  virtual void rotaryScrollCounterClockwise(int rotary) {}
+  virtual NavigationCoordination rotaryScrollClockwise(int rotary) {
+    return NavigationCoordination::NavigationCoordinationNone;
+  }
+  virtual NavigationCoordination rotaryScrollCounterClockwise(int rotary) {
+    return NavigationCoordination::NavigationCoordinationNone;
+  }
   virtual NavigationCoordination buttonPressUp() {
     return NavigationCoordination::NavigationCoordinationNone;
   }
