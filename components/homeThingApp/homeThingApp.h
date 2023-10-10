@@ -36,7 +36,7 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   virtual bool should_draw_app() { return false; }
   virtual void draw_app(
       int menuIndex,
-      const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
+      const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {}
   virtual void idleTick(int idleTime, int display_timeout) {}
   virtual int root_menu_size() { return 0; }
   virtual void reset_menu() {}
