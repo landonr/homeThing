@@ -5,6 +5,7 @@
 #include "esphome/components/font/font.h"
 #include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
 #include "esphome/components/image/image.h"
+#include "esphome/components/switch/switch.h"
 #include "homeThingMenuTextHelpers.h"
 
 namespace esphome {
@@ -94,8 +95,15 @@ class HomeThingDisplayState {
   void set_draw_battery_level(bool draw_battery_level) {
     draw_battery_level_ = draw_battery_level;
   }
-  bool get_dark_mode() { return dark_mode_; }
-  void set_dark_mode(bool dark_mode) { dark_mode_ = dark_mode; }
+  bool get_dark_mode() {
+    if (dark_mode_switch_ != nullptr) {
+      return dark_mode_switch_->state;
+    }
+    return true;
+  }
+  void set_dark_mode_switch(switch_::Switch* dark_mode_switch) {
+    dark_mode_switch_ = dark_mode_switch;
+  }
   bool get_draw_volume_level() { return draw_volume_level_; }
   void set_draw_volume_level(bool draw_volume_level) {
     draw_volume_level_ = draw_volume_level;
@@ -123,12 +131,12 @@ class HomeThingDisplayState {
   HomeThingMenuTextHelpers* get_text_helpers() { return text_helpers_; }
 
   Color primaryTextColor() {
-    return text_helpers_->primaryTextColor(dark_mode_,
+    return text_helpers_->primaryTextColor(get_dark_mode(),
                                            get_color_palette()->get_white(),
                                            get_color_palette()->get_black());
   }
   Color secondaryTextColor() {
-    return text_helpers_->primaryTextColor(dark_mode_,
+    return text_helpers_->primaryTextColor(get_dark_mode(),
                                            get_color_palette()->get_white(),
                                            get_color_palette()->get_white());
   }
@@ -174,10 +182,10 @@ class HomeThingDisplayState {
   DisplayIconEnabledState draw_repeat_;
   bool draw_header_time_;
   bool draw_battery_level_;
-  bool dark_mode_;
   bool draw_volume_level_;
   bool draw_now_playing_menu_;
   std::string boot_device_name_ = "homeThing";
+  switch_::Switch* dark_mode_switch_{nullptr};
 };
 }  // namespace homething_display_state
 }  // namespace esphome
