@@ -29,6 +29,12 @@ struct Coordinate {
   Coordinate(int newX, int newY) : x(newX), y(newY) {}
 };
 
+enum GameState {
+  GAME_STATE_PLAYING,
+  GAME_STATE_GAME_OVER,
+  GAME_STATE_STARTING
+};
+
 class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
  public:
   void reset();
@@ -54,8 +60,9 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
   void set_app_menu_index(int app_menu_index);
 
   // buttons
-  void rotaryScrollClockwise(int rotary);
-  void rotaryScrollCounterClockwise(int rotary);
+  homething_menu_app::NavigationCoordination rotaryScrollClockwise(int rotary);
+  homething_menu_app::NavigationCoordination rotaryScrollCounterClockwise(
+      int rotary);
   homething_menu_app::NavigationCoordination buttonPressUp();
   homething_menu_app::NavigationCoordination buttonPressDown();
   homething_menu_app::NavigationCoordination buttonPressLeft();
@@ -103,8 +110,9 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
 
   // Paddle properties
   int paddle_width = 0;
+  int paddle_height = 5;
   int paddle_position_x = 0;
-  int paddle_position_y = 0;
+  int paddle_position_y = 0 + get_bottom_margin();
 
   // Ball properties
   int ball_radius = 0;
@@ -123,13 +131,16 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
   // Game variables
   int score = -1;
   int lives = -1;
-  bool game_over = false;
+  GameState game_state_ = GAME_STATE_STARTING;
 
   // ui
   int margin = 8;
-  int paddleSpeed = 8;
-  int ball_speed = 4;
+  int paddleSpeed = 12;
+  int ball_speed = 8;
+  int bottomMargin = 12;
   double displayScale = 16;
+  int get_top_margin();
+  int get_bottom_margin();
 
   // Drawing functions
   void draw_paddle();
@@ -139,6 +150,7 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
   void draw_lives();
   void draw_game_over();
   void draw_win();
+  void draw_starting();
 };
 }  // namespace homething_app_breakout
 }  // namespace esphome

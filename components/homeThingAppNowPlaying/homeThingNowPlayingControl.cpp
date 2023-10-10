@@ -260,21 +260,25 @@ HomeThingMenuNowPlayingControl::button_press_now_playing_option(
 
 // MARK: Buttons
 
-void HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {
+homething_menu_app::NavigationCoordination
+HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {
   //   if (menu_display_->get_draw_now_playing_menu()) {
   //     break;
   //   }
   media_player_group_->increaseSpeakerVolume();
   circle_menu_->set_active_menu(volumeOptionMenu,
                                 media_player_group_->active_player_);
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
-void HomeThingMenuNowPlayingControl::rotaryScrollCounterClockwise(int rotary) {
+homething_menu_app::NavigationCoordination
+HomeThingMenuNowPlayingControl::rotaryScrollCounterClockwise(int rotary) {
   //   if (menu_display_->get_draw_now_playing_menu()) {
   //     break;
   //   }
   media_player_group_->decreaseSpeakerVolume();
   circle_menu_->set_active_menu(volumeOptionMenu,
                                 media_player_group_->active_player_);
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 
 homething_menu_app::NavigationCoordination

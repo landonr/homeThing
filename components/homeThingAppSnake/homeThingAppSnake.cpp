@@ -223,8 +223,16 @@ void HomeThingAppSnake::reset_menu() {}
 void HomeThingAppSnake::set_app_menu_index(int app_menu_index) {}
 
 // buttons
-void HomeThingAppSnake::rotaryScrollClockwise(int rotary) {}
-void HomeThingAppSnake::rotaryScrollCounterClockwise(int rotary) {}
+homething_menu_app::NavigationCoordination
+HomeThingAppSnake::rotaryScrollClockwise(int rotary) {
+  return homething_menu_app::NavigationCoordination::
+      NavigationCoordinationReturn;
+}
+homething_menu_app::NavigationCoordination
+HomeThingAppSnake::rotaryScrollCounterClockwise(int rotary) {
+  return homething_menu_app::NavigationCoordination::
+      NavigationCoordinationReturn;
+}
 homething_menu_app::NavigationCoordination HomeThingAppSnake::buttonPressUp() {
   switch (game_state_) {
     case GameState::GAME_STATE_STARTING:

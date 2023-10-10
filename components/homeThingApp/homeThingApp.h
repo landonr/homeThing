@@ -43,8 +43,12 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   virtual void set_app_menu_index(int app_menu_index) {}
 
   // buttons
-  virtual void rotaryScrollClockwise(int rotary) {}
-  virtual void rotaryScrollCounterClockwise(int rotary) {}
+  virtual NavigationCoordination rotaryScrollClockwise(int rotary) {
+    return NavigationCoordination::NavigationCoordinationNone;
+  }
+  virtual NavigationCoordination rotaryScrollCounterClockwise(int rotary) {
+    return NavigationCoordination::NavigationCoordinationNone;
+  }
   virtual NavigationCoordination buttonPressUp() {
     return NavigationCoordination::NavigationCoordinationNone;
   }
