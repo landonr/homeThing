@@ -4,13 +4,13 @@
 #include "esphome/components/homeThingApp/homeThingApp.h"
 
 namespace esphome {
-namespace homething_app_snake {
+namespace homething_app_breakout {
 
-class HomeThingAppSnakeHeader
+class HomeThingAppBreakoutHeader
     : public homething_menu_base::HomeThingMenuHeaderSource {
  public:
   // header
-  std::string get_header_title() { return "Snake"; }
+  std::string get_header_title() { return "Breakout"; }
 
   int draw_header_details(
       int xPos, int yPos, display::DisplayBuffer* display_buffer,
@@ -21,7 +21,7 @@ class HomeThingAppSnakeHeader
 
  protected:
  private:
-  const char* const TAG = "homething.app.snake.header";
+  const char* const TAG = "homething.app.breakout.header";
 };
 
 struct Coordinate {
@@ -29,7 +29,7 @@ struct Coordinate {
   Coordinate(int newX, int newY) : x(newX), y(newY) {}
 };
 
-class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
+class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
  public:
   void reset();
   // menu titles
@@ -69,7 +69,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
     return header_source_;
   }
-  HomeThingMenuHeaderSource* header_source_ = new HomeThingAppSnakeHeader();
+  HomeThingMenuHeaderSource* header_source_ = new HomeThingAppBreakoutHeader();
 
   void set_display_buffer(display::DisplayBuffer* display_buffer) {
     display_buffer_ = display_buffer;
@@ -84,7 +84,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
 
  protected:
  private:
-  const char* const TAG = "homething.app.snake";
+  const char* const TAG = "homething.app.breakout";
 
   // display
   display::DisplayBuffer* display_buffer_{nullptr};
@@ -99,13 +99,46 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
 
   void draw_resized_pixel(int coordinateX, int coordinateY, Color color);
   Coordinate get_display_bounds();
-  void create_new_fruit();
-  Coordinate get_random_coordinate();
-  Coordinate fruit_position_ = Coordinate(-1, -1);
-  Coordinate snake_direction_ = Coordinate(1, 0);
-  std::vector<Coordinate> snake = {Coordinate(30, 30)};
+  Coordinate calculate_brick_position(int row, int col);
+
+  // Paddle properties
+  int paddle_width = 0;
+  int paddle_position_x = 0;
+  int paddle_position_y = 0;
+
+  // Ball properties
+  int ball_radius = 0;
+  int ball_position_x = 0;
+  int ball_position_y = 0;
+  int ball_direction_x = 0;
+  int ball_direction_y = 0;
+
+  // Brick properties
+  int brick_rows = 0;
+  int brick_cols = 0;
+  int brick_width = 0;
+  int brick_height = 0;
+  bool bricks[24][24];
+
+  // Game variables
+  int score = -1;
+  int lives = -1;
+  bool game_over = false;
+
+  // ui
+  int margin = 8;
+  int paddleSpeed = 8;
+  int ball_speed = 4;
   double displayScale = 16;
-  int margin = 4;
+
+  // Drawing functions
+  void draw_paddle();
+  void draw_ball();
+  void draw_bricks();
+  void draw_score();
+  void draw_lives();
+  void draw_game_over();
+  void draw_win();
 };
-}  // namespace homething_app_snake
+}  // namespace homething_app_breakout
 }  // namespace esphome

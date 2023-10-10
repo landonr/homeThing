@@ -4,13 +4,13 @@ from esphome.const import CONF_ID
 from esphome.components import homeThingApp
 
 AUTO_LOAD = ["homeThingApp"]
-homething_app_snake_ns = cg.esphome_ns.namespace("homething_app_snake")
+homething_app_breakout_ns = cg.esphome_ns.namespace("homething_app_breakout")
 
-HomeThingAppSnake = homething_app_snake_ns.class_("HomeThingAppSnake", cg.Component)
+HomeThingAppBreakout = homething_app_breakout_ns.class_("HomeThingAppBreakout", cg.Component)
 
 CONFIG_SCHEMA = homeThingApp.BASE_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_ID): cv.declare_id(HomeThingAppSnake)
+        cv.GenerateID(CONF_ID): cv.declare_id(HomeThingAppBreakout)
     }
 )
 
