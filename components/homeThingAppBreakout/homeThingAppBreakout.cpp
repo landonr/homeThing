@@ -28,8 +28,9 @@ void HomeThingAppBreakout::reset() {
   // Set up the bricks
   brick_rows = 4;  // Number of rows of bricks
   brick_cols = 8;  // Number of columns of bricks
-  brick_width = (display_buffer_->get_width() - margin * 2) / (brick_rows + margin);  // Adjust brick width as needed
-  brick_height = 3;          // Adjust brick height as needed
+  brick_width = (display_buffer_->get_width() - margin * 2) /
+                (brick_rows + margin);  // Adjust brick width as needed
+  brick_height = 3;                     // Adjust brick height as needed
 
   // Initialize the bricks array (you may use a data structure like a 2D array)
   for (int row = 0; row < brick_rows; ++row) {
@@ -77,8 +78,9 @@ void HomeThingAppBreakout::draw_bricks() {
       if (bricks[row][col]) {
         Coordinate brick_position = calculate_brick_position(row, col);
         // Draw a rectangle for each active brick
-        display_buffer_->filled_rectangle(brick_position.x, brick_position.y, brick_width,
-                                          brick_height, brick_color);
+        display_buffer_->filled_rectangle(brick_position.x, brick_position.y,
+                                          brick_width, brick_height,
+                                          brick_color);
       }
     }
   }
