@@ -225,24 +225,36 @@ bool HomeThingMenuNowPlayingControl::select_media_player_feature(
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::button_press_now_playing_option(
     CircleOptionMenuPosition position) {
-  if (circle_menu_->get_active_menu()) {
-    auto feature = circle_menu_->tap_option_menu(
-        position, media_player_group_->get_active_player());
-    if (feature) {
-      ESP_LOGI(TAG, "button_press_now_playing_option: option menu selected %d",
-               feature->get_feature());
-      circle_menu_->clear_active_menu();
-      if (select_media_player_feature(feature)) {
-        return homething_menu_app::NavigationCoordination::
-            NavigationCoordinationPop;
-      }
-      return homething_menu_app::NavigationCoordination::
-          NavigationCoordinationUpdate;
-    }
-    ESP_LOGW(TAG, "button_press_now_playing_option: option menu NOT selected");
+  auto menu = circle_menu_->get_active_menu();
+  if (menu == nullptr) {
     return homething_menu_app::NavigationCoordination::
         NavigationCoordinationNone;
   }
+  switch (menu->type) {
+    case tvOptionMenu: {
+      auto feature = circle_menu_->tap_option_menu(
+          position, media_player_group_->get_active_player());
+      if (feature) {
+        ESP_LOGI(TAG,
+                 "button_press_now_playing_option: option menu selected %d",
+                 feature->get_feature());
+        circle_menu_->clear_active_menu();
+        if (select_media_player_feature(feature)) {
+          return homething_menu_app::NavigationCoordination::
+              NavigationCoordinationPop;
+        }
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationUpdate;
+      }
+      ESP_LOGW(TAG,
+               "button_press_now_playing_option: option menu NOT selected");
+      return homething_menu_app::NavigationCoordination::
+          NavigationCoordinationNone;
+    }
+    default:
+      break;
+  }
+  circle_menu_->clear_active_menu();
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 
