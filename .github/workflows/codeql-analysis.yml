@@ -33,3 +33,4 @@ jobs:
         uses: esphome/build-action@v1.8.0
         with:
           yaml_file: ${{ matrix.devices }}.yaml
+          version: beta
