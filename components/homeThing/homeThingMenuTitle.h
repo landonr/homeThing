@@ -290,64 +290,6 @@ static void activePlayerSourceItemTitles(
   }
 }
 
-static void speakerNowPlayingMenuStates(
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer* player,
-    bool bottomMenu, std::vector<MenuTitleBase*>* menu_titles) {
-  auto supported_features = player->get_option_menu_features(bottomMenu);
-  for (auto iter = supported_features->begin();
-       iter != supported_features->end(); ++iter) {
-    auto item = (*iter)->get_feature();
-    auto entity_id =
-        homeassistant_media_player::supported_feature_string_map[item];
-    auto title = (*iter)->get_title();
-    ESP_LOGI(MENU_TITLE_TAG,
-             "speakerNowPlayingMenuStates: %s %s draw bottom %d", title.c_str(),
-             entity_id.c_str(), bottomMenu);
-    switch (item) {
-      case homeassistant_media_player::MediaPlayerSupportedFeature::PLAY:
-        break;
-      case homeassistant_media_player::MediaPlayerSupportedFeature::PAUSE: {
-        std::string playString =
-            player->playerState ==
-                    homeassistant_media_player::RemotePlayerState::
-                        PlayingRemotePlayerState
-                ? "Pause"
-                : "Play";
-        // if (bottomMenu)
-        (*menu_titles)
-            .push_back(
-                new MenuTitleBase(playString, entity_id, NoMenuTitleRightIcon));
-        break;
-      }
-      case homeassistant_media_player::MediaPlayerSupportedFeature::
-          SHUFFLE_SET: {
-        std::string shuffle_string =
-            player->is_shuffling() ? "Shuffling" : "Shuffle";
-        (*menu_titles)
-            .push_back(new MenuTitleBase(shuffle_string, entity_id,
-                                         NoMenuTitleRightIcon));
-        break;
-      }
-      case homeassistant_media_player::MediaPlayerSupportedFeature::
-          CUSTOM_COMMAND: {
-        auto command = (*iter)->get_command();
-        if (command != nullptr) {
-          auto command_name = command->get_name();
-          (*menu_titles)
-              .push_back(new MenuTitleBase(command_name, entity_id,
-                                           NoMenuTitleRightIcon));
-        }
-        break;
-      }
-      default:
-        (*menu_titles)
-            .push_back(
-                new MenuTitleBase(title, entity_id, NoMenuTitleRightIcon));
-        break;
-    }
-  }
-}
-
 static MenuTitlePlayer headerMediaPlayerTitle(
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* active_player) {
   std::string friendlyName = active_player->get_name();

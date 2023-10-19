@@ -26,6 +26,7 @@ class HomeThingMenuNowPlayingOptionMenu {
   HomeThingOptionMenu* get_active_menu() { return active_menu_; }
   void clear_active_menu() { active_menu_ = nullptr; }
   void set_bottom_menu(bool bottomMenu) { bottomMenu_ = bottomMenu; }
+  bool get_bottom_menu() { return bottomMenu_; }
 
  private:
   HomeThingOptionMenu* active_menu_{nullptr};
