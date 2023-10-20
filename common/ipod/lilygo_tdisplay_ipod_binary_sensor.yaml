@@ -1,9 +1,9 @@
 substitutions:
-  rotary_left_pin: "15"
-  rotary_right_pin: "12"
-  rotary_up_pin: "2"
-  rotary_down_pin: "13"
-  rotary_select_pin: "17"
+  rotary_left_pin: "15" # sw5
+  rotary_right_pin: "12" # sw3
+  rotary_up_pin: "2" # sw4
+  rotary_down_pin: "13" # sw2
+  rotary_select_pin: "17" # sw1
   screen_left_pin: "GPIO0"
   screen_right_pin: "GPIO35"
 
