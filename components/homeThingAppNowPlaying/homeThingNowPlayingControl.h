@@ -89,6 +89,12 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   homething_menu_app::NavigationCoordination selectNowPlayingBottomMenu(
       int index);
 
+  // state callback
+  bool has_state_callback() { return true; }
+  void add_on_state_callback(std::function<void()>&& callback) {
+    this->callback_.add(std::move(callback));
+  }
+
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
@@ -99,6 +105,7 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
 
  private:
   const char* const TAG = "homething.nowplaying.control";
+  CallbackManager<void()> callback_;
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

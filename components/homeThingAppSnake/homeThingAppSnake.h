@@ -60,7 +60,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   int root_menu_size();
   void reset_menu();
   void set_app_menu_index(int app_menu_index);
-
+  homething_menu_app::NavigationCoordination changeDirection(bool clockwise);
   // buttons
   homething_menu_app::NavigationCoordination rotaryScrollClockwise(int rotary);
   homething_menu_app::NavigationCoordination rotaryScrollCounterClockwise(
@@ -91,6 +91,10 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
   }
 
   bool is_animating() { return true; }
+
+  // state callback
+  bool has_state_callback() { return false; }
+  void add_on_state_callback(std::function<void()>&& callback){};
 
  protected:
  private:

@@ -16,6 +16,8 @@ void HomeThingMenuNowPlayingControl::set_media_player_group(
   ESP_LOGI(TAG, "set_media_player_group null %d",
            media_player_group_ == nullptr);
   media_player_group_ = media_player_group;
+  media_player_group_->add_on_state_callback(
+      [this](float state) { this->callback_.call(); });
   header_source_ =
       new HomeThingMenuNowPlayingHeader(media_player_group, &menu_state_);
 }

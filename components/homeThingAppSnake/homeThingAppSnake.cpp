@@ -222,20 +222,43 @@ int HomeThingAppSnake::root_menu_size() {
 void HomeThingAppSnake::reset_menu() {}
 void HomeThingAppSnake::set_app_menu_index(int app_menu_index) {}
 
+homething_menu_app::NavigationCoordination HomeThingAppSnake::changeDirection(
+    bool clockwise) {
+  switch (game_state_) {
+    case GameState::GAME_STATE_STARTING:
+    case GameState::GAME_STATE_GAME_OVER:
+      return homething_menu_app::NavigationCoordination::
+          NavigationCoordinationReturn;
+    case GameState::GAME_STATE_PLAYING:
+      break;
+  }
+  if (clockwise) {
+    // Rotate the current direction 90 degrees to the right.
+    int new_x = snake_direction_.y;
+    int new_y = -snake_direction_.x;
+    snake_direction_ = Coordinate(new_x, new_y);
+  } else {
+    // Rotate the current direction 90 degrees to the left.
+    int new_x = -snake_direction_.y;
+    int new_y = snake_direction_.x;
+    snake_direction_ = Coordinate(new_x, new_y);
+  }
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
 // buttons
 homething_menu_app::NavigationCoordination
 HomeThingAppSnake::rotaryScrollClockwise(int rotary) {
-  return homething_menu_app::NavigationCoordination::
-      NavigationCoordinationReturn;
+  return changeDirection(true);
 }
 homething_menu_app::NavigationCoordination
 HomeThingAppSnake::rotaryScrollCounterClockwise(int rotary) {
-  return homething_menu_app::NavigationCoordination::
-      NavigationCoordinationReturn;
+  return changeDirection(false);
 }
 homething_menu_app::NavigationCoordination HomeThingAppSnake::buttonPressUp() {
   switch (game_state_) {
     case GameState::GAME_STATE_STARTING:
+      reset();
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationPop;
     case GameState::GAME_STATE_GAME_OVER:

@@ -401,6 +401,7 @@ homething_menu_app::NavigationCoordination
 HomeThingAppBreakout::buttonPressUp() {
   switch (game_state_) {
     case GameState::GAME_STATE_STARTING:
+      reset();
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationPop;
     case GameState::GAME_STATE_GAME_OVER:

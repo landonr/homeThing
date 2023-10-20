@@ -168,69 +168,34 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
     //       " " + media_player_group_->active_player_->media_album_name;
   }
   // }
-  int xPos = display_buffer_->get_width() / 2;
-  auto nowPlayingWrappedText =
-      getWrappedTitles(display_state_->get_margin_size(),
-                       display_state_->get_font_medium()->get_baseline(),
-                       display::TextAlign::TOP_LEFT, nowPlayingText);
-  auto mediaArtistWrappedText = getWrappedTitles(
-      xPos, display_state_->get_font_large()->get_baseline(),
-      display::TextAlign::TOP_CENTER, media_player_group_->mediaTitleString());
-  auto mediaTitleWrappedText =
-      getWrappedTitles(xPos, display_state_->get_font_medium()->get_baseline(),
-                       display::TextAlign::TOP_CENTER,
-                       media_player_group_->mediaSubtitleString());
-  int lineCount = nowPlayingWrappedText->size() +
-                  mediaArtistWrappedText->size() +
-                  mediaTitleWrappedText->size();
-  int maxLines = 0;
-  if (lineCount > display_state_->get_now_playing_max_lines()) {
-    maxLines = 1;
-    if (nowPlayingWrappedText->size() > 1) {
-      lineCount =
-          1 + mediaArtistWrappedText->size() + mediaTitleWrappedText->size();
-    }
-  }
-  yPos = drawTextWrapped(
-      display_state_->get_margin_size(), yPos,
-      display_state_->get_font_medium()->get_baseline(),
-      display_state_->get_font_medium(), display_state_->primaryTextColor(),
-      display::TextAlign::TOP_LEFT, *nowPlayingWrappedText, maxLines);
-  delete nowPlayingWrappedText;
-  if (mediaArtistWrappedText->size() == 0 &&
-      mediaTitleWrappedText->size() == 0) {
+
+  if (media_player_group_->mediaTitleString().size() == 0) {
     display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
                             display_state_->get_font_large(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER, "Nothing!");
-    delete mediaArtistWrappedText;
-    delete mediaTitleWrappedText;
     return;
   }
-  if (lineCount > display_state_->get_now_playing_max_lines()) {
-    maxLines = 2;
-  } else {
-    maxLines = 0;
-  }
-  yPos = yPos + display_state_->get_margin_size() / 2;
-  if (mediaArtistWrappedText->size() > 0) {
-    yPos = drawTextWrapped(
-        xPos, yPos, display_state_->get_font_large()->get_baseline(),
-        display_state_->get_font_large(), display_state_->primaryTextColor(),
-        display::TextAlign::TOP_CENTER, *mediaArtistWrappedText, maxLines);
-  }
-  delete mediaArtistWrappedText;
-  if (mediaTitleWrappedText->size() > 0 &&
-      media_player_group_->mediaTitleString() !=
-          media_player_group_->mediaSubtitleString()) {
-    yPos = yPos + display_state_->get_margin_size();
-    drawTextWrapped(
-        display_buffer_->get_width() / 2, yPos,
-        display_state_->get_font_medium()->get_baseline(),
-        display_state_->get_font_medium(), display_state_->primaryTextColor(),
-        display::TextAlign::TOP_CENTER, *mediaTitleWrappedText, maxLines);
-  }
-  delete mediaTitleWrappedText;
+
+  int xPos = display_buffer_->get_width() / 2;
+  yPos = display_state_->drawTextWrapped(
+      display_state_->get_margin_size(), yPos,
+      display_state_->get_font_medium(), display_state_->primaryTextColor(),
+      display::TextAlign::TOP_LEFT, nowPlayingText,
+      display_state_->get_now_playing_max_lines(), display_buffer_);
+
+  yPos = display_state_->drawTextWrapped(
+      xPos, yPos, display_state_->get_font_large(),
+      display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
+      media_player_group_->mediaTitleString(),
+      display_state_->get_now_playing_max_lines(), display_buffer_);
+
+  yPos = display_state_->drawTextWrapped(
+      xPos, yPos, display_state_->get_font_medium(),
+      display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
+      media_player_group_->mediaSubtitleString(),
+      display_state_->get_now_playing_max_lines(), display_buffer_);
+
   if (option_menu && option_menu->type == volumeOptionMenu) {
     drawVolumeOptionMenu();
   } else {
@@ -332,28 +297,23 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
       return false;
     case noOptionMenu:
       return false;
-    case playingNewSourceMenu:
-      display_buffer_->printf(display_buffer_->get_width() / 2,
-                              display_state_->get_header_height() +
-                                  display_state_->get_margin_size(),
+    case playingNewSourceMenu: {
+      int yPos = display_state_->get_header_height() +
+                 display_state_->get_margin_size();
+      display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
                               display_state_->get_font_medium(),
                               display_state_->primaryTextColor(),
                               display::TextAlign::TOP_CENTER, "Playing...");
-      auto playingNewSourceWrappedText =
-          getWrappedTitles(display_buffer_->get_width() / 2,
-                           display_state_->get_font_large()->get_baseline(),
-                           display::TextAlign::TOP_CENTER,
-                           media_player_group_->get_new_source_name());
-      drawTextWrapped(display_buffer_->get_width() / 2,
-                      display_state_->get_header_height() +
-                          display_state_->get_margin_size() * 2 +
-                          display_state_->get_font_medium()->get_baseline(),
-                      24, display_state_->get_font_large(),
-                      display_state_->primaryTextColor(),
-                      display::TextAlign::TOP_CENTER,
-                      *playingNewSourceWrappedText, 0);
-      delete playingNewSourceWrappedText;
+      yPos = yPos + display_state_->get_margin_size() +
+             display_state_->get_font_medium()->get_baseline();
+      display_state_->drawTextWrapped(
+          display_buffer_->get_width() / 2, yPos,
+          display_state_->get_font_medium(),
+          display_state_->get_color_palette()->get_accent_primary(),
+          display::TextAlign::TOP_CENTER,
+          media_player_group_->get_new_source_name(), 0, display_buffer_);
       return true;
+    }
   }
   return true;
 }
@@ -365,46 +325,6 @@ std::string HomeThingMenuNowPlaying::secondsToString(int seconds) {
   }
   return seconds % 60 < 10 ? "0" + to_string(seconds % 60)
                            : to_string(seconds % 60);
-}
-
-std::vector<std::string>* HomeThingMenuNowPlaying::getWrappedTitles(
-    int xPos, int fontSize, display::TextAlign alignment, std::string text) {
-  std::vector<std::string>* output = new std::vector<std::string>();
-  if (text.size() == 0) {
-    return output;
-  }
-  std::string wrappedTitles = display_state_->get_text_helpers()->textWrap(
-      text, display_state_->getCharacterLimit(xPos, fontSize, alignment,
-                                              display_buffer_->get_width()));
-  tokenize(wrappedTitles, "\n", output);
-  return output;
-}
-
-int HomeThingMenuNowPlaying::drawTextWrapped(
-    int xPos, int yPos, int fontSize, font::Font* font, Color color,
-    display::TextAlign alignment, std::vector<std::string> wrappedTitles,
-    int maxLines) {
-  int characterLimit = display_state_->getCharacterLimit(
-      xPos, fontSize, alignment, display_buffer_->get_width());
-  int max = maxLines != 0 && maxLines < wrappedTitles.size()
-                ? maxLines
-                : wrappedTitles.size();
-  for (int i = 0; i < max; i++) {
-    if (maxLines != 0 && maxLines - 1 == i && i == max - 1) {
-      std::string title = wrappedTitles[i];
-      if (wrappedTitles[i].size() > characterLimit - 2) {
-        title.erase(title.length() - 3);
-      }
-      title = title + "...";
-      display_buffer_->printf(xPos, yPos + (i * fontSize), font, color,
-                              alignment, title.c_str());
-      break;
-    } else {
-      display_buffer_->printf(xPos, yPos + (i * fontSize), font, color,
-                              alignment, wrappedTitles[i].c_str());
-    }
-  }
-  return yPos + (max * fontSize);
 }
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

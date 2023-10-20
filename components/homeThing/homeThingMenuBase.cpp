@@ -21,6 +21,25 @@ void HomeThingMenuBase::setup() {
   this->display_update_tick_->add_on_state_callback(
       [this](float state) { this->displayUpdateDebounced(); });
 
+#ifdef USE_HOMETHING_APP
+  for (auto menu_app : menu_apps_) {
+    if (menu_app->has_state_callback()) {
+      menu_app->add_on_state_callback([this]() {
+        switch (menuTree.back()) {
+          case rootMenu:
+          case appMenu:
+            ESP_LOGI(TAG, "menu_display_->add_on_state_callback");
+            reload_menu_items_ = true;
+            this->update_display();
+            break;
+          default:
+            break;
+        }
+      });
+    }
+  }
+#endif
+
   for (auto screen : menu_screens_) {
     screen->add_on_state_callback([this]() {
       switch (menuTree.back()) {
@@ -448,6 +467,10 @@ void HomeThingMenuBase::buttonPressSelect() {
             case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationReload:
               menuIndex = 0;
+              for (auto title : menu_titles) {
+                delete title;
+              }
+              menu_titles.clear();
               reload_menu_items_ = true;
               update_display();
               return;
@@ -531,8 +554,22 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   rotary_ = rotary;
   if (menuIndex == 0 && menu_settings_->get_menu_rollback()) {
     // && menuTree.back() != nowPlayingMenu) {
-    upMenu();
-    return;
+    switch (menuTree.back()) {
+      case appMenu: {
+#ifdef USE_HOMETHING_APP
+        if (active_app_) {
+          if (active_app_->should_draw_app()) {
+            break;
+          }
+        }
+#endif
+        upMenu();
+        return;
+      }
+      default:
+        upMenu();
+        return;
+    }
   }
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {

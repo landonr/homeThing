@@ -28,8 +28,8 @@ void HomeThingMenuNowPlayingOptionMenu::set_active_menu(
 std::vector<CircleOptionMenuItem>
 HomeThingMenuNowPlayingOptionMenu::get_supported_feature_options(
     homeassistant_media_player::HomeAssistantBaseMediaPlayer* player) {
-  auto supported_features = *(player->get_option_menu_features(bottomMenu_));
   auto out = std::vector<CircleOptionMenuItem>();
+  auto supported_features = *(player->get_option_menu_features(bottomMenu_));
   auto max_index = std::min(static_cast<int>(supported_features.size()), 5);
   int i_offset = 0;
   for (int i = 0; i < max_index; i++) {
