@@ -219,7 +219,10 @@ void HomeThingAppSnake::active_tick() {
 int HomeThingAppSnake::root_menu_size() {
   return 1;
 }
-void HomeThingAppSnake::reset_menu() {}
+void HomeThingAppSnake::reset_menu() {
+  reset();
+  game_state_ = GameState::GAME_STATE_STARTING;
+}
 void HomeThingAppSnake::set_app_menu_index(int app_menu_index) {}
 
 homething_menu_app::NavigationCoordination HomeThingAppSnake::changeDirection(
