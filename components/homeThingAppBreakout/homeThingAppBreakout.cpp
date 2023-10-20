@@ -369,7 +369,12 @@ void HomeThingAppBreakout::active_tick() {
 int HomeThingAppBreakout::root_menu_size() {
   return 1;
 }
-void HomeThingAppBreakout::reset_menu() {}
+
+void HomeThingAppBreakout::reset_menu() {
+  reset();
+  game_state_ = GameState::GAME_STATE_STARTING;
+}
+
 void HomeThingAppBreakout::set_app_menu_index(int app_menu_index) {}
 
 // buttons
@@ -401,6 +406,7 @@ homething_menu_app::NavigationCoordination
 HomeThingAppBreakout::buttonPressUp() {
   switch (game_state_) {
     case GameState::GAME_STATE_STARTING:
+      reset();
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationPop;
     case GameState::GAME_STATE_GAME_OVER:

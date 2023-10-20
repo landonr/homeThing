@@ -16,6 +16,8 @@ void HomeThingMenuNowPlayingControl::set_media_player_group(
   ESP_LOGI(TAG, "set_media_player_group null %d",
            media_player_group_ == nullptr);
   media_player_group_ = media_player_group;
+  media_player_group_->add_on_state_callback(
+      [this](float state) { this->callback_.call(); });
   header_source_ =
       new HomeThingMenuNowPlayingHeader(media_player_group, &menu_state_);
 }
@@ -54,6 +56,9 @@ void HomeThingMenuNowPlayingControl::app_menu_titles(
   if (media_player_group_ != nullptr) {
     switch (menu_state_) {
       case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+        homeThingNowPlayingMenuSources::bottomMenuTitles(
+            media_player_group_->get_active_player(),
+            circle_menu_->get_bottom_menu(), menu_titles);
         return;
       case NOW_PLAYING_MENU_STATE_GROUPING:
         homeThingNowPlayingMenuGroup::active_menu(menu_titles,
@@ -258,13 +263,47 @@ HomeThingMenuNowPlayingControl::button_press_now_playing_option(
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 
+homething_menu_app::NavigationCoordination
+HomeThingMenuNowPlayingControl::selectNowPlayingBottomMenu(int index) {
+  auto features = media_player_group_->active_player_->get_option_menu_features(
+      circle_menu_->get_bottom_menu());
+  auto active_feature = (*features)[index];
+  ESP_LOGI(TAG, "selectNowPlayingMenu: %d, %s", index,
+           active_feature->get_title().c_str());
+  switch (active_feature->get_feature()) {
+    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_SET:
+    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_UP:
+    case homeassistant_media_player::MediaPlayerSupportedFeature::VOLUME_DOWN:
+      circle_menu_->set_active_menu(volumeOptionMenu,
+                                    media_player_group_->active_player_);
+      select_media_player_feature(active_feature);
+      return homething_menu_app::NavigationCoordination::
+          NavigationCoordinationUpdate;
+    case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
+      menu_state_ = NOW_PLAYING_MENU_STATE_GROUPING;
+      return homething_menu_app::NavigationCoordination::
+          NavigationCoordinationNone;
+    default:
+      break;
+  }
+  select_media_player_feature(active_feature);
+  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
+}
+
 // MARK: Buttons
 
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {
-  //   if (menu_display_->get_draw_now_playing_menu()) {
-  //     break;
-  //   }
+  switch (menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (circle_menu_->get_bottom_menu())
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      break;
+    default:
+      return homething_menu_app::NavigationCoordination::
+          NavigationCoordinationNone;
+  }
   media_player_group_->increaseSpeakerVolume();
   circle_menu_->set_active_menu(volumeOptionMenu,
                                 media_player_group_->active_player_);
@@ -272,9 +311,16 @@ HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {
 }
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::rotaryScrollCounterClockwise(int rotary) {
-  //   if (menu_display_->get_draw_now_playing_menu()) {
-  //     break;
-  //   }
+  switch (menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (circle_menu_->get_bottom_menu())
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      break;
+    default:
+      return homething_menu_app::NavigationCoordination::
+          NavigationCoordinationNone;
+  }
   media_player_group_->decreaseSpeakerVolume();
   circle_menu_->set_active_menu(volumeOptionMenu,
                                 media_player_group_->active_player_);
@@ -408,6 +454,14 @@ HomeThingMenuNowPlayingControl::buttonPressRight() {
 
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressSelect(int menuIndex) {
+  switch (menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (circle_menu_->get_bottom_menu()) {
+        return selectNowPlayingBottomMenu(menuIndex);
+      }
+    default:
+      break;
+  }
   switch (button_press_now_playing_option(CircleOptionMenuPosition::CENTER)) {
     case homething_menu_app::NavigationCoordination::
         NavigationCoordinationUpdate:

@@ -71,6 +71,10 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingApp {
 
   bool is_animating() { return false; }
 
+  // state callback
+  bool has_state_callback() { return false; }
+  void add_on_state_callback(std::function<void()>&& callback){};
+
  protected:
  private:
   const char* const TAG = "homething.app.cattoy";

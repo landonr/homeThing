@@ -76,6 +76,8 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
           new_media_player_group) {
     now_playing_display_ = new HomeThingMenuNowPlaying(
         new_display_buffer, new_display_state, new_media_player_group);
+    circle_menu_->set_bottom_menu(
+        new_display_state->get_draw_now_playing_bottom_menu());
   }
 
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
@@ -84,6 +86,14 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   HomeThingMenuHeaderSource* header_source_{nullptr};
 
   bool is_animating() { return false; }
+  homething_menu_app::NavigationCoordination selectNowPlayingBottomMenu(
+      int index);
+
+  // state callback
+  bool has_state_callback() { return true; }
+  void add_on_state_callback(std::function<void()>&& callback) {
+    this->callback_.add(std::move(callback));
+  }
 
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
@@ -95,6 +105,7 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
 
  private:
   const char* const TAG = "homething.nowplaying.control";
+  CallbackManager<void()> callback_;
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

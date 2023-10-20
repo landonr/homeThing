@@ -41,6 +41,8 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   virtual int root_menu_size() { return 0; }
   virtual void reset_menu() {}
   virtual void set_app_menu_index(int app_menu_index) {}
+  virtual bool has_state_callback() { return false; }
+  virtual void add_on_state_callback(std::function<void()>&& callback){};
 
   // buttons
   virtual NavigationCoordination rotaryScrollClockwise(int rotary) {
