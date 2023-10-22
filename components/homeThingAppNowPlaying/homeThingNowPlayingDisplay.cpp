@@ -285,8 +285,7 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
     return false;
   }
   switch (option_menu->type) {
-    case tvOptionMenu:
-    case speakerOptionMenu:
+    case circleOptionMenu:
       if (option_menu && option_menu->circle_options.size() > 0) {
         drawCircleOptionMenu(option_menu->circle_options);
         return true;
