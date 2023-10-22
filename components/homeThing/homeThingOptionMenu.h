@@ -28,8 +28,7 @@ struct CircleOptionMenuItem {
 enum HomeThingOptionMenuType {
   noOptionMenu,
   volumeOptionMenu,
-  tvOptionMenu,
-  speakerOptionMenu,
+  circleOptionMenu,
   playingNewSourceMenu
 };
 

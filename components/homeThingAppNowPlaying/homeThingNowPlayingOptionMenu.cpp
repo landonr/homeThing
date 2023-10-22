@@ -15,8 +15,7 @@ void HomeThingMenuNowPlayingOptionMenu::set_active_menu(
     case playingNewSourceMenu:
       active_menu_ = new HomeThingOptionMenu(type);
       break;
-    case tvOptionMenu:
-    case speakerOptionMenu:
+    case circleOptionMenu:
       auto active_menu = new HomeThingOptionMenu(type);
       auto circleOptions = get_supported_feature_options(player);
       active_menu->circle_options = circleOptions;

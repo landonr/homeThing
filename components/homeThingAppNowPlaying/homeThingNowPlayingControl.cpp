@@ -236,7 +236,7 @@ HomeThingMenuNowPlayingControl::button_press_now_playing_option(
         NavigationCoordinationNone;
   }
   switch (menu->type) {
-    case tvOptionMenu: {
+    case circleOptionMenu: {
       auto feature = circle_menu_->tap_option_menu(
           position, media_player_group_->get_active_player());
       if (feature) {
@@ -516,7 +516,7 @@ HomeThingMenuNowPlayingControl::buttonPressScreenLeft() {
   if (circle_menu_->get_active_menu()) {
     circle_menu_->clear_active_menu();
   } else {
-    circle_menu_->set_active_menu(speakerOptionMenu,
+    circle_menu_->set_active_menu(circleOptionMenu,
                                   media_player_group_->active_player_);
   }
   return homething_menu_app::NavigationCoordination::

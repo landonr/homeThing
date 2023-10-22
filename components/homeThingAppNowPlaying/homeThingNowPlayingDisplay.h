@@ -43,12 +43,6 @@ class HomeThingMenuNowPlaying {
   void drawNowPlayingSelectMenu(
       const std::vector<homething_menu_base::MenuTitleBase*>* menu_titles,
       int menu_index);
-  std::vector<std::string>* getWrappedTitles(int xPos, int fontSize,
-                                             display::TextAlign alignment,
-                                             std::string text);
-  int drawTextWrapped(int xPos, int yPos, int fontSize, font::Font* font,
-                      Color color, display::TextAlign alignment,
-                      std::vector<std::string> wrappedTitles, int maxLines);
   display::TextAlign text_align_for_circle_position(
       CircleOptionMenuPosition position);
   void tokenize(std::string const& str, std::string delim,
