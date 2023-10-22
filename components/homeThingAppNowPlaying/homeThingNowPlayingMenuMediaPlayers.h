@@ -27,6 +27,7 @@ class homeThingNowPlayingMenuMediaPlayers {
       std::vector<homething_menu_base::MenuTitleBase*>* menu_titles,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           media_player_group) {
+    const char* const TAG = "homething.now_playing.menu.media_players";
     std::map<
         homeassistant_media_player::HomeAssistantBaseMediaPlayer*,
         std::vector<homeassistant_media_player::HomeAssistantBaseMediaPlayer*>>

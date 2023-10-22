@@ -1119,6 +1119,11 @@ bool HomeThingMenuBase::display_can_fade_out() {
 }
 
 bool HomeThingMenuBase::display_can_sleep() {
+  if (backlight_ && !backlight_->remote_values.is_on()) {
+    return false;
+  } else if (!backlight_) {
+    return false;
+  }
   int timeout = menu_settings_->get_display_timeout();
   bool idle_timeout = timeout != 0 && idleTime >= timeout;
 
@@ -1221,12 +1226,9 @@ void HomeThingMenuBase::idleTick() {
     update_display();
   } else if (display_can_fade_out()) {
     fade_out_display();
-  } else if (idleTime == menu_settings_->get_display_timeout()) {
-    ESP_LOGD(TAG, "idleTick: turning off display? %d", display_can_sleep());
-    if (display_can_sleep()) {
-      ESP_LOGD(TAG, "idleTick: turning off display");
-      sleep_display();
-    }
+  } else if (display_can_sleep()) {
+    ESP_LOGD(TAG, "idleTick: turning off display");
+    sleep_display();
     idleTime++;
     return;
   } else if (idleTime == 180 && get_charging()) {
