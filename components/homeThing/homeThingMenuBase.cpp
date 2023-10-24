@@ -283,10 +283,7 @@ bool HomeThingMenuBase::selectRootMenu() {
   if (home_screen_ && index < home_screen_->get_entity_count()) {
     ESP_LOGI(TAG, "selectRootMenu: home screen %d offset %d", menuIndex,
              offset);
-    if (!home_screen_->select_menu(index)) {
-      // update_display();
-      return false;
-    }
+    return home_screen_->select_menu(index);
   } else {
     ESP_LOGI(TAG, "selectRootMenu: screen %d offset %d", menuIndex, offset);
     menuTree.push_back(settingsMenu);
