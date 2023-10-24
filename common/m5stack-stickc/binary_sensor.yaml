@@ -4,12 +4,23 @@ binary_sensor:
       number: GPIO37
       inverted: true
     name: Button A
-    on_press:
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
       then:
-        lambda: |-
-            id(homeThingMenu)->buttonPressWakeUpDisplay();
-            id(homeThingMenu)->buttonPressSelect();
-            id(led1).turn_on().set_transition_length(0).perform();
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelect();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelectHold();
+    - timing:
+        - ON for at least 3s
+      then:
+      - lambda: |-
+          id(restart_switch)->toggle();
     on_release:
       then:
         - light.turn_off: led1
