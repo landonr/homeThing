@@ -59,6 +59,10 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
   void reset_menu();
   void set_app_menu_index(int app_menu_index);
 
+  // state callback
+  bool has_state_callback() { return false; }
+  void add_on_state_callback(std::function<void()>&& callback){};
+
   // buttons
   homething_menu_app::NavigationCoordination rotaryScrollClockwise(int rotary);
   homething_menu_app::NavigationCoordination rotaryScrollCounterClockwise(

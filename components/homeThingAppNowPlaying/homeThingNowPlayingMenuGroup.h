@@ -110,10 +110,10 @@ class homeThingNowPlayingMenuGroup {
           homeassistant_media_player::HomeAssistantBaseMediaPlayer*>*
           media_players,
       std::vector<esphome::homething_menu_base::MenuTitleBase*>* menu_titles) {
+    const char* const TAG = "homething.now_playing.menu.group";
     std::vector<std::string> groupedMembers;
     for (auto& media_player : (*media_players)) {
-      ESP_LOGD(MENU_TITLE_TAG, "groupTitleString: %s %s",
-               media_player->get_name().c_str(),
+      ESP_LOGD(TAG, "groupTitleString: %s %s", media_player->get_name().c_str(),
                media_player->get_entity_id().c_str());
       if (std::find(groupedMembers.begin(), groupedMembers.end(),
                     media_player->get_entity_id()) != groupedMembers.end() ||
@@ -131,8 +131,7 @@ class homeThingNowPlayingMenuGroup {
       auto groupMembers = speaker->get_group_members();
       if (groupMembers->size() > 1) {
         if ((*groupMembers)[0] != speaker->get_entity_id()) {
-          ESP_LOGD(MENU_TITLE_TAG, "%s not parent %s",
-                   (*groupMembers)[0].c_str(),
+          ESP_LOGD(TAG, "%s not parent %s", (*groupMembers)[0].c_str(),
                    speaker->get_entity_id().c_str());
           // speaker isn't the group parent
           continue;
