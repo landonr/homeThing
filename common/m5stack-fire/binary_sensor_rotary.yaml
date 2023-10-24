@@ -1,0 +1,36 @@
+binary_sensor:
+  - platform: gpio
+    id: M5_BtnA
+    pin:
+      number: 39
+      inverted: true
+    on_click:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressUp();
+  - platform: gpio
+    id: M5_BtnB
+    pin:
+      number: 38
+      inverted: true
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelect();
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->buttonPressSelectHold();
+  - platform: gpio
+    id: M5_BtnC
+    pin:
+      number: 37
+      inverted: true
+    on_click:
+      then:
+        - lambda: |-
+            id(homeThingMenu)->buttonPressRight();
