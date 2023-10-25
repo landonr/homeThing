@@ -34,17 +34,13 @@ namespace homething_menu_base {
 class HomeThingMenuDisplay {
  public:
   HomeThingMenuDisplay(
-      HomeThingMenuBoot* boot, display::DisplayBuffer* display_buffer,
+      display::DisplayBuffer* display_buffer,
       homething_display_state::HomeThingDisplayState* display_state,
       HomeThingMenuRefactor* refactor, HomeThingMenuHeader* header)
-      : boot_(boot),
-        display_buffer_(display_buffer),
+      : display_buffer_(display_buffer),
         display_state_(display_state),
         refactor_(refactor),
-        header_(header) {
-    setup();
-  }
-  void setup();
+        header_(header) {}
   void draw_background();
   void draw_lock_screen(int unlock_presses);
   bool draw_menu_screen(
@@ -55,9 +51,12 @@ class HomeThingMenuDisplay {
   void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void updateDisplay(bool force);
 
+  void set_boot(HomeThingMenuBoot* boot);
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;
-    boot_->set_animation(animation);
+    if (boot_) {
+      boot_->set_animation(animation);
+    }
   }
   bool get_draw_now_playing_menu() {
 #ifdef USE_MEDIA_PLAYER_GROUP

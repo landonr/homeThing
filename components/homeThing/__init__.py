@@ -209,7 +209,7 @@ CONFIG_SCHEMA =  cv.All(
             cv.Optional(CONF_APPS): cv.All(
                 cv.ensure_list(cv.use_id(homething_app_ns.HomeThingApp)), cv.Length(min=1)
             ),
-            cv.Optional(CONF_BOOT, default={}): BOOT_SCHEMA,
+            cv.Optional(CONF_BOOT): BOOT_SCHEMA,
             cv.Optional(CONF_ON_REDRAW): automation.validate_automation(
                 {
                     cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
@@ -281,11 +281,13 @@ async def menu_display_to_code(config, display_buffer, display_state):
         time_ = await cg.get_variable(config[CONF_HEADER][CONF_TIME_ID])
         cg.add(menu_header.set_time_id(time_))
     await battery_to_code(config, menu_header)
-    menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header)
-    await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], menu_boot, display_buffer, display_state, refactor, menu_header)
-
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, refactor, menu_header)
+    if (CONF_BOOT in config):
+        menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header)
+        await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
+        cg.add(menu_display.set_boot(menu_boot))
+    
     return menu_display
 
 async def menu_screen_to_code(config):

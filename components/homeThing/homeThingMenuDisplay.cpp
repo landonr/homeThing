@@ -4,8 +4,9 @@
 namespace esphome {
 namespace homething_menu_base {
 
-void HomeThingMenuDisplay::setup() {
-  if (boot_ != nullptr) {
+void HomeThingMenuDisplay::set_boot(HomeThingMenuBoot* boot) {
+  if (boot != nullptr) {
+    boot_ = boot;
     ESP_LOGW(TAG, "Boot setup");
     boot_->add_on_state_callback([this]() {
       ESP_LOGW(TAG, "Boot update");
