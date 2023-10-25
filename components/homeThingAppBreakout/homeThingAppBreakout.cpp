@@ -1,4 +1,4 @@
-#include "HomeThingAppBreakout.h"
+#include "homeThingAppBreakout.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
