@@ -109,3 +109,4 @@ homeThingTTGO.yaml
 *.pyc
 *:Zone.Identifier
 .vscode/c_cpp_properties.json
+~s3.kicad_pcb.lck
