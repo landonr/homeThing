@@ -98,7 +98,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
-        cv.Optional(CONF_LAUNCH_IMAGE, default={}): cv.use_id(image.Image_),
+        cv.Optional(CONF_LAUNCH_IMAGE): cv.use_id(image.Image_),
         cv.Optional(CONF_HEADER_HEIGHT, default=16): cv.int_,
         cv.Optional(CONF_MARGIN_SIZE, default=4): cv.int_,
         cv.Optional(CONF_BOTTOM_BAR_MARGIN, default=1): cv.int_,

@@ -85,7 +85,6 @@ homeThingDisplayState:
   font_large_heavy: roboto
   font_material_large: material_font
   font_material_small: material_font
-  launch_image: launch_image
 
 homeThing:
   id: homeThingMenu
@@ -102,7 +101,6 @@ display:
     cs_pin: GPIO5
     dc_pin: GPIO16
     reset_pin: GPIO23
-    backlight_pin: no
     rotation: 90
     update_interval: 10s
     lambda: |-
