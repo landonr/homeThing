@@ -11,7 +11,9 @@
 #ifdef USE_MEDIA_PLAYER_GROUP
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
+#ifdef USE_BINARY_SENSOR
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#endif
 
 namespace esphome {
 namespace homething_menu_base {
@@ -61,9 +63,11 @@ class HomeThingMenuBoot {
         header_(new_header) {}
   bool drawBootSequence(const MenuStates activeMenuState);
   BootMenuSkipState bootSequenceCanSkip(const MenuStates activeMenuState);
+#ifdef USE_BINARY_SENSOR
   void set_api_connected(binary_sensor::BinarySensor* api_connected) {
     api_connected_ = api_connected;
   }
+#endif
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;
   }
@@ -102,7 +106,9 @@ class HomeThingMenuBoot {
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};
 #endif
+#ifdef USE_BINARY_SENSOR
   binary_sensor::BinarySensor* api_connected_{nullptr};
+#endif
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =
       HomeThingMenuBootAnimationConfig();

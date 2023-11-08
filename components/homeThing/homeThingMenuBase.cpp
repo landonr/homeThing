@@ -1116,11 +1116,15 @@ bool HomeThingMenuBase::display_can_fade_out() {
 }
 
 bool HomeThingMenuBase::display_can_sleep() {
+#ifdef USE_LIGHT
   if (backlight_ && !backlight_->remote_values.is_on()) {
     return false;
   } else if (!backlight_) {
     return false;
   }
+#else
+  return false;
+#endif
   int timeout = menu_settings_->get_display_timeout();
   bool idle_timeout = timeout != 0 && idleTime >= timeout;
 

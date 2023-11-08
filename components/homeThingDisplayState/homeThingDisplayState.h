@@ -5,7 +5,9 @@
 #include "esphome/components/font/font.h"
 #include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
 #include "esphome/components/image/image.h"
+#ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
+#endif
 #include "homeThingMenuTextHelpers.h"
 
 namespace esphome {
@@ -96,14 +98,18 @@ class HomeThingDisplayState {
     draw_battery_level_ = draw_battery_level;
   }
   bool get_dark_mode() {
+#ifdef USE_SWITCH
     if (dark_mode_switch_ != nullptr) {
       return dark_mode_switch_->state;
     }
+#endif
     return true;
   }
+#ifdef USE_SWITCH
   void set_dark_mode_switch(switch_::Switch* dark_mode_switch) {
     dark_mode_switch_ = dark_mode_switch;
   }
+#endif
   bool get_draw_volume_level() { return draw_volume_level_; }
   void set_draw_volume_level(bool draw_volume_level) {
     draw_volume_level_ = draw_volume_level;
@@ -185,7 +191,9 @@ class HomeThingDisplayState {
   bool draw_volume_level_;
   bool draw_now_playing_menu_;
   std::string boot_device_name_ = "homeThing";
+#ifdef USE_SWITCH
   switch_::Switch* dark_mode_switch_{nullptr};
+#endif
 };
 }  // namespace homething_display_state
 }  // namespace esphome

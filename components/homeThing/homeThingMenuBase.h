@@ -34,9 +34,11 @@ class HomeThingMenuBase : public PollingComponent {
   }
   void setup();
 
+#ifdef USE_BINARY_SENSOR
   void set_charging(binary_sensor::BinarySensor* charging) {
     charging_ = charging;
   }
+#endif
   void set_battery_percent(sensor::Sensor* battery_percent) {
     battery_percent_ = battery_percent;
   }
@@ -130,11 +132,15 @@ class HomeThingMenuBase : public PollingComponent {
     }
   }
   bool get_charging() {
+#ifdef USE_BINARY_SENSOR
     if (charging_ != nullptr && charging_->has_state()) {
       return charging_->state;
     } else {
       return charging_ == nullptr;
     }
+#else
+    return false;
+#endif
   }
   void fade_out_display();
   void sleep_display();
@@ -195,7 +201,9 @@ class HomeThingMenuBase : public PollingComponent {
   bool menu_drawing_ = false;
   bool reload_menu_items_ = false;
   sensor::Sensor* battery_percent_{nullptr};
+#ifdef USE_BINARY_SENSOR
   binary_sensor::BinarySensor* charging_{nullptr};
+#endif
   bool device_locked_ = false;
   int unlock_presses_ = 0;
   void finish_boot();

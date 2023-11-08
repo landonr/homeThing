@@ -306,8 +306,12 @@ BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
   const int animationTick = animation_->animationTick->state;
   ESP_LOGD(TAG, "tick %d total %d", animationTick,
            animation_config_.total_animation_length());
+#ifdef USE_BINARY_SENSOR
   bool api = api_connected_->has_state() && api_connected_->state &&
              network::is_connected();
+#else
+  bool api = true;
+#endif
   bool draw_animation = animation_->animationTick->state <
                             animation_config_.total_animation_length() &&
                         !boot_animation_complete_;

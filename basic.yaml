@@ -1,0 +1,110 @@
+esphome:
+  name: "homething-basic"
+
+api:
+
+esp32:
+  board: featheresp32
+
+wifi: # setup wifi, make sure secrets.yaml exists!
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  id: wifi_id
+
+external_components:
+  - source:
+      # type: git
+      # url: https://github.com/landonr/homeThing
+      # ref: main
+      type: local
+      path: components
+    refresh: 0s
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+
+substitutions: # set friendly name
+  friendly_name: "homething-basic"
+
+image:
+  id: launch_image
+  file: "docs/homeThinglogo.svg"
+  resize: 48x48
+  type: TRANSPARENT_BINARY
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto
+    size: 20
+  - file: "fonts/materialdesignicons-webfont.ttf" 
+    id: material_font
+    size: 19
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+      '󰋜', # mdi-home
+      '󰌵', # mdi-lightbulb
+      '󰌶', # mdi-lightbulb-outline
+      '󰑗', # mdi-repeat-off
+      '󰑘', # mdi-repeat-once
+      '󰑖', # mdi-repeat
+    ]
+
+homeThingDisplayState:
+  id: display_state_id
+  font_small: roboto
+  font_medium: roboto
+  font_large: roboto
+  font_large_heavy: roboto
+  font_material_large: material_font
+  font_material_small: material_font
+  launch_image: launch_image
+
+homeThing:
+  id: homeThingMenu
+  display: my_display
+  display_state: display_state_id
+  on_redraw:
+    then:
+      component.update: my_display
+
+display:
+  - platform: st7789v
+    model: TTGO_TDisplay_135x240
+    id: my_display
+    cs_pin: GPIO5
+    dc_pin: GPIO16
+    reset_pin: GPIO23
+    backlight_pin: no
+    rotation: 90
+    update_interval: 10s
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
