@@ -71,7 +71,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "../../../../Desktop/pcbout/")
+      (outputdirectory "gerber/")
     )
   )
 
