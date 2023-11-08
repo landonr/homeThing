@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        devices: ['tdisplay-ipod', 'tdisplay-megadesk', 'tdisplay-t4', 'm5stack-fire', 'm5stack-stickc', 'm5stack-stickcplus-rotary', 'tdisplay-s3']
+        devices: ['basic', 'tdisplay-ipod', 'tdisplay-megadesk', 'tdisplay-t4', 'm5stack-fire', 'm5stack-stickc', 'm5stack-stickcplus-rotary', 'tdisplay-s3']
     steps:
       - uses: actions/checkout@v2
       - uses: DoozyX/clang-format-lint-action@v0.15
