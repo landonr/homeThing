@@ -1,0 +1,5 @@
+image:
+  id: launch_image
+  file: "docs/homeThinglogo.svg"
+  resize: 48x48
+  type: TRANSPARENT_BINARY

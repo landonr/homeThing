@@ -1,0 +1,24 @@
+substitutions:
+  large_heavy_font_size: "24"
+  large_font_size: "24"
+  medium_font_size: "15"
+  small_font_size: "14"
+
+font:
+  ## Font needs to be monospace!
+    - file: "gfonts://Roboto"
+      id: large_heavy_font
+      size: $large_heavy_font_size
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: "gfonts://Roboto"
+      id: large_font
+      size: $large_font_size
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: "gfonts://Roboto"
+      id: medium_font
+      size: $medium_font_size
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
+    - file: "gfonts://Roboto"
+      id: small_font
+      size: $small_font_size
+      glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
