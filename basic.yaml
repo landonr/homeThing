@@ -19,24 +19,12 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: lando/basic
+
       # type: local
       # path: components
     refresh: 0s
-    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
-  - source:
-      type: git
-      url: https://github.com/landonr/esphome-components
-      ref: main
-    refresh: 0s
-    components: [
-      homeassistant_component,
-      homeassistant_media_player,
-      media_player_source,
-      media_player_source_sonos,
-      media_player_source_spotify,
-      media_player_source_custom
-    ]
+    components: [homeThingDisplayState, homeThing]
 
 spi:
   clk_pin: GPIO18
