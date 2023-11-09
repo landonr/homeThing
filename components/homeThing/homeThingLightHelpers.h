@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/light/light_state.h"
 #include "esphome/core/color.h"
@@ -152,3 +153,4 @@ class HomeThingLightHelpers {
 };
 }  // namespace homething_menu_base
 }  // namespace esphome
+#endif

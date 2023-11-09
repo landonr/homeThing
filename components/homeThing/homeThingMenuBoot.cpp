@@ -8,13 +8,12 @@ namespace esphome {
 namespace homething_menu_base {
 
 #ifdef USE_MEDIA_PLAYER_GROUP
-void HomeThingMenuBoot::set_media_player_group(
-    homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-        media_player_group) {
-  media_player_group_ = media_player_group;
-  if (media_player_group_) {
-    media_player_group_->add_on_state_callback(
-        [this](float state) { this->callback_(); });
+void set_media_players_loaded(
+    binary_sensor::BinarySensor* media_player_group_sensor) {
+  media_player_group_sensor_ = media_player_group_sensor;
+  if (media_player_group_sensor_) {
+    media_player_group_sensor_->add_on_state_callback(
+        [this](bool state) { this->callback_(); });
   }
 }
 #endif
@@ -64,6 +63,10 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
 }
 
 int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
+#ifdef USE_IMAGE
+  if (display_state_->get_launch_image() == NULL) {
+    return 0;
+  }
   float animationLength = 6;
   int delayTime = 2;
   int totalDuration = delayTime + animationLength;
@@ -84,6 +87,8 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
                            Color(color, color, color));
   }
   return totalDuration;
+#endif
+  return 0;
 }
 
 int HomeThingMenuBoot::drawBootSequenceHeader(
@@ -273,13 +278,6 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
 }
 
 bool HomeThingMenuBoot::drawBootSequence(const MenuStates activeMenuState) {
-
-#ifdef USE_MEDIA_PLAYER_GROUP
-  if (media_player_group_) {
-    media_player_group_->findActivePlayer();
-  }
-#endif
-
   int imageYPos = display_state_->get_header_height() +
                   display_state_->get_margin_size() * 2;
   int xPos = display_buffer_->get_width() / 2;
@@ -306,8 +304,19 @@ BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
   const int animationTick = animation_->animationTick->state;
   ESP_LOGD(TAG, "tick %d total %d", animationTick,
            animation_config_.total_animation_length());
-  bool api = api_connected_->has_state() && api_connected_->state &&
-             network::is_connected();
+  bool api = true;
+  auto media_players = BOOT_MENU_STATE_COMPLETE;
+#ifdef USE_BINARY_SENSOR
+  if (api_connected_) {
+    api = api_connected_->has_state() && api_connected_->state &&
+          network::is_connected();
+  }
+
+  if (media_player_group_sensor_) {
+    media_players = media_player_group_sensor_->state ? BOOT_MENU_STATE_COMPLETE
+                                                      : BOOT_MENU_STATE_PLAYERS;
+  }
+#endif
   bool draw_animation = animation_->animationTick->state <
                             animation_config_.total_animation_length() &&
                         !boot_animation_complete_;
@@ -318,19 +327,8 @@ BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
   } else if (!api) {
     return BOOT_MENU_STATE_API;
   } else {
-
-#ifdef USE_MEDIA_PLAYER_GROUP
-    if (media_player_group_) {
-      int totalPlayers = media_player_group_->totalPlayers();
-      int loadedPlayers = media_player_group_->loadedPlayers;
-      ESP_LOGD(TAG, "totalPlayers %d loadedPlayers %d", totalPlayers,
-               loadedPlayers);
-      return totalPlayers == loadedPlayers ? BOOT_MENU_STATE_COMPLETE
-                                           : BOOT_MENU_STATE_PLAYERS;
-    }
-#endif
-    ESP_LOGD(TAG, "boot complete");
-    return BOOT_MENU_STATE_COMPLETE;
+    ESP_LOGD(TAG, "media players %d", media_players);
+    return media_players;
   }
 }
 }  // namespace homething_menu_base
