@@ -65,9 +65,7 @@ class HomeThingMenuBoot {
     api_connected_ = api_connected;
   }
   void set_media_players_loaded(
-      binary_sensor::BinarySensor* media_player_group_sensor) {
-    media_player_group_sensor_ = media_player_group_sensor;
-  };
+      binary_sensor::BinarySensor* media_player_group_sensor);
 #endif
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;

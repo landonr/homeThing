@@ -173,3 +173,6 @@ async def to_code(config):
     if CONF_DARK_MODE in config:
         dark_mode = await cg.get_variable(config[CONF_DARK_MODE])
         cg.add(display_state.set_dark_mode_switch(dark_mode))
+
+    if CONF_LAUNCH_IMAGE in config:
+        cg.add_build_flag("-DUSE_IMAGE")
