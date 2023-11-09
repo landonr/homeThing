@@ -7,8 +7,8 @@
 namespace esphome {
 namespace homething_menu_base {
 
-#ifdef USE_MEDIA_PLAYER_GROUP
-void set_media_players_loaded(
+#ifdef USE_BINARY_SENSOR
+void HomeThingMenuBoot::set_media_players_loaded(
     binary_sensor::BinarySensor* media_player_group_sensor) {
   media_player_group_sensor_ = media_player_group_sensor;
   if (media_player_group_sensor_) {
@@ -118,14 +118,9 @@ float HomeThingMenuBoot::bootSequenceLoadingProgress() {
     case BOOT_MENU_STATE_API:
       return 0.2;
     case BOOT_MENU_STATE_PLAYERS:
-#ifdef USE_MEDIA_PLAYER_GROUP
-      if (media_player_group_ != NULL) {
-        float totalPlayers =
-            static_cast<float>(media_player_group_->totalPlayers());
-        float loadedPlayers =
-            static_cast<float>(media_player_group_->loadedPlayers);
-        float progress = 0.7 * (loadedPlayers / totalPlayers);
-        return 0.3 + progress;
+#ifdef USE_BINARY_SENSOR
+      if (media_player_group_sensor_ != NULL) {
+        return 0.7;
       }
 #endif
       return 0.3;
@@ -177,9 +172,9 @@ int HomeThingMenuBoot::drawBootSequenceLoadingBarAnimation() {
 
 BootMenuSkipState HomeThingMenuBoot::bootSequenceCanSkip(
     const MenuStates activeMenuState) {
-#ifdef USE_MEDIA_PLAYER_GROUP
-  bool canSkip = activeMenuState == bootMenu && media_player_group_ != NULL &&
-                 media_player_group_->loadedPlayers > 0;
+#ifdef USE_BINARY_SENSOR
+  bool canSkip =
+      activeMenuState == bootMenu && media_player_group_sensor_ != NULL;
 #else
   bool canSkip = true;
 #endif
@@ -239,13 +234,10 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
       break;
     case BOOT_MENU_STATE_PLAYERS:
     case BOOT_MENU_STATE_COMPLETE: {
-#ifdef USE_MEDIA_PLAYER_GROUP
-      if (media_player_group_ && media_player_group_->totalPlayers() > 0) {
-        int totalPlayers = media_player_group_->totalPlayers();
-        int loadedPlayers = media_player_group_->loadedPlayers;
-        auto playersLoadedString = to_string(loadedPlayers) + "/" +
-                                   to_string(totalPlayers) +
-                                   " media players loaded";
+#ifdef USE_BINARY_SENSOR
+      if (media_player_group_sensor_ &&
+          media_player_group_sensor_->state == 0) {
+        auto playersLoadedString = "media players loading";
         display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
