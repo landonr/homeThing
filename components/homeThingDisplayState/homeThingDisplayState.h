@@ -4,7 +4,9 @@
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
+#ifdef USE_IMAGE
 #include "esphome/components/image/image.h"
+#endif
 #ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
 #endif
@@ -41,10 +43,12 @@ class HomeThingDisplayState {
     font_material_small_ = font_material_small;
   }
 
+#ifdef USE_IMAGE
   image::Image* get_launch_image() { return launch_image_; }
   void set_launch_image(image::Image* launch_image) {
     launch_image_ = launch_image;
   }
+#endif
 
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
@@ -174,7 +178,9 @@ class HomeThingDisplayState {
   font::Font* font_large_heavy_{nullptr};
   font::Font* font_material_large_{nullptr};
   font::Font* font_material_small_{nullptr};
+#ifdef USE_IMAGE
   image::Image* launch_image_{nullptr};
+#endif
   int header_height_;
   int margin_size_;
   int bottom_bar_margin_;

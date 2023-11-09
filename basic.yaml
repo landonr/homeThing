@@ -33,12 +33,6 @@ spi:
 substitutions: # set friendly name
   friendly_name: "homething-basic"
 
-image:
-  id: launch_image
-  file: "docs/homeThinglogo.svg"
-  resize: 48x48
-  type: TRANSPARENT_BINARY
-
 font:
   - file: "gfonts://Roboto"
     id: roboto

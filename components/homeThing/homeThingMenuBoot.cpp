@@ -63,6 +63,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
 }
 
 int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
+#ifdef USE_IMAGE
   if (display_state_->get_launch_image() == NULL) {
     return 0;
   }
@@ -86,6 +87,8 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
                            Color(color, color, color));
   }
   return totalDuration;
+#endif
+  return 0;
 }
 
 int HomeThingMenuBoot::drawBootSequenceHeader(
