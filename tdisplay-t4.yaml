@@ -19,7 +19,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: lando/revert-fonts
       # type: local
       # path: components
     refresh: 0s
