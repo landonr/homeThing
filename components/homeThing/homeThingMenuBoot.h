@@ -8,9 +8,6 @@
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
-#ifdef USE_MEDIA_PLAYER_GROUP
-#include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
-#endif
 #ifdef USE_BINARY_SENSOR
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #endif
@@ -67,6 +64,10 @@ class HomeThingMenuBoot {
   void set_api_connected(binary_sensor::BinarySensor* api_connected) {
     api_connected_ = api_connected;
   }
+  void set_media_players_loaded(
+      binary_sensor::BinarySensor* media_player_group_sensor) {
+    media_player_group_sensor_ = media_player_group_sensor;
+  };
 #endif
   void set_animation(HomeThingMenuAnimation* animation) {
     animation_ = animation;
@@ -74,11 +75,6 @@ class HomeThingMenuBoot {
   bool boot_complete() {
     return get_boot_menu_state() == BOOT_MENU_STATE_COMPLETE;
   }
-#ifdef USE_MEDIA_PLAYER_GROUP
-  void set_media_player_group(
-      homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          media_player_group);
-#endif
 
   void add_on_state_callback(std::function<void()>&& callback) {
     this->callback_.add(std::move(callback));
@@ -102,12 +98,9 @@ class HomeThingMenuBoot {
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};
-#ifdef USE_MEDIA_PLAYER_GROUP
-  homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-      media_player_group_{nullptr};
-#endif
 #ifdef USE_BINARY_SENSOR
   binary_sensor::BinarySensor* api_connected_{nullptr};
+  binary_sensor::BinarySensor* media_player_group_sensor_{nullptr};
 #endif
   const char* const TAG = "homething.boot";
   HomeThingMenuBootAnimationConfig animation_config_ =

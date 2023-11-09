@@ -6,6 +6,9 @@ api:
 esp32:
   board: featheresp32
 
+logger:
+  level: DEBUG
+
 wifi: # setup wifi, make sure secrets.yaml exists!
   ssid: !secret wifi_ssid
   password: !secret wifi_password

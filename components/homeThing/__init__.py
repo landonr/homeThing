@@ -71,13 +71,14 @@ CONF_SLEEP_SWITCH = "sleep_switch"
 CONF_SLEEP_AFTER = "sleep_after"
 CONF_BACKLIGHT = "backlight"
 CONF_LOCK_AFTER = "lock_after"
+CONF_MEDIA_PLAYER_LOADED = "media_player_loaded"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
 
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
-        cv.Optional(CONF_API, default="api_connected"): cv.use_id(binary_sensor.BinarySensor),
-        cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
+        cv.Optional(CONF_API): cv.use_id(binary_sensor.BinarySensor),
+        cv.Optional(CONF_MEDIA_PLAYER_LOADED): cv.use_id(binary_sensor.BinarySensor),
     }
 )
 
