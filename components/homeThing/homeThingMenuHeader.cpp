@@ -99,13 +99,18 @@ void HomeThingMenuHeader::draw_menu_header(
   }
   xPos = display_buffer_->get_width() - display_state_->get_margin_size() / 2;
   xPos = drawBattery(xPos, yPosOffset);
+
+#ifdef USE_TIME
   xPos = drawHeaderTime(xPos, yPosOffset);
+#endif
+
   if (header_source != nullptr) {
     xPos = header_source->draw_header_details(xPos, getHeaderTextYPos(0),
                                               display_buffer_, display_state_);
   }
 }
 
+#ifdef USE_TIME
 int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
   if (esp_time_ == nullptr) {
     return oldXPos;
@@ -127,6 +132,7 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
                           timeString.c_str());
   return xPos - display_state_->get_margin_size() / 2;
 }
+#endif
 
 int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
   if (!display_state_->get_draw_battery_level() ||
@@ -168,7 +174,9 @@ void HomeThingMenuHeader::drawHeader(int yPosOffset,
   int xPos =
       display_buffer_->get_width() - display_state_->get_margin_size() / 2;
   xPos = drawBattery(xPos, yPosOffset);
+#ifdef USE_TIME
   xPos = drawHeaderTime(xPos, yPosOffset);
+#endif
   // #ifdef USE_MEDIA_PLAYER_GROUP
   //   xPos = drawHeaderVolumeLevel(xPos, yPosOffset);
   // #endif

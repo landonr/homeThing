@@ -4,8 +4,12 @@
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
+#ifdef USE_IMAGE
 #include "esphome/components/image/image.h"
+#endif
+#ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
+#endif
 #include "homeThingMenuTextHelpers.h"
 
 namespace esphome {
@@ -39,10 +43,12 @@ class HomeThingDisplayState {
     font_material_small_ = font_material_small;
   }
 
+#ifdef USE_IMAGE
   image::Image* get_launch_image() { return launch_image_; }
   void set_launch_image(image::Image* launch_image) {
     launch_image_ = launch_image;
   }
+#endif
 
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
@@ -96,14 +102,18 @@ class HomeThingDisplayState {
     draw_battery_level_ = draw_battery_level;
   }
   bool get_dark_mode() {
+#ifdef USE_SWITCH
     if (dark_mode_switch_ != nullptr) {
       return dark_mode_switch_->state;
     }
+#endif
     return true;
   }
+#ifdef USE_SWITCH
   void set_dark_mode_switch(switch_::Switch* dark_mode_switch) {
     dark_mode_switch_ = dark_mode_switch;
   }
+#endif
   bool get_draw_volume_level() { return draw_volume_level_; }
   void set_draw_volume_level(bool draw_volume_level) {
     draw_volume_level_ = draw_volume_level;
@@ -168,7 +178,9 @@ class HomeThingDisplayState {
   font::Font* font_large_heavy_{nullptr};
   font::Font* font_material_large_{nullptr};
   font::Font* font_material_small_{nullptr};
+#ifdef USE_IMAGE
   image::Image* launch_image_{nullptr};
+#endif
   int header_height_;
   int margin_size_;
   int bottom_bar_margin_;
@@ -185,7 +197,9 @@ class HomeThingDisplayState {
   bool draw_volume_level_;
   bool draw_now_playing_menu_;
   std::string boot_device_name_ = "homeThing";
+#ifdef USE_SWITCH
   switch_::Switch* dark_mode_switch_{nullptr};
+#endif
 };
 }  // namespace homething_display_state
 }  // namespace esphome

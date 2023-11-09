@@ -1,0 +1,54 @@
+substitutions:
+  home_thing_logo_size: "48"
+  material_font_large_size: "19"
+  material_font_small_size: "18"
+
+font:
+  - file: "fonts/materialdesignicons-webfont.ttf" 
+    id: material_font_large
+    size: $material_font_large_size
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+      '󰋜', # mdi-home
+      '󰌵', # mdi-lightbulb
+      '󰌶', # mdi-lightbulb-outline
+      '󰑗', # mdi-repeat-off
+      '󰑘', # mdi-repeat-once
+      '󰑖', # mdi-repeat
+    ]  
+  - file: "fonts/materialdesignicons-webfont.ttf" 
+    id: material_font_small
+    size: $material_font_small_size
+    glyphs: [
+      '󰐊', # mdi-play
+      '󰓛', # mdi-stop
+      '󰏤', # home-pause
+      '󰽥', # mdi-moon-waning-crescent
+      '󰒝', # mdi-shuffle
+      '󰒞', # mdi-shuffle-disabled
+      '󰕾', # mdi-volume-high
+      '󰕿', # mdi-volume-low
+      '󰚺', # mdi-plex
+      '󰝆', # mdi-netflix
+      '󰗃', # mdi-youtube
+      '󰓇', # mdi-spotify
+      '󰔂', # mdi-television
+      '󰋜', # mdi-home
+      '󰌵', # mdi-lightbulb
+      '󰌶', # mdi-lightbulb-outline
+      '󰑗', # mdi-repeat-off
+      '󰑘', # mdi-repeat-once
+      '󰑖', # mdi-repeat
+    ]
