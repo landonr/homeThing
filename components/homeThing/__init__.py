@@ -4,7 +4,6 @@ from esphome import automation
 from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
-from esphome.components.homeassistant_media_player import homeassistant_media_player_ns
 from esphome.components.homeThingDisplayState import homething_display_state_ns
 # from esphome.components.homeThingApp import homething_app_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
@@ -35,7 +34,6 @@ CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
 CONF_BOOT = "boot"
 CONF_HEADER = "header"
-CONF_MEDIA_PLAYERS = "media_player_group"
 CONF_ON_REDRAW = "on_redraw"
 CONF_SCREENS = "screens"
 CONF_HOME_SCREEN = "home_screen"
@@ -71,13 +69,14 @@ CONF_SLEEP_SWITCH = "sleep_switch"
 CONF_SLEEP_AFTER = "sleep_after"
 CONF_BACKLIGHT = "backlight"
 CONF_LOCK_AFTER = "lock_after"
+CONF_MEDIA_PLAYERS_LOADED = "media_players_loaded"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
 
 BOOT_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
-        cv.Optional(CONF_API, default="api_connected"): cv.use_id(binary_sensor.BinarySensor),
-        cv.Optional(CONF_MEDIA_PLAYERS): cv.use_id(homeassistant_media_player_ns.HomeAssistantMediaPlayerGroup),
+        cv.Optional(CONF_API): cv.use_id(binary_sensor.BinarySensor),
+        cv.Optional(CONF_MEDIA_PLAYERS_LOADED): cv.use_id(binary_sensor.BinarySensor),
     }
 )
 
@@ -222,8 +221,7 @@ CONFIG_SCHEMA =  cv.All(
                 cv.ensure_list(MENU_SCREEN_SCHEMA), cv.Length(min=1)
             ),
         }
-    ).extend(cv.polling_component_schema("1s")),
-    cv.has_at_least_one_key(CONF_HOME_SCREEN, CONF_SCREENS, CONF_APPS)
+    ).extend(cv.polling_component_schema("1s"))
 )
 
 async def ids_to_code(config, var, types):
@@ -255,7 +253,7 @@ async def menu_settings_to_code(config):
 
 MENU_BOOT_IDS = [
     CONF_API,
-    CONF_MEDIA_PLAYERS
+    CONF_MEDIA_PLAYERS_LOADED
 ]
 
 async def menu_boot_to_code(config, display_buffer, display_state, menu_header):

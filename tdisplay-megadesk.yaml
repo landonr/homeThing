@@ -36,10 +36,6 @@ external_components:
       # path: components
     refresh: 0s
     components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
-  - source: github://pr#5214 # used to load images on compile
-    components: [ image ]
-  - source: github://pr#5254 # used to load fonts on compile
-    components: [ font, external_files ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -62,10 +58,10 @@ packages: # maybe modify: include default ipod controls
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
-      common/fonts.yaml, # default font
-      common/icon_fonts.yaml, # material icons
+      common/fonts-roboto.yaml, # default font
+      common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/images.yaml, # boot screen image
+      common/images-local.yaml, # boot screen image
     ]
     refresh: 0s
 

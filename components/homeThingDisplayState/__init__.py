@@ -98,7 +98,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
-        cv.Optional(CONF_LAUNCH_IMAGE, default={}): cv.use_id(image.Image_),
+        cv.Optional(CONF_LAUNCH_IMAGE): cv.use_id(image.Image_),
         cv.Optional(CONF_HEADER_HEIGHT, default=16): cv.int_,
         cv.Optional(CONF_MARGIN_SIZE, default=4): cv.int_,
         cv.Optional(CONF_BOTTOM_BAR_MARGIN, default=1): cv.int_,
@@ -173,3 +173,6 @@ async def to_code(config):
     if CONF_DARK_MODE in config:
         dark_mode = await cg.get_variable(config[CONF_DARK_MODE])
         cg.add(display_state.set_dark_mode_switch(dark_mode))
+
+    if CONF_LAUNCH_IMAGE in config:
+        cg.add_build_flag("-DUSE_IMAGE")

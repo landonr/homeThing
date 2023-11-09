@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingLightHelpers.h"
+#endif
+
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 
