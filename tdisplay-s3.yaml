@@ -70,10 +70,10 @@ packages: # maybe modify: include default ipod controls
       common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for rotary controls
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/tdisplay-s3/backlight.yaml, # backlight
-      common/fonts.yaml, # default font
-      common/icon_fonts.yaml, # material icons
+      common/fonts-roboto.yaml, # default font
+      common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/images.yaml, # boot screen image
+      common/images-local.yaml, # boot screen image
     ]
     refresh: 0s
 
