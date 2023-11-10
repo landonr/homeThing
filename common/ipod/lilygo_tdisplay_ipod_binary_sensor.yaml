@@ -62,8 +62,7 @@ binary_sensor:
     id: sw5
     on_press:
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressLeft();
+        homething_menu.left: homeThingMenu
   - platform: gpio
     internal: true
     pin:
@@ -75,8 +74,7 @@ binary_sensor:
     id: sw4
     on_press:
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressUp();
+        homething_menu.up: homeThingMenu
   - platform: gpio
     internal: true
     pin:
@@ -88,8 +86,7 @@ binary_sensor:
     id: sw3
     on_press:
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressRight();
+        homething_menu.right: homeThingMenu
   - platform: gpio
     internal: true
     pin:
@@ -101,8 +98,7 @@ binary_sensor:
     id: sw2
     on_press:
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressDown();
+        homething_menu.down: homeThingMenu
   - platform: gpio
     internal: true
     pin:
@@ -116,8 +112,7 @@ binary_sensor:
       min_length: 5ms
       max_length: 350ms
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
+        homething_menu.select: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s

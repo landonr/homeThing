@@ -7,6 +7,7 @@ from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_
 from esphome.components.homeThingDisplayState import homething_display_state_ns
 # from esphome.components.homeThingApp import homething_app_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
+from esphome.automation import maybe_simple_id
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
 HomeThingMenuScreen = homething_menu_base_ns.class_("HomeThingMenuScreen")
@@ -71,6 +72,43 @@ CONF_BACKLIGHT = "backlight"
 CONF_LOCK_AFTER = "lock_after"
 CONF_MEDIA_PLAYERS_LOADED = "media_players_loaded"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
+
+UpAction = homething_menu_base_ns.class_("UpAction", automation.Action)
+DownAction = homething_menu_base_ns.class_("DownAction", automation.Action)
+LeftAction = homething_menu_base_ns.class_("LeftAction", automation.Action)
+RightAction = homething_menu_base_ns.class_("RightAction", automation.Action)
+SelectAction = homething_menu_base_ns.class_("SelectAction", automation.Action)
+
+MENU_ACTION_SCHEMA = maybe_simple_id(
+    {
+        cv.GenerateID(CONF_ID): cv.use_id(HomeThingMenuBase),
+    }
+)
+
+@automation.register_action("homething_menu.up", UpAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.down", DownAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.left", LeftAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.right", RightAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.select", SelectAction, MENU_ACTION_SCHEMA)
+async def menu_up_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_down_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_left_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_right_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_select_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
 
 BOOT_SCHEMA = cv.Schema(
     {

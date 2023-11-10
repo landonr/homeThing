@@ -12,6 +12,14 @@ namespace homething_menu_base {
 
 static const char* const MENU_CONTROLS_TAG = "homething.menu.controls";
 
+enum MenuControlCommand : uint8_t {
+  MENU_COMMAND_UP = 0,
+  MENU_COMMAND_DOWN = 1,
+  MENU_COMMAND_LEFT = 2,
+  MENU_COMMAND_RIGHT = 3,
+  MENU_COMMAND_SELECT = 4,
+};
+
 class HomeThingMenuControls {
  public:
   static bool editingScrollBack(
