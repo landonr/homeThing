@@ -29,10 +29,7 @@ binary_sensor:
     name: Button B
     on_press:
       then:
-        lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->topMenu(); 
-          id(led1).turn_on().set_transition_length(0).perform();
+        homething_menu.home: homeThingMenu
     on_release:
       then:
         - light.turn_off: led1
