@@ -241,10 +241,10 @@ sensor:
     id: rotary
     on_clockwise:
       then:
-        homething_menu.scrollClockWise: homeThingMenu
+        homething_menu.scroll_clockwise: homeThingMenu
     on_anticlockwise:
       then:
-        homething_menu.scrollCounterClockwise: homeThingMenu
+        homething_menu.scroll_counter_clockwise: homeThingMenu
   - platform: custom
     lambda: |-
       auto megadesk = new Megadesk(id(uart_desk));

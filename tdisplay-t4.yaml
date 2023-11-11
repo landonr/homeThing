@@ -118,7 +118,7 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        homething_menu.scrollCounterClockWise: homeThingMenu
+        homething_menu.scroll_counter_clockwise: homeThingMenu
   - platform: gpio
     id: T4_BtnB
     pin:
@@ -134,7 +134,7 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        homething_menu.scrollClockWise: homeThingMenu
+        homething_menu.scroll_clockwise: homeThingMenu
 
 switch:
   - platform: gpio

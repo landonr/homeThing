@@ -28,7 +28,7 @@ UnitEncoderC:
     encoder_filter: 2
     on_clockwise:
       then:
-        homething_menu.scrollClockWise: homeThingMenu
+        homething_menu.scroll_clockwise: homeThingMenu
     on_anticlockwise:
       then:
-        homething_menu.scrollCounterClockWise: homeThingMenu
+        homething_menu.scroll_counter_clockwise: homeThingMenu
