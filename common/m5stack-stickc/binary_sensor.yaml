@@ -13,7 +13,7 @@ binary_sensor:
     - timing:
         - ON for at least 0.5s
       then:
-        homething_menu.optiopn: homeThingMenu
+        homething_menu.option: homeThingMenu
     - timing:
         - ON for at least 3s
       then:
