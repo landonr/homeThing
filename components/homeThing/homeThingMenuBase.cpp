@@ -518,7 +518,7 @@ void HomeThingMenuBase::buttonPressOption() {
   if (menuTree.back() == bootMenu) {
     return;
   }
-    switch (menuTree.back()) {
+  switch (menuTree.back()) {
     case appMenu:
 #ifdef USE_HOMETHING_APP
       if (active_app_ && active_app_->should_draw_app()) {

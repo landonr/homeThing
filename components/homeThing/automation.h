@@ -76,7 +76,8 @@ class ScrollClockwiseAction : public Action<Ts...> {
 template <typename... Ts>
 class ScrollCounterClockwiseAction : public Action<Ts...> {
  public:
-  explicit ScrollCounterClockwiseAction(HomeThingMenuBase* menu) : menu_(menu) {}
+  explicit ScrollCounterClockwiseAction(HomeThingMenuBase* menu)
+      : menu_(menu) {}
 
   void play(Ts... x) override { this->menu_->rotaryScrollCounterClockwise(); }
 
