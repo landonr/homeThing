@@ -62,6 +62,61 @@ class SelectAction : public Action<Ts...> {
   HomeThingMenuBase* menu_;
 };
 
+template <typename... Ts>
+class ScrollClockwiseAction : public Action<Ts...> {
+ public:
+  explicit ScrollClockwiseAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  void play(Ts... x) override { this->menu_->rotaryScrollClockwise(); }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
+
+template <typename... Ts>
+class ScrollCounterClockwiseAction : public Action<Ts...> {
+ public:
+  explicit ScrollCounterClockwiseAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  void play(Ts... x) override { this->menu_->rotaryScrollCounterClockwise(); }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
+
+template <typename... Ts>
+class BackAction : public Action<Ts...> {
+ public:
+  explicit BackAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  void play(Ts... x) override { this->menu_->upMenu(); }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
+
+template <typename... Ts>
+class OptionAction : public Action<Ts...> {
+ public:
+  explicit OptionAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  void play(Ts... x) override { this->menu_->buttonPressOption(); }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
+
+template <typename... Ts>
+class HomeAction : public Action<Ts...> {
+ public:
+  explicit HomeAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  void play(Ts... x) override { this->menu_->topMenu(); }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
+
 class ServiceCalledTrigger : public Trigger<> {
  public:
   explicit ServiceCalledTrigger(MenuCommand* parent) {

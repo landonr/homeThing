@@ -152,22 +152,7 @@ HomeThingCatToyApp::buttonPressSelect(int menuIndex) {
 }
 
 homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonPressSelectHold() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonPressScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonReleaseScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonPressScreenRight() {
+HomeThingCatToyApp::buttonPressOption() {
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 

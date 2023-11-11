@@ -318,22 +318,7 @@ homething_menu_app::NavigationCoordination HomeThingAppSnake::buttonPressSelect(
 }
 
 homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonPressSelectHold() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonPressScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonReleaseScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonPressScreenRight() {
+HomeThingAppSnake::buttonPressOption() {
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 

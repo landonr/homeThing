@@ -441,19 +441,7 @@ HomeThingAppBreakout::buttonPressSelect(int menuIndex) {
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 homething_menu_app::NavigationCoordination
-HomeThingAppBreakout::buttonPressSelectHold() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-homething_menu_app::NavigationCoordination
-HomeThingAppBreakout::buttonPressScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-homething_menu_app::NavigationCoordination
-HomeThingAppBreakout::buttonReleaseScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-homething_menu_app::NavigationCoordination
-HomeThingAppBreakout::buttonPressScreenRight() {
+HomeThingAppBreakout::buttonPressOption() {
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 

@@ -20,10 +20,6 @@ sensor:
         pullup: true
     id: rotary
     on_clockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+        homething_menu.scroll_clockwise: homeThingMenu
     on_anticlockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
+        homething_menu.scroll_counter_clockwise: homeThingMenu

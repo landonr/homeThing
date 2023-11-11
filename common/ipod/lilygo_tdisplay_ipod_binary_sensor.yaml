@@ -21,12 +21,7 @@ binary_sensor:
     internal: true
     on_press:
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressScreenLeft();
-    on_release:
-      then:
-      - lambda: |-
-          id(homeThingMenu)->buttonReleaseScreenLeft();
+        media_player_group.select_next_player: media_group_component
   - platform: gpio
     pin:
       number: $screen_right_pin
@@ -38,14 +33,12 @@ binary_sensor:
       min_length: 5ms
       max_length: 350ms
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressScreenRight();
+        homething_menu.option: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
-      - lambda: |-
-          id(homeThingMenu)->topMenu();
+        homething_menu.home: homeThingMenu
     - timing:
         - ON for at least 3s
       then:
@@ -117,5 +110,4 @@ binary_sensor:
     - timing:
         - ON for at least 0.5s
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
+        homething_menu.option: homeThingMenu

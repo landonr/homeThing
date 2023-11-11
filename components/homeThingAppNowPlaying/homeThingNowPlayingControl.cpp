@@ -161,18 +161,18 @@ void HomeThingMenuNowPlayingControl::idleTick(int idleTime,
   if (idleTime == 3) {
     circle_menu_->clear_active_menu();
   } else if (idleTime == display_timeout) {
-    if (media_player_group_ != NULL &&
-        media_player_group_->playerSearchFinished) {
-      // if (get_charging() && menuTree.back() != bootMenu) {
-      //   idleTime++;
-      //   return;
-      // }
-      // ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
-      // menuTree.assign(1, rootMenu);
-      // animation_->resetAnimation();
-      // idleMenu(false);
-      // menu_display_->updateDisplay(false);
-    }
+    // if (media_player_group_ != NULL &&
+    //     media_player_group_->playerSearchFinished) {
+    //   // if (get_charging() && menuTree.back() != bootMenu) {
+    //   //   idleTime++;
+    //   //   return;
+    //   // }
+    //   // ESP_LOGI(TAG, "idleTick: idle root menu %d", display_can_sleep());
+    //   // menuTree.assign(1, rootMenu);
+    //   // animation_->resetAnimation();
+    //   // idleMenu(false);
+    //   // menu_display_->updateDisplay(false);
+    // }
     return;
   }
   if (media_player_group_ != NULL) {
@@ -514,37 +514,13 @@ HomeThingMenuNowPlayingControl::buttonPressSelect(int menuIndex) {
 }
 
 homething_menu_app::NavigationCoordination
-HomeThingMenuNowPlayingControl::buttonPressSelectHold() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingMenuNowPlayingControl::buttonPressScreenLeft() {
+HomeThingMenuNowPlayingControl::buttonPressOption() {
   if (circle_menu_->get_active_menu()) {
     circle_menu_->clear_active_menu();
   } else {
     circle_menu_->set_active_menu(circleOptionMenu,
                                   media_player_group_->active_player_);
   }
-  return homething_menu_app::NavigationCoordination::
-      NavigationCoordinationUpdate;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingMenuNowPlayingControl::buttonReleaseScreenLeft() {
-  switch (media_player_group_->active_player_->get_player_type()) {
-    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-      // update_display();
-      break;
-    case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
-      break;
-  }
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingMenuNowPlayingControl::buttonPressScreenRight() {
-  media_player_group_->selectNextMediaPlayer();
   return homething_menu_app::NavigationCoordination::
       NavigationCoordinationUpdate;
 }

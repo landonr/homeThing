@@ -1,13 +1,11 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome import automation
 from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeThingDisplayState import homething_display_state_ns
 # from esphome.components.homeThingApp import homething_app_ns
 homething_menu_base_ns = cg.esphome_ns.namespace("homething_menu_base")
-from esphome.automation import maybe_simple_id
 
 HomeThingMenuBase = homething_menu_base_ns.class_("HomeThingMenuBase", cg.PollingComponent)
 HomeThingMenuScreen = homething_menu_base_ns.class_("HomeThingMenuScreen")
@@ -20,7 +18,6 @@ HomeThingMenuHeader = homething_menu_base_ns.class_("HomeThingMenuHeader")
 HomeThingMenuRefactor = homething_menu_base_ns.class_("HomeThingMenuRefactor")
 
 HomeThingMenuBaseConstPtr = HomeThingMenuBase.operator("ptr").operator("const")
-HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
 
 homething_app_ns = cg.esphome_ns.namespace("homething_menu_app")
 
@@ -73,11 +70,23 @@ CONF_LOCK_AFTER = "lock_after"
 CONF_MEDIA_PLAYERS_LOADED = "media_players_loaded"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
 
+# Automation
+
+from esphome import automation
+from esphome.automation import maybe_simple_id
+HomeThingDisplayMenuOnRedrawTrigger = homething_menu_base_ns.class_("HomeThingDisplayMenuOnRedrawTrigger", automation.Trigger)
+
 UpAction = homething_menu_base_ns.class_("UpAction", automation.Action)
 DownAction = homething_menu_base_ns.class_("DownAction", automation.Action)
 LeftAction = homething_menu_base_ns.class_("LeftAction", automation.Action)
 RightAction = homething_menu_base_ns.class_("RightAction", automation.Action)
 SelectAction = homething_menu_base_ns.class_("SelectAction", automation.Action)
+ScrollClockwiseAction = homething_menu_base_ns.class_("ScrollClockwiseAction", automation.Action)
+ScrollCounterClockwiseAction = homething_menu_base_ns.class_("ScrollCounterClockwiseAction", automation.Action)
+
+BackAction = homething_menu_base_ns.class_("BackAction", automation.Action)
+OptionAction = homething_menu_base_ns.class_("OptionAction", automation.Action)
+HomeAction = homething_menu_base_ns.class_("HomeAction", automation.Action)
 
 MENU_ACTION_SCHEMA = maybe_simple_id(
     {
@@ -90,6 +99,13 @@ MENU_ACTION_SCHEMA = maybe_simple_id(
 @automation.register_action("homething_menu.left", LeftAction, MENU_ACTION_SCHEMA)
 @automation.register_action("homething_menu.right", RightAction, MENU_ACTION_SCHEMA)
 @automation.register_action("homething_menu.select", SelectAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.scroll_clockwise", ScrollClockwiseAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.scroll_counter_clockwise", ScrollCounterClockwiseAction, MENU_ACTION_SCHEMA)
+
+@automation.register_action("homething_menu.back", BackAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.option", OptionAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.home", HomeAction, MENU_ACTION_SCHEMA)
+
 async def menu_up_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
@@ -109,6 +125,28 @@ async def menu_right_to_code(config, action_id, template_arg, args):
 async def menu_select_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_scroll_clockwise_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_scroll_counter_clockwise_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_back_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_option_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+async def menu_home_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+# Menu
 
 BOOT_SCHEMA = cv.Schema(
     {
@@ -400,8 +438,3 @@ async def to_code(config):
     for conf in config.get(CONF_ON_REDRAW, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], menu)
         await automation.build_automation(trigger, [(HomeThingMenuBaseConstPtr, "it")], conf)
-
-
-    # animation = await menu_animation_to_code(menu)
-
-   
