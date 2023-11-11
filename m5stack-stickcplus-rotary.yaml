@@ -35,7 +35,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: automations
+      ref: automation
     refresh: 0s
     components: [
       homeassistant_component,
@@ -59,7 +59,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: automations
+      ref: automation
     refresh: 0s
     components: [
       MiniEncoderC
