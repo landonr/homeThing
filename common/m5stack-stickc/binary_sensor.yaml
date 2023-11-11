@@ -8,14 +8,12 @@ binary_sensor:
       min_length: 5ms
       max_length: 350ms
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
+        homething_menu.select: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
+        homething_menu.optiopn: homeThingMenu
     - timing:
         - ON for at least 3s
       then:

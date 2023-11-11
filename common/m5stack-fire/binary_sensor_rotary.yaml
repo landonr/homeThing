@@ -6,8 +6,7 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        - lambda: |-
-            id(homeThingMenu)->buttonPressUp();
+        homething_menu.back: homeThingMenu
   - platform: gpio
     id: M5_BtnB
     pin:
@@ -17,14 +16,12 @@ binary_sensor:
       min_length: 5ms
       max_length: 350ms
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
+        homething_menu.select: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
+        homething_menu.option: homeThingMenu
   - platform: gpio
     id: M5_BtnC
     pin:
@@ -32,5 +29,4 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        - lambda: |-
-            id(homeThingMenu)->buttonPressRight();
+        homething_menu.right: homeThingMenu
