@@ -17,7 +17,7 @@ void HomeThingMenuNowPlayingControl::set_media_player_group(
            media_player_group_ == nullptr);
   media_player_group_ = media_player_group;
   media_player_group_->add_on_state_callback(
-      [this](float state) { this->callback_.call(); });
+      [this]() { this->callback_.call(); });
   header_source_ =
       new HomeThingMenuNowPlayingHeader(media_player_group, &menu_state_);
 }
@@ -359,7 +359,8 @@ HomeThingMenuNowPlayingControl::buttonPressUp() {
       switch (media_player_group_->active_player_->get_player_type()) {
         case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
           media_player_group_->sendActivePlayerRemoteCommand(
-              homeassistant_media_player::MediaPlayerTVRemoteCommand::UP);
+              homeassistant_media_player::MediaPlayerTVRemoteCommand::
+                  MEDIA_PLAYER_TV_COMMAND_UP);
           return homething_menu_app::NavigationCoordination::
               NavigationCoordinationReturn;
         case homeassistant_media_player::RemotePlayerType::
@@ -395,11 +396,12 @@ HomeThingMenuNowPlayingControl::buttonPressDown() {
   switch (media_player_group_->active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
       media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::DOWN);
+          homeassistant_media_player::MediaPlayerTVRemoteCommand::
+              MEDIA_PLAYER_TV_COMMAND_DOWN);
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationReturn;
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
-      media_player_group_->active_player_->playPause();
+      media_player_group_->active_player_->toggle();
       break;
   }
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
@@ -422,7 +424,8 @@ HomeThingMenuNowPlayingControl::buttonPressLeft() {
   switch (media_player_group_->active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
       media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::LEFT);
+          homeassistant_media_player::MediaPlayerTVRemoteCommand::
+              MEDIA_PLAYER_TV_COMMAND_LEFT);
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationReturn;
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
@@ -449,7 +452,8 @@ HomeThingMenuNowPlayingControl::buttonPressRight() {
   switch (media_player_group_->active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
       media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::RIGHT);
+          homeassistant_media_player::MediaPlayerTVRemoteCommand::
+              MEDIA_PLAYER_TV_COMMAND_RIGHT);
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationReturn;
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
@@ -483,7 +487,8 @@ HomeThingMenuNowPlayingControl::buttonPressSelect(int menuIndex) {
   switch (media_player_group_->active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
       media_player_group_->sendActivePlayerRemoteCommand(
-          homeassistant_media_player::MediaPlayerTVRemoteCommand::SELECT);
+          homeassistant_media_player::MediaPlayerTVRemoteCommand::
+              MEDIA_PLAYER_TV_COMMAND_SELECT);
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationReturn;
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
