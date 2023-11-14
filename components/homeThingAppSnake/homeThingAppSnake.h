@@ -54,7 +54,7 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
       int menuIndex,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
 
-  void idleTick(int idleTime, int display_timeout);
+  bool idleTick(int idleTime, int display_timeout);
   void active_tick();
 
   int root_menu_size();

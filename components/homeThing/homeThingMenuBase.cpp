@@ -28,7 +28,7 @@ void HomeThingMenuBase::setup() {
         switch (menuTree.back()) {
           case rootMenu:
           case appMenu:
-            ESP_LOGI(TAG, "menu_display_->add_on_state_callback");
+            ESP_LOGI(TAG, "menu_app state_callback");
             reload_menu_items_ = true;
             this->update_display();
             break;
@@ -67,13 +67,19 @@ void HomeThingMenuBase::setup() {
 void HomeThingMenuBase::draw_menu_screen() {
   auto activeMenuState = menuTree.back();
   if (display_can_sleep()) {
-    ESP_LOGI(TAG, "draw_menu_screen: not drawing");
+    ESP_LOGI(TAG, "draw_menu_screen: display can sleep, not drawing");
     sleep_display();
     return;
   }
   if (menu_drawing_) {
     return;
   }
+#ifdef USE_LIGHT
+  if (backlight_ && !backlight_->remote_values.is_on()) {
+    ESP_LOGD(TAG, "draw_menu_screen: display off, not drawing");
+    return;
+  }
+#endif
   if (menuTree.front() == bootMenu && menu_display_->boot_complete()) {
     finish_boot();
     return;
@@ -212,7 +218,7 @@ bool HomeThingMenuBase::selectLightEntity(
     ESP_LOGW(TAG, "selectLightEntit2y: %d type: %d", menuIndex, menu_item_type);
 #ifdef USE_LIGHT
     auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
-    ESP_LOGW(TAG, "selectDetailMenu: name %s", light->get_name().c_str());
+    ESP_LOGW(TAG, "selectLightEntity: name %s", light->get_name().c_str());
     if (supportsBrightness(light)) {
       active_menu_screen->set_selected_entity(menu_item);
       menuIndex = 0;
@@ -233,7 +239,14 @@ bool HomeThingMenuBase::selectDetailMenu() {
         int offset = 0;
 #ifdef USE_HOMETHING_APP
         for (auto& menu_app : menu_apps_) {
-          offset = offset + menu_app->root_menu_size();
+          int appMenuSize = menu_app->root_menu_size();
+          if (menuIndex < (offset + appMenuSize)) {
+            ESP_LOGI(TAG, "selectDetailMenu: app %d offset %d", menuIndex,
+                     offset);
+            menu_app->buttonPressOption();
+            return false;
+          }
+          offset += appMenuSize;
         }
 #endif
         int index = menuIndex - offset;
@@ -1127,7 +1140,9 @@ void HomeThingMenuBase::idleTick() {
   }
 #ifdef USE_HOMETHING_APP
   for (auto app : menu_apps_) {
-    app->idleTick(idleTime, menu_settings_->get_display_timeout());
+    if (app->idleTick(idleTime, menu_settings_->get_display_timeout())) {
+      update_display();
+    }
   }
 #endif
   if (menu_settings_->get_lock_after() != 0 &&

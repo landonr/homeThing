@@ -252,7 +252,9 @@ void HomeThingAppBreakout::draw_app(
   }
 }
 
-void HomeThingAppBreakout::idleTick(int idleTime, int display_timeout) {}
+bool HomeThingAppBreakout::idleTick(int idleTime, int display_timeout) {
+  return false;
+}
 
 void HomeThingAppBreakout::active_tick() {
   if (score == -1) {

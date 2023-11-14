@@ -73,7 +73,9 @@ void HomeThingCatToyApp::draw_app(
                           "Reverse");
 }
 
-void HomeThingCatToyApp::idleTick(int idleTime, int display_timeout) {}
+bool HomeThingCatToyApp::idleTick(int idleTime, int display_timeout) {
+  return false;
+}
 int HomeThingCatToyApp::root_menu_size() {
   return 1;
 }

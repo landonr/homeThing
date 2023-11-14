@@ -150,7 +150,9 @@ void HomeThingAppSnake::draw_app(
   }
 }
 
-void HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {}
+bool HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {
+  return false;
+}
 
 void HomeThingAppSnake::active_tick_playing() {
   if (fruit_position_.x == -1) {
