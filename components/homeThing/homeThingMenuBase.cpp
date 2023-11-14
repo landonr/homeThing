@@ -104,11 +104,12 @@ void HomeThingMenuBase::draw_menu_screen() {
 
 #ifdef USE_HOMETHING_APP
   if (active_app_ != nullptr) {
-    ESP_LOGI(TAG, "draw_menu_screen: draw header %d %s #%d", menuIndex,
+    ESP_LOGI(TAG, "draw_menu_screen: draw app header %d %s #%d", menuIndex,
              title_name.c_str(), menu_titles.size());
     menu_display_->draw_menu_header(active_app_->get_header_source());
   }
-  if (active_app_ != nullptr && active_app_->should_draw_app()) {
+  if (menuTree.back() == appMenu && active_app_ != nullptr &&
+      active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
     this->animation_->animating = active_app_->is_animating();
     if (this->animation_->animating) {
@@ -1158,10 +1159,7 @@ void HomeThingMenuBase::idleTick() {
   } else if (display_can_sleep()) {
     ESP_LOGD(TAG, "idleTick: turning off display");
     sleep_display();
-    idleTime++;
-    return;
-  } else if (idleTime == 180 && get_charging()) {
-    idleMenu(true);
+    idleMenu();
     idleTime++;
     return;
   } else if (idleTime > menu_settings_->get_sleep_after()) {
@@ -1190,19 +1188,22 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
   update_display();
 }
 
-void HomeThingMenuBase::idleMenu(bool force) {
-  ESP_LOGI(TAG, "idleMenu %d", force);
+void HomeThingMenuBase::idleMenu() {
+  ESP_LOGI(TAG, "idleMenu");
   if (menuTree.back() == bootMenu) {
+    ESP_LOGI(TAG, "idleMenu boot menu");
     return;
   }
-  if (!get_charging() || force) {
-    if (active_menu_screen)
-      active_menu_screen->set_selected_entity(nullptr);
-    reset_menu();
-    if (force) {
-      update_display();
-    }
+  reset_menu();
+#ifdef USE_HOMETHING_APP
+  auto idle_app = menu_settings_->get_idle_app();
+  if (idle_app) {
+    ESP_LOGI(TAG, "idleMenu: set idle app");
+    menuTree.push_back(appMenu);
+    active_app_ = idle_app;
+    active_app_->set_app_menu_index(0);
   }
+#endif
 }
 }  // namespace homething_menu_base
 }  // namespace esphome

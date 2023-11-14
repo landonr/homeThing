@@ -69,6 +69,7 @@ CONF_BACKLIGHT = "backlight"
 CONF_LOCK_AFTER = "lock_after"
 CONF_MEDIA_PLAYERS_LOADED = "media_players_loaded"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
+CONF_IDLE_APP = "idle_app"
 
 # Automation
 
@@ -188,6 +189,7 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.Optional(CONF_MENU_ROLLBACK_ON, default=False): cv.boolean,
         cv.Optional(CONF_LOCK_AFTER, default=0): cv.int_,
         cv.Optional(CONF_DISPLAY_TIMEOUT_WHILE_CHARGING, default=0): cv.int_,
+        cv.Optional(CONF_IDLE_APP): cv.use_id(homething_app_ns.HomeThingApp),
     }
 )
 
@@ -319,12 +321,17 @@ MENU_SETTING_TYPES = [
     CONF_MENU_ROLLOVER_ON,
     CONF_MENU_ROLLBACK_ON,
     CONF_LOCK_AFTER,
-    CONF_DISPLAY_TIMEOUT_WHILE_CHARGING
+    CONF_DISPLAY_TIMEOUT_WHILE_CHARGING,
+]
+
+MENU_SETTING_IDS = [
+    CONF_IDLE_APP,
 ]
 
 async def menu_settings_to_code(config):
     menu_settings = cg.new_Pvariable(config[CONF_ID])
     keys_to_code(config, menu_settings, MENU_SETTING_TYPES)
+    await ids_to_code(config, menu_settings, MENU_SETTING_IDS)
     return menu_settings
 
 MENU_BOOT_IDS = [

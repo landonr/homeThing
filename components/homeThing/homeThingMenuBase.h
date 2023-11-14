@@ -77,7 +77,7 @@ class HomeThingMenuBase : public PollingComponent {
   void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();
-  void idleMenu(bool force);
+  void idleMenu();
   bool selectLightEntity(
       const std::tuple<MenuItemType, EntityBase*>* menu_item);
   bool upMenu();
@@ -171,6 +171,8 @@ class HomeThingMenuBase : public PollingComponent {
   void activeMenu(std::vector<MenuTitleBase*>*);
   void reset_menu() {
     menuIndex = 0;
+    if (active_menu_screen)
+      active_menu_screen->set_selected_entity(nullptr);
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
     editing_menu_item = false;

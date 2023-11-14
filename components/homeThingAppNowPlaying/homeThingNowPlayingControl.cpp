@@ -503,6 +503,11 @@ HomeThingMenuNowPlayingControl::buttonPressSelect(int menuIndex) {
 
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressOption() {
+  if (media_player_group_ == nullptr ||
+      media_player_group_->active_player_ == nullptr) {
+    return homething_menu_app::NavigationCoordination::
+        NavigationCoordinationNone;
+  }
   ESP_LOGI(TAG, "buttonPressOption: %d", menu_state_);
   if (menu_state_ == NOW_PLAYING_MENU_STATE_NONE) {
     ESP_LOGI(TAG, "buttonPressOption: toggle power");
