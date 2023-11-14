@@ -28,7 +28,7 @@ int HomeThingMenuNowPlayingHeader::draw_header_details(
     int xPos, int yPos, display::DisplayBuffer* display_buffer,
     homething_display_state::HomeThingDisplayState* display_state) {
   switch (*menu_state_) {
-    case 0:
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
       break;
     default:
       return 0;

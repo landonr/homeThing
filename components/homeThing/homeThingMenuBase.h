@@ -71,28 +71,25 @@ class HomeThingMenuBase : public PollingComponent {
   void draw_menu_screen();
   void topMenu();
   bool selectMenu();
-  bool selectMenuHold();
+  bool selectDetailMenu();
   bool selectRootMenu();
   MenuTitleBase* menuTitleForType(MenuStates stringType, int index);
   void lockDevice();
   void idleTick();
   bool buttonPressWakeUpDisplay();
-  void idleMenu(bool force);
+  void idleMenu();
   bool selectLightEntity(
       const std::tuple<MenuItemType, EntityBase*>* menu_item);
   bool upMenu();
-  void rotaryScrollClockwise(int rotary);
-  void rotaryScrollCounterClockwise(int rotary);
+  void rotaryScrollClockwise();
+  void rotaryScrollCounterClockwise();
   void buttonPressUp();
   void buttonPressDown();
   void buttonPressLeft();
   void buttonPressRight();
   void buttonPressSelect();
-  void buttonPressSelectHold();
+  void buttonPressOption();
   bool buttonPressUnlock();
-  void buttonReleaseScreenLeft();
-  void buttonPressScreenLeft();
-  void buttonPressScreenRight();
 
   // create service for this with input select options
   void goToScreenFromString(std::string screenName);
@@ -174,6 +171,8 @@ class HomeThingMenuBase : public PollingComponent {
   void activeMenu(std::vector<MenuTitleBase*>*);
   void reset_menu() {
     menuIndex = 0;
+    if (active_menu_screen)
+      active_menu_screen->set_selected_entity(nullptr);
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
     editing_menu_item = false;

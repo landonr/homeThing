@@ -8,14 +8,12 @@ binary_sensor:
       min_length: 5ms
       max_length: 350ms
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
+        homething_menu.select: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
+        homething_menu.option: homeThingMenu
     - timing:
         - ON for at least 3s
       then:
@@ -31,10 +29,7 @@ binary_sensor:
     name: Button B
     on_press:
       then:
-        lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->topMenu(); 
-          id(led1).turn_on().set_transition_length(0).perform();
+        homething_menu.home: homeThingMenu
     on_release:
       then:
         - light.turn_off: led1

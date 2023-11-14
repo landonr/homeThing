@@ -2,6 +2,7 @@ i2c:
   sda: 21
   scl: 22
   scan: True
+  id: bus_b
 
 ip5306:
   battery_level:

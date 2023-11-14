@@ -52,7 +52,7 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
       int menuIndex,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
 
-  void idleTick(int idleTime, int display_timeout);
+  bool idleTick(int idleTime, int display_timeout);
   void active_tick();
 
   int root_menu_size();
@@ -72,10 +72,7 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
   homething_menu_app::NavigationCoordination buttonPressLeft();
   homething_menu_app::NavigationCoordination buttonPressRight();
   homething_menu_app::NavigationCoordination buttonPressSelect(int menuIndex);
-  homething_menu_app::NavigationCoordination buttonPressSelectHold();
-  homething_menu_app::NavigationCoordination buttonPressScreenLeft();
-  homething_menu_app::NavigationCoordination buttonReleaseScreenLeft();
-  homething_menu_app::NavigationCoordination buttonPressScreenRight();
+  homething_menu_app::NavigationCoordination buttonPressOption();
 
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
     return header_source_;

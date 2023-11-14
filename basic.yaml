@@ -32,6 +32,7 @@ spi:
 
 substitutions: # set friendly name
   friendly_name: "homething-basic"
+  log_level: "DEBUG"
 
 font:
   - file: "gfonts://Roboto"

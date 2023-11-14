@@ -28,7 +28,7 @@ void HomeThingMenuBase::setup() {
         switch (menuTree.back()) {
           case rootMenu:
           case appMenu:
-            ESP_LOGI(TAG, "menu_display_->add_on_state_callback");
+            ESP_LOGI(TAG, "menu_app state_callback");
             reload_menu_items_ = true;
             this->update_display();
             break;
@@ -67,13 +67,19 @@ void HomeThingMenuBase::setup() {
 void HomeThingMenuBase::draw_menu_screen() {
   auto activeMenuState = menuTree.back();
   if (display_can_sleep()) {
-    ESP_LOGI(TAG, "draw_menu_screen: not drawing");
+    ESP_LOGI(TAG, "draw_menu_screen: display can sleep, not drawing");
     sleep_display();
     return;
   }
   if (menu_drawing_) {
     return;
   }
+#ifdef USE_LIGHT
+  if (backlight_ && !backlight_->remote_values.is_on()) {
+    ESP_LOGD(TAG, "draw_menu_screen: display off, not drawing");
+    return;
+  }
+#endif
   if (menuTree.front() == bootMenu && menu_display_->boot_complete()) {
     finish_boot();
     return;
@@ -98,11 +104,12 @@ void HomeThingMenuBase::draw_menu_screen() {
 
 #ifdef USE_HOMETHING_APP
   if (active_app_ != nullptr) {
-    ESP_LOGI(TAG, "draw_menu_screen: draw header %d %s #%d", menuIndex,
+    ESP_LOGI(TAG, "draw_menu_screen: draw app header %d %s #%d", menuIndex,
              title_name.c_str(), menu_titles.size());
     menu_display_->draw_menu_header(active_app_->get_header_source());
   }
-  if (active_app_ != nullptr && active_app_->should_draw_app()) {
+  if (menuTree.back() == appMenu && active_app_ != nullptr &&
+      active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
     this->animation_->animating = active_app_->is_animating();
     if (this->animation_->animating) {
@@ -212,7 +219,7 @@ bool HomeThingMenuBase::selectLightEntity(
     ESP_LOGW(TAG, "selectLightEntit2y: %d type: %d", menuIndex, menu_item_type);
 #ifdef USE_LIGHT
     auto light = static_cast<light::LightState*>(std::get<1>(*menu_item));
-    ESP_LOGW(TAG, "selectMenuHold: name %s", light->get_name().c_str());
+    ESP_LOGW(TAG, "selectLightEntity: name %s", light->get_name().c_str());
     if (supportsBrightness(light)) {
       active_menu_screen->set_selected_entity(menu_item);
       menuIndex = 0;
@@ -225,23 +232,30 @@ bool HomeThingMenuBase::selectLightEntity(
   return false;
 }
 
-bool HomeThingMenuBase::selectMenuHold() {
-  ESP_LOGW(TAG, "selectMenuHold: %d", menuIndex);
+bool HomeThingMenuBase::selectDetailMenu() {
+  ESP_LOGW(TAG, "selectDetailMenu: %d", menuIndex);
   switch (menuTree.back()) {
     case rootMenu: {
       if (home_screen_) {
         int offset = 0;
 #ifdef USE_HOMETHING_APP
         for (auto& menu_app : menu_apps_) {
-          offset = offset + menu_app->root_menu_size();
+          int appMenuSize = menu_app->root_menu_size();
+          if (menuIndex < (offset + appMenuSize)) {
+            ESP_LOGI(TAG, "selectDetailMenu: app %d offset %d", menuIndex,
+                     offset);
+            menu_app->buttonPressOption();
+            return false;
+          }
+          offset += appMenuSize;
         }
 #endif
         int index = menuIndex - offset;
-        ESP_LOGW(TAG, "selectMenuHold: %d offset %d index %d", menuIndex,
+        ESP_LOGW(TAG, "selectDetailMenu: %d offset %d index %d", menuIndex,
                  offset, index);
         if (menuIndex >= offset && index < home_screen_->get_entity_count()) {
           auto menu_item = home_screen_->get_menu_item(index);
-          ESP_LOGW(TAG, "selectMenuHold: %d type: %d, name %s type %s", index,
+          ESP_LOGW(TAG, "selectDetailMenu: %d type: %d, name %s type %s", index,
                    std::get<0>(*menu_item),
                    home_screen_->entity_name_at_index(index).c_str(),
                    nameForMenuItemType(std::get<0>(*menu_item)).c_str());
@@ -511,14 +525,50 @@ void HomeThingMenuBase::buttonPressSelect() {
   }
 }
 
-void HomeThingMenuBase::buttonPressSelectHold() {
+void HomeThingMenuBase::buttonPressOption() {
   if (buttonPressWakeUpDisplay()) {
     return;
   }
   if (menuTree.back() == bootMenu) {
     return;
   }
-  if (selectMenuHold()) {
+  switch (menuTree.back()) {
+    case appMenu:
+#ifdef USE_HOMETHING_APP
+      if (active_app_ && active_app_->should_draw_app()) {
+        switch (active_app_->buttonPressOption()) {
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReturn:
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationNone:
+            break;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationUpdate:
+            update_display();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationPop:
+            upMenu();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationRoot:
+            topMenu();
+            return;
+          case homething_menu_app::NavigationCoordination::
+              NavigationCoordinationReload:
+            menuIndex = 0;
+            reload_menu_items_ = true;
+            update_display();
+            return;
+        }
+      }
+#endif
+      break;
+    default:
+      break;
+  }
+  if (selectDetailMenu()) {
     reload_menu_items_ = true;
     update_display();
   }
@@ -545,10 +595,10 @@ bool HomeThingMenuBase::upMenu() {
   return false;
 }
 
-void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
+void HomeThingMenuBase::rotaryScrollCounterClockwise() {
   if (!button_press_and_continue())
     return;
-  rotary_ = rotary;
+  rotary_ -= 1;
   if (menuIndex == 0 && menu_settings_->get_menu_rollback()) {
     // && menuTree.back() != nowPlayingMenu) {
     switch (menuTree.back()) {
@@ -573,7 +623,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
       case appMenu:
 #ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
-          switch (active_app_->rotaryScrollCounterClockwise(rotary)) {
+          switch (active_app_->rotaryScrollCounterClockwise(rotary_)) {
             case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationReturn:
               return;
@@ -656,18 +706,18 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise(int rotary) {
   debounceUpdateDisplay();
 }
 
-void HomeThingMenuBase::rotaryScrollClockwise(int rotary) {
+void HomeThingMenuBase::rotaryScrollClockwise() {
   if (menu_settings_->get_mode() == MENU_MODE_3_BUTTON && skipBootPressed())
     return;
   if (!button_press_and_continue())
     return;
-  rotary_ = rotary;
+  rotary_ += 1;
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
 #ifdef USE_HOMETHING_APP
         if (active_app_ && active_app_->should_draw_app()) {
-          switch (active_app_->rotaryScrollClockwise(rotary)) {
+          switch (active_app_->rotaryScrollClockwise(rotary_)) {
             case homething_menu_app::NavigationCoordination::
                 NavigationCoordinationReturn:
               return;
@@ -943,47 +993,6 @@ void HomeThingMenuBase::buttonPressRight() {
   }
 }
 
-void HomeThingMenuBase::buttonReleaseScreenLeft() {
-  if (!button_press_and_continue())
-    return;
-  switch (menuTree.back()) {
-    case appMenu:
-#ifdef USE_HOMETHING_APP
-      if (active_app_ && active_app_->should_draw_app()) {
-        switch (active_app_->buttonReleaseScreenLeft()) {
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationReturn:
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationNone:
-            break;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationUpdate:
-            update_display();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationPop:
-            upMenu();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationRoot:
-            topMenu();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationReload:
-            menuIndex = 0;
-            reload_menu_items_ = true;
-            update_display();
-            return;
-        }
-      }
-#endif
-      break;
-    default:
-      break;
-  }
-}
-
 bool HomeThingMenuBase::buttonPressUnlock() {
   if (device_locked_) {
     unlock_presses_++;
@@ -996,88 +1005,6 @@ bool HomeThingMenuBase::buttonPressUnlock() {
     return true;
   }
   return false;
-}
-
-void HomeThingMenuBase::buttonPressScreenLeft() {
-  if (buttonPressUnlock()) {
-    return;
-  } else if (!button_press_and_continue()) {
-    return;
-  }
-  switch (menuTree.back()) {
-    case appMenu:
-#ifdef USE_HOMETHING_APP
-      if (active_app_ && active_app_->should_draw_app()) {
-        switch (active_app_->buttonPressScreenLeft()) {
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationNone:
-            break;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationUpdate:
-            update_display();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationPop:
-            upMenu();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationRoot:
-            topMenu();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationReload:
-            menuIndex = 0;
-            reload_menu_items_ = true;
-            update_display();
-            return;
-        }
-      }
-#endif
-      break;
-    default:
-      break;
-  }
-}
-
-void HomeThingMenuBase::buttonPressScreenRight() {
-  if (!button_press_and_continue())
-    return;
-  switch (menuTree.back()) {
-    case appMenu:
-#ifdef USE_HOMETHING_APP
-      if (active_app_ && active_app_->should_draw_app()) {
-        switch (active_app_->buttonPressScreenRight()) {
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationNone:
-            break;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationUpdate:
-            update_display();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationPop:
-            upMenu();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationRoot:
-            topMenu();
-            return;
-          case homething_menu_app::NavigationCoordination::
-              NavigationCoordinationReload:
-            menuIndex = 0;
-            reload_menu_items_ = true;
-            update_display();
-            return;
-        }
-      }
-#endif
-      break;
-    case rootMenu:
-    case settingsMenu:
-    case lightsDetailMenu:
-    case bootMenu:
-      break;
-  }
 }
 
 void HomeThingMenuBase::displayUpdateDebounced() {
@@ -1214,7 +1141,9 @@ void HomeThingMenuBase::idleTick() {
   }
 #ifdef USE_HOMETHING_APP
   for (auto app : menu_apps_) {
-    app->idleTick(idleTime, menu_settings_->get_display_timeout());
+    if (app->idleTick(idleTime, menu_settings_->get_display_timeout())) {
+      update_display();
+    }
   }
 #endif
   if (menu_settings_->get_lock_after() != 0 &&
@@ -1230,10 +1159,7 @@ void HomeThingMenuBase::idleTick() {
   } else if (display_can_sleep()) {
     ESP_LOGD(TAG, "idleTick: turning off display");
     sleep_display();
-    idleTime++;
-    return;
-  } else if (idleTime == 180 && get_charging()) {
-    idleMenu(true);
+    idleMenu();
     idleTime++;
     return;
   } else if (idleTime > menu_settings_->get_sleep_after()) {
@@ -1262,19 +1188,22 @@ void HomeThingMenuBase::goToScreenFromString(std::string screenName) {
   update_display();
 }
 
-void HomeThingMenuBase::idleMenu(bool force) {
-  ESP_LOGI(TAG, "idleMenu %d", force);
+void HomeThingMenuBase::idleMenu() {
+  ESP_LOGI(TAG, "idleMenu");
   if (menuTree.back() == bootMenu) {
+    ESP_LOGI(TAG, "idleMenu boot menu");
     return;
   }
-  if (!get_charging() || force) {
-    if (active_menu_screen)
-      active_menu_screen->set_selected_entity(nullptr);
-    reset_menu();
-    if (force) {
-      update_display();
-    }
+  reset_menu();
+#ifdef USE_HOMETHING_APP
+  auto idle_app = menu_settings_->get_idle_app();
+  if (idle_app) {
+    ESP_LOGI(TAG, "idleMenu: set idle app");
+    menuTree.push_back(appMenu);
+    active_app_ = idle_app;
+    active_app_->set_app_menu_index(0);
   }
+#endif
 }
 }  // namespace homething_menu_base
 }  // namespace esphome
