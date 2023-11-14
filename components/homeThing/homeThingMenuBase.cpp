@@ -180,6 +180,8 @@ bool HomeThingMenuBase::selectMenu() {
               NavigationCoordinationNone:
             return false;
           case homething_menu_app::NavigationCoordination::
+            NavigationCoordinationReturn:
+          case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             return true;
           case homething_menu_app::NavigationCoordination::

@@ -72,6 +72,8 @@ void HomeThingMenuNowPlayingControl::app_menu_titles(
         homeThingNowPlayingMenuMediaPlayers::media_player_menu_titles(
             menu_titles, media_player_group_);
         return;
+      case NOW_PLAYING_MENU_STATE_NONE:
+        return;
     }
   }
 }
@@ -96,6 +98,8 @@ HomeThingMenuNowPlayingControl::app_menu_select(int index) {
     case NOW_PLAYING_MENU_STATE_MEDIA_PLAYERS: {
       return homeThingNowPlayingMenuMediaPlayers::select_menu(
           index, media_player_group_);
+    case NOW_PLAYING_MENU_STATE_NONE: 
+      break;
     }
   }
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
@@ -188,22 +192,22 @@ void HomeThingMenuNowPlayingControl::reset_menu() {
   menu_state_ = NOW_PLAYING_MENU_STATE_NONE;
 }
 
-bool HomeThingMenuNowPlayingControl::select_media_player_feature(
+void HomeThingMenuNowPlayingControl::select_media_player_feature(
     homeassistant_media_player::MediaPlayerFeatureCommand* command) {
   auto feature = command->get_feature();
   switch (feature) {
-    case homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME:
-      // topMenu();
-      return true;
     case homeassistant_media_player::MediaPlayerSupportedFeature::GROUPING:
       menu_state_ = NOW_PLAYING_MENU_STATE_GROUPING;
-      return false;
+      ESP_LOGD(TAG, "select_media_player_feature: GROUPING");
+      return;
     case homeassistant_media_player::MediaPlayerSupportedFeature::
         CUSTOM_COMMAND: {
       auto feature_command = command->get_command();
+      ESP_LOGD(TAG, "select_media_player_feature: CUSTOM_COMMAND %s",
+               feature_command->get_title().c_str());
       if (feature_command != nullptr) {
         feature_command->on_command();
-        return true;
+        return;
       }
     }
 
@@ -211,7 +215,7 @@ bool HomeThingMenuNowPlayingControl::select_media_player_feature(
       media_player_group_->call_feature(feature);
       break;
   }
-  return false;
+  return;
 }
 
 homething_menu_app::NavigationCoordination
@@ -224,17 +228,19 @@ HomeThingMenuNowPlayingControl::button_press_now_playing_option(
   }
   switch (menu->type) {
     case circleOptionMenu: {
-      auto feature = circle_menu_->tap_option_menu(
+      auto command = circle_menu_->tap_option_menu(
           position, media_player_group_->get_active_player());
-      if (feature) {
+      if (command) {
+        auto feature = command->get_feature();
         ESP_LOGI(TAG,
                  "button_press_now_playing_option: option menu selected %d",
-                 feature->get_feature());
+                 feature);
         circle_menu_->clear_active_menu();
-        if (select_media_player_feature(feature)) {
+        if (feature == homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME) {
           return homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop;
         }
+        select_media_player_feature(command);
         return homething_menu_app::NavigationCoordination::
             NavigationCoordinationUpdate;
       }
@@ -357,6 +363,7 @@ HomeThingMenuNowPlayingControl::buttonPressUp() {
     case NOW_PLAYING_MENU_STATE_SOURCE:
       return homeThingNowPlayingMenuSources::pop_menu(media_player_group_);
     case NOW_PLAYING_MENU_STATE_MEDIA_PLAYERS:
+    case NOW_PLAYING_MENU_STATE_NONE:
       break;
   }
   return homething_menu_app::NavigationCoordination::NavigationCoordinationPop;

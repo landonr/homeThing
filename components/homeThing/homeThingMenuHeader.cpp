@@ -77,6 +77,9 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
 #endif
       break;
     }
+    case entityMenu:
+      drawHeaderTitleWithString("Entity", xPos);
+      break;
     case bootMenu:
       drawHeaderTitleWithString(display_state_->get_boot_device_name(), xPos,
                                 yPosOffset);
