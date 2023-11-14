@@ -1,8 +1,8 @@
 i2c:
-    - id: bus_a
-      sda: 21
-      scl: 22
-      scan: True
+  id: bus_a
+  sda: 21
+  scl: 22
+  scan: True
 
 UnitEncoderC:
   id: encoder_base
@@ -15,24 +15,20 @@ UnitEncoderC:
       min_length: 5ms
       max_length: 350ms
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelect();
+        homething_menu.select: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s
       then:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressSelectHold();
+        homething_menu.option: homeThingMenu
   encoder:
     name: "${friendly_name} Rotary Encoder"
     id: rotary
     internal: True
     encoder_filter: 2
     on_clockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollClockwise(id(rotary).state);
+      then:
+        homething_menu.scroll_clockwise: homeThingMenu
     on_anticlockwise:
-      - lambda: |-
-          id(homeThingMenu)->buttonPressWakeUpDisplay();
-          id(homeThingMenu)->rotaryScrollCounterClockwise(id(rotary).state);
+      then:
+        homething_menu.scroll_counter_clockwise: homeThingMenu

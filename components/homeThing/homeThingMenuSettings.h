@@ -8,6 +8,10 @@
 #include "esphome/components/switch/switch.h"
 #endif
 
+#ifdef USE_HOMETHING_APP
+#include "esphome/components/homeThingApp/homeThingApp.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -44,6 +48,11 @@ class HomeThingMenuSettings {
   bool get_menu_rollback() { return menu_rollback_; }
   void set_menu_rollback(bool menu_rollback) { menu_rollback_ = menu_rollback; }
 
+#ifdef USE_HOMETHING_APP
+  void set_idle_app(homething_menu_app::HomeThingApp* app) { idle_app_ = app; }
+  homething_menu_app::HomeThingApp* get_idle_app() { return idle_app_; }
+#endif
+
  private:
   MenuMode mode_;
   int display_timeout_;
@@ -53,6 +62,10 @@ class HomeThingMenuSettings {
   bool menu_rollback_;
 #ifdef USE_SWITCH
   switch_::Switch* sleep_switch_;
+#endif
+
+#ifdef USE_HOMETHING_APP
+  homething_menu_app::HomeThingApp* idle_app_{nullptr};
 #endif
 
   int lock_after_;

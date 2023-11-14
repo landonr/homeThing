@@ -6,8 +6,7 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        - lambda: |-
-            id(homeThingMenu)->rotaryScrollCounterClockwise(0);
+        homething_menu.scroll_counter_clockwise: homeThingMenu
   - platform: gpio
     id: M5_BtnB
     pin:
@@ -15,8 +14,7 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        - lambda: |-
-           id(homeThingMenu)->buttonPressSelect();
+        homething_menu.select: homeThingMenu
   - platform: gpio
     id: M5_BtnC
     pin:
@@ -24,5 +22,4 @@ binary_sensor:
       inverted: true
     on_click:
       then:
-        - lambda: |-
-            id(homeThingMenu)->rotaryScrollClockwise(0);
+        homething_menu.scroll_clockwise: homeThingMenu
