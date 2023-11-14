@@ -1,0 +1,149 @@
+substitutions:
+  screen_left_pin: "GPIO0"
+  screen_right_pin: "GPIO35"
+
+binary_sensor:
+  ## controls
+  - platform: gpio
+    pin:
+      number: $screen_left_pin
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: "T-Display Button Input 0"
+    id: tdisplay_button_input_0
+    internal: true
+    on_press:
+      then:
+        media_player_group.select_next_player: media_group_component
+  - platform: gpio
+    pin:
+      number: $screen_right_pin
+      inverted: true
+    name: "T-Display Button Input 1"
+    id: tdisplay_button_input_1
+    internal: true
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+        homething_menu.option: homeThingMenu
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->topMenu();
+    - timing:
+        - ON for at least 3s
+      then:
+      - lambda: |-
+          id(sleep_toggle)->toggle();
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: 0
+          mode: INPUT
+          inverted: true
+    id: sw5
+    on_press:
+      then:
+        homething_menu.right: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: 1
+          mode: INPUT
+          inverted: true
+    id: sw4
+    on_press:
+      then:
+        homething_menu.right: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: 2
+          mode: INPUT
+          inverted: true
+    id: sw3
+    on_press:
+      then:
+        homething_menu.down: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: 3
+          mode: INPUT
+          inverted: true
+    id: sw2
+    on_press:
+      then:
+        homething_menu.left: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: 4
+          mode: INPUT
+          inverted: true
+    id: sw1
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+        homething_menu.select: homeThingMenu
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+        homething_menu.option: homeThingMenu
+  - platform: gpio
+    name: "Custom1"
+    internal: True
+    pin:
+      pcf8574: pcf8574_hub
+      number: 5
+      mode: INPUT
+      inverted: true
+    on_press:
+      then:
+        - logger.log: "Custom1"
+  - platform: gpio
+    name: "Custom2"
+    internal: True
+    pin:
+      pcf8574: pcf8574_hub
+      number: 6
+      mode: INPUT
+      inverted: true
+    on_press:
+      then:
+        - logger.log: "Custom2"
+  - platform: gpio
+    name: "Custom3"
+    internal: True
+    pin:
+      pcf8574: pcf8574_hub
+      number: 7
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        - logger.log: "Custom3"
+
+i2c:
+  sda: 43
+  scl: 44
+  scan: TRUE
+  id: bus_a
+  frequency: 100hz
+
+pcf8574:
+  - id: 'pcf8574_hub'
+    address: 0x20
+    pcf8575: false
