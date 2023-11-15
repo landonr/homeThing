@@ -2,6 +2,7 @@
 
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
+#include "esphome/components/homeassistant_component/LightExtensions.h"
 #include "esphome/components/light/light_state.h"
 #include "esphome/core/color.h"
 

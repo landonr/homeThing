@@ -204,7 +204,7 @@ void HomeThingMenuNowPlayingControl::select_media_player_feature(
         CUSTOM_COMMAND: {
       auto feature_command = command->get_command();
       ESP_LOGD(TAG, "select_media_player_feature: CUSTOM_COMMAND %s",
-               feature_command->get_title().c_str());
+               feature_command->get_name().c_str());
       if (feature_command != nullptr) {
         feature_command->on_command();
         return;

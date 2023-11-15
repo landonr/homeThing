@@ -20,7 +20,6 @@
 #endif
 
 #ifdef USE_LIGHT
-#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #include "esphome/components/light/light_state.h"
 #endif
 

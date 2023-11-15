@@ -1,9 +1,8 @@
 #pragma once
 
 #ifdef USE_LIGHT
-#include "esphome/components/homeassistant_component/LightExtensions.h"
-#endif
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeassistant_component/LightExtensions.h"
 
 namespace esphome {
 namespace homething_menu_base {
@@ -11,7 +10,6 @@ namespace homething_menu_base {
 static const char* const MENU_TITLE_LIGHT_TAG = "homething.menutitle.light";
 
 // light
-#ifdef USE_LIGHT
 #define MAX_BRIGHTNESS 255.0f
 
 class MenuTitleLight : public MenuTitleToggle {
@@ -94,7 +92,7 @@ static void lightTitleItems(light::LightState* light,
   }
 }
 
-#endif  // light
-
 }  // namespace homething_menu_base
 }  // namespace esphome
+
+#endif
