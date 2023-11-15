@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingMenuTitleSource.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
