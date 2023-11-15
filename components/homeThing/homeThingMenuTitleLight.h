@@ -31,8 +31,8 @@ static void lightTitleSwitches(const std::vector<light::LightState*>& lights,
                                std::vector<MenuTitleBase*>* menu_titles) {
   for (const auto& light : lights) {
     auto output = static_cast<light::LightOutput*>(light->get_output());
-    ESP_LOGD(MENU_TITLE_LIGHT_TAG, "state %d (%s)", light->remote_values.is_on(),
-             light->get_name().c_str());
+    ESP_LOGD(MENU_TITLE_LIGHT_TAG, "state %d (%s)",
+             light->remote_values.is_on(), light->get_name().c_str());
     MenuTitleLeftIcon state = light->remote_values.is_on()
                                   ? OnMenuTitleLeftIcon
                                   : OffMenuTitleLeftIcon;
