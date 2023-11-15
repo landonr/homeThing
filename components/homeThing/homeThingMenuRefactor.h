@@ -1,7 +1,10 @@
 
 #pragma once
+#include <string>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingMenuTitleSlider.h"
+#include "esphome/components/homeThing/homeThingMenuTitleToggle.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 

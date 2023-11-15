@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
@@ -18,6 +19,7 @@
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingMenuTitlePlayer.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 

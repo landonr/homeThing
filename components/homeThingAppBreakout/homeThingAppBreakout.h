@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"
 
@@ -19,7 +21,6 @@ class HomeThingAppBreakoutHeader
     return 0;
   }
 
- protected:
  private:
   const char* const TAG = "homething.app.breakout.header";
 };
@@ -61,7 +62,7 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
 
   // state callback
   bool has_state_callback() { return false; }
-  void add_on_state_callback(std::function<void()>&& callback){};
+  void add_on_state_callback(std::function<void()>&& callback) {}
 
   // buttons
   homething_menu_app::NavigationCoordination rotaryScrollClockwise(int rotary);
@@ -90,7 +91,6 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
 
   bool is_animating() { return true; }
 
- protected:
  private:
   const char* const TAG = "homething.app.breakout";
 

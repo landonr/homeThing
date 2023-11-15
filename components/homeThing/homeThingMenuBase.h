@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"

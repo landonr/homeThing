@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"

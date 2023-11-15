@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/core/entity_base.h"
 
@@ -69,7 +73,7 @@ enum MenuItemType {
 
 class HomeThingMenuScreen {
  public:
-  HomeThingMenuScreen(std::string name) : name_(name) {}
+  explicit HomeThingMenuScreen(std::string name) : name_(name) {}
   void set_name(std::string name) { name_ = name; }
   std::string get_name() { return name_; }
   void set_index(int index) { index_ = index; }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"

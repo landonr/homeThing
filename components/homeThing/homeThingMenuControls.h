@@ -1,5 +1,5 @@
 #pragma once
-
+#include <tuple>
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingLightHelpers.h"
 #endif
