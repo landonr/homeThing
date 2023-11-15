@@ -48,7 +48,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: espwarnings
     refresh: 1d
     components: [homeThingDisplayState]
 ```

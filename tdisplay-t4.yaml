@@ -19,7 +19,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: espwarnings
       # type: local
       # path: components
     refresh: 0s
@@ -27,7 +27,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: main
+      ref: espwarnings
     refresh: 0s
     components: [
       homeassistant_component,
@@ -41,7 +41,7 @@ external_components:
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: main
+    ref: espwarnings
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts-roboto.yaml, # default font
