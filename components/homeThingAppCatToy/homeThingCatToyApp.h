@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"
 #include "esphome/components/remote_base/pronto_protocol.h"
@@ -20,7 +22,6 @@ class HomeThingCatToyAppHeader
     return 0;
   }
 
- protected:
  private:
   const char* const TAG = "homething.cattoy.header";
 };
@@ -70,9 +71,8 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingApp {
 
   // state callback
   bool has_state_callback() { return false; }
-  void add_on_state_callback(std::function<void()>&& callback){};
+  void add_on_state_callback(std::function<void()>&& callback) {}
 
- protected:
  private:
   const char* const TAG = "homething.app.cattoy";
 

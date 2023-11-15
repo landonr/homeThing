@@ -1,7 +1,9 @@
 #pragma once
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
-#include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingMenuTitleSource.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
@@ -60,12 +62,6 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   homething_menu_app::NavigationCoordination buttonPressSelect(int menuIndex);
   homething_menu_app::NavigationCoordination buttonPressOption();
 
-  // controls
-  bool select_media_player_feature(
-      homeassistant_media_player::MediaPlayerFeatureCommand* command);
-  homething_menu_app::NavigationCoordination button_press_now_playing_option(
-      CircleOptionMenuPosition position);
-
   // display
   void set_now_playing_display(
       display::DisplayBuffer* new_display_buffer,
@@ -104,6 +100,12 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
  private:
   const char* const TAG = "homething.nowplaying.control";
   CallbackManager<void()> callback_;
+
+  // controls
+  void select_media_player_feature(
+      homeassistant_media_player::MediaPlayerFeatureCommand* command);
+  homething_menu_app::NavigationCoordination button_press_now_playing_option(
+      CircleOptionMenuPosition position);
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

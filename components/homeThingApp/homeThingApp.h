@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/core/component.h"
@@ -42,7 +42,7 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   virtual void reset_menu() {}
   virtual void set_app_menu_index(int app_menu_index) {}
   virtual bool has_state_callback() { return false; }
-  virtual void add_on_state_callback(std::function<void()>&& callback){};
+  virtual void add_on_state_callback(std::function<void()>&& callback) {}
 
   // buttons
   virtual NavigationCoordination rotaryScrollClockwise(int rotary) {

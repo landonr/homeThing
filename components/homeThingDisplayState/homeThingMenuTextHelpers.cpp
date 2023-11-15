@@ -48,13 +48,13 @@ int HomeThingMenuTextHelpers::drawTextWrapped(
   unsigned line_begin = 0;
   const unsigned per_line = getCharacterLimit(
       xPos, fontSize, alignment, display_buffer->get_width(), widthRatio);
-  ESP_LOGI(TAG, "drawTextWrapped: per_line1 %d text %s", per_line,
+  ESP_LOGD(TAG, "drawTextWrapped: per_line1 %d text %s", per_line,
            text.c_str());
   while (line_begin < text.size()) {
     const unsigned ideal_end = line_begin + per_line;
     unsigned line_end = ideal_end <= text.size() ? ideal_end : text.size();
     std::string line = text.substr(line_begin, line_end - line_begin);
-    ESP_LOGI(TAG,
+    ESP_LOGD(TAG,
              "Printing: xPos %d, yPos %d, font %p, color, alignment, "
              "text.c_str() + %u",
              xPos, yPos, font, line_begin);

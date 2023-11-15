@@ -1,6 +1,5 @@
 #include "homeThingMenuRefactor.h"
 #include "esphome/core/log.h"
-
 namespace esphome {
 namespace homething_menu_base {
 void HomeThingMenuRefactor::drawGroupedBar(int yPos, bool extend) {

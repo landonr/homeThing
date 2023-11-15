@@ -1,15 +1,16 @@
 #pragma once
 
+#include <string>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"
-
 namespace esphome {
 namespace homething_app_snake {
 
 class HomeThingAppSnakeHeader
     : public homething_menu_base::HomeThingMenuHeaderSource {
  public:
-  HomeThingAppSnakeHeader(int* score) : score(score) {}
+  explicit HomeThingAppSnakeHeader(int* score) : score(score) {}
   // header
   std::string get_header_title() { return to_string(*score) + "pts"; }
 
@@ -20,7 +21,6 @@ class HomeThingAppSnakeHeader
     return 0;
   }
 
- protected:
  private:
   const char* const TAG = "homething.app.snake.header";
   int* score;
@@ -91,9 +91,8 @@ class HomeThingAppSnake : public homething_menu_app::HomeThingApp {
 
   // state callback
   bool has_state_callback() { return false; }
-  void add_on_state_callback(std::function<void()>&& callback){};
+  void add_on_state_callback(std::function<void()>&& callback) {}
 
- protected:
  private:
   const char* const TAG = "homething.app.snake";
 
