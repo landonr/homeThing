@@ -27,7 +27,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: espwarnings
+      ref: main
       # type: local
       # path: components
     refresh: 0s
@@ -35,7 +35,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: espwarnings
+      ref: main
     refresh: 0s
     components: [
       homeassistant_component,
@@ -61,7 +61,7 @@ packages: # maybe modify: include default ipod controls
   # axp192: !include ../homeThing/common/m5stack-stickc/axp192-marty.yaml # power management and screen backlight
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: espwarnings
+    ref: main
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts-roboto.yaml, # default font

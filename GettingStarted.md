@@ -43,7 +43,7 @@ external_components:
   - source: # homeThing, display setup, and now playing app
       type: git
       url: https://github.com/landonr/homeThing
-      ref: espwarnings
+      ref: main
     refresh: 0s
     components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
   - source: github://pr#5214 # used to load images on compile
@@ -53,7 +53,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: espwarnings
+      ref: main
     refresh: 0s
     components: [
       homeassistant_component,
@@ -71,7 +71,7 @@ these packages are for a Lilygo TDisplay with a rotary encoder and battery
 packages:
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: espwarnings
+    ref: main
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
