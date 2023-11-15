@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"
@@ -73,8 +74,7 @@ class homeThingNowPlayingMenuMediaPlayers {
                   homeassistant_media_player::RemotePlayerMediaSource::
                       TVRemotePlayerMediaSource) {
             ESP_LOGD(TAG, "mediaPlayersTitleString: adding player %s no parent",
-                     parent->get_entity_id().c_str(),
-                     media_player->get_entity_id().c_str());
+                     parent->get_entity_id().c_str());
             tree[media_player] = {};
           } else {
             ESP_LOGD(TAG,

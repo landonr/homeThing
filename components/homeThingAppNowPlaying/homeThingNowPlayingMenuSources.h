@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
@@ -42,15 +43,18 @@ class homeThingNowPlayingMenuSources {
     const auto sources = media_player_group->activePlayerSources();
     const auto index = media_player_group->get_active_player_source_index();
     if (index == -1 && sources->size() > 1) {
-      activePlayerSourceTitles(sources, menu_titles);
+      homething_menu_base::MenuTitleSource::activePlayerSourceTitles(
+          sources, menu_titles);
       return;
     } else if (index == -1 && sources->size() == 1) {
       auto playerSources = (*sources)[0]->get_sources();
-      activePlayerSourceItemTitles(playerSources, menu_titles);
+      homething_menu_base::MenuTitleSource::activePlayerSourceItemTitles(
+          playerSources, menu_titles);
       return;
     } else if (sources->size() > 1) {
       auto playerSources = (*sources)[index]->get_sources();
-      activePlayerSourceItemTitles(playerSources, menu_titles);
+      homething_menu_base::MenuTitleSource::activePlayerSourceItemTitles(
+          playerSources, menu_titles);
       return;
     }
   }

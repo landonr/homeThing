@@ -18,7 +18,7 @@ void HomeThingAppSnake::reset() {
 
 Coordinate HomeThingAppSnake::get_random_coordinate() {
   const auto bounds = get_display_bounds();
-  return Coordinate((rand() % (bounds.x)), (rand() % (bounds.y)));
+  return Coordinate((rand_r() % (bounds.x)), (rand_r() % (bounds.y)));
 }
 
 Coordinate HomeThingAppSnake::get_display_bounds() {

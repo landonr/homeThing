@@ -2,22 +2,24 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuRefactor.h"
-#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 
+#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingMenuTitlePlayer.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif
 

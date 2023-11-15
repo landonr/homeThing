@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 #include "esphome/components/display/display_buffer.h"
@@ -12,7 +13,6 @@
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
-#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_HOMETHING_APP

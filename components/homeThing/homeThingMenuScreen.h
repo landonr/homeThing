@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/core/entity_base.h"
 
@@ -20,7 +24,6 @@
 #endif
 
 #ifdef USE_LIGHT
-#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #include "esphome/components/light/light_state.h"
 #endif
 
@@ -68,35 +71,9 @@ enum MenuItemType {
   MenuItemTypeButton
 };
 
-static std::string nameForMenuItemType(MenuItemType type) {
-  switch (type) {
-    case MenuItemTypeNone:
-      return "None";
-    case MenuItemTypeTitle:
-      return "Title";
-    case MenuItemTypeSwitch:
-      return "Switch";
-    case MenuItemTypeTextSensor:
-      return "TextSensor";
-    case MenuItemTypeCommand:
-      return "Command";
-    case MenuItemTypeSensor:
-      return "Sensor";
-    case MenuItemTypeLight:
-      return "Light";
-    case MenuItemTypeNumber:
-      return "Number";
-    case MenuItemTypeCover:
-      return "Cover";
-    case MenuItemTypeButton:
-      return "Button";
-  }
-  return "default";
-}
-
 class HomeThingMenuScreen {
  public:
-  HomeThingMenuScreen(std::string name) : name_(name) {}
+  explicit HomeThingMenuScreen(std::string name) : name_(name) {}
   void set_name(std::string name) { name_ = name; }
   std::string get_name() { return name_; }
   void set_index(int index) { index_ = index; }

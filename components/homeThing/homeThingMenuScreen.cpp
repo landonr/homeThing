@@ -1,5 +1,9 @@
 #include "homeThingMenuScreen.h"
 
+#ifdef USE_LIGHT
+#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
