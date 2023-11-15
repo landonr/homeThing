@@ -41,7 +41,7 @@ void HomeThingMenuNowPlayingControl::rootMenuTitles(
           homething_menu_base::ArrowMenuTitleRightIcon));
     }
     if (media_player_group_->active_player_ != nullptr &&
-        media_player_group_->active_player_->get_group_members() > 0) {
+        media_player_group_->active_player_->get_group_members()->size() > 0) {
       menu_titles->push_back(new homething_menu_base::MenuTitleBase(
           get_menu_title(NOW_PLAYING_MENU_STATE_GROUPING), "",
           homething_menu_base::ArrowMenuTitleRightIcon));
@@ -98,8 +98,8 @@ HomeThingMenuNowPlayingControl::app_menu_select(int index) {
     case NOW_PLAYING_MENU_STATE_MEDIA_PLAYERS: {
       return homeThingNowPlayingMenuMediaPlayers::select_menu(
           index, media_player_group_);
-    case NOW_PLAYING_MENU_STATE_NONE: 
-      break;
+      case NOW_PLAYING_MENU_STATE_NONE:
+        break;
     }
   }
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
@@ -114,7 +114,7 @@ int HomeThingMenuNowPlayingControl::root_menu_size() {
     bool show_media_players = media_player_group_->totalPlayers() > 1;
     bool show_grouping =
         media_player_group_->active_player_ != nullptr &&
-        media_player_group_->active_player_->get_group_members() > 0;
+        media_player_group_->active_player_->get_group_members()->size() > 0;
     return 1 + show_source + show_media_players + show_grouping;
   }
   return 0;
@@ -209,8 +209,8 @@ void HomeThingMenuNowPlayingControl::select_media_player_feature(
         feature_command->on_command();
         return;
       }
+      break;
     }
-
     default:
       media_player_group_->call_feature(feature);
       break;
@@ -236,7 +236,8 @@ HomeThingMenuNowPlayingControl::button_press_now_playing_option(
                  "button_press_now_playing_option: option menu selected %d",
                  feature);
         circle_menu_->clear_active_menu();
-        if (feature == homeassistant_media_player::MediaPlayerSupportedFeature::MENU_HOME) {
+        if (feature == homeassistant_media_player::MediaPlayerSupportedFeature::
+                           MENU_HOME) {
           return homething_menu_app::NavigationCoordination::
               NavigationCoordinationPop;
         }

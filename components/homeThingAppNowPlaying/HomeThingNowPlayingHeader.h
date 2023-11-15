@@ -2,6 +2,7 @@
 
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
+#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThingAppNowPlaying/NowPlayingMenuState.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"

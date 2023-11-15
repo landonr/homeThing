@@ -12,7 +12,13 @@
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
+
+#ifdef USE_LIGHT
+#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
+#else
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#endif
+
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_HOMETHING_APP

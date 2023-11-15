@@ -23,6 +23,7 @@ CONFIG_SCHEMA = homeThingApp.BASE_SCHEMA.extend(
 
 async def to_code(config):
     var = await homeThingApp.new_app_base(config)
+    cg.add_build_flag("-DUSE_NOW_PLAYING")
     media_players = await cg.get_variable(config[CONF_MEDIA_PLAYERS])
     cg.add(var.set_media_player_group(media_players))
 

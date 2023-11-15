@@ -1,10 +1,13 @@
 esphome:
-  name: "homething-basic"
+  name: "homething-debug"
 
 api:
 
 esp32:
   board: featheresp32
+  framework:
+    type: esp-idf
+    version: recommended
 
 logger:
   level: DEBUG
@@ -17,12 +20,12 @@ wifi: # setup wifi, make sure secrets.yaml exists!
 
 external_components:
   - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: espwarnings
+    #   type: git
+    #   url: https://github.com/landonr/homeThing
+    #   ref: espwarnings
 
-      # type: local
-      # path: components
+      type: local
+      path: components
     refresh: 0s
     components: [homeThingDisplayState, homeThing]
 
@@ -31,7 +34,8 @@ spi:
   mosi_pin: GPIO19
 
 substitutions: # set friendly name
-  friendly_name: "homething-basic"
+  friendly_name: "homething-debug"
+  log_level: "DEBUG"
 
 font:
   - file: "gfonts://Roboto"

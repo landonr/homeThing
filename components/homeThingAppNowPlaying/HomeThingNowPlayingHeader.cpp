@@ -49,7 +49,8 @@ int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
   if (active_player == NULL) {
     return 0;
   }
-  auto menuTitle = homething_menu_base::headerMediaPlayerTitle(active_player);
+  auto menuTitle = homething_menu_base::MenuTitlePlayer::headerMediaPlayerTitle(
+      active_player);
   switch (active_player->playerState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState: {

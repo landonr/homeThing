@@ -6,7 +6,7 @@ namespace esphome {
 namespace homething_menu_base {
 
 void HomeThingMenuAnimation::resetAnimation(bool force) {
-  ESP_LOGD(TAG, "resetAnimation: %f force", animationTick->state, force);
+  ESP_LOGD(TAG, "resetAnimation: %f force %d", animationTick->state, force);
   if (animationTick->state != 0 || force) {
     animating = false;
     animationTick->publish_state(0);

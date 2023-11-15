@@ -86,7 +86,7 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   menu_drawing_ = true;
   menu_display_->draw_background();
-  auto title_name = menu_state_title(activeMenuState);
+  auto title_name = MenuTitleBase::menu_state_title(activeMenuState);
   if (reload_menu_items_ ||
       (menu_titles.size() == 0 && activeMenuState != bootMenu)) {
     ESP_LOGI(TAG, "draw_menu_screen: reload %d index %d %s #%d",
@@ -180,7 +180,7 @@ bool HomeThingMenuBase::selectMenu() {
               NavigationCoordinationNone:
             return false;
           case homething_menu_app::NavigationCoordination::
-            NavigationCoordinationReturn:
+              NavigationCoordinationReturn:
           case homething_menu_app::NavigationCoordination::
               NavigationCoordinationUpdate:
             return true;
@@ -257,10 +257,9 @@ bool HomeThingMenuBase::selectDetailMenu() {
                  offset, index);
         if (menuIndex >= offset && index < home_screen_->get_entity_count()) {
           auto menu_item = home_screen_->get_menu_item(index);
-          ESP_LOGW(TAG, "selectDetailMenu: %d type: %d, name %s type %s", index,
+          ESP_LOGW(TAG, "selectDetailMenu: %d type: %d, name %s", index,
                    std::get<0>(*menu_item),
-                   home_screen_->entity_name_at_index(index).c_str(),
-                   nameForMenuItemType(std::get<0>(*menu_item)).c_str());
+                   home_screen_->entity_name_at_index(index).c_str());
           return selectLightEntity(menu_item);
         }
       }
@@ -327,8 +326,8 @@ MenuTitleBase* HomeThingMenuBase::menuTitleForType(MenuStates stringType,
     std::string menu_name = home_screen_->entity_name_at_index(index);
     return new MenuTitleBase(menu_name, "", NoMenuTitleRightIcon);
   }
-  return new MenuTitleBase(menu_state_title(stringType), "",
-                           menu_state_right_icon(stringType));
+  return new MenuTitleBase(MenuTitleBase::menu_state_title(stringType), "",
+                           MenuTitleBase::menu_state_right_icon(stringType));
 }
 
 void HomeThingMenuBase::finish_boot() {
@@ -391,7 +390,7 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
       return;
     default:
       ESP_LOGW(TAG, "activeMenu: menu is bad %d, %s", menuIndex,
-               menu_state_title(menuTree.back()).c_str());
+               MenuTitleBase::menu_state_title(menuTree.back()).c_str());
       break;
   }
 }
@@ -664,6 +663,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise() {
           return;
         }
 #endif
+        break;
       case settingsMenu:
         if (editing_menu_item && active_menu_screen &&
             active_menu_screen->get_selected_entity() &&
@@ -758,6 +758,7 @@ void HomeThingMenuBase::rotaryScrollClockwise() {
           return;
         }
 #endif
+        break;
       case settingsMenu:
         if (editing_menu_item && active_menu_screen &&
             active_menu_screen->get_selected_entity() &&

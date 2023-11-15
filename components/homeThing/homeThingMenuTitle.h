@@ -37,58 +37,6 @@ enum MenuTitleLeftIcon {
 
 enum MenuTitleRightIcon { NoMenuTitleRightIcon, ArrowMenuTitleRightIcon };
 
-static std::string menu_state_title(MenuStates menu_state) {
-  switch (menu_state) {
-    case appMenu:
-      return "App";
-    // case nowPlayingMenu:
-    //   return "Now Playing";
-    // case sourcesMenu:
-    //   return "Sources";
-    // case mediaPlayersMenu:
-    //   return "Media Players";
-    // case groupMenu:
-    //   return "Speaker Group";
-    case lightsDetailMenu:
-      return "Light Detail";
-    case rootMenu:
-      return "Home";
-    case bootMenu:
-      return "Boot";
-    case settingsMenu:
-      return "Settings";
-    case entityMenu:
-      return "Entity";
-  }
-  return "";
-}
-
-static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
-  switch (menu_state) {
-    case appMenu:
-      return ArrowMenuTitleRightIcon;
-    // case nowPlayingMenu:
-    //   return ArrowMenuTitleRightIcon;
-    // case sourcesMenu:
-    //   return ArrowMenuTitleRightIcon;
-    // case mediaPlayersMenu:
-    //   return ArrowMenuTitleRightIcon;
-    // case groupMenu:
-    //   return ArrowMenuTitleRightIcon;
-    case lightsDetailMenu:
-      return ArrowMenuTitleRightIcon;
-    case rootMenu:
-      return NoMenuTitleRightIcon;
-    case bootMenu:
-      return NoMenuTitleRightIcon;
-    case settingsMenu:
-      return ArrowMenuTitleRightIcon;
-    case entityMenu:
-      return NoMenuTitleRightIcon;
-  }
-  return NoMenuTitleRightIcon;
-}
-
 enum MenuTitleType {
   BaseMenuTitleType,
   PlayerMenuTitleType,
@@ -126,6 +74,42 @@ class MenuTitleBase {
     } else {
       return entity_id_;
     }
+  }
+
+  static MenuTitleRightIcon menu_state_right_icon(MenuStates menu_state) {
+    switch (menu_state) {
+      case appMenu:
+        return ArrowMenuTitleRightIcon;
+      case lightsDetailMenu:
+        return ArrowMenuTitleRightIcon;
+      case rootMenu:
+        return NoMenuTitleRightIcon;
+      case bootMenu:
+        return NoMenuTitleRightIcon;
+      case settingsMenu:
+        return ArrowMenuTitleRightIcon;
+      case entityMenu:
+        return NoMenuTitleRightIcon;
+    }
+    return NoMenuTitleRightIcon;
+  }
+
+  static std::string menu_state_title(MenuStates menu_state) {
+    switch (menu_state) {
+      case appMenu:
+        return "App";
+      case lightsDetailMenu:
+        return "Light Detail";
+      case rootMenu:
+        return "Home";
+      case bootMenu:
+        return "Boot";
+      case settingsMenu:
+        return "Settings";
+      case entityMenu:
+        return "Entity";
+    }
+    return "";
   }
 };
 
@@ -178,9 +162,32 @@ class MenuTitleSlider : public MenuTitleBase {
     float old_range = value_max_ - value_min_;
     return value_minus_min / old_range;
   }
+
+  static MenuTitleSlider* makeSlider(std::string title, std::string unit,
+                                     std::string entity_id_, int min, int max,
+                                     int value, int displayUnitMin,
+                                     int displayUnitMax) {
+    int displayValue = value;
+    float oldRange = max - min;
+    float valueMinusMin = value - min;
+    if (value > 0) {
+      float displayNewRange = displayUnitMax - displayUnitMin;
+      displayValue =
+          static_cast<float>(((valueMinusMin * displayNewRange) / oldRange)) +
+          displayUnitMin;
+    }
+
+    // float newMin = display_state_->get_slider_margin_size();
+    float newMin = 8;
+    // float newRange = displayWidth - 4 * newMin;
+    float newRange = 100;
+    int sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
+    return new MenuTitleSlider(title.c_str(), entity_id_, NoMenuTitleRightIcon,
+                               value, displayValue, unit, min, max);
+  }
 };
 
-#ifdef USE_MEDIA_PLAYER_GROUP  // now playing bottom menu
+#ifdef USE_NOW_PLAYING  // now playing bottom menu
 
 class MenuTitlePlayer : public MenuTitleToggle {
  public:
@@ -246,6 +253,27 @@ class MenuTitlePlayer : public MenuTitleToggle {
     }
     return defaultColor;
   }
+
+  static MenuTitlePlayer headerMediaPlayerTitle(
+      homeassistant_media_player::HomeAssistantBaseMediaPlayer* active_player) {
+    std::string friendlyName = active_player->get_name();
+    if (active_player->get_player_type() !=
+        homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+      auto activeSpeaker = static_cast<
+          homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
+          active_player);
+      if (activeSpeaker != NULL) {
+        auto groupMembers = *(activeSpeaker->get_group_members());
+        if (groupMembers.size() > 1) {
+          friendlyName =
+              friendlyName + " + " + to_string(groupMembers.size() - 1);
+        }
+      }
+    }
+    return MenuTitlePlayer(friendlyName, active_player->get_entity_id(),
+                           NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
+                           active_player);
+  }
 };
 
 class MenuTitleSource : public MenuTitleBase {
@@ -260,56 +288,36 @@ class MenuTitleSource : public MenuTitleBase {
         media_source_(new_media_source) {}
 
   std::string sourceTypeString() { return media_source_->sourceTypeString(); }
-};
 
-static void activePlayerSourceTitles(
-    std::vector<media_player_source::MediaPlayerSourceBase*>* sources,
-    std::vector<MenuTitleBase*>* menu_titles) {
-  for (auto& source : *sources) {
-    auto new_menu_title =
-        new MenuTitleBase(source->get_name(), "", NoMenuTitleRightIcon);
-    (*menu_titles).push_back(new_menu_title);
-  }
-}
-
-static void activePlayerSourceItemTitles(
-    const std::vector<media_player_source::MediaPlayerSourceItem*>* sourceItems,
-    std::vector<MenuTitleBase*>* menu_titles) {
-  if (sourceItems->size() == 0) {
-    ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
-    return;
-  }
-  for (auto& sourceItem : (*sourceItems)) {
-    auto name = sourceItem->get_name();
-    ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
-             name.c_str());
-    auto new_menu_title =
-        new MenuTitleSource(name, sourceItem->get_media_content_id(),
-                            NoMenuTitleRightIcon, sourceItem);
-    (*menu_titles).push_back(new_menu_title);
-  }
-}
-
-static MenuTitlePlayer headerMediaPlayerTitle(
-    homeassistant_media_player::HomeAssistantBaseMediaPlayer* active_player) {
-  std::string friendlyName = active_player->get_name();
-  if (active_player->get_player_type() !=
-      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-    auto activeSpeaker = static_cast<
-        homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-        active_player);
-    if (activeSpeaker != NULL) {
-      auto groupMembers = *(activeSpeaker->get_group_members());
-      if (groupMembers.size() > 1) {
-        friendlyName =
-            friendlyName + " + " + to_string(groupMembers.size() - 1);
-      }
+  static void activePlayerSourceTitles(
+      std::vector<media_player_source::MediaPlayerSourceBase*>* sources,
+      std::vector<MenuTitleBase*>* menu_titles) {
+    for (auto& source : *sources) {
+      auto new_menu_title =
+          new MenuTitleBase(source->get_name(), "", NoMenuTitleRightIcon);
+      (*menu_titles).push_back(new_menu_title);
     }
   }
-  return MenuTitlePlayer(friendlyName, active_player->get_entity_id(),
-                         NoMenuTitleLeftIcon, NoMenuTitleRightIcon,
-                         active_player);
-}
+
+  static void activePlayerSourceItemTitles(
+      const std::vector<media_player_source::MediaPlayerSourceItem*>*
+          sourceItems,
+      std::vector<MenuTitleBase*>* menu_titles) {
+    if (sourceItems->size() == 0) {
+      ESP_LOGW(MENU_TITLE_TAG, "activePlayerSourceItemTitles: empty list");
+      return;
+    }
+    for (auto& sourceItem : (*sourceItems)) {
+      auto name = sourceItem->get_name();
+      ESP_LOGD(MENU_TITLE_TAG, "activePlayerSourceItemTitles: name %s",
+               name.c_str());
+      auto new_menu_title =
+          new MenuTitleSource(name, sourceItem->get_media_content_id(),
+                              NoMenuTitleRightIcon, sourceItem);
+      (*menu_titles).push_back(new_menu_title);
+    }
+  }
+};
 
 #endif  // now playing
 
