@@ -12,10 +12,9 @@
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 
+#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
-#else
-#include "esphome/components/homeThing/homeThingMenuTitle.h"
 #endif
 
 #ifdef USE_MEDIA_PLAYER_GROUP
