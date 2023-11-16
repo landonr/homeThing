@@ -6,13 +6,11 @@
 <a href="https://discord.gg/BX6ZtGKHTy"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
 
-iPod style wifi remote that uses ESPHome and Home Assistant to integrate with your smart home
-- Controls music playback on smart speakers
-- Works as a remote for smart TVs
-- Controls lights, thermostats, garage doors and more
-- Shows the status of your smart home sensors
+A collection of Open Source Universal Remotes that run on a custom menu system using ESPHome and Home Assistant to integrate with your smart home
 
-#### Uses custom external components https://github.com/landonr/esphome-components
+- Works as a remote for smart speakers and TVs
+- Menu system for controlling lights, hvac, window covers, etc
+- Open source, customizable hardware with many examples
 
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
@@ -23,6 +21,14 @@ iPod style wifi remote that uses ESPHome and Home Assistant to integrate with yo
 
 ## Hardware 💪
 
+We've built a couple of custom devices for running homeThing, but it can run on almost any ESP32 such as,
+- M5Stack Fire
+- M5Stick C
+- Lilygo T-Display T4
+- Lilygo T-Display TTGO
+- Lilygo T-Display S3
+
+### homeThing Devices
 <table>
   <tr>
     <th>TDisplay homeThing</th>
@@ -30,7 +36,7 @@ iPod style wifi remote that uses ESPHome and Home Assistant to integrate with yo
   </tr>
   <tr>
     <td><img src="https://github.com/landonr/homeThing/assets/2607659/4054f110-6d8d-4764-8aab-d7287209cb47" width="400"/></td>
-    <td><img src="https://github.com/landonr/homeThing/assets/2607659/e42f4636-3e2a-4c94-a508-d919fe350d08" width="400"/></td>
+    <td><img src="https://github.com/landonr/homeThing/assets/2607659/ab7b2508-4b79-4397-bd90-b4145154d991" width="400"/></td>
   </tr>
   <tr>
     <td><a href="https://www.pcbway.com/project/shareproject/homeThing_V1_3_e3572f8f.html">Order Case</a></td>
@@ -60,14 +66,7 @@ iPod style wifi remote that uses ESPHome and Home Assistant to integrate with yo
   </tr>
 </table>
 
-Also supports many other different hardware configurations:
-- M5Stack Fire (no additional hardware)
-- M5Stick C (no additional hardware)
-- Lilygo T-Display T4
-- Lilygo T-Display TTGO with Adafruit ANO Scrollwheel
-- Lilygo T-Display TDisplay S3
-
-## Features 📝
+## Menu Features 📝
 ### iPod classic style menu 
 |t-display demo|m5stack fire demo|lilygo T4 demo|
 |--|--|--|
@@ -84,90 +83,31 @@ Also supports many other different hardware configurations:
 - Header is always shown at the top with info about the current state
 
 ### Now playing screen ⏯
-<table>
-<tbody>
-<tr>
-<td style="width: 50%;"><img src="docs/nowPlayingOverlay.png"/></td>
-<td style="width: 50%;">
-<ol>
-<li>Current media player + # of grouped speakers</li>
-<li>Volume %</li>
-<li>Shuffle state</li>
-<li>Play/Pause/Stopped state</li>
-<li>Battery level</li>
-<li>Playlist or album title</li>
-<li>Media artist</li>
-<li>Media title</li>
-<li>Media position and playback bar</li>
-<li>Media duration</li>
-</ol>
-</td>
-</tr>
-</tbody>
-</table>
+<img src="docs/nowPlayingOverlay.png"/>
+<ul>
+<li>Control media players using the scroll wheel buttons</li>
+<li>Scroll for volume using the scroll wheel</li>
+</ul>
 
-## Media Control 🔊📺
-### 1. Control Home Assistsant media players (Sonos, Spotify, Google Home, etc)
-|Play / pause, next track, previous track, toggle shuffle and mute|Scroll for volume (with scroll wheel)|
+|Music|TV|
 |--|--|
-|![Shuffle Gif](docs/shuffleTDisplay.gif)|![Scroll Volume Demo Gif](docs/volumeScrollTDisplay.gif)|
+|<ul><li>Control smart speakers like Sonos, Spotify, or Google Home</li><li>Change source from Spotify playlists, Sonos Favorites, and custom lists</li><li>Manage speaker groups</li></ul>|<ul><li>Remote directional buttons up, down, left, right, select (with scroll wheel)</li><li>Power, back, home, pause in second menu</li><li>Change source from tv source list</li><li>Optional soundbar support</li></ul>|
 
-|Manage speaker group|Change source from Spotify playlists and Sonos Favorites|
-|--|--|
-|![Speaker Group Demo Gif](docs/groupTDisplay.gif)|![Scroll Volume Demo Gif](docs/sourceSelectTDisplay.gif)|
 
-### 2. Control Roku tv 📺
-- Remote directional buttons up, down, left, right, select (with scroll wheel)
-- Scroll for volume (with scroll wheel)
-- Power, back, home, pause in second menu
-- Change source from tv source list
-- Optional soundbar support
 
-- Change current media player (tv or speaker) from home menu
-	- On boot the current media player is the first speaker found playing music or the tv
+### IR Remote
+<img src="docs/nowPlayingOverlay.png"/>
+<ul>
+<li>Custom UI and buttons to control infrared cat toys</li>
+</ul>
 
-## Smart Home Control 🧠🏠
-|Toggle lights on and off|View sensors from Home Assistant|Run scenes and scripts|
-|--|--|--|
-|![Lights Menu](docs/lights.jpg)|![Sensors Menu](docs/sensors.jpg)|![Scenes Menu](docs/scenes.jpg)|
+### Games
+<img src="docs/nowPlayingOverlay.png"/>
+<ul>
+<li>Snake</li>
+<li>Breakout</li>
+</ul>
 
-## Hardware 
-### 1. Lilygo T-Display with Scrollwheel ⚙️
-#### T-Display with scrollwheel has the same controls as an ipod
-
-|Lilygo T-Display Controls|Lilygo wiring|
-|--|--|
-|<img src="docs/tdisplayOverlay.jpg" width="525"/>|<img src="docs/wiring-png.png" width="525"/>|
-
-- Scroll to navigate in list menus and for volume on Now Playing Menu
-- Charges with usb-c
-- 1100 mah battery
-- On average 3 days of battery life depending on use
-	- Adafruit ANO Directional Navigation and Scroll Wheel Rotary Encoder https://www.adafruit.com/product/5001
-	- Adafruit ANO Rotary Navigation Encoder Breakout PCB https://www.adafruit.com/product/5221
-	- 1100mah lipo https://leeselectronic.com/en/product/88345-battery-rechargeable-li-poly-37v-1100mah-jst-zh.html
-
-### 2. M5Stack Fire 🔥
-#### M5Stack Fire is supported without any additional hardware
-- https://www.mouser.ca/ProductDetail/M5Stack/K007-V26?qs=TCDPyi3sCW1MGXwu64XB7w%3D%3D
-- Uses the 3 buttons for navigation
-- Simpler UI
-- Uses internal RGB light for booting sequence and while on
-
-|M5Stack Fire Controls|M5Stack Fire Boot sequence|
-|--|--|
-|<img src="docs/m5stackFire.jpg" width="300"/>|![Fire Boot Demo Gif](docs/m5StackFireBoot.gif)|
-
-### 3. Lilygo T-Display T4 
-#### Lilygo T-Display T4 is supported without any additional hardware
-- https://www.aliexpress.com/item/32854502767.html
-- Uses the 3 buttons for navigation
-- Simpler UI
-- Scrollwheel and battery planned
-
-|Lilygo T4 Controls|
-|--|
-|<img src="docs/tdisplayT4.jpg" width="300"/>|
 
 ## Mentions
 - Hackaday https://hackaday.com/2022/09/08/scroll-through-esphome-with-ipod-style-click-wheel/
@@ -179,32 +119,6 @@ Also supports many other different hardware configurations:
 - iosevka font https://github.com/be5invis/Iosevka
 - [@ssieb](https://github.com/ssieb)'s IP5306 esphome component https://github.com/ssieb/custom_components/tree/master/components/ip5306
 
-## todo
-- playlist queue count
-- sonos night sound / speech boost
-- graphs
-- media album art (needs https://github.com/esphome/esphome/pull/4710)
-- weather screen
-- home / room screen
-	- temp display
-	- rgb / temp lights
-	- media player
-	- hvac
-	- switches
-	- sliders
-- settings menu
-- esphome custom components
-	- rotary and button control code
-	- tdisplay battery / charging
-- grid ui
-- add sensors for player state
-	- current screen
-	- active player
-	- dark mode
-- set state from service
-	- change player
-	- dark mode
-<hr>
 
 # Sponsorship
 
