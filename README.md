@@ -36,7 +36,8 @@ We've built a couple of custom devices for running homeThing, but it can run on 
   </tr>
   <tr>
     <td><img src="https://github.com/landonr/homeThing/assets/2607659/4054f110-6d8d-4764-8aab-d7287209cb47" width="400"/></td>
-    <td><img src="https://github.com/landonr/homeThing/assets/2607659/ab7b2508-4b79-4397-bd90-b4145154d991" width="400"/></td>
+    <td><img src="https://github.com/landonr/homeThing/assets/2607659/b19a5b39-b0dd-4bac-9803-df9a452ab56b" width="400"/></td>
+
   </tr>
   <tr>
     <td><a href="https://www.pcbway.com/project/shareproject/homeThing_V1_3_e3572f8f.html">Order Case</a></td>
@@ -96,13 +97,11 @@ We've built a couple of custom devices for running homeThing, but it can run on 
 
 
 ### IR Remote
-<img src="docs/nowPlayingOverlay.png"/>
 <ul>
 <li>Custom UI and buttons to control infrared cat toys</li>
 </ul>
 
 ### Games
-<img src="docs/nowPlayingOverlay.png"/>
 <ul>
 <li>Snake</li>
 <li>Breakout</li>
