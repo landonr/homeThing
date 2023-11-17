@@ -24,11 +24,11 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: weather
       # type: local
       # path: components
     refresh: 0s
-    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying, homeThingAppWeather]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -46,7 +46,7 @@ external_components:
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: main
+    ref: weather
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_backlight.yaml, # used for toggling backlight
@@ -57,7 +57,7 @@ packages: # maybe modify: include default ipod controls
       common/fonts-roboto.yaml, # default font
       common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/images-local.yaml, # boot screen image
+      common/images-weather.yaml, # weather images
     ]
     refresh: 0s
 
@@ -143,6 +143,21 @@ homeThingDisplayState:
   font_material_large: material_font_large
   font_material_small: material_font_small
   launch_image: launch_image
+
+homeThingAppWeather:
+  id: weather
+  display: my_display
+  display_state: display_state_id
+  temperature_sensor: weather_temperature
+  humidity_sensor: weather_humidity
+  condition_sensor: weather_state
+  images:
+    cloudy: weather_cloudy
+    fog: weather_fog
+    snow: weather_snow
+    sunny: weather_sunny
+    rainy: weather_rainy
+    night: weather_night
 
 homeThing:
   id: homeThingMenu
