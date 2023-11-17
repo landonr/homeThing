@@ -1,5 +1,5 @@
 #pragma once
-
+#include <tuple>
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingLightHelpers.h"
 #endif
@@ -11,6 +11,19 @@ namespace esphome {
 namespace homething_menu_base {
 
 static const char* const MENU_CONTROLS_TAG = "homething.menu.controls";
+
+enum MenuControlCommand : uint8_t {
+  MENU_COMMAND_UP = 0,
+  MENU_COMMAND_DOWN = 1,
+  MENU_COMMAND_LEFT = 2,
+  MENU_COMMAND_RIGHT = 3,
+  MENU_COMMAND_SELECT = 4,
+  MENU_COMMAND_SCROLL_CLOCKWISE = 5,
+  MENU_COMMAND_SCROLL_COUNTER_CLOCKWISE = 6,
+  MENU_COMMAND_BACK = 7,
+  MENU_COMMAND_OPTION = 8,
+  MENU_COMMAND_HOME = 9,
+};
 
 class HomeThingMenuControls {
  public:

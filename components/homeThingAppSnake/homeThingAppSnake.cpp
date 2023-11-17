@@ -150,7 +150,9 @@ void HomeThingAppSnake::draw_app(
   }
 }
 
-void HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {}
+bool HomeThingAppSnake::idleTick(int idleTime, int display_timeout) {
+  return false;
+}
 
 void HomeThingAppSnake::active_tick_playing() {
   if (fruit_position_.x == -1) {
@@ -318,22 +320,7 @@ homething_menu_app::NavigationCoordination HomeThingAppSnake::buttonPressSelect(
 }
 
 homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonPressSelectHold() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonPressScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonReleaseScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingAppSnake::buttonPressScreenRight() {
+HomeThingAppSnake::buttonPressOption() {
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 

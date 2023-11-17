@@ -6,6 +6,7 @@
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
 
 #ifdef USE_MEDIA_PLAYER_GROUP
+#include "esphome/components/homeThing/homeThingMenuTitlePlayer.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"
 #endif

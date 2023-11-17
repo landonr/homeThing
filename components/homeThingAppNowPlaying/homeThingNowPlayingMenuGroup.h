@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeassistant_media_player/HomeAssistantMediaPlayerGroup.h"

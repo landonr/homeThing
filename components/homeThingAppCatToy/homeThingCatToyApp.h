@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <vector>
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"
 #include "esphome/components/remote_base/pronto_protocol.h"
@@ -20,7 +22,6 @@ class HomeThingCatToyAppHeader
     return 0;
   }
 
- protected:
  private:
   const char* const TAG = "homething.cattoy.header";
 };
@@ -39,7 +40,7 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingApp {
   void draw_app(
       int menuIndex,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
-  void idleTick(int idleTime, int display_timeout);
+  bool idleTick(int idleTime, int display_timeout);
   void active_tick();
   int root_menu_size();
   void reset_menu();
@@ -54,10 +55,7 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingApp {
   homething_menu_app::NavigationCoordination buttonPressLeft();
   homething_menu_app::NavigationCoordination buttonPressRight();
   homething_menu_app::NavigationCoordination buttonPressSelect(int menuIndex);
-  homething_menu_app::NavigationCoordination buttonPressSelectHold();
-  homething_menu_app::NavigationCoordination buttonPressScreenLeft();
-  homething_menu_app::NavigationCoordination buttonReleaseScreenLeft();
-  homething_menu_app::NavigationCoordination buttonPressScreenRight();
+  homething_menu_app::NavigationCoordination buttonPressOption();
 
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
     return header_source_;
@@ -73,9 +71,8 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingApp {
 
   // state callback
   bool has_state_callback() { return false; }
-  void add_on_state_callback(std::function<void()>&& callback){};
+  void add_on_state_callback(std::function<void()>&& callback) {}
 
- protected:
  private:
   const char* const TAG = "homething.app.cattoy";
 

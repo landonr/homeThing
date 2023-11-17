@@ -35,7 +35,7 @@ enum HomeThingOptionMenuType {
 struct HomeThingOptionMenu {
   HomeThingOptionMenuType type;
   std::vector<CircleOptionMenuItem> circle_options;
-  HomeThingOptionMenu(HomeThingOptionMenuType type) : type(type) {
+  explicit HomeThingOptionMenu(HomeThingOptionMenuType type) : type(type) {
     circle_options = std::vector<CircleOptionMenuItem>();
   }
 };

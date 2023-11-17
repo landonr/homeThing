@@ -73,7 +73,9 @@ void HomeThingCatToyApp::draw_app(
                           "Reverse");
 }
 
-void HomeThingCatToyApp::idleTick(int idleTime, int display_timeout) {}
+bool HomeThingCatToyApp::idleTick(int idleTime, int display_timeout) {
+  return false;
+}
 int HomeThingCatToyApp::root_menu_size() {
   return 1;
 }
@@ -152,22 +154,7 @@ HomeThingCatToyApp::buttonPressSelect(int menuIndex) {
 }
 
 homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonPressSelectHold() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonPressScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonReleaseScreenLeft() {
-  return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
-}
-
-homething_menu_app::NavigationCoordination
-HomeThingCatToyApp::buttonPressScreenRight() {
+HomeThingCatToyApp::buttonPressOption() {
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }
 

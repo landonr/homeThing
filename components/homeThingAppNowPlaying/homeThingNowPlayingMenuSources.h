@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
@@ -42,15 +43,18 @@ class homeThingNowPlayingMenuSources {
     const auto sources = media_player_group->activePlayerSources();
     const auto index = media_player_group->get_active_player_source_index();
     if (index == -1 && sources->size() > 1) {
-      activePlayerSourceTitles(sources, menu_titles);
+      homething_menu_base::MenuTitleSource::activePlayerSourceTitles(
+          sources, menu_titles);
       return;
     } else if (index == -1 && sources->size() == 1) {
       auto playerSources = (*sources)[0]->get_sources();
-      activePlayerSourceItemTitles(playerSources, menu_titles);
+      homething_menu_base::MenuTitleSource::activePlayerSourceItemTitles(
+          playerSources, menu_titles);
       return;
     } else if (sources->size() > 1) {
       auto playerSources = (*sources)[index]->get_sources();
-      activePlayerSourceItemTitles(playerSources, menu_titles);
+      homething_menu_base::MenuTitleSource::activePlayerSourceItemTitles(
+          playerSources, menu_titles);
       return;
     }
   }
@@ -62,18 +66,17 @@ class homeThingNowPlayingMenuSources {
       HomeThingMenuNowPlayingOptionMenu* circle_menu,
       NowPlayingMenuState* menu_state) {
     const char* const TAG = "homething.nowplaying.control";
-    // const auto sourceTitleState = static_cast<MenuTitleSource*>(activeMenuTitle);
-    // auto source = sourceTitleState->media_source_;
+
     auto player_source_index =
         media_player_group->get_active_player_source_index();
-    if (player_source_index == -1) {
+    const auto sources = media_player_group->activePlayerSources();
+    if (player_source_index == -1 && sources->size() > 1) {
       ESP_LOGI(TAG, "select_source_menu: set player source index %d", index);
       media_player_group->set_active_player_source_index(index);
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationReload;
     }
 
-    const auto sources = media_player_group->activePlayerSources();
     if (sources->size() == 0) {
       return homething_menu_app::NavigationCoordination::
           NavigationCoordinationReload;

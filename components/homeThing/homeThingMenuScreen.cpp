@@ -1,5 +1,9 @@
 #include "homeThingMenuScreen.h"
 
+#ifdef USE_LIGHT
+#include "esphome/components/homeThing/homeThingMenuTitleLight.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -117,12 +121,21 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
             switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
         menu_titles->push_back(new MenuTitleToggle(
             title, switchObject->get_object_id(), state, NoMenuTitleRightIcon));
-        break;
 #endif
+        break;
+      }
+      case MenuItemTypeSensor: {
+#ifdef USE_SENSOR
+        auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
+        auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
+        menu_titles->push_back(new MenuTitleBase(
+            sensor->get_name() + ": " + state, "", NoMenuTitleRightIcon));
+
+#endif
+        break;
       }
       case MenuItemTypeNumber:
       case MenuItemTypeButton:
-      case MenuItemTypeSensor:
       case MenuItemTypeTextSensor:
       case MenuItemTypeTitle:
       case MenuItemTypeCommand:
