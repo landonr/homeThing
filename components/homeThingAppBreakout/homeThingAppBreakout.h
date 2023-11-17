@@ -98,13 +98,6 @@ class HomeThingAppBreakout : public homething_menu_app::HomeThingApp {
   display::DisplayBuffer* display_buffer_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
 
-  // menu titles
-
-  void sourceMenuTitles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-  void media_player_menu_titles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-
   void draw_resized_pixel(int coordinateX, int coordinateY, Color color);
   Coordinate get_display_bounds();
   Coordinate calculate_brick_position(int row, int col);

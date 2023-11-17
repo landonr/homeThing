@@ -76,13 +76,6 @@ class HomeThingCatToyApp : public homething_menu_app::HomeThingApp {
  private:
   const char* const TAG = "homething.app.cattoy";
 
-  // menu titles
-
-  void sourceMenuTitles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-  void media_player_menu_titles(
-      std::vector<homething_menu_base::MenuTitleBase*>* menu_titles);
-
   remote_transmitter::RemoteTransmitterComponent* remote_transmitter_;
 };
 }  // namespace homething_cattoy_app
