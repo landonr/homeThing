@@ -109,3 +109,7 @@ homeThingTTGO.yaml
 *.pyc
 *:Zone.Identifier
 .vscode/c_cpp_properties.json
+~s3.kicad_pcb.lck
+fp-info-cache
+Case Design/tdisplay-s3/s3-backups
+s3.kicad_prl
