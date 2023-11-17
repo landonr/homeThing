@@ -1,4 +1,8 @@
 image:
+  - id: launch_image
+    file: "docs/homeThingLogo.svg"
+    resize: 48x48
+    type: TRANSPARENT_BINARY
   - file: mdi:weather-cloudy
     id: weather_cloudy
     resize: 50x50
