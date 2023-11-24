@@ -6,22 +6,22 @@ substitutions:
 
 font:
   ## Font needs to be monospace!
-    - file: "fonts/iosevka.svg"
+    - file: "fonts/iosevka.ttf"
       id: large_heavy_font
       size: $large_heavy_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "fonts/iosevka.svg"
+    - file: "fonts/iosevka.ttf"
       id: large_font
       size: $large_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "fonts/iosevka.svg"
+    - file: "fonts/iosevka.ttf"
       id: medium_font
       size: $medium_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
 
-    - file: "fonts/iosevka.svg"
+    - file: "fonts/iosevka.ttf"
       id: small_font
       size: $small_font_size
       glyphs: '^…*/|\$#<>!?"%()[]+=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz&êÊîÎâÂôÔéÉíÍáÁóÓčëËüÜïÏöÖøØṣṢñãõÑÃÕ''’'
