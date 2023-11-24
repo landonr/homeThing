@@ -46,8 +46,6 @@ external_components:
       ref: main
     refresh: 0s
     components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
-  - source: github://pr#5214 # used to load images on compile
-    components: [ image ]
   - source: github://pr#5254 # used to load fonts on compile
     components: [ font ]
   - source:
