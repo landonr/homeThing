@@ -1,0 +1,39 @@
+image:
+  - id: launch_image
+    file: "docs/homeThingLogo.svg"
+    resize: 48x48
+    type: TRANSPARENT_BINARY
+  - file: mdi:weather-cloudy
+    id: weather_cloudy
+    resize: 50x50
+  - file: mdi:weather-fog
+    id: weather_fog
+    resize: 50x50
+  - file: mdi:weather-snowy
+    id: weather_snow
+    resize: 50x50
+  - file: mdi:weather-sunny
+    id: weather_sunny
+    resize: 50x50
+  - file: mdi:weather-rainy
+    id: weather_rainy
+    resize: 50x50
+  - file: mdi:weather-night
+    id: weather_night
+    resize: 50x50
+
+sensor:
+  - platform: homeassistant
+    id: weather_temperature
+    entity_id: weather.accuweather
+    attribute: temperature
+  - platform: homeassistant
+    id: weather_humidity
+    entity_id: weather.accuweather
+    attribute: humidity
+
+text_sensor:
+  - platform: homeassistant
+    entity_id: "sensor.weather_condition"
+    name: "Weather state"
+    id: weather_state

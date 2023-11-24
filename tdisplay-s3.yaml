@@ -2,7 +2,6 @@ esphome:
   name: "lilygos3"
   platformio_options:
     board_build.f_flash: 80000000L
-    board_upload.flash_size: 16MB
     board_build.partitions: default_16MB.csv
     board_build.arduino.memory_type: qio_opi
 
@@ -11,6 +10,7 @@ esp32:
   variant: esp32s3
   framework:
     type: arduino
+  flash_size: 16MB
 
 # Enable logging
 logger:

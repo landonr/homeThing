@@ -28,7 +28,7 @@ external_components:
       # type: local
       # path: components
     refresh: 0s
-    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying, homeThingAppWeather]
   - source: github://pr#5214 # used to load images on compile
     components: [ image ]
   - source: github://pr#5254 # used to load fonts on compile
@@ -62,6 +62,7 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
       common/images.yaml, # boot screen image
+      common/images-weather.yaml, # weather images
     ]
     refresh: 0s
 
@@ -147,6 +148,21 @@ homeThingDisplayState:
   font_material_large: material_font_large
   font_material_small: material_font_small
   launch_image: launch_image
+
+homeThingAppWeather:
+  id: weather
+  display: my_display
+  display_state: display_state_id
+  temperature_sensor: weather_temperature
+  humidity_sensor: weather_humidity
+  condition_sensor: weather_state
+  images:
+    cloudy: weather_cloudy
+    fog: weather_fog
+    snow: weather_snow
+    sunny: weather_sunny
+    rainy: weather_rainy
+    night: weather_night
 
 homeThing:
   id: homeThingMenu
