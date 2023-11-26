@@ -152,11 +152,12 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       case SliderMenuTitleType: {
 #ifdef USE_LIGHT
         auto item = static_cast<MenuTitleSlider*>((*menuTitles)[i]);
+        bool drawRGB = item->get_name().find("Color") != std::string::npos;
         SliderSelectionState sliderState =
             menuState == i && editing_menu_item ? SliderSelectionStateActive
             : menuState == i                    ? SliderSelectionStateHover
                                                 : SliderSelectionStateNone;
-        refactor_->drawLightSlider(0, yPos, sliderState, item, i == 2);
+        refactor_->drawLightSlider(0, yPos, sliderState, item, drawRGB);
         sliderExtra += 0;
 
         yPos += (display_state_->get_font_medium()->get_baseline() +

@@ -46,11 +46,7 @@ class MenuTitleSlider : public MenuTitleBase {
           displayUnitMin;
     }
 
-    // float newMin = display_state_->get_slider_margin_size();
-    float newMin = 8;
-    // float newRange = displayWidth - 4 * newMin;
-    float newRange = 100;
-    sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
+    sliderValue = value;
   }
 
   float percent_value() const {
