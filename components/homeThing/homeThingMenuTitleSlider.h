@@ -20,7 +20,7 @@ class MenuTitleSlider : public MenuTitleBase {
                   int newDisplayValue, std::string newSliderUnit, int value_min,
                   int value_max)
       : MenuTitleBase{newTitle, newEntityId, newRightIconState,
-                      SliderMenuTitleType},
+                      SliderMenuTitleType, 2},
         sliderValue(newSliderValue),
         displayValue(newDisplayValue),
         sliderUnit(newSliderUnit),
@@ -31,7 +31,7 @@ class MenuTitleSlider : public MenuTitleBase {
                   int min, int max, int value, int displayUnitMin,
                   int displayUnitMax)
       : MenuTitleBase{title, entity_id_, NoMenuTitleRightIcon,
-                      SliderMenuTitleType},
+                      SliderMenuTitleType, 2},
         sliderValue(value),
         displayValue(value),
         sliderUnit(unit),

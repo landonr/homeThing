@@ -14,7 +14,8 @@ class MenuTitleToggle : public MenuTitleBase {
                   MenuTitleLeftIcon newLeftIconState,
                   MenuTitleRightIcon newRightIconState,
                   MenuTitleType newTitleType = ToggleMenuTitleType)
-      : MenuTitleBase{new_name, newEntityId, newRightIconState, newTitleType},
+      : MenuTitleBase{new_name, newEntityId, newRightIconState, newTitleType,
+                      1},
         leftIconState(newLeftIconState) {}
   bool indentLine() const;
 };
