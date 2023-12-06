@@ -1,6 +1,16 @@
 substitutions:
-  screen_left_pin: "GPIO0"
-  screen_right_pin: "GPIO35"
+  screen_left_pin: "0"
+  screen_right_pin: "14"
+  sda_pin: "18"
+  scl_pin: "17"
+  custom1_pin: "2"
+  custom2_pin: "1"
+  custom3_pin: "0"
+  sw1_pin: "3" # select
+  sw2_pin: "5" # down
+  sw3_pin: "4" # right
+  sw4_pin: "7" # up
+  sw5_pin: "6" # left
 
 binary_sensor:
   ## controls
@@ -11,7 +21,7 @@ binary_sensor:
       mode:
         input: true
         pullup: true
-    name: "T-Display Button Input 0"
+    name: $friendly_name Screen Left
     id: tdisplay_button_input_0
     internal: true
     on_press:
@@ -21,7 +31,7 @@ binary_sensor:
     pin:
       number: $screen_right_pin
       inverted: true
-    name: "T-Display Button Input 1"
+    name: $friendly_name Screen Right
     id: tdisplay_button_input_1
     internal: true
     on_click:
@@ -44,43 +54,11 @@ binary_sensor:
     internal: true
     pin:
           pcf8574: pcf8574_hub
-          number: 0
+          number: $sw5_pin
           mode: INPUT
           inverted: true
     id: sw5
-    on_press:
-      then:
-        homething_menu.right: homeThingMenu
-  - platform: gpio
-    internal: true
-    pin:
-          pcf8574: pcf8574_hub
-          number: 1
-          mode: INPUT
-          inverted: true
-    id: sw4
-    on_press:
-      then:
-        homething_menu.right: homeThingMenu
-  - platform: gpio
-    internal: true
-    pin:
-          pcf8574: pcf8574_hub
-          number: 2
-          mode: INPUT
-          inverted: true
-    id: sw3
-    on_press:
-      then:
-        homething_menu.down: homeThingMenu
-  - platform: gpio
-    internal: true
-    pin:
-          pcf8574: pcf8574_hub
-          number: 3
-          mode: INPUT
-          inverted: true
-    id: sw2
+    name: $friendly_name sw5 left
     on_press:
       then:
         homething_menu.left: homeThingMenu
@@ -88,15 +66,56 @@ binary_sensor:
     internal: true
     pin:
           pcf8574: pcf8574_hub
-          number: 4
+          number: $sw4_pin
+          mode: INPUT
+          inverted: true
+    id: sw4
+    name: $friendly_name sw4 up
+    on_press:
+      then:
+        - logger.log: "sw4 up"
+        - homething_menu.up: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw3_pin
+          mode: INPUT
+          inverted: true
+    id: sw3
+    name: $friendly_name sw3 right
+    on_press:
+      then:
+        - logger.log: "sw3 right"
+        - homething_menu.right: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw2_pin
+          mode: INPUT
+          inverted: true
+    id: sw2
+    name: $friendly_name sw2 down
+    on_press:
+      then:
+        - logger.log: "sw2 down"
+        - homething_menu.down: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw1_pin
           mode: INPUT
           inverted: true
     id: sw1
+    name: $friendly_name sw1 select
     on_click:
       min_length: 5ms
       max_length: 350ms
       then:
-        homething_menu.select: homeThingMenu
+        - logger.log: "sw1 select"
+        - homething_menu.select: homeThingMenu
     on_multi_click:
     - timing:
         - ON for at least 0.5s
@@ -107,7 +126,7 @@ binary_sensor:
     internal: True
     pin:
       pcf8574: pcf8574_hub
-      number: 5
+      number: $custom1_pin
       mode: INPUT
       inverted: true
     on_press:
@@ -118,28 +137,29 @@ binary_sensor:
     internal: True
     pin:
       pcf8574: pcf8574_hub
-      number: 6
+      number: $custom2_pin
       mode: INPUT
       inverted: true
     on_press:
       then:
-        - logger.log: "Custom2"
+      - lambda: |-
+          id(homeThingMenu)->topMenu();
   - platform: gpio
     name: "Custom3"
     internal: True
     pin:
       pcf8574: pcf8574_hub
-      number: 7
+      number: $custom3_pin
       mode: INPUT
       inverted: false
     on_press:
       then:
-        - logger.log: "Custom3"
+        homething_menu.option: homeThingMenu
 
 i2c:
-  sda: 43
-  scl: 44
-  scan: TRUE
+  sda: $sda_pin
+  scl: $scl_pin
+  # scan: TRUE
   id: bus_a
   frequency: 100hz
 
