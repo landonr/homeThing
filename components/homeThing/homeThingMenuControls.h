@@ -35,13 +35,16 @@ class HomeThingMenuControls {
       case MenuItemTypeLight: {
 #ifdef USE_LIGHT
         auto light = static_cast<light::LightState*>(std::get<1>(*entity));
+        int indexOffset = supportsColorTemperature(light) ? 2 : 1;
         if (editing_menu_item && menuIndex == 0 && entity != NULL) {
           HomeThingLightHelpers::decBrightness(light);
           return true;
-        } else if (editing_menu_item && menuIndex == 1 && entity != NULL) {
+        } else if (editing_menu_item && menuIndex == 1 && entity != NULL &&
+                   supportsColorTemperature(light)) {
           HomeThingLightHelpers::decTemperature(light);
           return true;
-        } else if (editing_menu_item && menuIndex == 2 && entity != NULL) {
+        } else if (editing_menu_item && menuIndex == indexOffset &&
+                   entity != NULL) {
           HomeThingLightHelpers::decColor(light);
           return true;
         }
@@ -72,13 +75,16 @@ class HomeThingMenuControls {
       case MenuItemTypeLight: {
 #ifdef USE_LIGHT
         auto light = static_cast<light::LightState*>(std::get<1>(*entity));
+        int indexOffset = supportsColorTemperature(light) ? 2 : 1;
         if (editing_menu_item && menuIndex == 0 && entity != NULL) {
           HomeThingLightHelpers::incBrightness(light);
           return true;
-        } else if (editing_menu_item && menuIndex == 1 && entity != NULL) {
+        } else if (editing_menu_item && menuIndex == 1 && entity != NULL &&
+                   supportsColorTemperature(light)) {
           HomeThingLightHelpers::incTemperature(light);
           return true;
-        } else if (editing_menu_item && menuIndex == 2 && entity != NULL) {
+        } else if (editing_menu_item && menuIndex == indexOffset &&
+                   entity != NULL) {
           HomeThingLightHelpers::incColor(light);
           return true;
         }
@@ -94,6 +100,32 @@ class HomeThingMenuControls {
         }
 #endif
         break;
+      }
+      default:
+        break;
+    }
+    return false;
+  }
+
+  static bool selectLightDetail(
+      const std::tuple<MenuItemType, EntityBase*>* entity, int menuIndex,
+      bool editing_menu_item) {
+    MenuItemType menu_item_type = std::get<0>(*entity);
+    switch (menu_item_type) {
+      case MenuItemTypeLight: {
+#ifdef USE_LIGHT
+        auto light = static_cast<light::LightState*>(std::get<1>(*entity));
+        if (light->supports_effects()) {
+          int index =
+              1 + supportsColorTemperature(light) + supportsColor(light);
+          if (menuIndex > index) {
+            auto effect = light->get_effects()[menuIndex - index - 1];
+            light->turn_on().set_effect(effect->get_name()).perform();
+            return true;
+          }
+        }
+#endif
+        return false;
       }
       default:
         break;

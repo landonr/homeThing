@@ -51,6 +51,7 @@ class HomeThingLightHelpers {
           light->remote_values.get_color_temperature() - mired_step;
       call.set_color_temperature(
           std::max(traits.get_min_mireds(), color_temperature));
+      call.set_effect("None");
       call.perform();
     }
   }
@@ -71,6 +72,7 @@ class HomeThingLightHelpers {
           light->remote_values.get_color_temperature() + mired_step;
       call.set_color_temperature(
           std::min(traits.get_max_mireds(), color_temperature));
+      call.set_effect("None");
       call.perform();
     }
   }
@@ -134,7 +136,11 @@ class HomeThingLightHelpers {
       float red, green, blue;
       hsv_to_rgb(hsv_color, 1, 1, red, green, blue);
       call.set_rgb(red, green, blue);
+      call.set_effect("None");
       call.perform();
+    } else {
+      ESP_LOGI(LIGHT_HELPERS_TAG, "'%s': light is null!",
+               light->get_name().c_str());
     }
   }
 

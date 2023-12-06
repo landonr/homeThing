@@ -85,6 +85,8 @@ void HomeThingMenuRefactor::drawLightSliderCircle(
   switch (sliderState) {
     case SliderSelectionStateActive:
       if (drawRGB) {
+        ESP_LOGI(TAG, "dotPositionX %d, percent_value %f", dotPositionX,
+                 slider->percent_value());
         float red, green, blue = 0;
         hsv_to_rgb(slider->displayValue, 1, 1, red, green, blue);
         auto rgbColor = Color(red * 255.0, green * 255.0, blue * 255.0);

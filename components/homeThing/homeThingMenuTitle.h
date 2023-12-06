@@ -61,13 +61,16 @@ class MenuTitleBase {
   std::string entity_id_;
   MenuTitleRightIcon rightIconState;
   MenuTitleType titleType;
+  int rowHeight;
   MenuTitleBase(std::string new_name, std::string newEntityId,
                 MenuTitleRightIcon newRightIconState,
-                MenuTitleType newTitleType = BaseMenuTitleType)
+                MenuTitleType newTitleType = BaseMenuTitleType,
+                int newRowHeight = 1)
       : name_(new_name),
         entity_id_(newEntityId),
         rightIconState(newRightIconState),
-        titleType(newTitleType) {}
+        titleType(newTitleType),
+        rowHeight(newRowHeight) {}
 
   std::string get_name() const {
     if (name_ != "") {

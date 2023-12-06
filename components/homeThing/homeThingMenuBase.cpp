@@ -491,6 +491,13 @@ void HomeThingMenuBase::buttonPressSelect() {
 #endif
         break;
       case lightsDetailMenu:
+#ifdef USE_LIGHT
+        if (!editing_menu_item && HomeThingMenuControls::selectLightDetail(
+                                      active_menu_screen->get_selected_entity(),
+                                      menuIndex, editing_menu_item)) {
+          return;
+        }
+#endif
       case settingsMenu:
         if (editing_menu_item) {
           // deselect light if selected and stay in lightsDetailMenu

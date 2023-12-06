@@ -70,6 +70,18 @@ static void lightTitleItems(light::LightState* light,
                                                light->get_object_id(), 0, 360,
                                                get_hsv_color(light), 0, 360));
   }
+  if (light->supports_effects()) {
+    menu_titles->push_back(
+        new MenuTitleToggle("Effect", light->get_effect_name(),
+                            NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon));
+    if (light->get_effects().size() > 0) {
+      for (const auto& effect : light->get_effects()) {
+        menu_titles->push_back(
+            new MenuTitleToggle(effect->get_name(), effect->get_name(),
+                                NoMenuTitleLeftIcon, ArrowMenuTitleRightIcon));
+      }
+    }
+  }
 }
 
 }  // namespace homething_menu_base

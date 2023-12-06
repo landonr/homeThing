@@ -88,7 +88,12 @@ bool HomeThingMenuDisplay::draw_menu_titles(
   if (menuTitles->size() == 0 || menuTitles->size() < menuIndex) {
     return false;
   }
-  scrollMenuPosition(menuIndex);
+  int scaledMenuIndex = menuIndex;
+  for (int i = scrollTop; i < menuIndex; i++) {
+    scaledMenuIndex += (*menuTitles)[i]->rowHeight - 1;
+  }
+  scrollMenuPosition(scaledMenuIndex);
+  ESP_LOGI(TAG, "draw_menu_titles: %d %d", menuIndex, scaledMenuIndex);
   int menuState = menuIndex;
   auto activeMenuTitle = (*menuTitles)[menuIndex];
   int yPos = display_state_->get_header_height();
@@ -110,15 +115,11 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         animating =
             draw_menu_title(menuState, i, titleName, yPos, false) || animating;
         drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState, yPos);
-        yPos += display_state_->get_font_medium()->get_baseline() +
-                display_state_->get_margin_size();
         break;
       case SourceMenuTitleType:
 #ifdef USE_MEDIA_PLAYER_GROUP
         animating =
             draw_menu_title(menuState, i, titleName, yPos, false) || animating;
-        yPos += display_state_->get_font_medium()->get_baseline() +
-                display_state_->get_margin_size();
 #endif
         break;
       case LightMenuTitleType: {
@@ -130,8 +131,6 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           drawLeftTitleIcon(menuTitlesSize, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
-          yPos += display_state_->get_font_medium()->get_baseline() +
-                  display_state_->get_margin_size();
         }
 #endif
         break;
@@ -144,24 +143,19 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           drawLeftTitleIcon(menuTitlesSize, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
-          yPos += display_state_->get_font_medium()->get_baseline() +
-                  display_state_->get_margin_size();
         }
         break;
       }
       case SliderMenuTitleType: {
 #ifdef USE_LIGHT
         auto item = static_cast<MenuTitleSlider*>((*menuTitles)[i]);
+        bool drawRGB = item->get_name().find("Color") != std::string::npos;
         SliderSelectionState sliderState =
             menuState == i && editing_menu_item ? SliderSelectionStateActive
             : menuState == i                    ? SliderSelectionStateHover
                                                 : SliderSelectionStateNone;
-        refactor_->drawLightSlider(0, yPos, sliderState, item, i == 2);
+        refactor_->drawLightSlider(0, yPos, sliderState, item, drawRGB);
         sliderExtra += 0;
-
-        yPos += (display_state_->get_font_medium()->get_baseline() +
-                 display_state_->get_margin_size()) *
-                2;
 #endif
         break;
       }
@@ -178,15 +172,17 @@ bool HomeThingMenuDisplay::draw_menu_titles(
           drawLeftTitleIcon(menuTitlesSize, playerTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
-          yPos += display_state_->get_font_medium()->get_baseline() +
-                  display_state_->get_margin_size();
         }
 #endif
         break;
       }
     }
+    yPos += (display_state_->get_font_medium()->get_baseline() +
+             display_state_->get_margin_size()) *
+            (*menuTitles)[i]->rowHeight;
   }
-  drawScrollBar(menuTitlesSize, display_state_->get_header_height(), menuIndex);
+  drawScrollBar(menuTitlesSize, display_state_->get_header_height(),
+                scaledMenuIndex);
   return animating;
 }
 
@@ -204,7 +200,7 @@ bool HomeThingMenuDisplay::draw_menu_screen(
   if (!boot_complete() && *activeMenuState == bootMenu) {
     return boot_->drawBootSequence(*activeMenuState);
   } else if (boot_complete() && *activeMenuState == bootMenu) {
-    ESP_LOGW(TAG, "finished boot");
+    ESP_LOGD(TAG, "finished boot");
     *activeMenuState = rootMenu;
     return true;
   } else if (!boot_complete() && *activeMenuState != bootMenu) {
@@ -243,14 +239,16 @@ void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
   }
 }
 
-void HomeThingMenuDisplay::scrollMenuPosition(int menuIndex) {
-  int menuState = menuIndex;
-
-  if (menuState - maxItems() > scrollTop) {
-    scrollTop = menuState - maxItems();
+void HomeThingMenuDisplay::scrollMenuPosition(const int menuIndex) {
+  if (menuIndex - maxItems() > scrollTop) {
+    ESP_LOGD(TAG, "scrollMenuPosition menuIndex %d scrollTop %d maxItems %d",
+             menuIndex, scrollTop, maxItems());
+    scrollTop = menuIndex - maxItems();
     // menu down
-  } else if (menuState - scrollTop < 0) {
-    scrollTop = menuState;
+  } else if (menuIndex - scrollTop < 0) {
+    ESP_LOGD(TAG, "scrollMenuPosition menuIndex %d scrollTop %d maxItems %d",
+             menuIndex, scrollTop, maxItems());
+    scrollTop = menuIndex;
     // menu up
   }
 }

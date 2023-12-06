@@ -20,7 +20,7 @@ class MenuTitleSlider : public MenuTitleBase {
                   int newDisplayValue, std::string newSliderUnit, int value_min,
                   int value_max)
       : MenuTitleBase{newTitle, newEntityId, newRightIconState,
-                      SliderMenuTitleType},
+                      SliderMenuTitleType, 2},
         sliderValue(newSliderValue),
         displayValue(newDisplayValue),
         sliderUnit(newSliderUnit),
@@ -31,7 +31,7 @@ class MenuTitleSlider : public MenuTitleBase {
                   int min, int max, int value, int displayUnitMin,
                   int displayUnitMax)
       : MenuTitleBase{title, entity_id_, NoMenuTitleRightIcon,
-                      SliderMenuTitleType},
+                      SliderMenuTitleType, 2},
         sliderValue(value),
         displayValue(value),
         sliderUnit(unit),
@@ -46,11 +46,7 @@ class MenuTitleSlider : public MenuTitleBase {
           displayUnitMin;
     }
 
-    // float newMin = display_state_->get_slider_margin_size();
-    float newMin = 8;
-    // float newRange = displayWidth - 4 * newMin;
-    float newRange = 100;
-    sliderValue = ((valueMinusMin * newRange) / oldRange) + newMin;
+    sliderValue = value;
   }
 
   float percent_value() const {
