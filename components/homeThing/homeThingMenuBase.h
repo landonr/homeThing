@@ -11,6 +11,7 @@
 #include "esphome/components/homeThing/homeThingMenuControls.h"
 #include "esphome/components/homeThing/homeThingMenuDisplay.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
+#include "esphome/components/homeThing/homeThingMenuNotifications.h"
 #include "esphome/components/homeThing/homeThingMenuScreen.h"
 #include "esphome/components/homeThing/homeThingMenuSettings.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
@@ -68,6 +69,10 @@ class HomeThingMenuBase : public PollingComponent {
     home_screen_ = new_screen;
   }
 
+  void register_notifications(HomeThingMenuNotifications* notifications) {
+    notifications_ = notifications;
+  }
+
   void draw_menu_screen();
   void topMenu();
   bool selectMenu();
@@ -90,6 +95,11 @@ class HomeThingMenuBase : public PollingComponent {
   void buttonPressSelect();
   void buttonPressOption();
   bool buttonPressUnlock();
+
+  void addNotification(const std::string& title, const std::string& subtitle,
+                       const std::string& text, bool autoClear);
+
+  bool clearNotifications();
 
   // create service for this with input select options
   void goToScreenFromString(std::string screenName);
@@ -114,7 +124,7 @@ class HomeThingMenuBase : public PollingComponent {
         ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
                  menuTree.front());
         animation_->resetAnimation();
-        return true;
+        return !clearNotifications();
       }
     } else {
       return false;
@@ -203,6 +213,9 @@ class HomeThingMenuBase : public PollingComponent {
 #ifdef USE_BINARY_SENSOR
   binary_sensor::BinarySensor* charging_{nullptr};
 #endif
+
+  HomeThingMenuNotifications* notifications_{nullptr};
+
   bool device_locked_ = false;
   int unlock_presses_ = 0;
   void finish_boot();

@@ -131,7 +131,10 @@ binary_sensor:
       inverted: true
     on_press:
       then:
-        - logger.log: "Custom1"
+        - voice_assistant.start:
+    on_release:
+      then:
+        - voice_assistant.stop:
   - platform: gpio
     name: "Custom2"
     internal: True
@@ -143,7 +146,10 @@ binary_sensor:
     on_press:
       then:
       - lambda: |-
-          id(homeThingMenu)->topMenu();
+          if (id(homeThingMenu)->buttonPressWakeUpDisplay()) {
+            return;
+          }
+          id(homeThingMenu)->upMenu();
   - platform: gpio
     name: "Custom3"
     internal: True

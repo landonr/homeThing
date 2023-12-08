@@ -115,6 +115,9 @@ void HomeThingMenuBase::draw_menu_screen() {
     if (this->animation_->animating) {
       this->animation_->tickAnimation();
     }
+    if (notifications_) {
+      notifications_->drawNotifications();
+    }
     menu_drawing_ = false;
     return;
   }
@@ -133,6 +136,9 @@ void HomeThingMenuBase::draw_menu_screen() {
     ESP_LOGD(TAG,
              "draw_menu_screen: unlocked, not drawing - time: %d locked: %d",
              idleTime, device_locked_);
+  }
+  if (notifications_) {
+    notifications_->drawNotifications();
   }
   menu_drawing_ = false;
 }
@@ -420,6 +426,28 @@ bool HomeThingMenuBase::skipBootPressed() {
     }
     default:
       break;
+  }
+  return false;
+}
+
+void HomeThingMenuBase::addNotification(const std::string& title,
+                                        const std::string& subtitle,
+                                        const std::string& text,
+                                        bool autoClear) {
+  if (notifications_) {
+    notifications_->addNotification(title, subtitle, text, autoClear);
+    ESP_LOGW(TAG, "addNotification: no notifications", title.c_str());
+  } else {
+    ESP_LOGW(TAG, "addNotification: no notifications");
+  }
+  if (!buttonPressWakeUpDisplay()) {
+    update_display();
+  }
+}
+
+bool HomeThingMenuBase::clearNotifications() {
+  if (notifications_) {
+    return notifications_->clearNotifications();
   }
   return false;
 }
