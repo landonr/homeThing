@@ -73,10 +73,6 @@ class HomeThingDisplayState {
   void set_scroll_bar_width(int scroll_bar_width) {
     scroll_bar_width_ = scroll_bar_width;
   }
-  int get_boot_logo_size() { return boot_logo_size_; }
-  void set_boot_logo_size(int boot_logo_size) {
-    boot_logo_size_ = boot_logo_size;
-  }
   int get_now_playing_max_lines() { return now_playing_max_lines_; }
   void set_now_playing_max_lines(int now_playing_max_lines) {
     now_playing_max_lines_ = now_playing_max_lines;
@@ -187,7 +183,6 @@ class HomeThingDisplayState {
   int slider_margin_size_;
   int icon_size_;
   int scroll_bar_width_;
-  int boot_logo_size_;
   int now_playing_max_lines_;
   float font_size_width_ratio_;
   DisplayIconEnabledState draw_shuffle_;

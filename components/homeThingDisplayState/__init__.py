@@ -28,7 +28,6 @@ CONF_BOTTOM_BAR_MARGIN = "bottom_bar_margin"
 CONF_SLIDER_MARGIN_SIZE = "slider_margin_size"
 CONF_ICON_SIZE = "icon_size"
 CONF_SCROLL_BAR_WIDTH = "scroll_bar_width"
-CONF_BOOT_LOGO_SIZE = "boot_logo_size"
 CONF_NOW_PLAYING_MAX_LINES = "now_playing_max_lines"
 CONF_FONT_SIZE_WIDTH_RATIO = "font_size_width_ratio"
 CONF_DRAW_SHUFFLE = "draw_shuffle"
@@ -105,7 +104,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SLIDER_MARGIN_SIZE, default=8): cv.int_,
         cv.Optional(CONF_ICON_SIZE, default=18): cv.int_,
         cv.Optional(CONF_SCROLL_BAR_WIDTH, default=6): cv.int_,
-        cv.Optional(CONF_BOOT_LOGO_SIZE, default=48): cv.int_,
         cv.Optional(CONF_NOW_PLAYING_MAX_LINES, default=5): cv.int_,
         cv.Optional(CONF_FONT_SIZE_WIDTH_RATIO, default=0.6): cv.float_,
         cv.Optional(CONF_DRAW_SHUFFLE, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
@@ -149,7 +147,6 @@ DISPLAY_STATE_TYPES = [
     CONF_SLIDER_MARGIN_SIZE,
     CONF_ICON_SIZE,
     CONF_SCROLL_BAR_WIDTH,
-    CONF_BOOT_LOGO_SIZE,
     CONF_NOW_PLAYING_MAX_LINES,
     CONF_FONT_SIZE_WIDTH_RATIO,
     CONF_DRAW_SHUFFLE,

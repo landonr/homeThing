@@ -221,7 +221,7 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
 
 int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
                                              const MenuStates activeMenuState) {
-  int yPos = imageYPos + display_state_->get_boot_logo_size() +
+  int yPos = imageYPos + display_state_->get_launch_image()->get_height() +
              display_state_->get_margin_size();
   int maxAnimationDuration = 0;
   switch (get_boot_menu_state()) {
