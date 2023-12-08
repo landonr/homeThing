@@ -436,9 +436,9 @@ void HomeThingMenuBase::addNotification(const std::string& title,
                                         bool autoClear) {
   if (notifications_) {
     notifications_->addNotification(title, subtitle, text, autoClear);
-    ESP_LOGW(TAG, "addNotification: no notifications", title.c_str());
+    ESP_LOGD(TAG, "addNotification: add notification %s", title.c_str());
   } else {
-    ESP_LOGW(TAG, "addNotification: no notifications");
+    ESP_LOGD(TAG, "addNotification: no notifications");
   }
   if (!buttonPressWakeUpDisplay()) {
     update_display();
