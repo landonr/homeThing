@@ -28,6 +28,7 @@ CONF_DISPLAY = "display"
 CONF_MENU_DISPLAY = "menu_display"
 CONF_DISPLAY_STATE = "display_state"
 CONF_REFACTOR = "refactor_me"
+CONF_NOTIFICATIONS = "notifications"
 CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
 CONF_BOOT = "boot"
@@ -271,10 +272,19 @@ MENU_SCREEN_SCHEMA = cv.Schema(
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
+NOTIFICATIONS_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.declare_id(homething_menu_base_ns.HomeThingMenuNotifications),
+        # cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
+        # cv.Required(CONF_DISPLAY_STATE): cv.use_id(homething_display_state_ns.HomeThingDisplayState),
+    }
+).extend(cv.COMPONENT_SCHEMA)
+
 CONFIG_SCHEMA =  cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
+            cv.Optional(CONF_NOTIFICATIONS, default={}): NOTIFICATIONS_SCHEMA,
             cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
             cv.Required(CONF_DISPLAY_STATE): cv.use_id(homething_display_state_ns.HomeThingDisplayState),
             cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
@@ -425,6 +435,9 @@ async def to_code(config):
 
     menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display)
     await cg.register_component(menu, config)
+
+    notifications = cg.new_Pvariable(config[CONF_NOTIFICATIONS][CONF_ID], display_buffer, display_state)
+    cg.add(menu.register_notifications(notifications))
 
     if CONF_HOME_SCREEN in config:
         home_screen = await menu_screen_to_code(config[CONF_HOME_SCREEN])

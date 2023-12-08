@@ -50,19 +50,45 @@ int HomeThingMenuTextHelpers::drawTextWrapped(
       xPos, fontSize, alignment, display_buffer->get_width(), widthRatio);
   ESP_LOGD(TAG, "drawTextWrapped: per_line1 %d text %s", per_line,
            text.c_str());
-  while (line_begin < text.size()) {
-    const unsigned ideal_end = line_begin + per_line;
-    unsigned line_end = ideal_end <= text.size() ? ideal_end : text.size();
+  unsigned linesDrawn = 0;
+  if (text.size() <= per_line) {
+    maxLines = 1;
+  }
+  while (line_begin < text.size() && (maxLines <= 0 || linesDrawn < maxLines)) {
+    unsigned line_end = line_begin + per_line;
+    if (line_end >= text.size()) {
+      line_end = text.size();
+    } else {
+      // Check if the current character is not a space; if so, move the end backwards
+      while (line_end > line_begin && text[line_end] != ' ' &&
+             text[line_end] != '\n') {
+        --line_end;
+      }
+      // If no space found within the limit, move the end forwards until a space is found
+      while (line_end < text.size() && text[line_end] != ' ' &&
+             text[line_end] != '\n' && line_end < line_begin + per_line) {
+        ++line_end;
+      }
+    }
+
     std::string line = text.substr(line_begin, line_end - line_begin);
     ESP_LOGD(TAG,
              "Printing: xPos %d, yPos %d, font %p, color, alignment, "
-             "text.c_str() + %u",
-             xPos, yPos, font, line_begin);
+             "%s + %u",
+             xPos, yPos, font, text.c_str(), linesDrawn);
     // Display the line using display_buffer->printf() with the substring.
     display_buffer->printf(xPos, yPos, font, color, alignment, line.c_str());
 
     yPos = yPos + fontSize;  // Increment yPos.
-    line_begin = line_end;
+    ++linesDrawn;
+
+    if (line_end < text.size() &&
+        (text[line_end] == ' ' || text[line_end] == '\n')) {
+      // Move past the space or newline character if present.
+      line_begin = line_end + 1;
+    } else {
+      line_begin = line_end;
+    }
   }
   return yPos;
 }

@@ -33,6 +33,19 @@ class HomeThingColorPalette {
   Color get_yellow() { return yellow_; }
   void set_yellow(Color yellow) { yellow_ = yellow; }
 
+  Color mixColors(const Color& color1, const Color& color2, float range) {
+    // Ensure the range is between 0 and 1
+    range = (range < 0.0f) ? 0.0f : (range > 1.0f) ? 1.0f : range;
+
+    int red = static_cast<int>(color1.red + (color2.red - color1.red) * range);
+    int green =
+        static_cast<int>(color1.green + (color2.green - color1.green) * range);
+    int blue =
+        static_cast<int>(color1.blue + (color2.blue - color1.blue) * range);
+
+    return Color(red, green, blue);
+  }
+
  private:
   Color gray_dark_ = Color(102, 102, 102);
   Color gray_dark_2_ = Color(20, 20, 20);
