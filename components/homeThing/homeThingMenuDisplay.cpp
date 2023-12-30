@@ -160,7 +160,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         break;
       }
       case PlayerMenuTitleType: {
-#ifdef USE_MEDIA_PLAYER_GROUP
+#ifdef USE_NOW_PLAYING
         auto playerTitle = static_cast<MenuTitlePlayer*>((*menuTitles)[i]);
         if (playerTitle != NULL) {
           draw_menu_title(menuState, i, titleName, yPos,

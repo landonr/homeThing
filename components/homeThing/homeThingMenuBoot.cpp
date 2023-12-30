@@ -64,7 +64,7 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
 
 int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
 #ifdef USE_IMAGE
-  if (display_state_->get_launch_image() == NULL) {
+  if (get_launch_image() == NULL) {
     return 0;
   }
   float animationLength = 6;
@@ -78,13 +78,12 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
       colorValue = 255 - colorValue;
     }
     auto color = Color(colorValue, colorValue, colorValue);
-    display_buffer_->image(xPos, imageYPos, display_state_->get_launch_image(),
+    display_buffer_->image(xPos, imageYPos, get_launch_image(),
                            display::ImageAlign::TOP_CENTER, color);
   } else if (animationTick >= totalDuration) {
     int color = !display_state_->get_dark_mode() ? 0 : 255;
-    display_buffer_->image(xPos, imageYPos, display_state_->get_launch_image(),
-                           display::ImageAlign::TOP_CENTER,
-                           Color(color, color, color));
+    display_buffer_->image(xPos, imageYPos, get_launch_image(),
+                           display::ImageAlign::TOP_CENTER);
   }
   return totalDuration;
 #endif
@@ -221,8 +220,10 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
 
 int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
                                              const MenuStates activeMenuState) {
-  int yPos = imageYPos + display_state_->get_launch_image()->get_height() +
-             display_state_->get_margin_size();
+  int yPos = imageYPos + display_state_->get_margin_size();
+#ifdef USE_IMAGE
+  yPos += get_launch_image()->get_height();
+#endif
   int maxAnimationDuration = 0;
   switch (get_boot_menu_state()) {
     case BOOT_MENU_STATE_API:

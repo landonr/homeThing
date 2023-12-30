@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button
+from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeThingDisplayState import homething_display_state_ns
@@ -31,7 +31,10 @@ CONF_REFACTOR = "refactor_me"
 CONF_NOTIFICATIONS = "notifications"
 CONF_NOW_PLAYING = "now_playing"
 CONF_API = "api_connected"
+
 CONF_BOOT = "boot"
+CONF_LAUNCH_IMAGE = "launch_image"
+
 CONF_HEADER = "header"
 CONF_ON_REDRAW = "on_redraw"
 CONF_SCREENS = "screens"
@@ -155,6 +158,7 @@ BOOT_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(HomeThingMenuBoot),
         cv.Optional(CONF_API): cv.use_id(binary_sensor.BinarySensor),
         cv.Optional(CONF_MEDIA_PLAYERS_LOADED): cv.use_id(binary_sensor.BinarySensor),
+        cv.Optional(CONF_LAUNCH_IMAGE): cv.use_id(image.Image_),
     }
 )
 
@@ -346,12 +350,15 @@ async def menu_settings_to_code(config):
 
 MENU_BOOT_IDS = [
     CONF_API,
-    CONF_MEDIA_PLAYERS_LOADED
+    CONF_MEDIA_PLAYERS_LOADED,
+    CONF_LAUNCH_IMAGE
 ]
 
 async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
     menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header)
     await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
+    if CONF_LAUNCH_IMAGE in config:
+        cg.add_build_flag("-DUSE_IMAGE")
     return menu_boot
 
 BATTERY_IDS = [

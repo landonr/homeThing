@@ -79,7 +79,6 @@ homeThingDisplayState:
     font_large_heavy: font_large_heavy # required
     font_material_large: font_material_large # required
     font_material_small: font_material_small # required
-    launch_image: launch_image 
     header_height: 16
     margin_size: 4
     bottom_bar_margin: 1

@@ -79,6 +79,13 @@ class HomeThingMenuBoot {
     this->callback_.add(std::move(callback));
   }
 
+#ifdef USE_IMAGE
+  image::Image* get_launch_image() { return launch_image_; }
+  void set_launch_image(image::Image* launch_image) {
+    launch_image_ = launch_image;
+  }
+#endif
+
  private:
   void drawBootSequenceLoadingBar(int yPosOffset, float progress);
   void drawBootSequenceSkipTitle(int xPos, int imageYPos,
@@ -106,6 +113,10 @@ class HomeThingMenuBoot {
       HomeThingMenuBootAnimationConfig();
   CallbackManager<void()> callback_;
   bool boot_animation_complete_ = false;
+
+#ifdef USE_IMAGE
+  image::Image* launch_image_{nullptr};
+#endif
 };
 
 }  // namespace homething_menu_base

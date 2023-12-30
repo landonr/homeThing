@@ -2,16 +2,6 @@ esphome:
   name: fireremote
   platform: ESP32
   board: m5stack-fire
-  on_boot:
-    priority: 600.0
-    then:
-      - delay: 45s
-      - if:
-          condition:
-            not:
-              - wifi.connected:
-          then:
-            - switch.turn_on: sleep_toggle
 
 wifi:
   ssid: !secret wifi_ssid
@@ -59,7 +49,6 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
       common/m5stack-fire/ip5306.yaml, # power management and screen backlight
-      common/m5stack-fire/sleep.yaml, # deep sleep
       common/m5stack-fire/binary_sensor.yaml, # buttons
       common/m5stack-fire/backlight.yaml, # backlight
       common/m5stack-fire/sidelight.yaml, # sidelight
@@ -153,12 +142,9 @@ homeThingDisplayState:
   font_large_heavy: large_heavy_font
   font_material_large: material_font_large
   font_material_small: material_font_small
-  launch_image: launch_image
 
 homeThing:
   id: homeThingMenu
-  settings:
-    sleep_after: 14400
   display: my_display
   on_redraw:
     then:

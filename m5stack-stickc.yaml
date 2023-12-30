@@ -1,15 +1,5 @@
 esphome:
   name: m5stickc
-  on_boot:
-    priority: 600.0
-    then:
-      - delay: 45s
-      - if:
-          condition:
-            not:
-              - wifi.connected:
-          then:
-            - switch.turn_on: sleep_toggle
 
 esp32:
   board: m5stick-c
@@ -68,7 +58,6 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
       common/m5stack-stickc/axp192-marty.yaml, # power management and screen backlight
-      common/m5stack-stickc/sleep.yaml, # deep sleep
       common/m5stack-stickc/binary_sensor.yaml, # power management and screen backlight
       common/images-local.yaml, # boot screen image
     ]
@@ -153,7 +142,6 @@ homeThingDisplayState:
   font_large_heavy: large_heavy_font
   font_material_large: material_font_large
   font_material_small: material_font_small
-  launch_image: launch_image
 
 homeThing:
   id: homeThingMenu
@@ -237,7 +225,7 @@ display:
     col_start: 0
     row_start: 0
     eight_bit_color: true
-    update_interval: 3600s    
+    update_interval: 3600s
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;

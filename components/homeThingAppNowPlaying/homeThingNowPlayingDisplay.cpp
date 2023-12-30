@@ -174,33 +174,42 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
                             display_state_->get_font_large(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER, "Nothing!");
-    return;
+  } else {
+    int xPos = display_buffer_->get_width() / 2;
+    yPos = display_state_->drawTextWrapped(
+        display_state_->get_margin_size(), yPos,
+        display_state_->get_font_medium(), display_state_->primaryTextColor(),
+        display::TextAlign::TOP_LEFT, nowPlayingText,
+        display_state_->get_now_playing_max_lines(), display_buffer_);
+
+    yPos = display_state_->drawTextWrapped(
+        xPos, yPos, display_state_->get_font_large(),
+        display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
+        media_player_group_->mediaTitleString(),
+        display_state_->get_now_playing_max_lines(), display_buffer_);
+
+    yPos = display_state_->drawTextWrapped(
+        xPos, yPos, display_state_->get_font_medium(),
+        display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
+        media_player_group_->mediaSubtitleString(),
+        display_state_->get_now_playing_max_lines(), display_buffer_);
   }
-
-  int xPos = display_buffer_->get_width() / 2;
-  yPos = display_state_->drawTextWrapped(
-      display_state_->get_margin_size(), yPos,
-      display_state_->get_font_medium(), display_state_->primaryTextColor(),
-      display::TextAlign::TOP_LEFT, nowPlayingText,
-      display_state_->get_now_playing_max_lines(), display_buffer_);
-
-  yPos = display_state_->drawTextWrapped(
-      xPos, yPos, display_state_->get_font_large(),
-      display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-      media_player_group_->mediaTitleString(),
-      display_state_->get_now_playing_max_lines(), display_buffer_);
-
-  yPos = display_state_->drawTextWrapped(
-      xPos, yPos, display_state_->get_font_medium(),
-      display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-      media_player_group_->mediaSubtitleString(),
-      display_state_->get_now_playing_max_lines(), display_buffer_);
 
   if (option_menu && option_menu->type == volumeOptionMenu) {
     drawVolumeOptionMenu();
   } else {
     drawMediaDuration();
   }
+#ifdef USE_IMAGE
+  if (now_playing_image_ != nullptr) {
+    int imageHeight = now_playing_image_->get_height();
+    int imageXPos = display_buffer_->get_width() / 2;
+    int imageYPos = yPos + display_state_->get_margin_size() * 2;
+    display_buffer_->image(imageXPos, imageYPos, now_playing_image_,
+                           display::ImageAlign::TOP_CENTER);
+    yPos = imageYPos + imageHeight;
+  }
+#endif
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
