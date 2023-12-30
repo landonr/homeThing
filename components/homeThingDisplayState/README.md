@@ -47,7 +47,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: lando/boot_image
+      ref: main
     refresh: 1d
     components: [homeThingDisplayState]
 ```
