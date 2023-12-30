@@ -42,6 +42,7 @@ CONFIG_SCHEMA = homeThingApp.BASE_SCHEMA.extend(
 )
 
 async def to_code(config):
+    cg.add_build_flag("-DUSE_IMAGE")
     var = await homeThingApp.new_app_base(config)
     await cg.register_component(var, config)
 

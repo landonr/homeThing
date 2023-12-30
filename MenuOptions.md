@@ -18,7 +18,6 @@
 - **slider_margin_size**: optional - slider margin size (used for rgb lights), default 8
 - **icon_size**: optional - icon size, default 18
 - **scroll_bar_width**: optional - scroll bar width, default 6
-- **boot_logo_size**: optional - boot logo size, default 48
 - **now_playing_max_lines**: optional - max lines for now playing, default 5
 - **font_size_width_ratio**: optional - font size height/width ratio, default 0.6
 - **draw_shuffle**: optional - draw shuffle icon, default on (on, off, always)
@@ -80,14 +79,12 @@ homeThingDisplayState:
     font_large_heavy: font_large_heavy # required
     font_material_large: font_material_large # required
     font_material_small: font_material_small # required
-    launch_image: launch_image 
     header_height: 16
     margin_size: 4
     bottom_bar_margin: 1
     slider_margin_size: 8
     icon_size: 18
     scroll_bar_width: 6
-    boot_logo_size: 48
     now_playing_max_lines: 5
     font_size_width_ratio: 0.6
     draw_shuffle: on # optional (on, off, always)

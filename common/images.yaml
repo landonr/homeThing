@@ -1,5 +1,10 @@
+substitutions:
+  launch_image_file: "https://raw.githubusercontent.com/landonr/homeThing/main/docs/homeThingLogo.svg"
+  launch_image_size: "48x48"
+  launch_image_type: "TRANSPARENT_BINARY"
+
 image:
   id: launch_image
-  file: "https://raw.githubusercontent.com/landonr/homeThing/main/docs/homeThingLogo.svg"
-  resize: 48x48
-  type: TRANSPARENT_BINARY
+  file: $launch_image_file
+  resize: $launch_image_size
+  type: $launch_image_type

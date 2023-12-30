@@ -43,13 +43,6 @@ class HomeThingDisplayState {
     font_material_small_ = font_material_small;
   }
 
-#ifdef USE_IMAGE
-  image::Image* get_launch_image() { return launch_image_; }
-  void set_launch_image(image::Image* launch_image) {
-    launch_image_ = launch_image;
-  }
-#endif
-
   bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
   void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
     draw_now_playing_menu_ = draw_now_playing_menu;
@@ -72,10 +65,6 @@ class HomeThingDisplayState {
   int get_scroll_bar_width() { return scroll_bar_width_; }
   void set_scroll_bar_width(int scroll_bar_width) {
     scroll_bar_width_ = scroll_bar_width;
-  }
-  int get_boot_logo_size() { return boot_logo_size_; }
-  void set_boot_logo_size(int boot_logo_size) {
-    boot_logo_size_ = boot_logo_size;
   }
   int get_now_playing_max_lines() { return now_playing_max_lines_; }
   void set_now_playing_max_lines(int now_playing_max_lines) {
@@ -178,16 +167,12 @@ class HomeThingDisplayState {
   font::Font* font_large_heavy_{nullptr};
   font::Font* font_material_large_{nullptr};
   font::Font* font_material_small_{nullptr};
-#ifdef USE_IMAGE
-  image::Image* launch_image_{nullptr};
-#endif
   int header_height_;
   int margin_size_;
   int bottom_bar_margin_;
   int slider_margin_size_;
   int icon_size_;
   int scroll_bar_width_;
-  int boot_logo_size_;
   int now_playing_max_lines_;
   float font_size_width_ratio_;
   DisplayIconEnabledState draw_shuffle_;

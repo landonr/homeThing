@@ -6,6 +6,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+#ifdef USE_IMAGE
+#include "esphome/components/image/image.h"
+#endif
+
 #include "esphome/components/display/display_buffer.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
@@ -28,6 +33,12 @@ class HomeThingMenuNowPlaying {
   void drawNowPlaying(
       int menuIndex, HomeThingOptionMenu* option_menu,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
+#ifdef USE_IMAGE
+  void set_now_playing_image(image::Image* now_playing_image) {
+    now_playing_image_ = now_playing_image;
+  }
+  image::Image* get_now_playing_image() { return now_playing_image_; }
+#endif
 
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
@@ -55,6 +66,9 @@ class HomeThingMenuNowPlaying {
       out->push_back(str.substr(start, end - start));
     }
   }
+#ifdef USE_IMAGE
+  image::Image* now_playing_image_{nullptr};
+#endif
 
   const char* const TAG = "homething.menu.now_playing";
 };

@@ -161,7 +161,6 @@ homeThingDisplayState:
   font_large_heavy: large_font
   font_material_large: material_font_large
   font_material_small: material_font_small
-  launch_image: launch_image
 
 homeThing:
   id: homeThingMenu
@@ -186,7 +185,7 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    launch_image: launch_image
+
   screens:	# you can have multiple screens
     - name: Kitchen Screen
       entities:

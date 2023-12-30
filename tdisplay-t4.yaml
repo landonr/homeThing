@@ -134,20 +134,6 @@ binary_sensor:
       then:
         homething_menu.scroll_clockwise: homeThingMenu
 
-switch:
-  - platform: gpio
-    pin:
-      number: 27
-      inverted: false
-    id: comb
-    internal: true
-  - platform: gpio
-    pin:
-      number: 26
-      inverted: false
-    id: coma
-    internal: true
-
 spi:
   clk_pin: 18
   miso_pin: 12
@@ -229,7 +215,6 @@ homeThingDisplayState:
   font_large_heavy: large_heavy_font
   font_material_large: material_font_large
   font_material_small: material_font_small
-  launch_image: launch_image
     
 homeThing:
   id: homeThingMenu
