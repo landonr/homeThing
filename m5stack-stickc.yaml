@@ -225,7 +225,7 @@ display:
     col_start: 0
     row_start: 0
     eight_bit_color: true
-    update_interval: 3600s    
+    update_interval: 3600s
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;

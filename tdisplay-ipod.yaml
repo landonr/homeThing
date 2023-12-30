@@ -22,11 +22,11 @@ wifi: # setup wifi, make sure secrets.yaml exists!
 
 external_components:
   - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: lando/boot_image
-      # type: local
-      # path: components
+      # type: git
+      # url: https://github.com/landonr/homeThing
+      # ref: lando/boot_image
+      type: local
+      path: components
     refresh: 0s
     components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying, homeThingAppWeather]
   - source:

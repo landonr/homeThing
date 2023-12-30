@@ -229,6 +229,7 @@ display:
     reset_pin: GPIO18
     rotation: 0
     update_interval: 3600s
+    backlight_pin: no
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
