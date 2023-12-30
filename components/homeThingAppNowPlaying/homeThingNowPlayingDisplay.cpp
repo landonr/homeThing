@@ -206,7 +206,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
     int imageXPos = display_buffer_->get_width() / 2;
     int imageYPos = yPos + display_state_->get_margin_size() * 2;
     display_buffer_->image(imageXPos, imageYPos, now_playing_image_,
-                            display::ImageAlign::TOP_CENTER);
+                           display::ImageAlign::TOP_CENTER);
     yPos = imageYPos + imageHeight;
   }
 #endif

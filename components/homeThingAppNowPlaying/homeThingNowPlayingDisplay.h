@@ -34,10 +34,10 @@ class HomeThingMenuNowPlaying {
       int menuIndex, HomeThingOptionMenu* option_menu,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
 #ifdef USE_IMAGE
-    void set_now_playing_image(image::Image* now_playing_image) {
-        now_playing_image_ = now_playing_image;
-    }
-    image::Image* get_now_playing_image() { return now_playing_image_; }
+  void set_now_playing_image(image::Image* now_playing_image) {
+    now_playing_image_ = now_playing_image;
+  }
+  image::Image* get_now_playing_image() { return now_playing_image_; }
 #endif
 
  private:

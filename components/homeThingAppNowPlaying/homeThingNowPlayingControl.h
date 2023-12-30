@@ -74,12 +74,11 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
         new_display_state->get_draw_now_playing_bottom_menu());
   }
 
-  #ifdef USE_IMAGE
-    void set_now_playing_image(image::Image* now_playing_image) {
-        now_playing_display_->set_now_playing_image(now_playing_image);
-    }
+#ifdef USE_IMAGE
+  void set_now_playing_image(image::Image* now_playing_image) {
+    now_playing_display_->set_now_playing_image(now_playing_image);
+  }
 #endif
-
 
   homething_menu_base::HomeThingMenuHeaderSource* get_header_source() {
     return header_source_;
