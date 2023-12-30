@@ -75,7 +75,6 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
       common/m5stack-stickc/axp192-marty.yaml, # power management and screen backlight
-      common/m5stack-stickc/sleep.yaml, # deep sleep
       common/m5stack-stickc/binary_sensor.yaml, # buttons
       common/m5stack-stickc/MiniEncoderC.yaml, # rotary encoder and built in led
       common/images-local.yaml, # boot screen image
