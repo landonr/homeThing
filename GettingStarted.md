@@ -43,7 +43,7 @@ external_components:
   - source: # homeThing, display setup, and now playing app
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: lando/boot_image
     refresh: 0s
     components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
   - source: github://pr#5214 # used to load images on compile
