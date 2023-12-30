@@ -200,7 +200,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
   } else {
     drawMediaDuration();
   }
-
+#ifdef USE_IMAGE
   if (now_playing_image_ != nullptr) {
     int imageHeight = now_playing_image_->get_height();
     int imageXPos = display_buffer_->get_width() / 2;
@@ -209,6 +209,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
                             display::ImageAlign::TOP_CENTER);
     yPos = imageYPos + imageHeight;
   }
+#endif
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
