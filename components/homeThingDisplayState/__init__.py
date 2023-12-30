@@ -20,7 +20,6 @@ CONF_FONT_LARGE = "font_large"
 CONF_FONT_LARGE_HEAVY = "font_large_heavy"
 CONF_FONT_MATERIAL_LARGE = "font_material_large"
 CONF_FONT_MATERIAL_SMALL = "font_material_small"
-CONF_LAUNCH_IMAGE = "launch_image"
 CONF_DRAW_NOW_PLAYING_BOTTOM_MENU = "draw_now_playing_bottom_menu"
 CONF_HEADER_HEIGHT = "header_height"
 CONF_MARGIN_SIZE = "margin_size"
@@ -97,7 +96,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Required(CONF_FONT_LARGE_HEAVY): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_LARGE): cv.use_id(font.Font),
         cv.Required(CONF_FONT_MATERIAL_SMALL): cv.use_id(font.Font),
-        cv.Optional(CONF_LAUNCH_IMAGE): cv.use_id(image.Image_),
         cv.Optional(CONF_HEADER_HEIGHT, default=16): cv.int_,
         cv.Optional(CONF_MARGIN_SIZE, default=4): cv.int_,
         cv.Optional(CONF_BOTTOM_BAR_MARGIN, default=1): cv.int_,
@@ -135,8 +133,7 @@ DISPLAY_STATE_IDS = [
     CONF_FONT_LARGE,
     CONF_FONT_LARGE_HEAVY,
     CONF_FONT_MATERIAL_LARGE,
-    CONF_FONT_MATERIAL_SMALL,
-    CONF_LAUNCH_IMAGE,
+    CONF_FONT_MATERIAL_SMALL
 ]
 
 DISPLAY_STATE_TYPES = [
@@ -170,6 +167,3 @@ async def to_code(config):
     if CONF_DARK_MODE in config:
         dark_mode = await cg.get_variable(config[CONF_DARK_MODE])
         cg.add(display_state.set_dark_mode_switch(dark_mode))
-
-    if CONF_LAUNCH_IMAGE in config:
-        cg.add_build_flag("-DUSE_IMAGE")
