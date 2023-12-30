@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "esphome/components/image/image.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingApp/homeThingApp.h"
 namespace esphome {

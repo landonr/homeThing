@@ -57,7 +57,6 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts-local.yaml, # material icons
       common/settings.yaml, # settings screen
       common/m5stack-fire/ip5306.yaml, # power management and screen backlight
-      common/m5stack-fire/sleep.yaml, # deep sleep
       common/m5stack-fire/binary_sensor.yaml, # buttons
       common/m5stack-fire/backlight.yaml, # backlight
       common/m5stack-fire/sidelight.yaml, # sidelight
