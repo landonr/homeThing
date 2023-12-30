@@ -22,6 +22,8 @@ external_components: #include homething, and esphome-components
       # path: components
     refresh: 0s
     components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+  - source: github://pr#5254 # used to load fonts on compile
+    components: [ font ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -61,13 +63,13 @@ packages: # maybe modify: include default ipod controls
     ref: main
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
-      common/fonts-roboto.yaml, # default font
-      common/icon_fonts-local.yaml, # material icons
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
       common/m5stack-stickc/axp192-marty.yaml, # power management and screen backlight
       common/m5stack-stickc/binary_sensor.yaml, # buttons
       common/m5stack-stickc/MiniEncoderC.yaml, # rotary encoder and built in led
-      common/images-local.yaml, # boot screen image
+      common/images.yaml, # boot screen image
     ]
     refresh: 0s
 
