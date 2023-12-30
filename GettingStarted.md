@@ -43,7 +43,7 @@ external_components:
   - source: # homeThing, display setup, and now playing app
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: lando/boot_image
     refresh: 0s
     components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
   - source: github://pr#5214 # used to load images on compile
@@ -163,7 +163,6 @@ homeThingDisplayState:
   font_large_heavy: large_font
   font_material_large: material_font_large
   font_material_small: material_font_small
-  launch_image: launch_image
 
 homeThing:
   id: homeThingMenu
@@ -188,7 +187,7 @@ homeThing:
     font_large_heavy: large_heavy_font
     font_material_large: material_font_large
     font_material_small: material_font_small
-    launch_image: launch_image
+
   screens:	# you can have multiple screens
     - name: Kitchen Screen
       entities:

@@ -220,8 +220,10 @@ void HomeThingMenuBoot::drawBootSequenceSkipTitle(
 
 int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
                                              const MenuStates activeMenuState) {
-  int yPos = imageYPos + get_launch_image()->get_height() +
-             display_state_->get_margin_size();
+  int yPos = imageYPos + display_state_->get_margin_size();
+#ifdef USE_IMAGE
+  yPos += get_launch_image()->get_height();
+#endif
   int maxAnimationDuration = 0;
   switch (get_boot_menu_state()) {
     case BOOT_MENU_STATE_API:

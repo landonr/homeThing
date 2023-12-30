@@ -27,7 +27,7 @@ external_components: #include homething, and esphome-components
   - source:
       type: git
       url: https://github.com/landonr/homeThing
-      ref: main
+      ref: lando/boot_image
       # type: local
       # path: components
     refresh: 0s
@@ -153,7 +153,6 @@ homeThingDisplayState:
   font_large_heavy: large_heavy_font
   font_material_large: material_font_large
   font_material_small: material_font_small
-  launch_image: launch_image
 
 homeThing:
   id: homeThingMenu
