@@ -2,6 +2,7 @@
 ## _Designed to fit a 5000 mAh battery_
 
 Main components can be seen in the "main components.jpg" photo.
+![Alt text](<main components.jpg>)
 Components list:
 - 5000 mAh battery (check the form factor in "main components.jpg" photo; it was bought from a local store so i'm note sure a link would be useful)
 - Lilygo T-Display TTGO
