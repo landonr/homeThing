@@ -158,6 +158,15 @@ class HomeThingDisplayState {
                                           get_font_size_width_ratio());
   }
 
+  void drawTextMarquee(int xPos, int yPos, font::Font* font, Color color,
+                       display::TextAlign alignment, std::string text,
+                       int animationTick,
+                       display::DisplayBuffer* display_buffer) {
+    text_helpers_->drawTextMarquee(xPos, yPos, font, color, alignment, text,
+                                   animationTick, display_buffer,
+                                   get_font_size_width_ratio());
+  }
+
  private:
   HomeThingMenuTextHelpers* text_helpers_ = new HomeThingMenuTextHelpers();
   HomeThingColorPalette* color_palette_;

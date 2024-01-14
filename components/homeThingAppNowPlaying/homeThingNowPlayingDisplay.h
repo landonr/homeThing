@@ -39,6 +39,8 @@ class HomeThingMenuNowPlaying {
   }
   image::Image* get_now_playing_image() { return now_playing_image_; }
 #endif
+  void tickAnimation() { tick++; }
+  void resetTick() { tick = -5; }
 
  private:
   display::DisplayBuffer* display_buffer_{nullptr};
@@ -56,6 +58,12 @@ class HomeThingMenuNowPlaying {
       int menu_index);
   display::TextAlign text_align_for_circle_position(
       CircleOptionMenuPosition position);
+  void drawMediaText(int startYPos);
+  void drawImage();
+  void drawBottomText();
+  void drawBottomBar(HomeThingOptionMenu* option_menu);
+  int tick = 0;
+  int getBottomBarYPosition();
   void tokenize(std::string const& str, std::string delim,
                 std::vector<std::string>* out) {
     size_t start;

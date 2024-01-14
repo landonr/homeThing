@@ -85,7 +85,7 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   }
   HomeThingMenuHeaderSource* header_source_{nullptr};
 
-  bool is_animating() { return false; }
+  bool is_animating() { return animating_; }
   homething_menu_app::NavigationCoordination selectNowPlayingBottomMenu(
       int index);
 
@@ -112,6 +112,7 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
       homeassistant_media_player::MediaPlayerFeatureCommand* command);
   homething_menu_app::NavigationCoordination button_press_now_playing_option(
       CircleOptionMenuPosition position);
+  bool animating_ = false;
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

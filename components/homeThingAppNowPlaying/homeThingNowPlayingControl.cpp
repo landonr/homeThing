@@ -143,6 +143,7 @@ bool HomeThingMenuNowPlayingControl::should_draw_app() {
 void HomeThingMenuNowPlayingControl::draw_app(
     int menuIndex,
     const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
+  active_tick();
   switch (menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
       now_playing_display_->drawNowPlaying(
@@ -162,9 +163,11 @@ bool HomeThingMenuNowPlayingControl::idleTick(int idleTime,
   if (media_player_group_ != nullptr) {
     media_player_group_->findActivePlayer();
   }
+  animating_ = idleTime < display_timeout;
   if (idleTime == 3) {
     circle_menu_->clear_active_menu();
   } else if (idleTime == display_timeout) {
+    now_playing_display_->resetTick();
     return false;
   } else if (media_player_group_ != NULL) {
     bool updatedMediaPositions = media_player_group_->updateMediaPosition();
@@ -182,7 +185,9 @@ bool HomeThingMenuNowPlayingControl::idleTick(int idleTime,
   return false;
 }
 
-void HomeThingMenuNowPlayingControl::active_tick() {}
+void HomeThingMenuNowPlayingControl::active_tick() {
+  now_playing_display_->tickAnimation();
+}
 
 void HomeThingMenuNowPlayingControl::reset_menu() {
   if (media_player_group_) {
@@ -190,6 +195,7 @@ void HomeThingMenuNowPlayingControl::reset_menu() {
     media_player_group_->set_active_player_source_index(-1);
   }
   menu_state_ = NOW_PLAYING_MENU_STATE_NONE;
+  now_playing_display_->resetTick();
 }
 
 void HomeThingMenuNowPlayingControl::select_media_player_feature(
