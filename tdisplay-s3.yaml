@@ -30,7 +30,7 @@ wifi:
     password: "zQ9tuPKIfFMu"
 
 external_components:
-  - source: github://landonr/lilygo-tdisplays3-esphome
+  - source: github://landonr/lilygo-tdisplays3-esphome@v0.1
     components: [tdisplays3]
     refresh: 0s
   - source: github://landonr/homeThing
