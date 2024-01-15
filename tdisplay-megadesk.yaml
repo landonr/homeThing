@@ -28,10 +28,7 @@ substitutions:
   log_level: "WARN"
   
 external_components:
-  - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: main
+  - source: github://landonr/homeThing
       # type: local
       # path: components
     refresh: 0s

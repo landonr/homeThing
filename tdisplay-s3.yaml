@@ -33,10 +33,7 @@ external_components:
   - source: github://landonr/lilygo-tdisplays3-esphome
     components: [tdisplays3]
     refresh: 0s
-  - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: main
+  - source: github://landonr/homeThing
       # type: local
       # path: components
     refresh: 0s
