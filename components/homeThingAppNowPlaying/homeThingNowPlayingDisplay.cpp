@@ -263,7 +263,7 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
                                       static_cast<double>(mediaDuration));
   }
 
-  int yPos = getBottomBarYPosition() + display_state_->get_margin_size() * 3;
+  int yPos = getBottomBarYPosition() + display_state_->get_margin_size() * 2;
   display_buffer_->rectangle(textWidth, yPos, totalBarWidth, barHeight,
                              display_state_->primaryTextColor());
   display_buffer_->filled_rectangle(
@@ -361,10 +361,13 @@ std::string HomeThingMenuNowPlaying::secondsToString(int seconds) {
 }
 
 int HomeThingMenuNowPlaying::getBottomBarYPosition() {
-  int display_height = display_buffer_->get_height();
-  int barHeight = (display_state_->get_font_small()->get_height() * 3) +
+  int barYPosition = display_buffer_->get_height();
+  barYPosition -= (display_state_->get_font_small()->get_height() * 3) +
                   (display_state_->get_margin_size());
-  return display_height - barHeight;
+  if (display_state_->get_draw_now_playing_bottom_menu()) {
+    barYPosition -= display_state_->get_font_large()->get_baseline();
+  }
+  return barYPosition;
 }
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

@@ -84,10 +84,6 @@ HomeThingMenuNowPlayingControl::app_menu_select(int index) {
            media_player_group_ == nullptr, menu_state_);
   switch (menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
-      // if (display_state_->get_draw_now_playing_bottom_menu()) {
-      //   return selectNowPlayingBottomMenu(
-      //       index);
-      // }
       break;
     case NOW_PLAYING_MENU_STATE_GROUPING:
       return homeThingNowPlayingMenuGroup::select_menu(index,
