@@ -136,8 +136,7 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
     ESP_LOGI(TAG, "drawNowPlaying: display state null");
     return;
   }
-  if (active_menu && active_menu->size() > 0 &&
-      display_state_->get_draw_now_playing_bottom_menu()) {
+  if (active_menu && active_menu->size() > 0 && draw_now_playing_menu_) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }
   int yPos =
@@ -224,7 +223,7 @@ void HomeThingMenuNowPlaying::drawBottomText() {
   display_state_->drawTextWrapped(
       xPos, textYPos, display_state_->get_font_small(),
       display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER, text,
-      display_state_->get_now_playing_max_lines(), display_buffer_);
+      max_lines_, display_buffer_);
 }
 
 void HomeThingMenuNowPlaying::drawBottomBar(HomeThingOptionMenu* option_menu) {
@@ -364,7 +363,7 @@ int HomeThingMenuNowPlaying::getBottomBarYPosition() {
   int barYPosition = display_buffer_->get_height();
   barYPosition -= (display_state_->get_font_small()->get_height() * 2) +
                   (display_state_->get_margin_size() * 2);
-  if (display_state_->get_draw_now_playing_bottom_menu()) {
+  if (draw_now_playing_menu_) {
     barYPosition -= display_state_->get_font_large()->get_baseline();
   }
   return barYPosition;

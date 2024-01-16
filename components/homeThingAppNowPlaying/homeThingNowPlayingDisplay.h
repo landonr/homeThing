@@ -25,10 +25,13 @@ class HomeThingMenuNowPlaying {
       display::DisplayBuffer* new_display_buffer,
       homething_display_state::HomeThingDisplayState* new_display_state,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
-          new_media_player_group)
+          new_media_player_group,
+      bool new_draw_now_playing_menu, int new_max_lines)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
-        media_player_group_(new_media_player_group) {}
+        media_player_group_(new_media_player_group),
+        draw_now_playing_menu_(new_draw_now_playing_menu),
+        max_lines_(new_max_lines) {}
   PositionCoordinate get_coordinate(double radius, double angle);
   void drawNowPlaying(
       int menuIndex, HomeThingOptionMenu* option_menu,
@@ -77,6 +80,8 @@ class HomeThingMenuNowPlaying {
 #ifdef USE_IMAGE
   image::Image* now_playing_image_{nullptr};
 #endif
+  bool draw_now_playing_menu_ = false;
+  int max_lines_ = 5;
 
   const char* const TAG = "homething.menu.now_playing";
 };

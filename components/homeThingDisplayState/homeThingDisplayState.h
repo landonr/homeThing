@@ -43,11 +43,6 @@ class HomeThingDisplayState {
     font_material_small_ = font_material_small;
   }
 
-  bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
-  void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
-    draw_now_playing_menu_ = draw_now_playing_menu;
-  }
-
   int get_header_height() { return header_height_; }
   void set_header_height(int header_height) { header_height_ = header_height; }
   int get_margin_size() { return margin_size_; }
@@ -65,10 +60,6 @@ class HomeThingDisplayState {
   int get_scroll_bar_width() { return scroll_bar_width_; }
   void set_scroll_bar_width(int scroll_bar_width) {
     scroll_bar_width_ = scroll_bar_width;
-  }
-  int get_now_playing_max_lines() { return now_playing_max_lines_; }
-  void set_now_playing_max_lines(int now_playing_max_lines) {
-    now_playing_max_lines_ = now_playing_max_lines;
   }
   float get_font_size_width_ratio() { return font_size_width_ratio_; }
   void set_font_size_width_ratio(float font_size_width_ratio) {
@@ -112,13 +103,9 @@ class HomeThingDisplayState {
     boot_device_name_ = boot_device_name;
   }
 
-  int getBottomBarYPosition(bool spaceForMenu, int display_height) {
+  int getBottomLoadingBarYPosition(int display_height) {
     int barHeight = font_small_->get_height();
-    int menuSpace = spaceForMenu && get_draw_now_playing_bottom_menu()
-                        ? font_large_->get_height()
-                        : 0;
-    int yPos = display_height - margin_size_ - menuSpace - bottom_bar_margin_ -
-               barHeight;
+    int yPos = display_height - margin_size_ - bottom_bar_margin_ - barHeight;
     return yPos;
   }
 
@@ -182,14 +169,12 @@ class HomeThingDisplayState {
   int slider_margin_size_;
   int icon_size_;
   int scroll_bar_width_;
-  int now_playing_max_lines_;
   float font_size_width_ratio_;
   DisplayIconEnabledState draw_shuffle_;
   DisplayIconEnabledState draw_repeat_;
   bool draw_header_time_;
   bool draw_battery_level_;
   bool draw_volume_level_;
-  bool draw_now_playing_menu_;
   std::string boot_device_name_ = "homeThing";
 #ifdef USE_SWITCH
   switch_::Switch* dark_mode_switch_{nullptr};

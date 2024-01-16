@@ -60,12 +60,6 @@ class HomeThingMenuDisplay {
       boot_->set_animation(animation);
     }
   }
-  bool get_draw_now_playing_menu() {
-#ifdef USE_MEDIA_PLAYER_GROUP
-    return display_state_->get_draw_now_playing_bottom_menu();
-#endif
-    return false;
-  }
 
   void set_active_menu_screen(HomeThingMenuScreen** active_menu_screen) {
     header_->set_active_menu_screen(active_menu_screen);
