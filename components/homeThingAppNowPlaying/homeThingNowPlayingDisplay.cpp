@@ -362,8 +362,8 @@ std::string HomeThingMenuNowPlaying::secondsToString(int seconds) {
 
 int HomeThingMenuNowPlaying::getBottomBarYPosition() {
   int barYPosition = display_buffer_->get_height();
-  barYPosition -= (display_state_->get_font_small()->get_height() * 3) +
-                  (display_state_->get_margin_size());
+  barYPosition -= (display_state_->get_font_small()->get_height() * 2) +
+                  (display_state_->get_margin_size() * 2);
   if (display_state_->get_draw_now_playing_bottom_menu()) {
     barYPosition -= display_state_->get_font_large()->get_baseline();
   }
