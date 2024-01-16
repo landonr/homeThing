@@ -104,7 +104,7 @@ void HomeThingMenuBase::draw_menu_screen() {
 
 #ifdef USE_HOMETHING_APP
   if (active_app_ != nullptr) {
-    ESP_LOGI(TAG, "draw_menu_screen: draw app header %d %s #%d", menuIndex,
+    ESP_LOGD(TAG, "draw_menu_screen: draw app header %d %s #%d", menuIndex,
              title_name.c_str(), menu_titles.size());
     menu_display_->draw_menu_header(active_app_->get_header_source());
   }

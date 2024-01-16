@@ -20,14 +20,12 @@ CONF_FONT_LARGE = "font_large"
 CONF_FONT_LARGE_HEAVY = "font_large_heavy"
 CONF_FONT_MATERIAL_LARGE = "font_material_large"
 CONF_FONT_MATERIAL_SMALL = "font_material_small"
-CONF_DRAW_NOW_PLAYING_BOTTOM_MENU = "draw_now_playing_bottom_menu"
 CONF_HEADER_HEIGHT = "header_height"
 CONF_MARGIN_SIZE = "margin_size"
 CONF_BOTTOM_BAR_MARGIN = "bottom_bar_margin"
 CONF_SLIDER_MARGIN_SIZE = "slider_margin_size"
 CONF_ICON_SIZE = "icon_size"
 CONF_SCROLL_BAR_WIDTH = "scroll_bar_width"
-CONF_NOW_PLAYING_MAX_LINES = "now_playing_max_lines"
 CONF_FONT_SIZE_WIDTH_RATIO = "font_size_width_ratio"
 CONF_DRAW_SHUFFLE = "draw_shuffle"
 CONF_DRAW_REPEAT = "draw_repeat"
@@ -102,14 +100,12 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SLIDER_MARGIN_SIZE, default=8): cv.int_,
         cv.Optional(CONF_ICON_SIZE, default=18): cv.int_,
         cv.Optional(CONF_SCROLL_BAR_WIDTH, default=6): cv.int_,
-        cv.Optional(CONF_NOW_PLAYING_MAX_LINES, default=5): cv.int_,
         cv.Optional(CONF_FONT_SIZE_WIDTH_RATIO, default=0.6): cv.float_,
         cv.Optional(CONF_DRAW_SHUFFLE, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
         cv.Optional(CONF_DRAW_REPEAT, default=CONF_ON): cv.enum(DISPLAY_ICON_MODES),
         cv.Optional(CONF_DRAW_HEADER_TIME, default=True): cv.boolean,
         cv.Optional(CONF_DRAW_BATTERY_LEVEL, default=False): cv.boolean,
         cv.Optional(CONF_DRAW_VOLUME_LEVEL, default=False): cv.boolean,
-        cv.Optional(CONF_DRAW_NOW_PLAYING_BOTTOM_MENU, default=False): cv.boolean,
         cv.Optional(CONF_BOOT_DEVICE_NAME, default="homeThing"): cv.string,
         cv.Optional(CONF_COLORS, default={}): COLOR_SCHEMA,
     }
@@ -137,14 +133,12 @@ DISPLAY_STATE_IDS = [
 ]
 
 DISPLAY_STATE_TYPES = [
-    CONF_DRAW_NOW_PLAYING_BOTTOM_MENU,
     CONF_HEADER_HEIGHT,
     CONF_MARGIN_SIZE,
     CONF_BOTTOM_BAR_MARGIN,
     CONF_SLIDER_MARGIN_SIZE,
     CONF_ICON_SIZE,
     CONF_SCROLL_BAR_WIDTH,
-    CONF_NOW_PLAYING_MAX_LINES,
     CONF_FONT_SIZE_WIDTH_RATIO,
     CONF_DRAW_SHUFFLE,
     CONF_DRAW_REPEAT,

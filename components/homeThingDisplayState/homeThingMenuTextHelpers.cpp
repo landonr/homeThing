@@ -40,6 +40,68 @@ int HomeThingMenuTextHelpers::getTextWidth(int fontSize, int characterCount,
   return (fontSize * widthRatio * characterCount);
 }
 
+void HomeThingMenuTextHelpers::drawTextMarquee(
+    int xPos, int yPos, font::Font* font, Color color,
+    display::TextAlign alignment, std::string text, int animationTick,
+    display::DisplayBuffer* display_buffer, float widthRatio) {
+  // Adjust the number of characters to show in the marquee
+  const int marqueeLength =
+      getCharacterLimit(xPos, font->get_baseline(), alignment,
+                        display_buffer->get_width(), widthRatio);
+  ;
+  if (text.length() < marqueeLength) {
+    display_buffer->printf(xPos, yPos, font, color, alignment, "%s",
+                           text.c_str());
+    return;
+  }
+  std::string spaceTitle = "   ";
+  int marqueePositionMaxed = 0;
+  int textLength = text.length();
+  bool animate =
+      animationTick > 0 && animationTick < textLength + spaceTitle.length();
+
+  if (!text.empty() && textLength > marqueeLength && animate) {
+    const int visibleLength = textLength - marqueeLength;
+    // Calculate the position for the marquee effect
+    int tick = animationTick %
+               textLength;  // +1 to ensure at least one character is shown
+    marqueePositionMaxed = tick;
+  }
+
+  std::string title1 = "";
+  std::string marqueeTitle, title2;
+  if (marqueePositionMaxed < textLength && animationTick < textLength) {
+    title1 = text.substr(marqueePositionMaxed, marqueeLength);
+    if (title1.length() < marqueeLength) {
+      title1 += spaceTitle.substr(0, marqueeLength - (title1.length()));
+    }
+  } else {
+    title1 = spaceTitle.substr(
+        0, (textLength + spaceTitle.length()) - animationTick);
+  }
+  if (animate) {
+    // std::string title1 = text.erase(0, marqueePositionMaxed);
+    marqueeTitle = title1;
+    if (marqueeTitle.length() < marqueeLength) {
+      title2 = text.substr(0, marqueeLength - (title1.length()));
+      marqueeTitle += title2;
+    }
+
+    ESP_LOGD(TAG,
+             "drawTextMarquee: xPos %d, yPos %d, marqueePositionMaxed %d, tick "
+             "%d, animate %d, text1 %s, text2 %s, marqueeTitle %s",
+             xPos, yPos, marqueePositionMaxed, animationTick, animate,
+             title1.c_str(), title2.c_str(), marqueeTitle.c_str());
+  } else {
+    marqueeTitle = text.substr(0, marqueeLength);
+  }
+
+  if (!marqueeTitle.empty()) {
+    display_buffer->printf(xPos, yPos, font, color, alignment, "%s",
+                           marqueeTitle.c_str());
+  }
+}
+
 int HomeThingMenuTextHelpers::drawTextWrapped(
     int xPos, int yPos, font::Font* font, Color color,
     display::TextAlign alignment, std::string text, int maxLines,

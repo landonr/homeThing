@@ -136,12 +136,11 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
     ESP_LOGI(TAG, "drawNowPlaying: display state null");
     return;
   }
-  if (active_menu && active_menu->size() > 0 &&
-      display_state_->get_draw_now_playing_bottom_menu()) {
+  if (active_menu && active_menu->size() > 0 && draw_now_playing_menu_) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }
-  int yPos = display_state_->get_header_height() +
-             display_state_->get_margin_size() / 4;
+  int yPos =
+      display_state_->get_header_height() + display_state_->get_margin_size();
   if (media_player_group_->active_player_->playerState ==
       homeassistant_media_player::RemotePlayerState::
           PowerOffRemotePlayerState) {
@@ -151,65 +150,92 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
                             display::TextAlign::TOP_CENTER, "Power Off");
     return;
   }
-  std::string nowPlayingText = "Now Playing,";
 
-  // if (media_player_group_->active_player_->get_player_type() !=
-  //     homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
-  //   homeassistant_media_player::HomeAssistantSpeakerMediaPlayer* activeSpeaker =
-  //       static_cast<
-  //           homeassistant_media_player::HomeAssistantSpeakerMediaPlayer*>(
-  //           media_player_group_->active_player_);
-  if (media_player_group_->active_player_->playlist_title !=
-      media_player_group_->active_player_->mediaTitle) {
-    nowPlayingText += " " + media_player_group_->active_player_->playlist_title;
-    // } else if (media_player_group_->active_player_->media_album_name !=
-    //            media_player_group_->active_player_->mediaTitle) {
-    //   nowPlayingText +=
-    //       " " + media_player_group_->active_player_->media_album_name;
-  }
-  // }
+  drawMediaText(yPos);
 
+  int rectYPos = getBottomBarYPosition();
+
+  // image
+#ifdef USE_IMAGE
+  drawImage();
+#endif
+
+  // bottom bar
+  drawBottomBar(option_menu);
+}
+
+void HomeThingMenuNowPlaying::drawMediaText(int startYPos) {
+  int yPos = startYPos;
+  int xPos = display_buffer_->get_width() / 2;
   if (media_player_group_->mediaTitleString().size() == 0) {
     display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
                             display_state_->get_font_large(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER, "Nothing!");
   } else {
-    int xPos = display_buffer_->get_width() / 2;
-    yPos = display_state_->drawTextWrapped(
-        display_state_->get_margin_size(), yPos,
-        display_state_->get_font_medium(), display_state_->primaryTextColor(),
-        display::TextAlign::TOP_LEFT, nowPlayingText,
-        display_state_->get_now_playing_max_lines(), display_buffer_);
-
-    yPos = display_state_->drawTextWrapped(
-        xPos, yPos, display_state_->get_font_large(),
+    display_state_->drawTextMarquee(
+        xPos, yPos, display_state_->get_font_small(),
         display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-        media_player_group_->mediaTitleString(),
-        display_state_->get_now_playing_max_lines(), display_buffer_);
+        media_player_group_->mediaTitleString(), tick, display_buffer_);
 
-    yPos = display_state_->drawTextWrapped(
+    yPos += display_state_->get_font_small()->get_height() +
+            display_state_->get_margin_size();
+
+    display_state_->drawTextMarquee(
         xPos, yPos, display_state_->get_font_medium(),
         display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-        media_player_group_->mediaSubtitleString(),
-        display_state_->get_now_playing_max_lines(), display_buffer_);
-  }
+        media_player_group_->mediaSubtitleString(), tick, display_buffer_);
 
+    yPos += display_state_->get_font_small()->get_height() +
+            display_state_->get_margin_size();
+
+    display_state_->drawTextMarquee(
+        xPos, yPos, display_state_->get_font_small(),
+        display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
+        media_player_group_->mediaAlbumString(), tick, display_buffer_);
+  }
+}
+
+#ifdef USE_IMAGE
+void HomeThingMenuNowPlaying::drawImage() {
+  if (now_playing_image_ == nullptr) {
+    return;
+  }
+  int imageHeight = now_playing_image_->get_height();
+  int imageXPos = display_buffer_->get_width() / 2;
+  int imageYPos = getBottomBarYPosition() - imageHeight - 1;
+  display_buffer_->image(imageXPos, imageYPos, now_playing_image_,
+                         display::ImageAlign::TOP_CENTER);
+
+  display_buffer_->line(0, imageYPos - 1, display_buffer_->get_width(),
+                        imageYPos - 1, display_state_->primaryTextColor());
+}
+#endif
+
+void HomeThingMenuNowPlaying::drawBottomText() {
+  int textYPos = getBottomBarYPosition() +
+                 display_state_->get_font_small()->get_height() +
+                 display_state_->get_margin_size() * 3;
+  int xPos = display_buffer_->get_width() / 2;
+  std::string text = media_player_group_->mediaPlaylistString().length() > 0
+                         ? media_player_group_->mediaPlaylistString()
+                         : media_player_group_->queuePositionString();
+  display_state_->drawTextWrapped(
+      xPos, textYPos, display_state_->get_font_small(),
+      display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER, text,
+      max_lines_, display_buffer_);
+}
+
+void HomeThingMenuNowPlaying::drawBottomBar(HomeThingOptionMenu* option_menu) {
+  int yPos = getBottomBarYPosition();
+  display_buffer_->line(0, yPos - 1, display_buffer_->get_width(), yPos - 1,
+                        display_state_->primaryTextColor());
   if (option_menu && option_menu->type == volumeOptionMenu) {
     drawVolumeOptionMenu();
   } else {
     drawMediaDuration();
   }
-#ifdef USE_IMAGE
-  if (now_playing_image_ != nullptr) {
-    int imageHeight = now_playing_image_->get_height();
-    int imageXPos = display_buffer_->get_width() / 2;
-    int imageYPos = yPos + display_state_->get_margin_size() * 2;
-    display_buffer_->image(imageXPos, imageYPos, now_playing_image_,
-                           display::ImageAlign::TOP_CENTER);
-    yPos = imageYPos + imageHeight;
-  }
-#endif
+  drawBottomText();
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
@@ -236,8 +262,7 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
                                       static_cast<double>(mediaDuration));
   }
 
-  int yPos = display_state_->getBottomBarYPosition(
-      true, display_buffer_->get_height());
+  int yPos = getBottomBarYPosition() + display_state_->get_margin_size() * 2;
   display_buffer_->rectangle(textWidth, yPos, totalBarWidth, barHeight,
                              display_state_->primaryTextColor());
   display_buffer_->filled_rectangle(
@@ -267,8 +292,7 @@ void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
   int barWidth =
       (totalBarWidth - 4) * (media_player_group_->getVolumeLevel() / 100);
-  int yPos = display_state_->getBottomBarYPosition(
-      true, display_buffer_->get_height());
+  int yPos = getBottomBarYPosition() + display_state_->get_margin_size() * 3;
   display_buffer_->printf(
       iconMargin / 2 - display_state_->get_icon_size() / 2, yPos + 1,
       display_state_->get_font_material_small(),
@@ -333,6 +357,16 @@ std::string HomeThingMenuNowPlaying::secondsToString(int seconds) {
   }
   return seconds % 60 < 10 ? "0" + to_string(seconds % 60)
                            : to_string(seconds % 60);
+}
+
+int HomeThingMenuNowPlaying::getBottomBarYPosition() {
+  int barYPosition = display_buffer_->get_height();
+  barYPosition -= (display_state_->get_font_small()->get_height() * 2) +
+                  (display_state_->get_margin_size() * 2);
+  if (draw_now_playing_menu_) {
+    barYPosition -= display_state_->get_font_large()->get_baseline();
+  }
+  return barYPosition;
 }
 }  // namespace homething_menu_now_playing
 }  // namespace esphome

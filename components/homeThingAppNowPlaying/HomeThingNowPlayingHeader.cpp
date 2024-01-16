@@ -90,7 +90,7 @@ int HomeThingMenuNowPlayingHeader::drawShuffle(
   if (!media_player_group_ || media_player_group_->active_player_ == NULL ||
       display_state->get_draw_shuffle() ==
           homething_display_state::DisplayIconEnabledState::OFF) {
-    ESP_LOGI(TAG, "drawShuffle return 0");
+    ESP_LOGD(TAG, "drawShuffle return 0");
     return 0;
   }
   auto active_player = media_player_group_->active_player_;
@@ -98,7 +98,7 @@ int HomeThingMenuNowPlayingHeader::drawShuffle(
           homeassistant_media_player::RemotePlayerType::TVRemotePlayerType ||
       !active_player->supports(homeassistant_media_player::
                                    MediaPlayerSupportedFeature::SHUFFLE_SET)) {
-    ESP_LOGI(TAG, "drawShuffle return 0 not set");
+    ESP_LOGD(TAG, "drawShuffle return 0 not set");
     return 0;
   }
   if (active_player->playerState !=
@@ -116,12 +116,10 @@ int HomeThingMenuNowPlayingHeader::drawShuffle(
           xPos, yPos, display_state->get_font_material_small(),
           display_state->get_color_palette()->get_accent_primary(), "󰒞");
     } else {
-      ESP_LOGI(TAG, "drawShuffle uhh %d", display_state->get_draw_shuffle());
       return 0;
     }
     return iconWidth;
   }
-  ESP_LOGI(TAG, "drawShuffle fail");
   return 0;
 }
 

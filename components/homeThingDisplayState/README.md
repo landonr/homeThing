@@ -44,10 +44,7 @@
 ## Include
 ```yaml
 external_components:
-  - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: main
+  - source: github://landonr/homeThing
     refresh: 1d
     components: [homeThingDisplayState]
 ```

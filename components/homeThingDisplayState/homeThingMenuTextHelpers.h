@@ -20,6 +20,11 @@ class HomeThingMenuTextHelpers {
                       display::TextAlign alignment, std::string text,
                       int maxLines, display::DisplayBuffer* display_buffer,
                       float widthRatio);
+  void drawTextMarquee(int xPos, int yPos, font::Font* font, Color color,
+                       display::TextAlign alignment, std::string text,
+                       int animationTick,
+                       display::DisplayBuffer* display_buffer,
+                       float widthRatio);
 
  private:
   const char* const TAG = "homething.menu.text_helpers";

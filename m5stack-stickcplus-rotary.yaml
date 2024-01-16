@@ -14,10 +14,7 @@ wifi: # setup wifi, make sure secrets.yaml exists!
   power_save_mode: HIGH
 
 external_components: #include homething, and esphome-components
-  - source:
-      type: git
-      url: https://github.com/landonr/homeThing
-      ref: main
+  - source: github://landonr/homeThing
       # type: local
       # path: components
     refresh: 0s

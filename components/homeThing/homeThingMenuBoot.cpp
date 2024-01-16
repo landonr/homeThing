@@ -137,8 +137,8 @@ void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
                    display_state_->get_font_size_width_ratio() * 3;
   int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * progress;
-  int yPos = display_state_->getBottomBarYPosition(
-                 false, display_buffer_->get_height()) +
+  int yPos = display_state_->getBottomLoadingBarYPosition(
+                 display_buffer_->get_height()) +
              yPosOffset;
 
   display_buffer_->rectangle(
@@ -193,8 +193,8 @@ BootMenuSkipState HomeThingMenuBoot::bootSequenceCanSkip(
 void HomeThingMenuBoot::drawBootSequenceSkipTitle(
     int xPos, int imageYPos, const MenuStates activeMenuState) {
   auto skip_state = bootSequenceCanSkip(activeMenuState);
-  int yPos = display_state_->getBottomBarYPosition(
-                 false, display_buffer_->get_height()) -
+  int yPos = display_state_->getBottomLoadingBarYPosition(
+                 display_buffer_->get_height()) -
              display_state_->get_margin_size() / 2 -
              display_state_->get_font_small()->get_baseline();
   switch (skip_state) {
