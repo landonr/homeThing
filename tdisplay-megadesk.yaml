@@ -105,12 +105,12 @@ homeThingAppNowPlaying:
   media_player_group: media_group_component
   display: my_display
   display_state: display_state_id
+  draw_now_playing_bottom_menu: true
 
 homeThingDisplayState:
   id: display_state_id
   colors:
     accent_primary: my_primary_accent
-  draw_now_playing_bottom_menu: true
   font_small: small_font
   font_medium: medium_font
   font_large: large_font
