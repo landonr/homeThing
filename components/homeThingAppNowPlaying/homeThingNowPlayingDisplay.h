@@ -26,22 +26,27 @@ class HomeThingMenuNowPlaying {
       homething_display_state::HomeThingDisplayState* new_display_state,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_media_player_group,
-      bool new_draw_now_playing_menu, int new_max_lines)
+      bool new_draw_bottom_menu)
       : display_buffer_(new_display_buffer),
         display_state_(new_display_state),
         media_player_group_(new_media_player_group),
-        draw_now_playing_menu_(new_draw_now_playing_menu),
-        max_lines_(new_max_lines) {}
+        draw_bottom_menu_(new_draw_bottom_menu) {}
   PositionCoordinate get_coordinate(double radius, double angle);
   void drawNowPlaying(
       int menuIndex, HomeThingOptionMenu* option_menu,
       const std::vector<homething_menu_base::MenuTitleBase*>* active_menu);
+
 #ifdef USE_IMAGE
   void set_now_playing_image(image::Image* now_playing_image) {
     now_playing_image_ = now_playing_image;
   }
   image::Image* get_now_playing_image() { return now_playing_image_; }
 #endif
+
+  void set_draw_bottom_menu(bool draw_bottom_menu) {
+    draw_bottom_menu_ = draw_bottom_menu;
+  }
+
   void tickAnimation() { tick++; }
   void resetTick() { tick = -5; }
 
@@ -61,7 +66,7 @@ class HomeThingMenuNowPlaying {
       int menu_index);
   display::TextAlign text_align_for_circle_position(
       CircleOptionMenuPosition position);
-  void drawMediaText(int startYPos);
+  bool drawMediaTextAndStop(int startYPos);
   void drawImage();
   void drawBottomText();
   void drawBottomBar(HomeThingOptionMenu* option_menu);
@@ -80,8 +85,7 @@ class HomeThingMenuNowPlaying {
 #ifdef USE_IMAGE
   image::Image* now_playing_image_{nullptr};
 #endif
-  bool draw_now_playing_menu_ = false;
-  int max_lines_ = 5;
+  bool draw_bottom_menu_ = false;
 
   const char* const TAG = "homething.menu.now_playing";
 };
