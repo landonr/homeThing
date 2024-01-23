@@ -356,9 +356,9 @@ MENU_BOOT_IDS = [
 
 async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
     menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header)
-    await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
-    if CONF_LAUNCH_IMAGE in config:
+    if CONF_LAUNCH_IMAGE in config[CONF_BOOT]:
         cg.add_build_flag("-DUSE_IMAGE")
+    await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
     return menu_boot
 
 BATTERY_IDS = [
