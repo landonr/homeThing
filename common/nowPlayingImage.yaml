@@ -1,0 +1,57 @@
+### Online Media Player Image
+
+# home assistant sensor
+# - needs an image proxy docker running to resize the image 
+# - https://hub.docker.com/r/darthsim/imgproxy/
+# - home assisstant addon https://github.com/landonr/home-assistant-imgproxy
+#
+#   template:
+#     - sensor:
+#         - name: Media Player Image Proxy URL
+#           state: |
+#             {{ 
+#               state_attr(states.sensor.active_player.state, "entity_picture") | base64_encode
+#             }}
+#           attributes:
+#             url: >
+#               {% set homeAssistantURL = "http://172.16.1.67:8123" %}
+#               {% set imageProxyURL = "http://172.16.1.23:8080/insecure/rs:fill:170:170/" %}
+#               {% set url = homeAssistantURL + state_attr(states.sensor.active_player.state, "entity_picture") %}
+#               {% set base64url_encoded_url = (url | base64_encode) | replace('+', '-') | replace('/', '_') | replace('=', '') %}
+#               {{ imageProxyURL + base64url_encoded_url }}
+
+substitutions:
+  online_image_id: "media_player_image"
+  online_image_initial_url: "http://172.16.1.23:8080/insecure/rs:fill:170:170/"
+  online_image_text_sensor_id: "entity_picture"
+  online_image_text_sensor_entity_id: "sensor.beam_picture_proxy"
+  online_image_display_id: "my_display"
+
+text_sensor:
+  - platform: homeassistant
+    id: ${online_image_text_sensor_id}
+    entity_id: ${online_image_text_sensor_entity_id}
+    attribute: url
+    on_value:
+      then:
+      - logger.log:
+          level: debug
+          format: "new online_image %s"
+          args: [ 'x.c_str()' ]
+      - online_image.set_url:
+          id: media_player_image
+          # prepend http:// because it has trouble decoding the url otherwise
+          url: !lambda 'return ("http://" + x).c_str();'
+
+online_image:
+  - url: ${online_image_initial_url}
+    id: ${online_image_id}
+    type: RGB565
+    on_download_finished:
+      - logger.log:
+          level: debug
+          format: "new online_image downloaded %s"
+          args: [ 'id(${online_image_text_sensor_id}).state' ]
+      - component.update: ${online_image_display_id}
+    on_error:
+      - logger.log: "Could not download the online image"

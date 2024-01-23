@@ -50,6 +50,10 @@ We made a couple of custom devices for running homeThing, but it can also run on
     <td><a href="https://github.com/landonr/homeThing/tree/main/Case%20Design">Case 3D Files</a></td>
   </tr>
   <tr>
+    <td><a href="tdisplay-ipod.yaml">ESPHome Config</a></td>
+    <td><a href="tdisplay-s3.yaml">ESPHome Config</a></td>
+  </tr>
+  <tr>
   	<td>
 	<h4>Features</h4>
 	<ul>
