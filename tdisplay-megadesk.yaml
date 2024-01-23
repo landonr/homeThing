@@ -105,7 +105,7 @@ homeThingAppNowPlaying:
   media_player_group: media_group_component
   display: my_display
   display_state: display_state_id
-  draw_now_playing_bottom_menu: true
+  draw_bottom_menu: true
 
 homeThingDisplayState:
   id: display_state_id
