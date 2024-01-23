@@ -136,35 +136,29 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
     ESP_LOGI(TAG, "drawNowPlaying: display state null");
     return;
   }
-  if (active_menu && active_menu->size() > 0 && draw_now_playing_menu_) {
+  if (active_menu && active_menu->size() > 0 && draw_bottom_menu_) {
     drawNowPlayingSelectMenu(active_menu, menuIndex);
   }
   int yPos =
       display_state_->get_header_height() + display_state_->get_margin_size();
-  if (media_player_group_->active_player_->playerState ==
-      homeassistant_media_player::RemotePlayerState::
-          PowerOffRemotePlayerState) {
-    display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
-                            display_state_->get_font_large(),
-                            display_state_->primaryTextColor(),
-                            display::TextAlign::TOP_CENTER, "Power Off");
+  if (drawMediaTextAndStop(yPos)) {
     return;
   }
 
-  drawMediaText(yPos);
-
-  int rectYPos = getBottomBarYPosition();
-
   // image
 #ifdef USE_IMAGE
-  drawImage();
+  if (media_player_group_->active_player_->mediaSource !=
+      homeassistant_media_player::RemotePlayerMediaSource::
+          TVRemotePlayerMediaSource) {
+    drawImage();
+  }
 #endif
 
   // bottom bar
   drawBottomBar(option_menu);
 }
 
-void HomeThingMenuNowPlaying::drawMediaText(int startYPos) {
+bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
   int yPos = startYPos;
   int xPos = display_buffer_->get_width() / 2;
   if (media_player_group_->mediaTitleString().size() == 0) {
@@ -172,6 +166,15 @@ void HomeThingMenuNowPlaying::drawMediaText(int startYPos) {
                             display_state_->get_font_large(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER, "Nothing!");
+    return true;
+  } else if (media_player_group_->active_player_->playerState ==
+             homeassistant_media_player::RemotePlayerState::
+                 PowerOffRemotePlayerState) {
+    display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
+                            display_state_->get_font_large(),
+                            display_state_->primaryTextColor(),
+                            display::TextAlign::TOP_CENTER, "Power Off");
+    return true;
   } else {
     display_state_->drawTextMarquee(
         xPos, yPos, display_state_->get_font_small(),
@@ -194,6 +197,7 @@ void HomeThingMenuNowPlaying::drawMediaText(int startYPos) {
         display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
         media_player_group_->mediaAlbumString(), tick, display_buffer_);
   }
+  return false;
 }
 
 #ifdef USE_IMAGE
@@ -223,19 +227,23 @@ void HomeThingMenuNowPlaying::drawBottomText() {
   display_state_->drawTextWrapped(
       xPos, textYPos, display_state_->get_font_small(),
       display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER, text,
-      max_lines_, display_buffer_);
+      1, display_buffer_);
 }
 
 void HomeThingMenuNowPlaying::drawBottomBar(HomeThingOptionMenu* option_menu) {
-  int yPos = getBottomBarYPosition();
-  display_buffer_->line(0, yPos - 1, display_buffer_->get_width(), yPos - 1,
-                        display_state_->primaryTextColor());
-  if (option_menu && option_menu->type == volumeOptionMenu) {
-    drawVolumeOptionMenu();
-  } else {
-    drawMediaDuration();
+  if (media_player_group_->active_player_->mediaSource !=
+      homeassistant_media_player::RemotePlayerMediaSource::
+          TVRemotePlayerMediaSource) {
+    int yPos = getBottomBarYPosition();
+    display_buffer_->line(0, yPos - 1, display_buffer_->get_width(), yPos - 1,
+                          display_state_->primaryTextColor());
+    if (option_menu && option_menu->type == volumeOptionMenu) {
+      drawVolumeOptionMenu();
+    } else {
+      drawMediaDuration();
+    }
+    drawBottomText();
   }
-  drawBottomText();
 }
 
 void HomeThingMenuNowPlaying::drawMediaDuration() {
@@ -363,8 +371,9 @@ int HomeThingMenuNowPlaying::getBottomBarYPosition() {
   int barYPosition = display_buffer_->get_height();
   barYPosition -= (display_state_->get_font_small()->get_height() * 2) +
                   (display_state_->get_margin_size() * 2);
-  if (draw_now_playing_menu_) {
-    barYPosition -= display_state_->get_font_large()->get_baseline();
+  if (draw_bottom_menu_) {
+    barYPosition -= display_state_->get_font_large()->get_baseline() +
+                    display_state_->get_margin_size();
   }
   return barYPosition;
 }

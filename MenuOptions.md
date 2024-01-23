@@ -18,7 +18,6 @@
 - **slider_margin_size**: optional - slider margin size (used for rgb lights), default 8
 - **icon_size**: optional - icon size, default 18
 - **scroll_bar_width**: optional - scroll bar width, default 6
-- **now_playing_max_lines**: optional - max lines for now playing, default 5
 - **font_size_width_ratio**: optional - font size height/width ratio, default 0.6
 - **draw_shuffle**: optional - draw shuffle icon, default on (on, off, always)
 - **draw_repeat**: optional - draw repeat icon, default on (on, off, always)
@@ -85,7 +84,6 @@ homeThingDisplayState:
     slider_margin_size: 8
     icon_size: 18
     scroll_bar_width: 6
-    now_playing_max_lines: 5
     font_size_width_ratio: 0.6
     draw_shuffle: on # optional (on, off, always)
     draw_repeat: on # optional (on, off, always)

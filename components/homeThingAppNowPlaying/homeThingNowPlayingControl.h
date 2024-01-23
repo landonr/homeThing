@@ -70,8 +70,8 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
           new_media_player_group) {
     now_playing_display_ = new HomeThingMenuNowPlaying(
         new_display_buffer, new_display_state, new_media_player_group,
-        get_draw_now_playing_bottom_menu(), get_now_playing_max_lines());
-    circle_menu_->set_bottom_menu(get_draw_now_playing_bottom_menu());
+        get_draw_bottom_menu());
+    circle_menu_->set_draw_bottom_menu(get_draw_bottom_menu());
   }
 
 #ifdef USE_IMAGE
@@ -89,14 +89,11 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   homething_menu_app::NavigationCoordination selectNowPlayingBottomMenu(
       int index);
 
-  int get_now_playing_max_lines() { return now_playing_max_lines_; }
-  void set_now_playing_max_lines(int now_playing_max_lines) {
-    now_playing_max_lines_ = now_playing_max_lines;
-  }
-
-  bool get_draw_now_playing_bottom_menu() { return draw_now_playing_menu_; }
-  void set_draw_now_playing_bottom_menu(bool draw_now_playing_menu) {
-    draw_now_playing_menu_ = draw_now_playing_menu;
+  bool get_draw_bottom_menu() { return draw_bottom_menu_; }
+  void set_draw_bottom_menu(bool draw_bottom_menu) {
+    draw_bottom_menu_ = draw_bottom_menu;
+    now_playing_display_->set_draw_bottom_menu(draw_bottom_menu);
+    circle_menu_->set_draw_bottom_menu(draw_bottom_menu);
   }
 
   // state callback
@@ -123,8 +120,7 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
   homething_menu_app::NavigationCoordination button_press_now_playing_option(
       CircleOptionMenuPosition position);
   bool animating_ = false;
-  int now_playing_max_lines_;
-  bool draw_now_playing_menu_;
+  bool draw_bottom_menu_ = false;
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome
