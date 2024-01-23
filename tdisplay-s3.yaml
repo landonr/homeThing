@@ -71,6 +71,7 @@ packages: # maybe modify: include default ipod controls
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
       common/images.yaml, # boot screen image
+      common/nowPlayingImage.yaml, # now playing online image
     ]
     refresh: 0s
 
@@ -88,6 +89,13 @@ substitutions:
   launch_image_size: 100x100
   launch_image_file: "https://freight.cargo.site/w/450/i/6e34213b4c7e34285aa1729af3f7f0bd6c2d21412ca40407073d7ec8be40ed7c/E75A57A1-8ACD-4004-A603-647BF7AD04F7_1_105_c.jpeg"
   launch_image_type: "RGBA"
+
+  # common/nowPlayingImage.yaml
+  online_image_id: "media_player_image"
+  online_image_initial_url: "http://172.16.1.23:8080/insecure/rs:fill:170:170/"
+  online_image_text_sensor_id: "entity_picture"
+  online_image_text_sensor_entity_id: "sensor.beam_picture_proxy"
+  online_image_display_id: "my_display"
 
 light: # home assistant lights
   - platform: homeassistant_component
@@ -222,61 +230,11 @@ homeThingAppCatToy:
   display: my_display
   display_state: display_state_id
 
-
-### Online Media Player Image
-
-# home assistant sensor
-# - needs an image proxy docker running to resize the image 
-# - https://hub.docker.com/r/darthsim/imgproxy/
-#
-#   template:
-#     - sensor:
-#         - name: Media Player Image Proxy URL
-#           state: |
-#             {{ 
-#               state_attr(states.sensor.active_player.state, "entity_picture") | base64_encode
-#             }}
-#           attributes:
-#             url: >
-#               {% set homeAssistantURL = "http://172.16.1.67:8123" %}
-#               {% set imageProxyURL = "img.landorghini.com/insecure/rs:fill:170:170/" %}
-#               {% set url = homeAssistantURL + state_attr(states.sensor.active_player.state, "entity_picture") %}
-#               {% set base64url_encoded_url = (url | base64_encode) | replace('+', '-') | replace('/', '_') | replace('=', '') %}
-#               {{ imageProxyURL + base64url_encoded_url }}
-
 text_sensor:
   - platform: homeassistant
     entity_id: "sensor.weather_condition"
     name: "Weather state"
     id: weather_state
-  - platform: homeassistant
-    id: entity_picture
-    entity_id: sensor.beam_picture_proxy
-    attribute: url
-    on_value:
-      then:
-      - logger.log:
-          level: debug
-          format: "new online_image %s"
-          args: [ 'x.c_str()' ]
-      - online_image.set_url:
-          id: media_player_image
-          # prepend http:// because it has trouble decoding the url otherwise
-          url: !lambda 'return ("http://" + x).c_str();'
-
-online_image:
-  - url: "http://172.16.1.23:8080/insecure/rs:fill:170:170/"
-    id: media_player_image
-    type: RGB565
-    on_download_finished:
-      - logger.log:
-          level: debug
-          format: "new online_image downloaded %s"
-          args: [ 'id(entity_picture).state' ]
-      - component.update: my_display
-    on_error:
-      - logger.log: "Could not download the online image"
-
 
 ### Voice Assistant
 
