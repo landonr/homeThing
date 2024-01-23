@@ -22,7 +22,7 @@
 
 substitutions:
   online_image_id: "media_player_image"
-  online_image_initial_url: "http://172.16.1.23:8080/insecure/rs:fill:170:170/"
+  online_image_initial_url: "http://www.katkam.ca/api/pic"
   online_image_text_sensor_id: "entity_picture"
   online_image_text_sensor_entity_id: "sensor.beam_picture_proxy"
   online_image_display_id: "my_display"
