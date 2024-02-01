@@ -24,7 +24,7 @@ substitutions:
   online_image_id: "media_player_image"
   online_image_initial_url: "http://www.katkam.ca/api/pic"
   online_image_text_sensor_id: "entity_picture"
-  online_image_text_sensor_entity_id: "sensor.beam_picture_proxy"
+  online_image_text_sensor_entity_id: "sensor.media_player_image_proxy_url"
   online_image_display_id: "my_display"
 
 text_sensor:
