@@ -31,7 +31,7 @@ We made a couple of custom devices for running homeThing, but it can also run on
 <table>
   <tr>
     <th>TDisplay homeThing</th>
-    <th>TDisplay S3 homeThing</th>
+    <th><a href="https://github.com/landonr/homeThing/tree/main/Case%20Design/tdisplay-s3">TDisplay S3 homeThing</a></th>
   </tr>
   <tr>
     <td><img src="https://github.com/landonr/homeThing/assets/2607659/4054f110-6d8d-4764-8aab-d7287209cb47" width="400"/></td>
