@@ -34,9 +34,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x' # Choose the Python version you need
-      - name: Install Pillow
-        run: pip install "pillow==10.2.0"
+          python-version: '3.9' # Choose the Python version you need
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r requirements.txt
+      - run: pip install "pillow==10.2.0"
       - name: Build esphome
         uses: esphome/build-action@v1.8.0
         with:
