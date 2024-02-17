@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: '3.x' # Choose the Python version you need
       - name: Install Pillow
-        run: pip install Pillow
+        run: pip install "pillow==10.2.0"
       - name: Build esphome
         uses: esphome/build-action@v1.8.0
         with:
