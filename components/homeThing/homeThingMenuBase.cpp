@@ -123,8 +123,8 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
 #endif
   if (home_screen_ != nullptr) {
-    ESP_LOGD(TAG, "draw_menu_screen: draw hoem screen header %d %s #%d", menuIndex,
-             title_name.c_str(), menu_titles.size());
+    ESP_LOGD(TAG, "draw_menu_screen: draw hoem screen header %d %s #%d",
+             menuIndex, title_name.c_str(), menu_titles.size());
     // menu_display_->draw_menu_header(home_screen_->get_header_source());
   }
   if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
@@ -468,7 +468,8 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
       turn_on_backlight();
       update_display();
       return true;
-    } else if (backlight_->remote_values.get_brightness() < menu_settings_->get_max_brightness()) {
+    } else if (backlight_->remote_values.get_brightness() <
+               menu_settings_->get_max_brightness()) {
       ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display 2");
       backlight_->turn_on()
           .set_transition_length(100)

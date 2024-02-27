@@ -127,10 +127,11 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
       case MenuItemTypeSensor: {
 #ifdef USE_SENSOR
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
-        auto state = value_accuracy_to_string(sensor->get_state(), sensor->get_accuracy_decimals());
+        auto state = value_accuracy_to_string(sensor->get_state(),
+                                              sensor->get_accuracy_decimals());
         std::string stateString = sensor->get_name() + " " + state;
-        menu_titles->push_back(new MenuTitleBase(
-           stateString.c_str(), "", NoMenuTitleRightIcon));
+        menu_titles->push_back(
+            new MenuTitleBase(stateString.c_str(), "", NoMenuTitleRightIcon));
 
 #endif
         break;
