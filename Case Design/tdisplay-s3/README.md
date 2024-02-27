@@ -20,8 +20,7 @@
 </table>
 
 <h2>Order</h2>
-<a href="https://www.pcbway.com/project/shareproject/homeThing_V1_3_e3572f8f.html">Order Case from PCBWay</a><br>
-<a href="https://www.pcbway.com/project/shareproject/homeThing_V1_3_e3572f8f.html">Order PCB from PCBWay</a>
+<a href="https://www.pcbway.com/project/shareproject/homeThing_S3_2b3ac3ac.html">Order Case and PCB from PCBWay</a>
 
 <h2>Case 3D Files</h2>
 
