@@ -74,7 +74,7 @@ CONF_LOCK_AFTER = "lock_after"
 CONF_MEDIA_PLAYERS_LOADED = "media_players_loaded"
 CONF_DISPLAY_TIMEOUT_WHILE_CHARGING = "display_timeout_while_charging"
 CONF_IDLE_APP = "idle_app"
-
+CONF_MAX_BRIGHTNESS = "max_brightness"
 # Automation
 
 from esphome import automation
@@ -195,6 +195,7 @@ MENU_SETTINGS_SCHEMA = cv.Schema(
         cv.Optional(CONF_LOCK_AFTER, default=0): cv.int_,
         cv.Optional(CONF_DISPLAY_TIMEOUT_WHILE_CHARGING, default=0): cv.int_,
         cv.Optional(CONF_IDLE_APP): cv.use_id(homething_app_ns.HomeThingApp),
+        cv.Optional(CONF_MAX_BRIGHTNESS, default=1.0): cv.float_,
     }
 )
 
@@ -336,6 +337,7 @@ MENU_SETTING_TYPES = [
     CONF_MENU_ROLLBACK_ON,
     CONF_LOCK_AFTER,
     CONF_DISPLAY_TIMEOUT_WHILE_CHARGING,
+    CONF_MAX_BRIGHTNESS
 ]
 
 MENU_SETTING_IDS = [

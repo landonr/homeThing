@@ -42,9 +42,9 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
       auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
       if (sensor->get_name() != "") {
-        return sensor->get_name() + ": " + state;
+        return state;
       } else {
-        return sensor->get_object_id() + ": " + state;
+        return state;
       }
 #endif
       break;
@@ -127,9 +127,10 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
       case MenuItemTypeSensor: {
 #ifdef USE_SENSOR
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
-        auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
+        auto state = value_accuracy_to_string(sensor->get_state(), sensor->get_accuracy_decimals());
+        std::string stateString = sensor->get_name() + " " + state;
         menu_titles->push_back(new MenuTitleBase(
-            sensor->get_name() + ": " + state, "", NoMenuTitleRightIcon));
+           stateString.c_str(), "", NoMenuTitleRightIcon));
 
 #endif
         break;
