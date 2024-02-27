@@ -300,7 +300,7 @@ color: # setup primary accent color
   - id: my_primary_accent
     red_int: 75
     green_int: 45
-    blue_int: 209
+    blue_int: 210
 
 homeThingDisplayState:
   id: display_state_id
