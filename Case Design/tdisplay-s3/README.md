@@ -83,4 +83,7 @@
         <td><a href="https://leeselectronic.com/en/product/844-polyester-cap-50v-01uf-4pcs.html">0.1uF capacitor</a></td>
         <td>0.1uF capacitor</td>
     </tr>
+    <tr>
+        <td>3.7V 7x20x50mm 700mAh Lipo</td>
+    </tr>
 </table>
