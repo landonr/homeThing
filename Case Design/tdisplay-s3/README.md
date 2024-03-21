@@ -84,6 +84,19 @@
         <td>0.1uF capacitor</td>
     </tr>
     <tr>
+        <td><a href="https://www.aliexpress.com/item/32835179410.html">3.7V 7x20x50mm 700mAh Lipo</a></td>
         <td>3.7V 7x20x50mm 700mAh Lipo</td>
+    </tr>
+    <tr>
+        <td><a href="https://leeselectronic.com/en/product/31231-tack-switch-6x6x10mm.html">10mm Push Button</a></td>
+        <td>10mm Push Button</td>
+    </tr>
+    <tr>
+        <td><a href="https://leeselectronic.com/en/product/6049-6049BOLTM25100PCS.html">M2.5x8mm screws</a></td>
+        <td>M2.5x8mm screws</td>
+    </tr>
+    <tr>
+        <td><a href="https://leeselectronic.com/qc/product/7174-7174TRANSISTOR2N2222MPS2222ANPN5.html">2N2222 Transistor</a></td>
+        <td>2N2222 Transistor</td>
     </tr>
 </table>
