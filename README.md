@@ -92,7 +92,10 @@ We made a couple of custom devices for running homeThing, but it can also run on
 	<li><a href="https://www.adafruit.com/product/5221">Custom PCB</a></li>
 	<li><a href="https://www.aliexpress.us/item/32962426410.html">INMP441 Microphone</a></li>
 	<li><a href="https://leeselectronic.com/en/product/71446-ic-i-o-expander-for-i2c-8bit-pcf8574p.html">PCF8574 GPIO Extender</a></li>
-	<li>3.7V 7x20x50mm 700mAh Lipo</li>
+	<li><a href="https://www.aliexpress.com/item/32835179410.html">3.7V 7x20x50mm 700mAh Lipo</a></li>
+	<li><a href="https://leeselectronic.com/en/product/31231-tack-switch-6x6x10mm.html">10mm Push Button</a></li>
+	<li><a href="https://leeselectronic.com/en/product/6049-6049BOLTM25100PCS.html">M2.5x8mm screws</a></li>
+	<li><a href="https://leeselectronic.com/qc/product/7174-7174TRANSISTOR2N2222MPS2222ANPN5.html">2N2222 Transistor</a></li>
 	</ul>
 	</td>
   </tr>
