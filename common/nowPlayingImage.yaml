@@ -41,7 +41,7 @@ text_sensor:
       - online_image.set_url:
           id: media_player_image
           # prepend http:// because it has trouble decoding the url otherwise
-          url: !lambda 'return ("http://" + x).c_str();'
+          url: !lambda 'return ("https://" + x + ".png").c_str();'
 
 online_image:
   - url: ${online_image_initial_url}

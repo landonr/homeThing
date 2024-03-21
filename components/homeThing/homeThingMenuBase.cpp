@@ -122,7 +122,11 @@ void HomeThingMenuBase::draw_menu_screen() {
     return;
   }
 #endif
-
+  if (home_screen_ != nullptr) {
+    ESP_LOGD(TAG, "draw_menu_screen: draw hoem screen header %d %s #%d",
+             menuIndex, title_name.c_str(), menu_titles.size());
+    // menu_display_->draw_menu_header(home_screen_->get_header_source());
+  }
   if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
                                       nullptr, editing_menu_item)) {
     this->animation_->tickAnimation();
@@ -464,11 +468,12 @@ bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
       turn_on_backlight();
       update_display();
       return true;
-    } else if (backlight_->remote_values.get_brightness() < 1) {
+    } else if (backlight_->remote_values.get_brightness() <
+               menu_settings_->get_max_brightness()) {
       ESP_LOGI(TAG, "buttonPressWakeUpDisplay: turning on display 2");
       backlight_->turn_on()
-          .set_transition_length(250)
-          .set_brightness(1)
+          .set_transition_length(100)
+          .set_brightness(menu_settings_->get_max_brightness())
           .perform();
     }
   }
@@ -1118,7 +1123,7 @@ void HomeThingMenuBase::turn_on_backlight() {
     ESP_LOGI(TAG, "turn_on_backlight: turning on display");
     backlight_->turn_on()
         .set_transition_length(250)
-        .set_brightness(1)
+        .set_brightness(menu_settings_->get_max_brightness())
         .perform();
   }
 #endif
@@ -1148,12 +1153,12 @@ void HomeThingMenuBase::fade_out_display() {
 #ifdef USE_LIGHT
   auto brightness = backlight_->remote_values.get_brightness();
   if (backlight_ != nullptr && backlight_->remote_values.is_on() &&
-      brightness > 0.3f) {
+      brightness > menu_settings_->get_max_brightness() * 0.3f) {
     ESP_LOGI(TAG, "fade_out_display: fading out display %d, %d, %f",
              backlight_ == nullptr, backlight_->remote_values.is_on(),
              brightness);
     backlight_->turn_on()
-        .set_brightness(0.3)
+        .set_brightness(menu_settings_->get_max_brightness() * 0.3f)
         .set_transition_length(500)
         .perform();
   }

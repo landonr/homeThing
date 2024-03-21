@@ -53,11 +53,17 @@ class HomeThingMenuSettings {
   homething_menu_app::HomeThingApp* get_idle_app() { return idle_app_; }
 #endif
 
+  float get_max_brightness() { return max_brightness_; }
+  void set_max_brightness(float max_brightness) {
+    max_brightness_ = max_brightness;
+  }
+
  private:
   MenuMode mode_;
   int display_timeout_;
   int display_timeout_while_charging_;
   int sleep_after_;
+  float max_brightness_;
   bool menu_rollover_;
   bool menu_rollback_;
 #ifdef USE_SWITCH
