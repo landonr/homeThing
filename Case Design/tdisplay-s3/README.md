@@ -23,19 +23,18 @@
 <a href="https://www.pcbway.com/project/shareproject/homeThing_S3_2b3ac3ac.html">Order Case and PCB from PCBWay</a>
 
 <h2>Case 3D Files</h2>
-
+There's a different file for for the front part FDM printers. This doesn't have extruded buttons so it can print flat without supports
 <table>
     <tr>
-        <th>SLS Files</th>
-        <th>FDM Files</th>
+        <th>Front</th>
+        <th>Back</th>
     </tr>
     <tr>
-        <td><a href="s3 case front sls.stl">Case Front STL</a></td>
-        <td><a href="s3 case front fdm.stl">Case Front FDM</a></td>
+        <td><a href="s3 case front sls.stl">s3 case front sls.stl</a></td>
+        <td><a href="s3 case back.stl">s3 case back.stl</a></td>
     </tr>
     <tr>
-        <td><a href="s3 case back sls.stl">Case Back STL</a></td>
-        <td><a href="s3 case back fdm.stl">Case Back FDM</a></td>
+        <td><a href="s3 case front fdm.stl">s3 case front fdm.stl</a></td>
     </tr>
 </table>
 
