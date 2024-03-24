@@ -12,7 +12,6 @@ binary_sensor:
   - platform: gpio
     pin:
       number: $screen_left_pin
-      allow_other_uses: true
       inverted: true
       mode:
         input: true
