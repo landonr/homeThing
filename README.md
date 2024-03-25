@@ -16,7 +16,12 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
  - [Discord](https://discord.gg/BX6ZtGKHTy) - support / chat with the community and the team
  
 ## Demo Video 🎬
-[![Demo Video](https://img.youtube.com/vi/Tg7Op2hr42o/0.jpg)](https://youtu.be/Tg7Op2hr42o)
+<div align="center">
+	<a href="https://youtu.be/5bx5w-n5c0Y">
+		<h3>Watch on YouTube</h3>
+		<img src="https://img.youtube.com/vi/5bx5w-n5c0Y/0.jpg" alt="Demo Video" />
+	</a>
+</div>
 
 # Hardware 💪
 
