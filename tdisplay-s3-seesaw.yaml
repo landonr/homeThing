@@ -73,8 +73,8 @@ packages: # maybe modify: include default ipod controls
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
-      common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for button controls
-      common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for rotary controls
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for seesaw button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for seesaw rotary controls
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/tdisplay-s3/backlight.yaml, # backlight
       common/fonts.yaml, # default font
@@ -94,7 +94,7 @@ substitutions:
   # scl_pin: "44"
   # screen_left_pin: "GPIO0"
   # screen_right_pin: "GPIO14"
-  # battery_pin: "4"
+  battery_pin: "4"
   # log_level: "DEBUG"
   launch_image_size: 100x100
   launch_image_file: "https://freight.cargo.site/w/450/i/6e34213b4c7e34285aa1729af3f7f0bd6c2d21412ca40407073d7ec8be40ed7c/E75A57A1-8ACD-4004-A603-647BF7AD04F7_1_105_c.jpeg"
