@@ -73,8 +73,8 @@ packages: # maybe modify: include default ipod controls
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
-      common/ipod/lilygo_tdisplay_ipod_binary_sensor_i2c.yaml, # used for button controls
-      common/ipod/lilygo_tdisplay_ipod_rotary_i2c.yaml, # used for rotary controls
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for rotary controls
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/tdisplay-s3/backlight.yaml, # backlight
       common/fonts.yaml, # default font
