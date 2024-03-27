@@ -1,0 +1,24 @@
+substitutions:
+  sda_pin: "43"
+  scl_pin: "44"
+  
+sensor:
+  - platform: seesaw
+    type: encoder
+    name: "Rotary Encoder"
+    internal: true
+    id: rotary
+    on_clockwise:
+        homething_menu.scroll_clockwise: homeThingMenu
+    on_anticlockwise:
+        homething_menu.scroll_counter_clockwise: homeThingMenu
+
+i2c:
+  sda: $sda_pin
+  scl: $scl_pin
+  # scan: TRUE
+  id: bus_a
+  frequency: 100hz
+
+
+seesaw:

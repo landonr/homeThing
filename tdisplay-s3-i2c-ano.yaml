@@ -1,0 +1,409 @@
+
+esphome:
+  name: "lilygos3"
+  platformio_options:
+    board_build.f_flash: 80000000L
+    board_build.partitions: default_16MB.csv
+    board_build.arduino.memory_type: qio_opi
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: arduino
+  flash_size: 16MB
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  reboot_timeout: 0s
+
+ota:
+
+wifi:
+  reboot_timeout: 0s
+  networks:
+  - ssid: !secret wifi_ssid
+    password: !secret wifi_password
+  - ssid: !secret wifi_ssid2
+    password: !secret wifi_password2
+
+  ap:
+    ssid: "S3 Fallback Hotspot"
+    password: "9092407573"
+
+external_components:
+  - source: github://landonr/lilygo-tdisplays3-esphome@v0.1
+    components: [tdisplays3]
+    refresh: 0s
+  - source: github://landonr/homeThing
+      # type: local
+      # path: components
+    refresh: 0s
+    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying, homeThingAppSnake, homeThingAppCatToy, homeThingAppBreakout, homeThingAppWeather]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+  - source: github://pr#4710 # for media player image
+    components: [ online_image ]
+
+  - source:
+      type: git
+      url: https://github.com/ssieb/esphome_components
+      ref: seesaw
+    components: [ seesaw ]
+
+  
+packages: # maybe modify: include default ipod controls
+  remote_package:
+    url: https://github.com/landonr/homeThing
+    ref: main
+    files: [
+      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
+      common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor_i2c.yaml, # used for button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary_i2c.yaml, # used for rotary controls
+      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
+      common/tdisplay-s3/backlight.yaml, # backlight
+      common/fonts.yaml, # default font
+      common/icon_fonts.yaml, # material icons
+      common/settings.yaml, # settings screen
+      common/images.yaml, # boot screen image
+      common/nowPlayingImage.yaml, # now playing online image
+    ]
+    refresh: 0s
+
+substitutions:
+  friendly_name: "HomeThing"
+  # rotary_pin_a: "10"
+  # rotary_pin_b: "11"
+  medium_font_size: "16"
+  # sda_pin: "43"
+  # scl_pin: "44"
+  # screen_left_pin: "GPIO0"
+  # screen_right_pin: "GPIO14"
+  # battery_pin: "4"
+  # log_level: "DEBUG"
+  launch_image_size: 100x100
+  launch_image_file: "https://freight.cargo.site/w/450/i/6e34213b4c7e34285aa1729af3f7f0bd6c2d21412ca40407073d7ec8be40ed7c/E75A57A1-8ACD-4004-A603-647BF7AD04F7_1_105_c.jpeg"
+  launch_image_type: "RGBA"
+
+  # common/nowPlayingImage.yaml
+  online_image_id: "media_player_image"
+  online_image_initial_url: "http://172.16.1.23:8080/insecure/rs:fill:170:170/"
+  online_image_text_sensor_id: "entity_picture"
+  online_image_text_sensor_entity_id: "sensor.beam_picture_proxy"
+  online_image_display_id: "my_display"
+
+light: # home assistant lights
+  - platform: homeassistant_component
+    id: light_desk_lamp
+    entity_id: light.desk_lamp
+    name: Desk Lamp
+  - platform: homeassistant_component
+    id: light_all_lights
+    entity_id: light.all_lights
+    name: All Lights
+
+### Media Players
+
+media_player_source_sonos: # sonos favorite source
+  id: sonos
+
+media_player: # home assistant media players
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+  - platform: homeassistant_media_player
+    name: TV
+    entity_id: "media_player.55_tcl_roku_tv"
+    id: media_player_tv
+    type: roku
+    soundbar:
+      speaker: media_player_beam
+
+homeassistant_media_player: # media player menu
+  id: media_group_component
+  finished_loading:
+    id: media_players_loaded_sensor
+  media_players:
+    - id: media_player_beam
+      type: speaker
+    - id: media_player_tv
+      type: roku
+
+homeThingAppNowPlaying:
+  display: my_display
+  display_state: display_state_id
+  id: now_playing
+  media_player_group: media_group_component
+  now_playing_image: media_player_image
+
+
+### Covers / Smart Desk
+
+number: # home assistant number
+  - platform: homeassistant_component
+    entity_id: number.desk_height_cm
+    name: desk height
+    id: desk_height_number
+    min_value: 61.0
+    max_value: 105.0
+    step: 1
+
+cover: # home assistant cover
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
+
+
+### Weather
+
+sensor:
+  - platform: homeassistant
+    id: weather_temperature
+    entity_id: weather.accuweather
+    attribute: temperature
+  - platform: homeassistant
+    id: weather_humidity
+    entity_id: weather.accuweather
+    attribute: humidity
+
+image:
+  - file: mdi:weather-cloudy
+    id: weather_cloudy
+    resize: 50x50
+  - file: mdi:weather-fog
+    id: weather_fog
+    resize: 50x50
+  - file: mdi:weather-snowy
+    id: weather_snow
+    resize: 50x50
+  - file: mdi:weather-sunny
+    id: weather_sunny
+    resize: 50x50
+  - file: mdi:weather-rainy
+    id: weather_rainy
+    resize: 50x50
+  - file: mdi:weather-night
+    id: weather_night
+    resize: 50x50
+
+    # Launch image is included with other images
+  - id: launch_image
+    file: $launch_image_file
+    resize: $launch_image_size
+    type: $launch_image_type
+
+
+### Games
+
+homeThingAppSnake:
+  id: snake
+  display: my_display
+  display_state: display_state_id
+
+homeThingAppBreakout:
+  id: breakout
+  display: my_display
+  display_state: display_state_id
+
+### IR Blaster
+
+remote_transmitter:
+  pin: GPIO13
+  # Infrared remotes use a 50% carrier signal
+  carrier_duty_percent: 50%
+  id: infrared
+
+homeThingAppCatToy:
+  id: cat_toy
+  remote_transmitter: infrared
+  display: my_display
+  display_state: display_state_id
+
+text_sensor:
+  - platform: homeassistant
+    entity_id: "sensor.weather_condition"
+    name: "Weather state"
+    id: weather_state
+
+### Voice Assistant
+
+i2s_audio:
+  i2s_lrclk_pin: 3 # WS
+  i2s_bclk_pin: 2 # SCK
+
+microphone:
+  - platform: i2s_audio
+    id: external_mic
+    i2s_din_pin: 1 # SD
+    adc_type: external
+    pdm: false
+    # bits_per_sample: 32bit
+    channel: left
+
+voice_assistant:
+  microphone: external_mic
+  on_start:
+    then:
+      lambda: |-
+        id(homeThingMenu)->clearNotifications();
+        id(homeThingMenu)->addNotification("Voice Assistant", "Listening", "", true);
+        return;
+  on_error:
+    then:
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Error", message, false);
+        return;
+  on_stt_end:
+    then:
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Understood", x, false);
+        return;
+  on_tts_start:
+    then:
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Finished", x, true);
+        return;
+
+
+
+### Weather App
+
+homeThingAppWeather:
+  id: weather
+  display: my_display
+  display_state: display_state_id
+  temperature_sensor: weather_temperature
+  humidity_sensor: weather_humidity
+  condition_sensor: weather_state
+  images:
+    cloudy: weather_cloudy
+    fog: weather_fog
+    snow: weather_snow
+    sunny: weather_sunny
+    rainy: weather_rainy
+    night: weather_night
+
+### HomeThing
+
+color: # setup primary accent color
+  - id: my_primary_accent
+    red_int: 75
+    green_int: 45
+    blue_int: 210
+
+homeThingDisplayState:
+  id: display_state_id
+  colors:
+    accent_primary: my_primary_accent
+  draw_battery_level: true
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_heavy_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
+
+homeThing:
+  id: homeThingMenu
+  apps: 
+    - now_playing
+    - breakout
+    - snake
+    - cat_toy
+    - weather
+  backlight: backlight
+  battery:
+    battery_percent: battery_percent
+    charging: charging
+  boot:
+    api_connected: api_connected
+    media_players_loaded: media_players_loaded_sensor
+    launch_image: launch_image
+  display: my_display
+  display_state: display_state_id
+  on_redraw:
+    then:
+      component.update: my_display
+  settings:
+    sleep_after: 14400
+  sleep_switch: sleep_toggle
+  screens:
+    - name: Desk Screen
+      entities:
+        - type: cover
+          id: cover_megadesk
+        - type: number
+          id: desk_height_number
+        - type: command
+          name: "desk nudge up"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_up"
+        - type: command
+          name: "desk nudge down"
+          command:
+            - homeassistant.service:
+                service: button.press
+                data:
+                  entity_id: "button.desk_position_nudge_down"
+        - id: light_desk_lamp
+          type: light
+    - name: Lights Screen
+      entities:
+        - id: light_all_lights
+          type: light
+        - type: command
+          name: "color lights"
+          command:
+            - homeassistant.service:
+                service: script.colors
+        - type: command
+          name: "lights off"
+          command:
+            - homeassistant.service:
+                service: script.off_script
+    - name: Settings Screen
+      show_version: True
+      entities:
+        - id: backlight
+          type: light
+        - id: "restart_switch"
+          type: switch
+        - id: wifi_ssid
+          type: text_sensor
+        - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
+
+display:
+  - platform: tdisplays3
+    id: my_display
+    rotation: 180
+    update_interval: 0s
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
