@@ -1,0 +1,175 @@
+substitutions:
+  screen_left_pin: "0"
+  screen_right_pin: "14"
+  sda_pin: "18"
+  scl_pin: "17"
+  custom1_pin: "2"
+  custom2_pin: "1"
+  custom3_pin: "0"
+  sw1_pin: "3" # select
+  sw2_pin: "5" # down
+  sw3_pin: "4" # right
+  sw4_pin: "7" # up
+  sw5_pin: "6" # left
+
+binary_sensor:
+  ## controls
+  - platform: gpio
+    pin:
+      number: $screen_left_pin
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: $friendly_name Screen Left
+    id: tdisplay_button_input_0
+    internal: true
+    on_press:
+      then:
+        media_player_group.select_next_player: media_group_component
+  - platform: gpio
+    pin:
+      number: $screen_right_pin
+      inverted: true
+    name: $friendly_name Screen Right
+    id: tdisplay_button_input_1
+    internal: true
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+        homething_menu.option: homeThingMenu
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+      - lambda: |-
+          id(homeThingMenu)->topMenu();
+    - timing:
+        - ON for at least 3s
+      then:
+      - lambda: |-
+          id(sleep_toggle)->toggle();
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw5_pin
+          mode: INPUT
+          inverted: true
+    id: sw5
+    name: $friendly_name sw5 left
+    on_press:
+      then:
+        homething_menu.left: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw4_pin
+          mode: INPUT
+          inverted: true
+    id: sw4
+    name: $friendly_name sw4 up
+    on_press:
+      then:
+        - logger.log: "sw4 up"
+        - homething_menu.up: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw3_pin
+          mode: INPUT
+          inverted: true
+    id: sw3
+    name: $friendly_name sw3 right
+    on_press:
+      then:
+        - logger.log: "sw3 right"
+        - homething_menu.right: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw2_pin
+          mode: INPUT
+          inverted: true
+    id: sw2
+    name: $friendly_name sw2 down
+    on_press:
+      then:
+        - logger.log: "sw2 down"
+        - homething_menu.down: homeThingMenu
+  - platform: gpio
+    internal: true
+    pin:
+          pcf8574: pcf8574_hub
+          number: $sw1_pin
+          mode: INPUT
+          inverted: true
+    id: sw1
+    name: $friendly_name sw1 select
+    on_click:
+      min_length: 5ms
+      max_length: 350ms
+      then:
+        - logger.log: "sw1 select"
+        - homething_menu.select: homeThingMenu
+    on_multi_click:
+    - timing:
+        - ON for at least 0.5s
+      then:
+        homething_menu.option: homeThingMenu
+  - platform: gpio
+    name: "Custom1"
+    internal: True
+    pin:
+      pcf8574: pcf8574_hub
+      number: $custom1_pin
+      mode: INPUT
+      inverted: true
+    on_press:
+      then:
+        - voice_assistant.start:
+    on_release:
+      then:
+        - voice_assistant.stop:
+  - platform: gpio
+    name: "Custom2"
+    internal: True
+    pin:
+      pcf8574: pcf8574_hub
+      number: $custom2_pin
+      mode: INPUT
+      inverted: true
+    on_press:
+      then:
+      - lambda: |-
+          if (id(homeThingMenu)->buttonPressWakeUpDisplay()) {
+            return;
+          }
+          id(homeThingMenu)->upMenu();
+  - platform: gpio
+    name: "Custom3"
+    internal: True
+    pin:
+      pcf8574: pcf8574_hub
+      number: $custom3_pin
+      mode: INPUT
+      inverted: false
+    on_press:
+      then:
+        homething_menu.option: homeThingMenu
+
+i2c:
+  sda: $sda_pin
+  scl: $scl_pin
+  # scan: TRUE
+  id: bus_a
+  frequency: 100hz
+
+pcf8574:
+  - id: 'pcf8574_hub'
+    address: 0x20
+    pcf8575: false
