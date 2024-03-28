@@ -36,6 +36,7 @@
 
 ### 1. Install ESPHome on your hardware
 [ESPHome install guide](https://esphome.io/guides/getting_started_hassio.html)
+> Note: To use fonts and images in this project, you will need to have the python pillow package installed. If you are running this project as a Home Assistant add-on or with the official ESPHome docker image, the package should already be installed. Otherwise, you can install it using the command `pip install "pillow==10.1.0"`. For more information, refer to the [ESPHome documentation on images](https://esphome.io/components/display/index.html#images).
 
 ### 2. Include the homeThing components in your yaml
 ```yaml
