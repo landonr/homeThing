@@ -57,14 +57,14 @@ external_components:
 packages: # maybe modify: include default ipod controls
   remote_package:
     url: https://github.com/landonr/homeThing
-    ref: main
+    ref: main # pr_replace
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
       common/ipod/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml, # used for pcf button controls
       common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for pcf rotary controls
       # common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for seesaw button controls
-      common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for seesaw rotary controls
+      # common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for seesaw rotary controls
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/tdisplay-s3/backlight.yaml, # backlight
       common/fonts.yaml, # default font
