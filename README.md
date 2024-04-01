@@ -160,7 +160,7 @@ We made a couple of custom devices for running homeThing, but it can also run on
 
 # Sponsorship
 
-<img src="https://camo.githubusercontent.com/3fab6e1d2bd2504dd94cfc2927b151aee553c106eef66ef09e49bdcd4c1013dc/68747470733a2f2f63646e2e6861636b616461792e696f2f696d616765732f3838313032313637333238353832393239312e706e67" data-caption="PCBWay Logo" data-no-zoom="">
+<img src="https://freight.cargo.site/w/800/i/a931690205c27162476213b8bcc171585aad9d84d65cdc121ca425e813114121/0x0.png" data-caption="PCBWay Logo" data-no-zoom="">
 
 ## [PCBWay](https://pcbway.com/g/Xymq6O "PCBWay") sponsors 3D Printing and PCB assembly costs on this project during the prototyping phase! 
 If you are interested in their awesome fabrication services please check them out.&nbsp; They offer 
