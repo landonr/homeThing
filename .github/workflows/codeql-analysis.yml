@@ -26,7 +26,7 @@ jobs:
           style: file
           exclude: './components/homeThing/version.h'
           clangFormatVersion: 15
-      - name: "Replace branch reference"
+      - name: "Replace component branch reference"
         run: sed -i "s#\(github://${{ github.repository }}\)\(@[^ ]*\)\?#\1@${{ github.head_ref }}#" ${{ matrix.devices }}.yaml
       - name: Create file
         run: |
