@@ -1,9 +1,19 @@
 esphome:
-  name: "lilygos3"
+  name: "tdisplay-s3"
   platformio_options:
     board_build.f_flash: 80000000L
     board_build.partitions: default_16MB.csv
     board_build.arduino.memory_type: qio_opi
+  on_boot: 
+    then:
+    - light.turn_on:
+        id: backlight
+        brightness: 10%
+    - delay: 0.2s
+    - light.turn_on:
+        id: backlight
+        brightness: 100%
+        transition_length: 0.5s
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -12,10 +22,8 @@ esp32:
     type: arduino
   flash_size: 16MB
 
-# Enable logging
 logger:
 
-# Enable Home Assistant API
 api:
 
 ota:
@@ -61,10 +69,10 @@ packages: # maybe modify: include default ipod controls
     files: [
       common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
-      # common/ipod/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml, # used for pcf button controls
-      # common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for pcf rotary controls
-      common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for seesaw button controls
-      common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for seesaw rotary controls
+      common/ipod/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml, # used for pcf button controls
+      common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for pcf rotary controls
+      # common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for seesaw button controls
+      # common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for seesaw rotary controls
       common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
       common/tdisplay-s3/backlight.yaml, # backlight
       common/fonts.yaml, # default font
@@ -76,19 +84,11 @@ packages: # maybe modify: include default ipod controls
     refresh: 0s
 
 substitutions:
-  friendly_name: "s3 homething"
+  friendly_name: "homeThing S3"
   rotary_pin_a: "10"
   rotary_pin_b: "11"
   medium_font_size: "16"
-  # sda_pin: "18"
-  # scl_pin: "17"
-  # screen_left_pin: "GPIO0"
-  # screen_right_pin: "GPIO14"
   battery_pin: "4"
-  # log_level: "DEBUG"
-  launch_image_size: 100x100
-  launch_image_file: "https://freight.cargo.site/w/450/i/6e34213b4c7e34285aa1729af3f7f0bd6c2d21412ca40407073d7ec8be40ed7c/E75A57A1-8ACD-4004-A603-647BF7AD04F7_1_105_c.jpeg"
-  launch_image_type: "RGBA"
 
   # common/nowPlayingImage.yaml
   online_image_id: "media_player_image"
@@ -146,7 +146,6 @@ homeThingAppNowPlaying:
   media_player_group: media_group_component
   now_playing_image: media_player_image
 
-
 ### Covers / Smart Desk
 
 number: # home assistant number
@@ -163,7 +162,6 @@ cover: # home assistant cover
     entity_id: "cover.megadesk_cover"
     name: "Megadesk"
     id: cover_megadesk
-
 
 ### Weather
 
@@ -202,7 +200,6 @@ image:
     file: $launch_image_file
     resize: $launch_image_size
     type: $launch_image_type
-
 
 ### Games
 
@@ -275,8 +272,6 @@ voice_assistant:
         id(homeThingMenu)->addNotification("Voice Assistant", "Finished", x, true);
         return;
 
-
-
 ### Weather App
 
 homeThingAppWeather:
@@ -331,13 +326,28 @@ homeThing:
     media_players_loaded: media_players_loaded_sensor
     launch_image: launch_image
   display: my_display
+  header:
+    time_id: esptime
   display_state: display_state_id
   on_redraw:
     then:
       component.update: my_display
   settings:
-    sleep_after: 14400
+    sleep_after: 3600
+    display_timeout_while_charging: 30
+    idle_app: now_playing
+    max_brightness: 0.5
   sleep_switch: sleep_toggle
+  home_screen:
+    name: homeThing
+    entities:
+      - type: command
+        name: "feed lil freak"
+        command:
+          - homeassistant.service:
+              service: button.press
+              data:
+                entity_id: "button.catfeeder_node_feed_single"
   screens:
     - name: Desk Screen
       entities:
@@ -393,7 +403,7 @@ display:
   - platform: tdisplays3
     id: my_display
     rotation: 180
-    update_interval: 0s
+    update_interval: 60s
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
