@@ -1,0 +1,40 @@
+substitutions:
+  mic_lrclk_pin: "3"
+  mic_bclk_pin: "2"
+  mic_din_pin: "1"
+
+i2s_audio:
+  i2s_lrclk_pin: $mic_lrclk_pin # WS
+  i2s_bclk_pin: $mic_bclk_pin # SCK
+
+microphone:
+  - platform: i2s_audio
+    id: external_mic
+    i2s_din_pin: $mic_din_pin # SD
+    adc_type: external
+    pdm: false
+    channel: left
+
+voice_assistant:
+  microphone: external_mic
+  on_start:
+    then:
+      lambda: |-
+        id(homeThingMenu)->clearNotifications();
+        id(homeThingMenu)->addNotification("Voice Assistant", "Listening", "", true);
+        return;
+  on_error:
+    then:
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Error", message, false);
+        return;
+  on_stt_end:
+    then:
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Understood", x, false);
+        return;
+  on_tts_start:
+    then:
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Finished", x, true);
+        return;
