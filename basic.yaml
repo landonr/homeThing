@@ -16,12 +16,9 @@ wifi: # setup wifi, make sure secrets.yaml exists!
   id: wifi_id
 
 external_components:
-  - source:
-      # type: git
-      # url: https://github.com/landonr/homeThing
-      # ref: lando/boot_image
-      type: local
-      path: components
+  - source: github://landonr/homeThing
+      # type: local
+      # path: components
     refresh: 0s
     components: [homeThingDisplayState, homeThing]
 
@@ -32,43 +29,18 @@ spi:
 substitutions: # set friendly name
   friendly_name: "homething-basic"
 
-font:
-  - file: "gfonts://Roboto"
-    id: roboto
-    size: 20
-  - file: "fonts/materialdesignicons-webfont.ttf" 
-    id: material_font
-    size: 19
-    glyphs: [
-      '󰐊', # mdi-play
-      '󰓛', # mdi-stop
-      '󰏤', # home-pause
-      '󰽥', # mdi-moon-waning-crescent
-      '󰒝', # mdi-shuffle
-      '󰒞', # mdi-shuffle-disabled
-      '󰕾', # mdi-volume-high
-      '󰕿', # mdi-volume-low
-      '󰚺', # mdi-plex
-      '󰝆', # mdi-netflix
-      '󰗃', # mdi-youtube
-      '󰓇', # mdi-spotify
-      '󰔂', # mdi-television
-      '󰋜', # mdi-home
-      '󰌵', # mdi-lightbulb
-      '󰌶', # mdi-lightbulb-outline
-      '󰑗', # mdi-repeat-off
-      '󰑘', # mdi-repeat-once
-      '󰑖', # mdi-repeat
-    ]
+packages:
+  fonts_roboto: github://landonr/homeThing/common/fonts-roboto.yaml@main
+  icon_fonts: github://landonr/homeThing/common/icon-fonts.yaml@main
 
 homeThingDisplayState:
   id: display_state_id
-  font_small: roboto
-  font_medium: roboto
-  font_large: roboto
-  font_large_heavy: roboto
-  font_material_large: material_font
-  font_material_small: material_font
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_heavy_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
 
 homeThing:
   id: homeThingMenu
