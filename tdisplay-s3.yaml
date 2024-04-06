@@ -28,14 +28,17 @@ api:
 
 ota:
 
+# WiFi Configuration, uncomment and fill secrets.yaml with wifi_ssid and wifi_password to enable fast connect
+captive_portal:
+
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  # ssid: !secret wifi_ssid
+  # password: !secret wifi_password
+  # fast_connect: true
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "S3 Fallback Hotspot"
-    password: "zQ9tuPKIfFMu"
+    ssid: "homeThing Fallback Hotspot"
 
 external_components:
   - source: github://landonr/lilygo-tdisplays3-esphome@v0.1
