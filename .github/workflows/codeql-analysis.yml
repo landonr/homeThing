@@ -1,4 +1,5 @@
-name: homeThing Builder
+name: Build ESPHome
+
 on:
   workflow_dispatch:
   push:
@@ -11,33 +12,51 @@ on:
     - cron: '0 */6 * * *'
 
 jobs:
-  lint:
-    runs-on: "ubuntu-latest"
+  matrix_maker:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.create_matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create yaml file matrix
+        id: create_matrix
+        run: |
+          # Read the list of YAML files and create a matrix
+          yaml_files=$(find . -not -name "secrets.yaml" -maxdepth 1 -type f -name "*.yaml" -exec echo {} \; | tr '\n' ' ')
+          yaml_array="[\"$(echo "$yaml_files" | sed 's/ /", "/g')\"]"
+          yaml_array=$(echo $yaml_array | sed 's/.....$/]/')
+          DATA=$(echo $yaml_array | jq -c )
+          echo "matrix=$DATA" >> $GITHUB_OUTPUT
+      - name: Debug output
+        run: echo "${{ steps.create_matrix.outputs.matrix }}"
+  build:
+    needs: matrix_maker
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        devices: ['basic', 'debug', 'tdisplay-ipod', 'tdisplay-megadesk', 'tdisplay-t4', 'm5stack-fire', 'm5stack-stickc', 'm5stack-stickcplus-rotary', 'tdisplay-s3']
+        name: ${{ fromJSON(needs.matrix_maker.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: DoozyX/clang-format-lint-action@v0.15
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: "Replace component branch reference"
+        run: sed -i "s|@main \#update_to_head_ref|@${{ github.head_ref }}|g" ${{ matrix.name }}
+      - name: Debug output
+        run: cat ${{ matrix.name }}
+      - name: CLang Format Lint
+        uses: DoozyX/clang-format-lint-action@v0.15
         with:
           source: '.'
           extensions: 'h,cpp'
           style: file
-          exclude: './components/homeThing/version.h'
+          exclude: '*/version.h'
           clangFormatVersion: 15
-      - name: "Replace component branch reference"
-        run: sed -i "s#\(github://${{ github.repository }}\)\(@[^ ]*\)\?#\1@${{ github.head_ref }}#" ${{ matrix.devices }}.yaml
-      - name: Create file
+      - name: Create secrets file 
         run: |
           echo "d2lmaV9ic3NpZDogIjFDOjg3OjJDOjcwOkMyOkMyIgp3aWZpX3NzaWQ6ICJzc2lkIgp3aWZpX3Bhc3N3b3JkOiAid2lmaXBhc3MiCndpZmlfZmFsbGJhY2tfcGFzc3dvcmQ6ICJ3aWZpZmFsbGJhY2twYXNzIgphcGlfZW5jcnlwdGlvbjogImFwaWVuY3J5cHRpb24iCm90YV9lbmNyeXB0aW9uOiAib3RhZW5jcnlwdGlvbiIK" | base64 --decode > secrets.yaml
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9' # Choose the Python version you need
-          cache: 'pip' # caching pip dependencies
-      - run: pip install -r .github/workflows/requirements.txt
       - name: Build esphome
         uses: esphome/build-action@v1.8.0
         with:
-          yaml_file: ${{ matrix.devices }}.yaml
+          # version: dev
+          yaml_file: ${{ matrix.name }}
