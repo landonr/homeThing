@@ -41,7 +41,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: "Replace component branch reference"
-        run: sed -i "s/@main \#update_to_head_ref/@{{ github.head_ref }}/g" ${{ matrix.name }}
+        run: sed -i "s/@main \#update_to_head_ref/@${{ github.head_ref }}/g" ${{ matrix.name }}
       - name: Debug output
         run: cat ${{ matrix.name }}
       - name: CLang Format Lint
