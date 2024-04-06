@@ -39,7 +39,7 @@ jobs:
         name: ${{ fromJSON(needs.matrix_maker.outputs.matrix) }}
     steps:
       - name: "Replace component branch reference"
-        run: sed -i "s#\(github://${{ github.repository }}\)\(@[^ ]*\)\?#\1@${{ github.head_ref }}#" ${{ matrix.name }}.yaml
+        run: sed -i "s#\(github://${{ github.repository }}\)\(@[^ ]*\)\?#\1@${{ github.head_ref }}#" ${{ matrix.name }}
       - name: Checkout code
         uses: actions/checkout@v2
       - name: CLang Format Lint
