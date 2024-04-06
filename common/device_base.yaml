@@ -4,6 +4,20 @@ substitutions:
 logger:
   level: ${log_level}
 
+# WiFi Configuration, uncomment and fill secrets.yaml with wifi_ssid and wifi_password to enable fast connect
+
+captive_portal:
+
+wifi:
+  # ssid: !secret wifi_ssid
+  # password: !secret wifi_password
+  # fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "homeThing Fallback Hotspot"
+
+
 ota:
 
 api:
