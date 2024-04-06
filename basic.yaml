@@ -31,7 +31,7 @@ substitutions: # set friendly name
 
 packages:
   fonts_roboto: github://landonr/homeThing/common/fonts-roboto.yaml@main
-  icon_fonts: github://landonr/homeThing/common/icon-fonts.yaml@main
+  icon_fonts: github://landonr/homeThing/common/icon-fonts.yaml@main #update_to_current_ref
 
 homeThingDisplayState:
   id: display_state_id
