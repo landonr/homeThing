@@ -50,7 +50,6 @@ external_components:
 packages: 
   # common
   device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
-  battery: github://landonr/homeThing/common/battery.yaml@main
   fonts: github://landonr/homeThing/common/fonts.yaml@main
   icon_fonts: github://landonr/homeThing/common/icon_fonts.yaml@main
   settings: github://landonr/homeThing/common/settings.yaml@main
@@ -58,12 +57,13 @@ packages:
   nowPlayingImage: github://landonr/homeThing/common/nowPlayingImage.yaml@main
 
   # ipod
+  battery: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_battery.yaml@main
   sleep: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_sleep.yaml@main
-  rotary: github://landonr/homeThing/common/ipod/rotary.yaml@main
+  rotary: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_rotary.yaml@main
 
   #tdisplay s3
   backlight: github://landonr/homeThing/common/tdisplay-s3/backlight.yaml@main #update_to_head_ref
-  binary_sensors: github://landonr/homeThing/common/tdisplay-s3/binary_sensor_pcf.yaml@main #update_to_head_ref
+  binary_sensors: github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml@main #update_to_head_ref
   # rotary_seesaaw: !include github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_rotary_seesaw.yaml@main
   # binary_sensor_seesaw: !include github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml@main
 
