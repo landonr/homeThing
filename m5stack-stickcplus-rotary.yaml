@@ -60,11 +60,12 @@ external_components: #include homething, and esphome-components
     ]
 
 packages: # maybe modify: include default ipod controls
+  # common
+  device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
   remote_package:
     url: https://github.com/landonr/homeThing
     ref: main
     files: [
-      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
