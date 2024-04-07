@@ -6,10 +6,7 @@ esphome:
     board_build.arduino.memory_type: qio_opi
   on_boot: 
     then:
-    - light.turn_on:
-        id: backlight
-        brightness: 10%
-    - delay: 0.2s
+    - delay: 0.5s
     - light.turn_on:
         id: backlight
         brightness: 100%
@@ -22,26 +19,11 @@ esp32:
     type: arduino
   flash_size: 16MB
 
-logger:
-
-api:
-
-ota:
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "S3 Fallback Hotspot"
-    password: "zQ9tuPKIfFMu"
-
 external_components:
   - source: github://landonr/lilygo-tdisplays3-esphome@v0.1
     components: [tdisplays3]
     refresh: 0s
-  - source: github://landonr/homeThing
+  - source: github://landonr/homeThing@main #update_to_head_ref
       # type: local
       # path: components
     refresh: 0s
@@ -62,26 +44,25 @@ external_components:
   - source: github://pr#4710 # for media player image
     components: [ online_image ]
   
-packages: # maybe modify: include default ipod controls
-  remote_package:
-    url: https://github.com/landonr/homeThing
-    ref: main # pr_replace
-    files: [
-      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
-      common/ipod/lilygo_tdisplay_ipod_battery.yaml, # used for battery percent
-      common/ipod/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml, # used for pcf button controls
-      common/ipod/lilygo_tdisplay_ipod_rotary.yaml, # used for pcf rotary controls
-      # common/ipod/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml, # used for seesaw button controls
-      # common/ipod/lilygo_tdisplay_ipod_rotary_seesaw.yaml, # used for seesaw rotary controls
-      common/ipod/lilygo_tdisplay_ipod_sleep.yaml, # required for device to sleep
-      common/tdisplay-s3/backlight.yaml, # backlight
-      common/fonts.yaml, # default font
-      common/icon_fonts.yaml, # material icons
-      common/settings.yaml, # settings screen
-      common/images.yaml, # boot screen image
-      common/nowPlayingImage.yaml, # now playing online image
-    ]
-    refresh: 0s
+packages: 
+  # common
+  device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
+  fonts: github://landonr/homeThing/common/fonts.yaml@main
+  icon_fonts: github://landonr/homeThing/common/icon_fonts.yaml@main
+  settings: github://landonr/homeThing/common/settings.yaml@main
+  images: github://landonr/homeThing/common/images.yaml@main
+  nowPlayingImage: github://landonr/homeThing/common/nowPlayingImage.yaml@main
+
+  # ipod
+  battery: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_battery.yaml@main
+  sleep: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_sleep.yaml@main
+  rotary: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_rotary.yaml@main
+
+  #tdisplay s3
+  backlight: github://landonr/homeThing/common/tdisplay-s3/backlight.yaml@main #update_to_head_ref
+  binary_sensors: github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml@main #update_to_head_ref
+  # rotary_seesaaw: !include github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_rotary_seesaw.yaml@main
+  # binary_sensor_seesaw: !include github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml@main
 
 substitutions:
   friendly_name: "homeThing S3"

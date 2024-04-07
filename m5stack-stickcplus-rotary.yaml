@@ -6,12 +6,17 @@ esp32:
   framework:
     type: arduino
 
-wifi: # setup wifi, make sure secrets.yaml exists!
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true
-  id: wifi_id
-  power_save_mode: HIGH
+# WiFi Configuration, uncomment and fill secrets.yaml with wifi_ssid and wifi_password to enable fast connect
+captive_portal:
+
+wifi:
+  # ssid: !secret wifi_ssid
+  # password: !secret wifi_password
+  # fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "homeThing Fallback Hotspot"
 
 external_components: #include homething, and esphome-components
   - source: github://landonr/homeThing
@@ -55,11 +60,12 @@ external_components: #include homething, and esphome-components
     ]
 
 packages: # maybe modify: include default ipod controls
+  # common
+  device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
   remote_package:
     url: https://github.com/landonr/homeThing
     ref: main
     files: [
-      common/device_base.yaml, # defines api, ota, free memory and uptime sensor
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen

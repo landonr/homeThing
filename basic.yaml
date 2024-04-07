@@ -6,15 +6,6 @@ api:
 esp32:
   board: featheresp32
 
-logger:
-  level: DEBUG
-
-wifi: # setup wifi, make sure secrets.yaml exists!
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true
-  id: wifi_id
-
 external_components:
   - source: github://landonr/homeThing
       # type: local
@@ -30,6 +21,10 @@ substitutions: # set friendly name
   friendly_name: "homething-basic"
 
 packages:
+  # common
+  device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
+
+  # fonts
   fonts_roboto: github://landonr/homeThing/common/fonts-roboto.yaml@main
   icon_fonts: github://landonr/homeThing/common/icon_fonts.yaml@main
 
