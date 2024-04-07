@@ -1,8 +1,0 @@
-external_components: #include homething, and esphome-components
-  - source: github://landonr/homeThing
-      # type: local
-      # path: components
-    refresh: 0s
-    components: [homeThingDisplayState, homeThing]
-  - source: github://pr#5254 # used to load fonts on compile
-    components: [ font ]
