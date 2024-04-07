@@ -265,19 +265,34 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
           display::TextAlign::TOP_CENTER, "wifi connecting...", 4,
           display_buffer_);
       break;
-    case BOOT_MENU_STATE_ACCESS_POINT:
-      yPos = display_state_->get_margin_size() + 
+#ifdef USE_CAPTIVE_PORTAL
+    case BOOT_MENU_STATE_ACCESS_POINT: {
+      yPos = display_state_->get_margin_size() +
+             display_state_->drawTextWrapped(
+                 xPos, yPos, display_state_->get_font_large(),
+                 display_state_->get_color_palette()->get_accent_primary(),
+                 display::TextAlign::TOP_CENTER, "WIFI Access Point", 2,
+                 display_buffer_);
+      if (wifi::global_wifi_component->has_ap()) {
+        wifi::WiFiAP ap = wifi::global_wifi_component->get_ap();
+        const std::string ssidText = ap.get_ssid();
         display_state_->drawTextWrapped(
-            xPos, yPos, display_state_->get_font_large_heavy(),
+            xPos, yPos, display_state_->get_font_medium(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, "Access Point", 2,
+            display::TextAlign::TOP_CENTER,
+            "Connect to " + ssidText + " to Setup", 4,
             display_buffer_);
-      display_state_->drawTextWrapped(
-          xPos, yPos, display_state_->get_font_medium(),
-          display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "Connect to homeThing Fallback Hotspot to Setup", 4,
-          display_buffer_);
+      } else {
+        display_state_->drawTextWrapped(
+            xPos, yPos, display_state_->get_font_medium(),
+            display_state_->get_color_palette()->get_accent_primary(),
+            display::TextAlign::TOP_CENTER,
+            "Not Available", 4,
+            display_buffer_);
+      }
       break;
+    }
+#endif
     case BOOT_MENU_STATE_START:
       maxAnimationDuration =
           drawBootSequenceTitleRainbow(xPos, yPos, activeMenuState);
@@ -333,11 +348,12 @@ BootMenuState HomeThingMenuBoot::get_boot_menu_state() {
   if (!api && draw_animation) {
     return BOOT_MENU_STATE_START;
   } else if (!wifi::global_wifi_component->is_connected()) {
-    #ifdef USE_CAPTIVE_PORTAL
-      if (captive_portal::global_captive_portal != nullptr && captive_portal::global_captive_portal->is_active()) {
-        return BOOT_MENU_STATE_ACCESS_POINT;
-      }
-    #endif
+#ifdef USE_CAPTIVE_PORTAL
+    if (captive_portal::global_captive_portal != nullptr &&
+        captive_portal::global_captive_portal->is_active()) {
+      return BOOT_MENU_STATE_ACCESS_POINT;
+    }
+#endif
     return BOOT_MENU_STATE_NETWORK;
   } else if (!api) {
     return BOOT_MENU_STATE_API;
