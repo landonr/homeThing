@@ -118,6 +118,8 @@ float HomeThingMenuBoot::bootSequenceLoadingProgress() {
       return 0;
     case BOOT_MENU_STATE_NETWORK:
       return 0.1;
+    case BOOT_MENU_STATE_ACCESS_POINT:
+      return 0.1;
     case BOOT_MENU_STATE_API:
       return 0.2;
     case BOOT_MENU_STATE_PLAYERS:
