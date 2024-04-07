@@ -280,14 +280,12 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
             xPos, yPos, display_state_->get_font_medium(),
             display_state_->get_color_palette()->get_accent_primary(),
             display::TextAlign::TOP_CENTER,
-            "Connect to " + ssidText + " to Setup", 4,
-            display_buffer_);
+            "Connect to " + ssidText + " to Setup", 4, display_buffer_);
       } else {
         display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_medium(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER,
-            "Not Available", 4,
+            display::TextAlign::TOP_CENTER, "Not Available", 4,
             display_buffer_);
       }
       break;
