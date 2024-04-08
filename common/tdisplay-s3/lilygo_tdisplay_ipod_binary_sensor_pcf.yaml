@@ -11,6 +11,7 @@ substitutions:
   sw3_pin: "4" # right
   sw4_pin: "7" # up
   sw5_pin: "6" # left
+  pcf_address: "0x20"
 
 binary_sensor:
   ## controls
@@ -171,5 +172,5 @@ i2c:
 
 pcf8574:
   - id: 'pcf8574_hub'
-    address: 0x20
+    address: $pcf_address
     pcf8575: false
