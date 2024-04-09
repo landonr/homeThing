@@ -159,6 +159,9 @@ void HomeThingMenuNowPlaying::drawNowPlaying(
 }
 
 bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
+  if (media_player_group_->active_player_ == nullptr) {
+    return true;
+  }
   int yPos = startYPos;
   int xPos = display_buffer_->get_width() / 2;
   if (media_player_group_->mediaTitleString().size() == 0) {
