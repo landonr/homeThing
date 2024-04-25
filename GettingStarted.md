@@ -1,7 +1,7 @@
 <h1 align = "center">homeThing: Getting Started 🌈</h1>
 
 <h2 align = "center">
-<a href="https://github.com/landonr/homeThing/blob/main/tdisplay-s3.yaml"See a Full Config for TDisplay S3 here 📦</a></h2>
+<a href="https://github.com/landonr/homeThing/blob/main/tdisplay-s3.yaml">See a Full Config for TDisplay S3 here 📦</a></h2>
 
 <h1 align="center"><a href="https://www.youtube.com/watch?v=LEmA9E3Gzkk">
 	Watch on YouTube!
