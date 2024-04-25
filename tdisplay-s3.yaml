@@ -23,7 +23,7 @@ external_components:
   - source: github://landonr/lilygo-tdisplays3-esphome@v0.1
     components: [tdisplays3]
     refresh: 0s
-  - source: github://landonr/homeThing@main #update_to_head_ref
+  - source: github://landonr/homeThing@main
       # type: local
       # path: components
     refresh: 0s
@@ -46,7 +46,7 @@ external_components:
   
 packages: 
   # common
-  device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
+  device_base: github://landonr/homeThing/common/device_base.yaml@main
   fonts: github://landonr/homeThing/common/fonts.yaml@main
   icon_fonts: github://landonr/homeThing/common/icon_fonts.yaml@main
   settings: github://landonr/homeThing/common/settings.yaml@main
@@ -59,8 +59,8 @@ packages:
   rotary: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_rotary.yaml@main
 
   #tdisplay s3
-  backlight: github://landonr/homeThing/common/tdisplay-s3/backlight.yaml@main #update_to_head_ref
-  binary_sensors: github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml@main #update_to_head_ref
+  backlight: github://landonr/homeThing/common/tdisplay-s3/backlight.yaml@main
+  binary_sensors: github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml@main
   # rotary_seesaaw: !include github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_rotary_seesaw.yaml@main
   # binary_sensor_seesaw: !include github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_seesaw.yaml@main
 

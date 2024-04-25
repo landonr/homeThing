@@ -51,7 +51,7 @@ external_components: #include homething, and esphome-components
 
 packages: # maybe modify: include default ipod controls
   # common
-  device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
+  device_base: github://landonr/homeThing/common/device_base.yaml@main
   # axp192: !include ../homeThing/common/m5stack-stickc/axp192-marty.yaml # power management and screen backlight
   remote_package:
     url: https://github.com/landonr/homeThing
