@@ -30,6 +30,9 @@ int HomeThingMenuHeader::drawHeaderIcon(std::string title, int xPos,
 
 void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
                                           const MenuStates activeMenuState) {
+  if ((*active_menu_screen_) == nullptr) {
+    return;
+  }
   int xPos = 2;
   switch (activeMenuState) {
     case rootMenu: {
