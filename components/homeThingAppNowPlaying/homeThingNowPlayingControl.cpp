@@ -32,16 +32,17 @@ void HomeThingMenuNowPlayingControl::rootMenuTitles(
     }
     menu_titles->push_back(new homething_menu_base::MenuTitleBase(
         title, "", homething_menu_base::ArrowMenuTitleRightIcon));
-    menu_titles->push_back(new homething_menu_base::MenuTitleBase(
-        get_menu_title(NOW_PLAYING_MENU_STATE_SOURCE), "",
-        homething_menu_base::ArrowMenuTitleRightIcon));
-    if (media_player_group_->totalPlayers() > 1) {
+    if (draw_source()) {
+      menu_titles->push_back(new homething_menu_base::MenuTitleBase(
+          get_menu_title(NOW_PLAYING_MENU_STATE_SOURCE), "",
+          homething_menu_base::ArrowMenuTitleRightIcon));
+    }
+    if (draw_media_players()) {
       menu_titles->push_back(new homething_menu_base::MenuTitleBase(
           get_menu_title(NOW_PLAYING_MENU_STATE_MEDIA_PLAYERS), "",
           homething_menu_base::ArrowMenuTitleRightIcon));
     }
-    if (media_player_group_->active_player_ != nullptr &&
-        media_player_group_->active_player_->get_group_members()->size() > 0) {
+    if (draw_grouping()) {
       menu_titles->push_back(new homething_menu_base::MenuTitleBase(
           get_menu_title(NOW_PLAYING_MENU_STATE_GROUPING), "",
           homething_menu_base::ArrowMenuTitleRightIcon));
@@ -56,9 +57,11 @@ void HomeThingMenuNowPlayingControl::app_menu_titles(
   if (media_player_group_ != nullptr) {
     switch (menu_state_) {
       case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
-        homeThingNowPlayingMenuSources::bottomMenuTitles(
-            media_player_group_->get_active_player(),
-            circle_menu_->get_bottom_menu(), menu_titles);
+        if (media_player_group_->get_active_player() != nullptr) {
+          homeThingNowPlayingMenuSources::bottomMenuTitles(
+              media_player_group_->get_active_player(),
+              circle_menu_->get_bottom_menu(), menu_titles);
+        }
         return;
       case NOW_PLAYING_MENU_STATE_GROUPING:
         homeThingNowPlayingMenuGroup::active_menu(menu_titles,
@@ -103,14 +106,9 @@ HomeThingMenuNowPlayingControl::app_menu_select(int index) {
 
 int HomeThingMenuNowPlayingControl::root_menu_size() {
   if (media_player_group_ != nullptr) {
-    bool show_source =
-        media_player_group_->active_player_ != nullptr &&
-        media_player_group_->active_player_->get_sources() != nullptr &&
-        media_player_group_->active_player_->get_sources()->size() > 0;
-    bool show_media_players = media_player_group_->totalPlayers() > 1;
-    bool show_grouping =
-        media_player_group_->active_player_ != nullptr &&
-        media_player_group_->active_player_->get_group_members()->size() > 0;
+    bool show_source = draw_source();
+    bool show_media_players = draw_media_players();
+    bool show_grouping = draw_grouping();
     return 1 + show_source + show_media_players + show_grouping;
   }
   return 0;
@@ -295,6 +293,10 @@ homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::rotaryScrollClockwise(int rotary) {
   switch (menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      }
       if (circle_menu_->get_bottom_menu())
         return homething_menu_app::NavigationCoordination::
             NavigationCoordinationNone;
@@ -312,6 +314,10 @@ homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::rotaryScrollCounterClockwise(int rotary) {
   switch (menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      }
       if (circle_menu_->get_bottom_menu())
         return homething_menu_app::NavigationCoordination::
             NavigationCoordinationNone;
@@ -330,6 +336,10 @@ homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressUp() {
   switch (menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING: {
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationPop;
+      }
       switch (button_press_now_playing_option(CircleOptionMenuPosition::TOP)) {
         case homething_menu_app::NavigationCoordination::
             NavigationCoordinationUpdate:
@@ -374,6 +384,16 @@ HomeThingMenuNowPlayingControl::buttonPressUp() {
 
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressDown() {
+  switch (menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      }
+      break;
+    default:
+      break;
+  }
   switch (button_press_now_playing_option(CircleOptionMenuPosition::BOTTOM)) {
     case homething_menu_app::NavigationCoordination::
         NavigationCoordinationUpdate:
@@ -402,6 +422,16 @@ HomeThingMenuNowPlayingControl::buttonPressDown() {
 
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressLeft() {
+  switch (menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      }
+      break;
+    default:
+      break;
+  }
   switch (button_press_now_playing_option(CircleOptionMenuPosition::LEFT)) {
     case homething_menu_app::NavigationCoordination::
         NavigationCoordinationUpdate:
@@ -430,6 +460,16 @@ HomeThingMenuNowPlayingControl::buttonPressLeft() {
 
 homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressRight() {
+  switch (menu_state_) {
+    case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      }
+      break;
+    default:
+      break;
+  }
   switch (button_press_now_playing_option(CircleOptionMenuPosition::RIGHT)) {
     case homething_menu_app::NavigationCoordination::
         NavigationCoordinationUpdate:
@@ -460,6 +500,10 @@ homething_menu_app::NavigationCoordination
 HomeThingMenuNowPlayingControl::buttonPressSelect(int menuIndex) {
   switch (menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
+      if (media_player_group_->active_player_ == nullptr) {
+        return homething_menu_app::NavigationCoordination::
+            NavigationCoordinationNone;
+      }
       if (circle_menu_->get_bottom_menu()) {
         return selectNowPlayingBottomMenu(menuIndex);
       }

@@ -294,7 +294,9 @@ bool HomeThingMenuBase::selectRootMenu() {
   for (auto& menu_app : menu_apps_) {
     int appMenuSize = menu_app->root_menu_size();
     if (menuIndex < (offset + appMenuSize)) {
-      ESP_LOGI(TAG, "selectRootMenu: app %d offset %d", menuIndex, offset);
+      ESP_LOGI(TAG,
+               "selectRootMenu: app - index: %d offset %d app menu size %d",
+               menuIndex, offset, appMenuSize);
       menuTree.push_back(appMenu);
       active_app_ = menu_app;
       active_app_->set_app_menu_index(menuIndex - offset);

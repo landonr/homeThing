@@ -1,5 +1,5 @@
 substitutions:
-  launch_image_file: "https://raw.githubusercontent.com/landonr/homeThing/main/docs/homeThingLogo.svg"
+  launch_image_file: "https://github.com/landonr/homeThing/raw/main/docs/homeThingLogoWhite.svg"
   launch_image_size: "48x48"
   launch_image_type: "TRANSPARENT_BINARY"
 

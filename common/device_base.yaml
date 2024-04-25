@@ -9,14 +9,17 @@ logger:
 captive_portal:
 
 wifi:
+  # update when flashing device
+
   # ssid: !secret wifi_ssid
   # password: !secret wifi_password
   # fast_connect: true
 
+  # For out of box experience
+
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "homeThing Fallback Hotspot"
-
 
 ota:
 

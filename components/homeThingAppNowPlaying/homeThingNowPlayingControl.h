@@ -121,6 +121,23 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
       CircleOptionMenuPosition position);
   bool animating_ = false;
   bool draw_bottom_menu_ = false;
+
+  // menu
+  bool draw_source() {
+    return media_player_group_->active_player_ != nullptr &&
+           media_player_group_->active_player_->get_sources() != nullptr &&
+           media_player_group_->active_player_->get_sources()->size() > 0;
+  }
+
+  bool draw_media_players() {
+    return media_player_group_->get_media_players() != nullptr &&
+           media_player_group_->totalPlayers() > 1;
+  }
+
+  bool draw_grouping() {
+    return media_player_group_->active_player_ != nullptr &&
+           media_player_group_->active_player_->get_group_members()->size() > 0;
+  }
 };
 }  // namespace homething_menu_now_playing
 }  // namespace esphome
