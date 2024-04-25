@@ -5,9 +5,8 @@ logger:
   level: ${log_level}
 
 wifi:
-  # ssid: !secret wifi_ssid
-  # password: !secret wifi_password
-  # fast_connect: true
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
 ota:
 
