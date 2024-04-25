@@ -1,0 +1,34 @@
+substitutions:
+  log_level: "INFO"
+
+logger:
+  level: ${log_level}
+
+wifi:
+  # ssid: !secret wifi_ssid
+  # password: !secret wifi_password
+  # fast_connect: true
+
+ota:
+
+api:
+  id: homeassistant_api_id
+  services:
+    - service: goto_screen
+      variables:
+        screen_name: string
+      then:
+      - lambda: |-
+          id(homeThingMenu)->goToScreenFromString(screen_name);
+
+time:
+  - platform: homeassistant
+    id: esptime
+    on_time_sync:
+      then:
+        component.update: my_display
+
+binary_sensor:
+  - platform: status
+    id: api_connected
+    internal: true
