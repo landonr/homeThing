@@ -39,6 +39,8 @@ external_components:
 packages: # maybe modify: include default ipod controls
   # common
   device_base: github://landonr/homeThing/common/device_base.yaml@main #update_to_head_ref
+  
+  # needs to be updated to above format
   remote_package:
     url: https://github.com/landonr/homeThing
     ref: main
