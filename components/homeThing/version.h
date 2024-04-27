@@ -4,8 +4,8 @@
 
 namespace esphome {
 namespace homething_menu_base {
-static const std::string COMPONENTS_HOMETHING_VERSION =
-    "improv-wifi/2024-04-06";
+static const std::string COMPONENTS_HOMETHING_VERSION = "main/2024-04-27";
 }
 }  // namespace esphome
 #endif  // COMPONENTS_HOMETHING_VERSION_H_
+

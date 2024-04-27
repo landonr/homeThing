@@ -97,9 +97,9 @@ class HomeThingMenuBase : public PollingComponent {
   bool buttonPressUnlock();
 
   void addNotification(const std::string& title, const std::string& subtitle,
-                       const std::string& text, bool autoClear);
+                       const std::string& message, bool persistent);
 
-  bool clearNotifications();
+  void clearNotifications();
 
   // create service for this with input select options
   void goToScreenFromString(std::string screenName);
@@ -124,7 +124,11 @@ class HomeThingMenuBase : public PollingComponent {
         ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
                  menuTree.front());
         animation_->resetAnimation();
-        return !clearNotifications();
+        if (notifications_ != nullptr && notifications_->notificationCount() > 0) {
+          // clear notifications and redraw
+          clearNotifications();
+          return false;
+        }
       }
     } else {
       return false;

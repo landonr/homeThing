@@ -11,8 +11,8 @@ namespace homething_menu_base {
 struct Notification {
   std::string title;
   std::string subtitle;
-  std::string text;
-  bool autoClear;
+  std::string message;
+  bool persistent;
   int time_added_seconds;
 };
 
@@ -26,8 +26,9 @@ class HomeThingMenuNotifications {
   void drawNotifications();
   int drawNotification(const Notification notification, int yPos);
   void addNotification(const std::string& title, const std::string& subtitle,
-                       const std::string& text, bool autoClear);
-  bool clearNotifications();
+                       const std::string& message, bool persistent);
+  void clearNotifications();
+  int notificationCount() { return notifications_.size(); }
   // Add any other necessary functions or members here
 
  private:
