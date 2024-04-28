@@ -124,5 +124,35 @@ class ServiceCalledTrigger : public Trigger<> {
     parent->add_on_command_callback([this, parent]() { trigger(); });
   }
 };
+
+template <typename... Ts>
+class AddNotificationAction : public Action<Ts...> {
+ public:
+  explicit AddNotificationAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  TEMPLATABLE_VALUE(std::string, title)
+  TEMPLATABLE_VALUE(std::string, subtitle)
+  TEMPLATABLE_VALUE(std::string, message)
+  TEMPLATABLE_VALUE(bool, persistent)
+
+  void play(Ts... x) override {
+    this->menu_->addNotification(title_.value(x...), subtitle_.value(x...),
+                                 message_.value(x...), persistent_.value(x...));
+  }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
+
+template <typename... Ts>
+class ClearNotificationsAction : public Action<Ts...> {
+ public:
+  explicit ClearNotificationsAction(HomeThingMenuBase* menu) : menu_(menu) {}
+
+  void play(Ts... x) override { this->menu_->clearNotifications(); }
+
+ protected:
+  HomeThingMenuBase* menu_;
+};
 }  // namespace homething_menu_base
 }  // namespace esphome

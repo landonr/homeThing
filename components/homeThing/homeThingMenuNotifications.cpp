@@ -13,7 +13,7 @@ void HomeThingMenuNotifications::drawNotifications() {
 
     it->time_added_seconds++;  // Increment time_added for each drawn frame
 
-    if (it->autoClear && it->time_added_seconds > MAX_NOTIFICATION_TIME) {
+    if (!it->persistent && it->time_added_seconds > MAX_NOTIFICATION_TIME) {
       it = notifications_.erase(
           it);  // Remove notification if time exceeds limit
     } else {
@@ -77,11 +77,11 @@ int HomeThingMenuNotifications::drawNotification(
         notification.subtitle, maxLines, display_buffer_);
   }
 
-  if (!notification.text.empty()) {
+  if (!notification.message.empty()) {
     display_state_->drawTextWrapped(
         textXPos, textYPos, display_state_->get_font_small(),
         display_state_->primaryTextColor(), display::TextAlign::LEFT,
-        notification.text, maxLines, display_buffer_);
+        notification.message, maxLines, display_buffer_);
   }
 
   return yPos + rectHeight;
@@ -89,26 +89,25 @@ int HomeThingMenuNotifications::drawNotification(
 
 void HomeThingMenuNotifications::addNotification(const std::string& title,
                                                  const std::string& subtitle,
-                                                 const std::string& text,
-                                                 bool autoClear) {
+                                                 const std::string& message,
+                                                 bool persistent) {
 
-  Notification newNotification = {title, subtitle, text, autoClear, 0};
+  Notification newNotification = {title, subtitle, message, persistent, 0};
   notifications_.erase(
       std::remove_if(notifications_.begin(), notifications_.end(),
                      [](const Notification& notification) {
-                       return notification.autoClear;
+                       return !notification.persistent;
                      }),
       notifications_.end());
 
   notifications_.push_back(newNotification);
 }
 
-bool HomeThingMenuNotifications::clearNotifications() {
+void HomeThingMenuNotifications::clearNotifications() {
   if (notifications_.empty()) {
-    return false;
+    return;
   }
   notifications_.clear();
-  return true;
 }
 
 }  // namespace homething_menu_base

@@ -438,10 +438,10 @@ bool HomeThingMenuBase::skipBootPressed() {
 
 void HomeThingMenuBase::addNotification(const std::string& title,
                                         const std::string& subtitle,
-                                        const std::string& text,
-                                        bool autoClear) {
+                                        const std::string& message,
+                                        bool persistent) {
   if (notifications_) {
-    notifications_->addNotification(title, subtitle, text, autoClear);
+    notifications_->addNotification(title, subtitle, message, persistent);
     ESP_LOGD(TAG, "addNotification: add notification %s", title.c_str());
   } else {
     ESP_LOGD(TAG, "addNotification: no notifications");
@@ -451,11 +451,10 @@ void HomeThingMenuBase::addNotification(const std::string& title,
   }
 }
 
-bool HomeThingMenuBase::clearNotifications() {
+void HomeThingMenuBase::clearNotifications() {
   if (notifications_) {
-    return notifications_->clearNotifications();
+    notifications_->clearNotifications();
   }
-  return false;
 }
 
 bool HomeThingMenuBase::buttonPressWakeUpDisplay() {
