@@ -233,25 +233,26 @@ voice_assistant:
   microphone: external_mic
   on_start:
     then:
-      lambda: |-
-        id(homeThingMenu)->clearNotifications();
-        id(homeThingMenu)->addNotification("Voice Assistant", "Listening", "", true);
-        return;
+      - homething_menu.clear_notifications: homeThingMenu
+      - homething_menu.add_notification:
+          title: "Voice Assistant"
+          subtitle: "Listening"
   on_error:
     then:
-      lambda: |-
-        id(homeThingMenu)->addNotification("Voice Assistant", "Error", message, false);
-        return;
+      - homething_menu.add_notification: 
+          title: "Voice Assistant"
+          subtitle: "Error"
+          message:  |-
+            return x;
+          persistent: true
   on_stt_end:
     then:
-      lambda: |-
-        id(homeThingMenu)->addNotification("Voice Assistant", "Understood", x, false);
-        return;
-  on_tts_start:
-    then:
-      lambda: |-
-        id(homeThingMenu)->addNotification("Voice Assistant", "Finished", x, true);
-        return;
+      - homething_menu.add_notification: 
+          title: "Voice Assistant"
+          subtitle: "Understood"
+          message: |-
+            return x;
+          persistent: true
 
 ### Weather App
 

@@ -88,8 +88,8 @@ ADD_NOTIFICATION_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.use_id(HomeThingMenuBase),
         cv.Required(CONF_TITLE): cv.templatable(cv.string),
-        cv.Required(CONF_SUBTITLE): cv.templatable(cv.string),
-        cv.Optional(CONF_MESSAGE, default="123"): cv.templatable(cv.string),
+        cv.Optional(CONF_SUBTITLE, default=""): cv.templatable(cv.string),
+        cv.Optional(CONF_MESSAGE, default=""): cv.templatable(cv.string),
         cv.Optional(CONF_PERSISTENT, default=False): cv.boolean,
     }
 )

@@ -19,22 +19,30 @@ voice_assistant:
   microphone: external_mic
   on_start:
     then:
-      lambda: |-
-        id(homeThingMenu)->clearNotifications();
-        id(homeThingMenu)->addNotification("Voice Assistant", "Listening", "", true);
-        return;
+      - homething_menu.clear_notifications: homeThingMenu
+      - homething_menu.add_notification: homeThingMenu
+          title: "Voice Assistant"
+          message: "Listening"
+          icon: ""
+          persistent: false
   on_error:
     then:
-      lambda: |-
-        id(homeThingMenu)->addNotification("Voice Assistant", "Error", message, false);
-        return;
+      - homething_menu.add_notification: homeThingMenu
+          title: "Voice Assistant"
+          subtitle: "Error"
+          message: x
+          persistent: true
   on_stt_end:
     then:
-      lambda: |-
-        id(homeThingMenu)->addNotification("Voice Assistant", "Understood", x, false);
-        return;
+      - homething_menu.add_notification: homeThingMenu
+          title: "Voice Assistant"
+          subtitle: "Understood"
+          message: x
+          persistent: true
   on_tts_start:
     then:
-      lambda: |-
-        id(homeThingMenu)->addNotification("Voice Assistant", "Finished", x, true);
-        return;
+      - homething_menu.add_notification: homeThingMenu
+          title: "Voice Assistant"
+          subtitle: "Speaking"
+          message: x
+          persistent: false
