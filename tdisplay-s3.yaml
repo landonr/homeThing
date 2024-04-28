@@ -23,9 +23,10 @@ external_components:
   - source: github://landonr/lilygo-tdisplays3-esphome@v0.1
     components: [tdisplays3]
     refresh: 0s
-  - source: github://landonr/homeThing@main
-      # type: local
-      # path: components
+  - source: github://landonr/homeThing@main@main #update_to_head_ref
+  # - source:      
+  #     type: local
+  #     path: components
     refresh: 0s
     components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying, homeThingAppSnake, homeThingAppCatToy, homeThingAppBreakout, homeThingAppWeather]
   - source:
