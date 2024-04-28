@@ -124,7 +124,8 @@ class HomeThingMenuBase : public PollingComponent {
         ESP_LOGD(TAG, "button_press_and_continue: reset animation %d",
                  menuTree.front());
         animation_->resetAnimation();
-        if (notifications_ != nullptr && notifications_->notificationCount() > 0) {
+        if (notifications_ != nullptr &&
+            notifications_->notificationCount() > 0) {
           // clear notifications and redraw
           clearNotifications();
           return false;

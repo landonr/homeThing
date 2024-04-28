@@ -8,4 +8,3 @@ static const std::string COMPONENTS_HOMETHING_VERSION = "main/2024-04-27";
 }
 }  // namespace esphome
 #endif  // COMPONENTS_HOMETHING_VERSION_H_
-

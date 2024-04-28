@@ -135,7 +135,10 @@ class AddNotificationAction : public Action<Ts...> {
   TEMPLATABLE_VALUE(std::string, message)
   TEMPLATABLE_VALUE(bool, persistent)
 
-  void play(Ts... x) override { this->menu_->addNotification(title_.value(x...), subtitle_.value(x...), message_.value(x...), persistent_.value(x...)); }
+  void play(Ts... x) override {
+    this->menu_->addNotification(title_.value(x...), subtitle_.value(x...),
+                                 message_.value(x...), persistent_.value(x...));
+  }
 
  protected:
   HomeThingMenuBase* menu_;
