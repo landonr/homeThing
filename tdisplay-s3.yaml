@@ -81,13 +81,26 @@ substitutions:
 
 light: # home assistant lights
   - platform: homeassistant_component
-    id: light_desk_lamp
-    entity_id: light.desk_lamp
-    name: Desk Lamp
-  - platform: homeassistant_component
     id: light_all_lights
     entity_id: light.all_lights
     name: All Lights
+
+    # plugged into Stemma QT port
+  - platform: esp32_rmt_led_strip
+    chipset: WS2812
+    rgb_order: RGB
+    pin: GPIO43
+    num_leds: 42
+    rmt_channel: 2
+    name: "${friendly_name} Strip Light"
+    restore_mode: RESTORE_DEFAULT_OFF
+    id: strip_light
+    default_transition_length: 0s
+    effects:
+      - addressable_rainbow:
+          name: Rainbow Effect
+          speed: 10
+          width: 50
 
 ### Media Players
 
@@ -324,6 +337,10 @@ homeThing:
   home_screen:
     name: homeThing
     entities:
+      - type: cover
+        id: cover_megadesk
+      - type: number
+        id: desk_height_number
       - type: command
         name: "feed lil freak"
         command:
@@ -332,28 +349,6 @@ homeThing:
               data:
                 entity_id: "button.catfeeder_node_feed_single"
   screens:
-    - name: Desk Screen
-      entities:
-        - type: cover
-          id: cover_megadesk
-        - type: number
-          id: desk_height_number
-        - type: command
-          name: "desk nudge up"
-          command:
-            - homeassistant.service:
-                service: button.press
-                data:
-                  entity_id: "button.desk_position_nudge_up"
-        - type: command
-          name: "desk nudge down"
-          command:
-            - homeassistant.service:
-                service: button.press
-                data:
-                  entity_id: "button.desk_position_nudge_down"
-        - id: light_desk_lamp
-          type: light
     - name: Lights Screen
       entities:
         - id: light_all_lights
