@@ -228,7 +228,9 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
                                              const MenuStates activeMenuState) {
   int yPos = imageYPos + display_state_->get_margin_size();
 #ifdef USE_IMAGE
-  yPos += get_launch_image()->get_height();
+  if (get_launch_image() != NULL) {
+    yPos += get_launch_image()->get_height();
+  }
 #endif
   int maxAnimationDuration = 0;
   switch (get_boot_menu_state()) {
