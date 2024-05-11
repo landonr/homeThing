@@ -31,3 +31,6 @@ switch:
   - platform: restart
     id: restart_switch
     name: "${friendly_name} Restart"
+  - platform: factory_reset
+    id: reset_switch
+    name: "${friendly_name} Factory Reset"
