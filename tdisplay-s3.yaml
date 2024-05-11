@@ -53,6 +53,7 @@ packages:
   settings: github://landonr/homeThing/common/settings.yaml@main
   images: github://landonr/homeThing/common/images.yaml@main
   nowPlayingImage: github://landonr/homeThing/common/nowPlayingImage.yaml@main
+  voice_assistant: github://landonr/homeThing/common/voice_assistant.yaml@main
 
   # ipod
   battery: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_battery.yaml@main
@@ -227,46 +228,6 @@ text_sensor:
     entity_id: "sensor.weather_condition"
     name: "Weather state"
     id: weather_state
-
-### Voice Assistant
-
-i2s_audio:
-  i2s_lrclk_pin: 3 # WS
-  i2s_bclk_pin: 2 # SCK
-
-microphone:
-  - platform: i2s_audio
-    id: external_mic
-    i2s_din_pin: 1 # SD
-    adc_type: external
-    pdm: false
-    # bits_per_sample: 32bit
-    channel: left
-
-voice_assistant:
-  microphone: external_mic
-  on_start:
-    then:
-      - homething_menu.clear_notifications: homeThingMenu
-      - homething_menu.add_notification:
-          title: "Voice Assistant"
-          subtitle: "Listening"
-  on_error:
-    then:
-      - homething_menu.add_notification: 
-          title: "Voice Assistant"
-          subtitle: "Error"
-          message:  |-
-            return x;
-          persistent: true
-  on_stt_end:
-    then:
-      - homething_menu.add_notification: 
-          title: "Voice Assistant"
-          subtitle: "Understood"
-          message: |-
-            return x;
-          persistent: true
 
 ### Weather App
 

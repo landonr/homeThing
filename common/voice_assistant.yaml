@@ -20,22 +20,18 @@ voice_assistant:
   on_start:
     then:
       - homething_menu.clear_notifications: homeThingMenu
-      - homething_menu.add_notification:
-          title: "Voice Assistant"
-          subtitle: "Listening"
+      - lambda: |-
+          id(homeThingMenu)->addNotification("Voice Assistant", "Listening", "", true);
   on_error:
     then:
-      - homething_menu.add_notification: 
-          title: "Voice Assistant"
-          subtitle: "Error"
-          message:  |-
-            return x;
-          persistent: true
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Error", message, false);
   on_stt_end:
     then:
-      - homething_menu.add_notification: 
-          title: "Voice Assistant"
-          subtitle: "Understood"
-          message: |-
-            return x;
-          persistent: true
+      lambda: |-
+        id(homeThingMenu)->addNotification("Voice Assistant", "Understood", x, false);
+  on_tts_start:
+    then:
+      lambda: |-
+        if (x.compare("Started") == 0) return;
+        id(homeThingMenu)->addNotification("Voice Assistant", "", x, true);
