@@ -342,7 +342,7 @@ homeThing:
       - type: number
         id: desk_height_number
       - type: command
-        name: "feed lil freak"
+        name: "Feed cat"
         command:
           - homeassistant.service:
               service: button.press
@@ -354,12 +354,12 @@ homeThing:
         - id: light_all_lights
           type: light
         - type: command
-          name: "color lights"
+          name: "Color scene"
           command:
             - homeassistant.service:
                 service: script.colors
         - type: command
-          name: "lights off"
+          name: "Lights off"
           command:
             - homeassistant.service:
                 service: script.off_script
@@ -368,7 +368,7 @@ homeThing:
       entities:
         - id: backlight
           type: light
-        - id: "restart_switch"
+        - id: restart_switch
           type: switch
         - id: wifi_ssid
           type: text_sensor
@@ -376,6 +376,8 @@ homeThing:
           type: sensor
         - id: wifi_ip
           type: text_sensor
+        - id: reset_switch
+          type: switch
 
 display:
   - platform: tdisplays3

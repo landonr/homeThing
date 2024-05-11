@@ -223,6 +223,8 @@ homeThing:
           type: sensor
         - id: wifi_ip
           type: text_sensor
+        - id: reset_switch
+          type: switch
 
 display:
   - platform: st7789v
