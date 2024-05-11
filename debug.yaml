@@ -214,6 +214,8 @@ homeThing:
           type: sensor
         - id: wifi_ip
           type: text_sensor
+        - id: reset_switch
+          type: switch
 
 spi:
   clk_pin: 18
