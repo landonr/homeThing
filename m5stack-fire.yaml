@@ -20,11 +20,12 @@ external_components:
       type: git
       url: https://github.com/ssieb/custom_components
     components: [ ip5306 ]
-  - source: github://landonr/homeThing
-      # type: local
-      # path: components
+  # - source: github://landonr/homeThing
+  - source:
+      type: local
+      path: components
     refresh: 0s
-    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppNowPlaying]
+    components: [homeThingDisplayState, homeThing, homeThingApp, homeThingAppImage, homeThingAppNowPlaying]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -132,6 +133,12 @@ homeThingAppNowPlaying:
   display: my_display
   display_state: display_state_id
 
+homeThingAppImage:
+  id: image_app
+  camera_image: launch_image
+  display: my_display
+  display_state: display_state_id
+
 homeThingDisplayState:
   id: display_state_id
   colors:
@@ -153,6 +160,7 @@ homeThing:
   display_state: display_state_id
   apps:
     - now_playing
+    - image_app
   screens:
     - name: Desk Screen
       entities:
