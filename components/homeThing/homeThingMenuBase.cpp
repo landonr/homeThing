@@ -120,10 +120,10 @@ void HomeThingMenuBase::draw_menu_screen() {
 #endif
   if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
                                       nullptr, editing_menu_item)) {
-    this->animation_->tickAnimation();
-    this->animation_->animating = true;
-  } else {
-    this->animation_->animating = false;
+    if (idleTime > 0) {
+      this->animation_->animating = true;
+      this->animation_->tickAnimation();
+    }
   }
   if (device_locked_ && idleTime < 3) {
     menu_display_->draw_lock_screen(unlock_presses_);
@@ -653,8 +653,8 @@ bool HomeThingMenuBase::scrollEdit(HomeThingMenuScreen* menu_screen,
       debounceUpdateDisplay();
       return true;
     } else if (!forwards && HomeThingMenuControls::editingScrollBack(
-                   menu_screen->get_selected_entity(), menuIndex,
-                   editing_menu_item)) {
+                                menu_screen->get_selected_entity(), menuIndex,
+                                editing_menu_item)) {
       reload_menu_items_ = true;
       debounceUpdateDisplay();
       return true;
@@ -686,6 +686,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise() {
         return;
     }
   }
+  animation_->resetAnimation();
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
@@ -780,6 +781,7 @@ void HomeThingMenuBase::rotaryScrollClockwise() {
   if (!button_press_and_continue())
     return;
   rotary_ += 1;
+  animation_->resetAnimation();
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:

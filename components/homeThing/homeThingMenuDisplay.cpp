@@ -37,7 +37,7 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
       const int animationTick =
           static_cast<int>(animation_->animationTick->state) % title.length();
       marqueePositionMaxed = animationTick;
-      if (marqueePositionMaxed < 0) {
+      if (marqueePositionMaxed < 0 || this->animation_->animating == false) {
         marqueePositionMaxed = 0;
       }
       // animation_->marqueeTick(title.length());
@@ -108,7 +108,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
     if (i == menuIndex && editing_menu_item) {
       titleName = "*" + titleName;
     }
-    ESP_LOGI(TAG, "draw_menu_titles: %s, type %d", titleName.c_str(), (*menuTitles)[i]->titleType);
+    ESP_LOGD(TAG, "draw_menu_titles: %s, type %d", titleName.c_str(),
+             (*menuTitles)[i]->titleType);
     switch ((*menuTitles)[i]->titleType) {
       case BaseMenuTitleType:
         animating =
@@ -126,7 +127,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         auto lightTitle = static_cast<MenuTitleLight*>((*menuTitles)[i]);
         if (lightTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
-                                      lightTitle->indentLine()) || animating;
+                                      lightTitle->indentLine()) ||
+                      animating;
           drawLeftTitleIcon(menuTitlesSize, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
@@ -138,7 +140,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         auto toggleTitle = static_cast<MenuTitleToggle*>((*menuTitles)[i]);
         if (toggleTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
-                                      toggleTitle->indentLine()) || animating;
+                                      toggleTitle->indentLine()) ||
+                      animating;
           drawLeftTitleIcon(menuTitlesSize, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
@@ -163,7 +166,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         auto playerTitle = static_cast<MenuTitlePlayer*>((*menuTitles)[i]);
         if (playerTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
-                          playerTitle->indentLine()) || animating;
+                                      playerTitle->indentLine()) ||
+                      animating;
           int length = playerTitle->get_name().length() +
                        (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->media_player_->playerState,
