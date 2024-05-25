@@ -120,7 +120,7 @@ void HomeThingMenuBase::draw_menu_screen() {
 #endif
   if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
                                       nullptr, editing_menu_item)) {
-    if (idleTime > 0) {
+    if (idleTime > 0 || menuTree.back() == bootMenu) {
       this->animation_->animating = true;
       this->animation_->tickAnimation();
     }
@@ -781,7 +781,7 @@ void HomeThingMenuBase::rotaryScrollClockwise() {
   if (!button_press_and_continue())
     return;
   rotary_ += 1;
-  animation_->resetAnimation();
+  animation_->resetAnimation();     
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
