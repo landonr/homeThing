@@ -40,7 +40,7 @@ void HomeThingMenuHeader::drawHeaderTitle(int yPosOffset,
       drawHeaderTitleWithString(screenName, xPos);
       break;
     }
-    case settingsMenu:
+    case customMenu:
       drawHeaderTitleWithString("Settings", xPos);
       break;
     case appMenu:

@@ -4,7 +4,7 @@ sensor:
 ## Battery
   - platform: adc
     pin: $battery_pin
-    attenuation: 11db
+    attenuation: 12db
     name: "vccadc"
     update_interval: 500ms
     id: vcc_adc

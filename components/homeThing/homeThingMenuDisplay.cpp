@@ -93,7 +93,6 @@ bool HomeThingMenuDisplay::draw_menu_titles(
     scaledMenuIndex += (*menuTitles)[i]->rowHeight - 1;
   }
   scrollMenuPosition(scaledMenuIndex);
-  ESP_LOGI(TAG, "draw_menu_titles: %d %d", menuIndex, scaledMenuIndex);
   int menuState = menuIndex;
   auto activeMenuTitle = (*menuTitles)[menuIndex];
   int yPos = display_state_->get_header_height();
@@ -109,7 +108,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
     if (i == menuIndex && editing_menu_item) {
       titleName = "*" + titleName;
     }
-    ESP_LOGD(TAG, "draw_menu_titles: %s", titleName.c_str());
+    ESP_LOGI(TAG, "draw_menu_titles: %s, type %d", titleName.c_str(), (*menuTitles)[i]->titleType);
     switch ((*menuTitles)[i]->titleType) {
       case BaseMenuTitleType:
         animating =
@@ -127,7 +126,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         auto lightTitle = static_cast<MenuTitleLight*>((*menuTitles)[i]);
         if (lightTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
-                                      lightTitle->indentLine());
+                                      lightTitle->indentLine()) || animating;
           drawLeftTitleIcon(menuTitlesSize, lightTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
@@ -139,7 +138,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         auto toggleTitle = static_cast<MenuTitleToggle*>((*menuTitles)[i]);
         if (toggleTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
-                                      toggleTitle->indentLine());
+                                      toggleTitle->indentLine()) || animating;
           drawLeftTitleIcon(menuTitlesSize, toggleTitle, i, menuState, yPos);
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
@@ -163,8 +162,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 #ifdef USE_NOW_PLAYING
         auto playerTitle = static_cast<MenuTitlePlayer*>((*menuTitles)[i]);
         if (playerTitle != NULL) {
-          draw_menu_title(menuState, i, titleName, yPos,
-                          playerTitle->indentLine());
+          animating = draw_menu_title(menuState, i, titleName, yPos,
+                          playerTitle->indentLine()) || animating;
           int length = playerTitle->get_name().length() +
                        (playerTitle->indentLine() ? 2 : 0);
           drawTitleImage(length, yPos, playerTitle->media_player_->playerState,
