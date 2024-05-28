@@ -781,7 +781,7 @@ void HomeThingMenuBase::rotaryScrollClockwise() {
   if (!button_press_and_continue())
     return;
   rotary_ += 1;
-  animation_->resetAnimation();     
+  animation_->resetAnimation();
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
