@@ -2,7 +2,7 @@
 
 This README provides an overview of the configuration options for the `HomeThingMenuBase` custom component in ESPHome. This setup example configures a device using the LilyGo T-Display S3 with various apps, settings, and menu screens for an interactive display interface.
 
-For the full configuration file, please refer to the [example configuration](https://github.com/landonr/homeThing/blob/main/tdisplay-s3.yaml).
+**For the full configuration file, please refer to the [example configuration](https://github.com/landonr/homeThing/blob/main/tdisplay-s3.yaml).**
 
 ## Configuration Options
 
