@@ -12,20 +12,22 @@
 
 ### Required
 -  Hardware (pick one):
+	- homeThing S3
+	- LilyGo T-Display S3
 	- LilyGo T-Display
 	- LilyGo T-Display T4
-	- LilyGo T-Display S3
 	- M5Stack Fire
 	- M5Stick C
 	- Generic ESP32 + [Supported display](https://esphome.io/components/display/index.html#see-also "Supported display")
 - Software:
 	- [ESPHome](https://esphome.io/) (required)
 	- [Home Assistant](https://www.home-assistant.io/) (required for now, MQTT support is coming soon)
-	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup) 
+	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup)
+ 	- Cairosvg, Pillow, Libmagic (optional)
 
 # Install guide
-1. [Install](#1-install-esphome-on-your-hardware "Install")
-2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
+1. [Install software](#1-install-esphome-on-your-hardware "Install")
+2. [Include homeThing](#2-include-the-homething-components-in-your-yaml "Include")
 3. [Setup Device](#3-setup-device "Setup Device")
 4. [Setup Home](#4-setup-your-home-config "Setup Home")
 5. [Setup Media Player Group](#5-set-up-the-media-player-group)
@@ -46,7 +48,12 @@ external_components:
       url: https://github.com/landonr/homeThing
       ref: main
     refresh: 0s
-    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
+    components: [
+      homeThing, 
+      homeThingDisplayState,
+      homeThingApp, # only required if using apps
+      homeThingAppNowPlaying # only required for Now Playing app
+    ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
