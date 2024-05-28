@@ -1,6 +1,6 @@
 # homeThing Display State
 
-**Used for ![Menu](https://github.com/landonr/homeThing/blob/readme-update-may/components/homeThing/README.md) and Apps**
+**Used for [Menu](../homeThing/) and [Apps](../)**
 
 ### Required
 - **font_small**: required - id of the small font
