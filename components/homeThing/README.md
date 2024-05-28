@@ -13,7 +13,7 @@ For the full configuration file, please refer to the [example configuration](htt
   - Unique ID for the HomeThing component.
 - **apps**: `list`
   - List of applications available on the menu.
-  - [See the full list of apps](https://github.com/landonr/homeThing/tree/main/components/README.md) 
+  - [See the full list of apps](../README.md) 
 - **settings**: `map`
   - **Optional**, Configuration for device behavior and display.
   - **sleep_after**: `int`
