@@ -1,6 +1,6 @@
 # homeThing Display State
 
-**Used for menu and apps**
+**Used for [Menu](../homeThing/) and [Apps](../)**
 
 ### Required
 - **font_small**: required - id of the small font

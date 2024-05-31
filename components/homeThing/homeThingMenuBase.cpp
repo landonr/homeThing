@@ -43,7 +43,7 @@ void HomeThingMenuBase::setup() {
   for (auto screen : menu_screens_) {
     screen->add_on_state_callback([this]() {
       switch (menuTree.back()) {
-        case settingsMenu:
+        case customMenu:
           reload_menu_items_ = true;
           this->update_display();
         default:
@@ -101,7 +101,6 @@ void HomeThingMenuBase::draw_menu_screen() {
   }
   ESP_LOGD(TAG, "draw_menu_screen: draw %d %s #%d", menuIndex,
            title_name.c_str(), menu_titles.size());
-
 #ifdef USE_HOMETHING_APP
   if (active_app_ != nullptr) {
     ESP_LOGD(TAG, "draw_menu_screen: draw app header %d %s #%d", menuIndex,
@@ -112,9 +111,6 @@ void HomeThingMenuBase::draw_menu_screen() {
       active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
     this->animation_->animating = active_app_->is_animating();
-    if (this->animation_->animating) {
-      this->animation_->tickAnimation();
-    }
     if (notifications_) {
       notifications_->drawNotifications();
     }
@@ -122,17 +118,12 @@ void HomeThingMenuBase::draw_menu_screen() {
     return;
   }
 #endif
-  if (home_screen_ != nullptr) {
-    ESP_LOGD(TAG, "draw_menu_screen: draw hoem screen header %d %s #%d",
-             menuIndex, title_name.c_str(), menu_titles.size());
-    // menu_display_->draw_menu_header(home_screen_->get_header_source());
-  }
   if (menu_display_->draw_menu_screen(&activeMenuState, &menu_titles, menuIndex,
                                       nullptr, editing_menu_item)) {
-    this->animation_->tickAnimation();
-    this->animation_->animating = true;
-  } else {
-    this->animation_->animating = false;
+    if (idleTime > 0 || menuTree.back() == bootMenu) {
+      this->animation_->animating = true;
+      this->animation_->tickAnimation();
+    }
   }
   if (device_locked_ && idleTime < 3) {
     menu_display_->draw_lock_screen(unlock_presses_);
@@ -161,6 +152,18 @@ void HomeThingMenuBase::update() {
   idleTick();
 }
 
+bool HomeThingMenuBase::handleSelectedEntity(HomeThingMenuScreen* screen) {
+  auto selected_entity = screen->get_selected_entity();
+  if (selected_entity) {
+    MenuItemType menu_item_type = std::get<0>(*selected_entity);
+    ESP_LOGI(TAG, "selectMenu: began editing type %d", menu_item_type);
+    editing_menu_item = true;
+  } else {
+    editing_menu_item = false;
+  }
+  return true;
+}
+
 bool HomeThingMenuBase::selectMenu() {
   auto activeMenuTitle = menu_titles[menuIndex];
   switch (menuTree.back()) {
@@ -170,15 +173,11 @@ bool HomeThingMenuBase::selectMenu() {
       ESP_LOGI(TAG, "selectMenu: began editing light detail");
       editing_menu_item = true;
       break;
-    case settingsMenu:
+    case customMenu:
       if (active_menu_screen && active_menu_screen->select_menu(menuIndex)) {
-        auto selected_entity = active_menu_screen->get_selected_entity();
-        if (selected_entity) {
-          MenuItemType menu_item_type = std::get<0>(*selected_entity);
-          ESP_LOGI(TAG, "selectMenu: began editing type %d", menu_item_type);
-          editing_menu_item = true;
+        if (handleSelectedEntity(active_menu_screen)) {
+          return true;
         }
-        update_display();
       }
       break;
     case appMenu:
@@ -275,7 +274,7 @@ bool HomeThingMenuBase::selectDetailMenu() {
       }
       break;
     }
-    case settingsMenu: {
+    case customMenu: {
       if (active_menu_screen) {
         auto menu_item = active_menu_screen->get_menu_item(menuIndex);
         return selectLightEntity(menu_item);
@@ -310,10 +309,17 @@ bool HomeThingMenuBase::selectRootMenu() {
   if (home_screen_ && index < home_screen_->get_entity_count()) {
     ESP_LOGI(TAG, "selectRootMenu: home screen %d offset %d", menuIndex,
              offset);
-    return home_screen_->select_menu(index);
+    if (home_screen_->select_menu(index)) {
+      ESP_LOGI(TAG, "selectRootMenu: selected home screen %d offset %d",
+               menuIndex, offset);
+      if (handleSelectedEntity(home_screen_)) {
+        update_display();
+        return false;
+      }
+    }
   } else {
     ESP_LOGI(TAG, "selectRootMenu: screen %d offset %d", menuIndex, offset);
-    menuTree.push_back(settingsMenu);
+    menuTree.push_back(customMenu);
     int home_screen_count = home_screen_ ? home_screen_->get_entity_count() : 0;
     offset = home_screen_count + offset;
     index = menuIndex - offset;
@@ -329,7 +335,7 @@ bool HomeThingMenuBase::selectRootMenu() {
 
 MenuTitleBase* HomeThingMenuBase::menuTitleForType(MenuStates stringType,
                                                    int index) {
-  if (stringType == settingsMenu && menu_screens_.size() > 0) {
+  if (stringType == customMenu && menu_screens_.size() > 0) {
     int offset = home_screen_ ? home_screen_->get_entity_count() : 0;
     HomeThingMenuScreen* menu_screen = menu_screens_[index - offset];
     std::string menu_name = menu_screen->get_name();
@@ -390,7 +396,7 @@ void HomeThingMenuBase::activeMenu(std::vector<MenuTitleBase*>* menu_titles) {
     }
     case bootMenu:
       break;
-    case settingsMenu:
+    case customMenu:
       active_menu_screen->menu_titles(menu_titles, true);
       break;
     case appMenu:
@@ -532,7 +538,7 @@ void HomeThingMenuBase::buttonPressSelect() {
           return;
         }
 #endif
-      case settingsMenu:
+      case customMenu:
         if (editing_menu_item) {
           // deselect light if selected and stay in lightsDetailMenu
           editing_menu_item = false;
@@ -637,6 +643,26 @@ bool HomeThingMenuBase::upMenu() {
   return false;
 }
 
+bool HomeThingMenuBase::scrollEdit(HomeThingMenuScreen* menu_screen,
+                                   bool forwards) {
+  if (editing_menu_item && menu_screen && menu_screen->get_selected_entity()) {
+    if (forwards &&
+        HomeThingMenuControls::editingScrollForward(
+            menu_screen->get_selected_entity(), menuIndex, editing_menu_item)) {
+      reload_menu_items_ = true;
+      debounceUpdateDisplay();
+      return true;
+    } else if (!forwards && HomeThingMenuControls::editingScrollBack(
+                                menu_screen->get_selected_entity(), menuIndex,
+                                editing_menu_item)) {
+      reload_menu_items_ = true;
+      debounceUpdateDisplay();
+      return true;
+    }
+  }
+  return false;
+}
+
 void HomeThingMenuBase::rotaryScrollCounterClockwise() {
   if (!button_press_and_continue())
     return;
@@ -660,6 +686,7 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise() {
         return;
     }
   }
+  animation_->resetAnimation();
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
@@ -705,14 +732,13 @@ void HomeThingMenuBase::rotaryScrollCounterClockwise() {
         }
 #endif
         break;
-      case settingsMenu:
-        if (editing_menu_item && active_menu_screen &&
-            active_menu_screen->get_selected_entity() &&
-            HomeThingMenuControls::editingScrollBack(
-                active_menu_screen->get_selected_entity(), menuIndex,
-                editing_menu_item)) {
-          reload_menu_items_ = true;
-          debounceUpdateDisplay();
+      case rootMenu:
+        if (scrollEdit(home_screen_, false)) {
+          return;
+        }
+        break;
+      case customMenu:
+        if (scrollEdit(active_menu_screen, false)) {
           return;
         }
         break;
@@ -755,6 +781,7 @@ void HomeThingMenuBase::rotaryScrollClockwise() {
   if (!button_press_and_continue())
     return;
   rotary_ += 1;
+  animation_->resetAnimation();
   if (menu_settings_->get_mode() == MENU_MODE_ROTARY) {
     switch (menuTree.back()) {
       case appMenu:
@@ -800,16 +827,16 @@ void HomeThingMenuBase::rotaryScrollClockwise() {
         }
 #endif
         break;
-      case settingsMenu:
-        if (editing_menu_item && active_menu_screen &&
-            active_menu_screen->get_selected_entity() &&
-            HomeThingMenuControls::editingScrollForward(
-                active_menu_screen->get_selected_entity(), menuIndex,
-                editing_menu_item)) {
-          reload_menu_items_ = true;
-          debounceUpdateDisplay();
+      case rootMenu:
+        if (scrollEdit(home_screen_, true)) {
           return;
         }
+        break;
+      case customMenu:
+        if (scrollEdit(active_menu_screen, true)) {
+          return;
+        }
+        break;
       default:
         break;
     }
@@ -897,7 +924,7 @@ void HomeThingMenuBase::buttonPressUp() {
 #endif
       break;
     default:
-    case settingsMenu:
+    case customMenu:
       if (editing_menu_item) {
         editing_menu_item = false;
         reload_menu_items_ = true;

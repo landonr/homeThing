@@ -75,6 +75,7 @@ class HomeThingMenuBase : public PollingComponent {
 
   void draw_menu_screen();
   void topMenu();
+  bool handleSelectedEntity(HomeThingMenuScreen* screen);
   bool selectMenu();
   bool selectDetailMenu();
   bool selectRootMenu();
@@ -109,6 +110,7 @@ class HomeThingMenuBase : public PollingComponent {
   }
 
  private:
+  bool scrollEdit(HomeThingMenuScreen* menu_screen, bool forwards);
   bool skipBootPressed();
   bool button_press_and_continue() {
     if (buttonPressWakeUpDisplay()) {
@@ -188,6 +190,8 @@ class HomeThingMenuBase : public PollingComponent {
     menuIndex = 0;
     if (active_menu_screen)
       active_menu_screen->set_selected_entity(nullptr);
+    if (home_screen_)
+      home_screen_->set_selected_entity(nullptr);
     active_menu_screen = nullptr;
     reload_menu_items_ = true;
     editing_menu_item = false;

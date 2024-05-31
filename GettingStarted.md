@@ -12,20 +12,22 @@
 
 ### Required
 -  Hardware (pick one):
+	- homeThing S3
+	- LilyGo T-Display S3
 	- LilyGo T-Display
 	- LilyGo T-Display T4
-	- LilyGo T-Display S3
 	- M5Stack Fire
 	- M5Stick C
 	- Generic ESP32 + [Supported display](https://esphome.io/components/display/index.html#see-also "Supported display")
 - Software:
 	- [ESPHome](https://esphome.io/) (required)
 	- [Home Assistant](https://www.home-assistant.io/) (required for now, MQTT support is coming soon)
-	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup) 
+	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup)
+ 	- Cairosvg, Pillow, Libmagic (optional)
 
 # Install guide
-1. [Install](#1-install-esphome-on-your-hardware "Install")
-2. [Include](#2-include-the-homething-components-in-your-yaml "Include")
+1. [Install software](#1-install-esphome-on-your-hardware "Install")
+2. [Include homeThing](#2-include-the-homething-components-in-your-yaml "Include")
 3. [Setup Device](#3-setup-device "Setup Device")
 4. [Setup Home](#4-setup-your-home-config "Setup Home")
 5. [Setup Media Player Group](#5-set-up-the-media-player-group)
@@ -46,7 +48,12 @@ external_components:
       url: https://github.com/landonr/homeThing
       ref: main
     refresh: 0s
-    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying]
+    components: [
+      homeThing, 
+      homeThingDisplayState,
+      homeThingApp, # only required if using apps
+      homeThingAppNowPlaying # only required for Now Playing app
+    ]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
@@ -163,51 +170,41 @@ homeThingDisplayState:
 
 homeThing:
   id: homeThingMenu
-  sleep_switch: sleep_toggle #optional
-  backlight: backlight #optional
-  battery: #optional
+  settings:
+    sleep_after: 14400
+  boot:
+    api_connected: api_connected
+    launch_image: launch_image    
+  sleep_switch: sleep_toggle
+  backlight: backlight
+  battery:
     battery_percent: battery_percent
     charging: charging
+  display: my_display
   display_state: display_state_id
-  apps: # you can have multiple apps
+  apps:
     - now_playing
-  display: my_display # required
-  on_redraw: # required
+  on_redraw:
     then:
       component.update: my_display
-  display_state:
-    draw_battery_level: true # only needed if you have a battery
-    # probably leave these alone
-    font_small: small_font
-    font_medium: medium_font
-    font_large: large_font
-    font_large_heavy: large_heavy_font
-    font_material_large: material_font_large
-    font_material_small: material_font_small
-
-  screens:	# you can have multiple screens
+  home_screen:
+    name: homeThing
+    entities:
+      - type: text_sensor
+        id: sensor_weather
+  screens:
     - name: Kitchen Screen
       entities:
-        - id: oven_fan
-          type: switch
-        - id: sensor_weather
-          type: text_sensor
-    - name: Settings Screen
-      show_version: True # defaults to false
-      entities:
-        - id: backlight
-          type: light
-        - id: "restart_switch"
-          type: switch
-        - id: wifi_ssid
-          type: text_sensor
-        - id: wifi_signal_percent
-          type: sensor
-        - id: wifi_ip
-          type: text_sensor
+        - type: switch
+          id: oven_fan_switch
 ```
 ### 7. Install on your device
+- [ESPHome Docker/Addon](https://esphome.io/guides/getting_started_hassio.html)
+- [ESPHome Command Line](https://esphome.io/guides/installing_esphome.html)
 ### 8. Add the device to Home Assistant
+- Home Assistant should auto discover the device and send a notification
+	- If not, add a ESPHome integration using the ip address of the homeThing device
+- Allow API calls from the device by clicking configure on it, then checking the **Allow the device to make Home Assistant service calls** checkbox
 ### 9. **Done! 🎉**
 
 ---

@@ -14,8 +14,6 @@ class HomeThingMenuAnimation {
     animationTick->add_filter(filter);
   }
   void resetAnimation(bool force = false);
-  void updateMarqueePosition(int titleLength);
-  // void marqueeTick(int titleLength);
   void activeTick();
 
   sensor::Sensor* animationTick;

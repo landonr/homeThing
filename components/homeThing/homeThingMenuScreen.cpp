@@ -54,7 +54,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto number = static_cast<number::Number*>(std::get<1>(entity));
       auto name = number->get_name() == "" ? number->get_object_id()
                                            : number->get_name();
-      auto title = name + ": " + value_accuracy_to_string(number->state, 1);
+      auto title = value_accuracy_to_string(number->state, 1) + ": " + name;
       return title;
 #endif
       break;
@@ -219,7 +219,11 @@ bool HomeThingMenuScreen::select_menu(int index) {
 #ifdef USE_NUMBER
       ESP_LOGI(TAG, "selected number %d", index);
       auto entity = &entities_[index];
-      set_selected_entity(entity);
+      if (get_selected_entity() == nullptr) {
+        set_selected_entity(entity);
+      } else if (get_selected_entity() == entity) {
+        set_selected_entity(nullptr);
+      }
       return true;
 #endif
       break;
@@ -233,6 +237,7 @@ bool HomeThingMenuScreen::select_menu(int index) {
       return false;
     }
   }
+  ESP_LOGI(TAG, "select_menu: selected nothing index %d", index);
   return false;
 }
 

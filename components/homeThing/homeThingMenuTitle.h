@@ -20,12 +20,8 @@ enum MenuStates {
   bootMenu,
   rootMenu,
   appMenu,
-  // sourcesMenu,
-  // groupMenu,
-  // mediaPlayersMenu,
   lightsDetailMenu,
-  // nowPlayingMenu,
-  settingsMenu,
+  customMenu,
   entityMenu
 };
 
@@ -90,7 +86,7 @@ class MenuTitleBase {
         return NoMenuTitleRightIcon;
       case bootMenu:
         return NoMenuTitleRightIcon;
-      case settingsMenu:
+      case customMenu:
         return ArrowMenuTitleRightIcon;
       case entityMenu:
         return NoMenuTitleRightIcon;
@@ -108,7 +104,7 @@ class MenuTitleBase {
         return "Home";
       case bootMenu:
         return "Boot";
-      case settingsMenu:
+      case customMenu:
         return "Settings";
       case entityMenu:
         return "Entity";
