@@ -65,8 +65,8 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto state = fan->state;
       ESP_LOGI(TAG, "fan state %d", state);
       std::string stateString = state ? "On" : "Off";
-      auto name = fan->get_name() == "" ? fan->get_object_id()
-                                           : fan->get_name();
+      auto name =
+          fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
       auto speed = to_string(static_cast<int>(fan->speed));
       if (state) {
         return speed + ": " + name;
