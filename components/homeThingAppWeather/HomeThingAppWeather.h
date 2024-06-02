@@ -87,11 +87,19 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
     condition_sensor_ = condition_sensor;
   }
 
+  void set_clear_image(image::Image* clear_image) { clear_image_ = clear_image; }
+
   void set_cloudy_image(image::Image* cloudy_image) {
     cloudy_image_ = cloudy_image;
   }
 
   void set_fog_image(image::Image* fog_image) { fog_image_ = fog_image; }
+
+  void set_hail_image(image::Image* hail_image) { hail_image_ = hail_image; }
+
+  void set_rainy_image(image::Image* rainy_image) {
+    rainy_image_ = rainy_image;
+  }
 
   void set_snow_image(image::Image* snow_image) { snow_image_ = snow_image; }
 
@@ -99,12 +107,8 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
     sunny_image_ = sunny_image;
   }
 
-  void set_rainy_image(image::Image* rainy_image) {
-    rainy_image_ = rainy_image;
-  }
-
-  void set_night_image(image::Image* night_image) {
-    night_image_ = night_image;
+  void set_windy_image(image::Image* windy_image) {
+    windy_image_ = windy_image;
   }
 
  private:
@@ -121,12 +125,14 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
 
   // images
 
+  image::Image* clear_image_{nullptr};
   image::Image* cloudy_image_{nullptr};
   image::Image* fog_image_{nullptr};
+  image::Image* hail_image_{nullptr};
+  image::Image* rainy_image_{nullptr};
   image::Image* snow_image_{nullptr};
   image::Image* sunny_image_{nullptr};
-  image::Image* rainy_image_{nullptr};
-  image::Image* night_image_{nullptr};
+  image::Image* windy_image_{nullptr};
 
   void display_temperature(int xPos, int yPos, float temperature);
   void display_humidity(int xPos, int yPos, float humidity);

@@ -8,23 +8,26 @@ image:
     file: $launch_image_file
     resize: $launch_image_size
     type: $launch_image_type
+  - file: mdi:weather-clear
+    id: weather_clear
+    resize: 50x50
   - file: mdi:weather-cloudy
     id: weather_cloudy
     resize: 50x50
   - file: mdi:weather-fog
     id: weather_fog
     resize: 50x50
+  - file: mdi:weather-hail
+    id: weather_hail
+    resize: 50x50
+  - file: mdi:weather-rainy
+    id: weather_rainy
+    resize: 50x50
   - file: mdi:weather-snowy
     id: weather_snow
     resize: 50x50
   - file: mdi:weather-sunny
     id: weather_sunny
-    resize: 50x50
-  - file: mdi:weather-rainy
-    id: weather_rainy
-    resize: 50x50
-  - file: mdi:weather-night
-    id: weather_night
     resize: 50x50
 
 sensor:
