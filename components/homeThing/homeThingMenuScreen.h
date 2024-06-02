@@ -39,6 +39,10 @@
 #include "esphome/components/button/button.h"
 #endif
 
+#ifdef USE_FAN
+#include "esphome/components/fan/fan.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -68,7 +72,8 @@ enum MenuItemType {
   MenuItemTypeLight,
   MenuItemTypeNumber,
   MenuItemTypeCover,
-  MenuItemTypeButton
+  MenuItemTypeButton,
+  MenuItemTypeFan
 };
 
 class HomeThingMenuScreen {
@@ -149,6 +154,14 @@ class HomeThingMenuScreen {
     entities_.push_back(std::make_tuple(MenuItemTypeButton, new_button));
     new_button->add_on_press_callback(
         [this, new_button]() { this->callback_.call(); });
+  }
+#endif
+
+#ifdef USE_FAN
+  void register_fan(fan::Fan* new_fan) {
+    entities_.push_back(std::make_tuple(MenuItemTypeFan, new_fan));
+    new_fan->add_on_state_callback(
+        [this, new_fan]() { this->callback_.call(); });
   }
 #endif
 
