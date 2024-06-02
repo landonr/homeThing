@@ -87,7 +87,9 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
     condition_sensor_ = condition_sensor;
   }
 
-  void set_clear_image(image::Image* clear_image) { clear_image_ = clear_image; }
+  void set_clear_image(image::Image* clear_image) {
+    clear_image_ = clear_image;
+  }
 
   void set_cloudy_image(image::Image* cloudy_image) {
     cloudy_image_ = cloudy_image;
