@@ -63,15 +63,13 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
 #ifdef USE_FAN
       auto fan = static_cast<fan::Fan*>(std::get<1>(entity));
       auto state = fan->state;
-      ESP_LOGI(TAG, "fan state %d", state);
-      std::string stateString = state ? "On" : "Off";
       auto name =
           fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
       auto speed = to_string(static_cast<int>(fan->speed));
       if (state) {
         return speed + ": " + name;
       } else {
-        return stateString + ": " + name + " " + speed;
+        return name;
       }
 #endif
       break;
@@ -153,12 +151,23 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #endif
         break;
       }
+      case MenuItemTypeFan: {
+#ifdef USE_FAN
+        auto fanObject = static_cast<fan::Fan*>(std::get<1>(entity));
+        ESP_LOGD(TAG, "fan state %d", fanObject->state);
+        MenuTitleLeftIcon state = fanObject->state
+                                      ? OnMenuTitleLeftIcon
+                                      : OffMenuTitleLeftIcon;
+        menu_titles->push_back(new MenuTitleToggle(
+            title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+#endif
+        break;
+      }
       case MenuItemTypeNumber:
       case MenuItemTypeButton:
       case MenuItemTypeTextSensor:
       case MenuItemTypeTitle:
       case MenuItemTypeCommand:
-      case MenuItemTypeFan:
         menu_titles->push_back(
             new MenuTitleBase(title, "", NoMenuTitleRightIcon));
         break;
@@ -206,6 +215,15 @@ bool HomeThingMenuScreen::select_menu(int index) {
       auto coverObject =
           static_cast<cover::Cover*>(std::get<1>(entities_[index]));
       coverObject->make_call().set_command_toggle().perform();
+      return true;
+#endif
+      break;
+    }
+    case MenuItemTypeFan: {
+#ifdef USE_FAN
+      ESP_LOGI(TAG, "selected fan %d", index);
+      auto fanObject = static_cast<fan::Fan*>(std::get<1>(entities_[index]));
+      fanObject->toggle();
       return true;
 #endif
       break;
