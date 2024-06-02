@@ -223,7 +223,7 @@ bool HomeThingMenuScreen::select_menu(int index) {
 #ifdef USE_FAN
       ESP_LOGI(TAG, "selected fan %d", index);
       auto fanObject = static_cast<fan::Fan*>(std::get<1>(entities_[index]));
-      fanObject->toggle();
+      fanObject->toggle().perform();
       return true;
 #endif
       break;
