@@ -1,8 +1,8 @@
 substitutions:
   log_level: "INFO"
 
-logger:
-  level: ${log_level}
+# logger:
+#   level: ${log_level}
 
 # WiFi Configuration, uncomment and fill secrets.yaml with wifi_ssid and wifi_password to enable fast connect
 
