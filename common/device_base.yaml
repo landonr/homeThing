@@ -22,6 +22,7 @@ wifi:
     ssid: "homeThing Fallback Hotspot"
 
 ota:
+  platform: esphome
 
 api:
   id: homeassistant_api_id
