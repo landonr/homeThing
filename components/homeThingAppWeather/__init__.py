@@ -13,8 +13,10 @@ CONF_HUMIDITY_SENSOR = "humidity_sensor"
 CONF_CONDITION_SENSOR = "condition_sensor"
 CONF_CLEAR = "clear"
 CONF_CLOUDY = "cloudy"
+CONF_PARTLY_CLOUDY = "partly_cloudy"
 CONF_FOG = "fog"
 CONF_HAIL = "hail"
+CONF_LIGHTNING = "lightning"
 CONF_RAINY = "rainy"
 CONF_SNOW = "snow"
 CONF_SUNNY = "sunny"
@@ -31,6 +33,8 @@ IMAGE_SCHEMA = cv.Schema(
         cv.Required(CONF_SNOW): cv.use_id(image.Image_),
         cv.Required(CONF_SUNNY): cv.use_id(image.Image_),
         cv.Required(CONF_WINDY): cv.use_id(image.Image_),
+        cv.Required(CONF_PARTLY_CLOUDY): cv.use_id(image.Image_),
+        cv.Required(CONF_LIGHTNING): cv.use_id(image.Image_),
     }
 )
 
@@ -66,3 +70,5 @@ async def to_code(config):
     cg.add(var.set_snow_image(await cg.get_variable(images[CONF_SNOW])))
     cg.add(var.set_sunny_image(await cg.get_variable(images[CONF_SUNNY])))
     cg.add(var.set_windy_image(await cg.get_variable(images[CONF_WINDY])))
+    cg.add(var.set_partly_cloudy_image(await cg.get_variable(images[CONF_PARTLY_CLOUDY])))
+    cg.add(var.set_lightning_image(await cg.get_variable(images[CONF_LIGHTNING])))

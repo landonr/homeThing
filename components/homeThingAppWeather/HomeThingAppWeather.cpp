@@ -50,23 +50,6 @@ void HomeThingAppWeather::display_condition(int xPos, int yPos,
       display::TextAlign::CENTER_LEFT, condition, 2, display_buffer_);
 }
 
-// all types
-// "clear-night": "Clear, night",
-// "cloudy": "Cloudy",
-// "exceptional": "Exceptional",
-// "fog": "Fog",
-// "hail": "Hail",
-// "lightning": "Lightning",
-// "lightning-rainy": "Lightning, rainy",
-// "partlycloudy": "Partly cloudy",
-// "pouring": "Pouring",
-// "rainy": "Rainy",
-// "snowy": "Snowy",
-// "snowy-rainy": "Snowy, rainy",
-// "sunny": "Sunny",
-// "windy": "Windy",
-// "windy-variant": "Windy, cloudy"
-
 void HomeThingAppWeather::display_condition_image(
     int xPos, int yPos, const std::string& condition) {
   int newXPos = xPos - cloudy_image_->get_width() / 2 - 10;
@@ -101,6 +84,14 @@ void HomeThingAppWeather::display_condition_image(
                            Color(255, 255, 255));
   } else if (condition == "windy" || condition == "windy-variant") {
     display_buffer_->image(newXPos, yPos, windy_image_,
+                           display::ImageAlign::TOP_CENTER,
+                           Color(255, 255, 255));
+  } else if (condition == "partly-cloudy") {
+    display_buffer_->image(newXPos, yPos, partly_cloudy_image_,
+                           display::ImageAlign::TOP_CENTER,
+                           Color(255, 255, 255));
+  } else if (condition == "lightning" || condition == "lightning-rainy") {
+    display_buffer_->image(newXPos, yPos, lightning_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
   }

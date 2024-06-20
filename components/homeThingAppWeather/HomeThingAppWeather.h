@@ -113,6 +113,14 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
     windy_image_ = windy_image;
   }
 
+  void set_lightning_image(image::Image* lightning_image) {
+    lightning_image_ = lightning_image;
+  }
+
+  void set_partly_cloudy_image(image::Image* partly_cloudy_image) {
+    partly_cloudy_image_ = partly_cloudy_image;
+  }
+
  private:
   const char* const TAG = "homething.app.weather";
 
@@ -129,12 +137,14 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
 
   image::Image* clear_image_{nullptr};
   image::Image* cloudy_image_{nullptr};
+  image::Image* partly_cloudy_image_{nullptr};
   image::Image* fog_image_{nullptr};
   image::Image* hail_image_{nullptr};
   image::Image* rainy_image_{nullptr};
   image::Image* snow_image_{nullptr};
   image::Image* sunny_image_{nullptr};
   image::Image* windy_image_{nullptr};
+  image::Image* lightning_image_{nullptr};
 
   void display_temperature(int xPos, int yPos, float temperature);
   void display_humidity(int xPos, int yPos, float humidity);
