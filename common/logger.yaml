@@ -29,4 +29,5 @@ logger:
     light: WARN
     api: INFO
     voice_assistant: INFO
+    climate: INFO
   level: DEBUG

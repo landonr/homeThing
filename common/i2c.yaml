@@ -1,0 +1,19 @@
+defaults:
+  i2cBusA_sda: GPIO18
+  i2cBusA_scl: GPIO17
+  i2cBusA_scan: "FALSE"
+  i2cBusB_sda: GPIO44
+  i2cBusB_scl: GPIO43
+  i2cBusB_scan: "FALSE"
+
+i2c:
+  - id: i2cBusA
+    sda: $i2cBusA_sda
+    scl: $i2cBusA_scl
+    scan: $i2cBusA_scan
+    frequency: 100hz
+  - id: i2cBusB
+    sda: $i2cBusB_sda
+    scl: $i2cBusB_scl
+    # frequency: 10kHz
+    scan: $i2cBusB_scan
