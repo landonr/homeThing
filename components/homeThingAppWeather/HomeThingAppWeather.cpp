@@ -69,8 +69,7 @@ void HomeThingAppWeather::display_condition_image(
     display_buffer_->image(newXPos, yPos, hail_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
-  } else if (condition == "rainy" || condition == "lightning-rainy" ||
-             condition == "pouring") {
+  } else if (condition == "rainy" || condition == "pouring") {
     display_buffer_->image(newXPos, yPos, rainy_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
