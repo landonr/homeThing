@@ -152,40 +152,46 @@ MENU_COMMAND_SCHEMA = cv.Schema(
     }
 )
 
+MENU_ENTITY_BASE_SCHEMA = cv.Schema(
+    {
+        cv.Optional(CONF_NAME): cv.string,
+    }
+)
+
 MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
     {
-        CONF_SWITCH: cv.Schema(
+        CONF_SWITCH: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(switch.Switch),
             }
         ),
-        CONF_TEXT_SENSOR: cv.Schema(
+        CONF_TEXT_SENSOR: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(text_sensor.TextSensor),
             }
         ),
         CONF_COMMAND: MENU_COMMAND_SCHEMA,
-        CONF_LIGHT: cv.Schema(
+        CONF_LIGHT: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(LightState)
             }
         ),
-        CONF_SENSOR: cv.Schema(
+        CONF_SENSOR: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(sensor.Sensor)
             }
         ),
-        CONF_COVER: cv.Schema(
+        CONF_COVER: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(cover.Cover),
             }
         ),
-        CONF_NUMBER: cv.Schema(
+        CONF_NUMBER: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(number.Number)
             }
         ),
-        CONF_BUTTON: cv.Schema(
+        CONF_BUTTON: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(button.Button)
             }

@@ -40,12 +40,9 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
     case MenuItemTypeSensor: {
 #ifdef USE_SENSOR
       auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
-      auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
-      if (sensor->get_name() != "") {
-        return state;
-      } else {
-        return state;
-      }
+      auto name = sensor->get_name() == "" ? sensor->get_object_id()
+                                           : sensor->get_name();
+      return name;
 #endif
       break;
     }
@@ -54,8 +51,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto number = static_cast<number::Number*>(std::get<1>(entity));
       auto name = number->get_name() == "" ? number->get_object_id()
                                            : number->get_name();
-      auto title = value_accuracy_to_string(number->state, 1) + ": " + name;
-      return title;
+      return name;
 #endif
       break;
     }
@@ -129,14 +125,22 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
         auto state = value_accuracy_to_string(sensor->get_state(),
                                               sensor->get_accuracy_decimals());
-        std::string stateString = sensor->get_name() + " " + state;
         menu_titles->push_back(
-            new MenuTitleBase(stateString.c_str(), "", NoMenuTitleRightIcon));
+            new MenuTitleBase(state + ": " + title, "", NoMenuTitleRightIcon));
 
 #endif
         break;
       }
-      case MenuItemTypeNumber:
+      case MenuItemTypeNumber: {
+#ifdef USE_NUMBER
+        auto number = static_cast<number::Number*>(std::get<1>(entity));
+        menu_titles->push_back(new MenuTitleBase(
+            value_accuracy_to_string(number->state, 1) + ": " + title, "",
+            NoMenuTitleRightIcon));
+        break;
+#endif
+        break;
+      }
       case MenuItemTypeButton:
       case MenuItemTypeTextSensor:
       case MenuItemTypeTitle:
@@ -259,7 +263,7 @@ bool HomeThingMenuScreen::select_menu_hold(int index) {
   return false;
 }
 
-const std::tuple<MenuItemType, EntityBase*>* HomeThingMenuScreen::get_menu_item(
+const std::tuple<MenuItemType, EntityBase*, std::string>* HomeThingMenuScreen::get_menu_item(
     int index) {
   if (show_name_) {
     // name isnt an entity

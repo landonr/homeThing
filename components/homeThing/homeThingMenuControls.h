@@ -28,7 +28,7 @@ enum MenuControlCommand : uint8_t {
 class HomeThingMenuControls {
  public:
   static bool editingScrollBack(
-      const std::tuple<MenuItemType, EntityBase*>* entity, int menuIndex,
+      const std::tuple<MenuItemType, EntityBase*, std::string>* entity, int menuIndex,
       bool editing_menu_item) {
     MenuItemType menu_item_type = std::get<0>(*entity);
     switch (menu_item_type) {
@@ -68,7 +68,7 @@ class HomeThingMenuControls {
   }
 
   static bool editingScrollForward(
-      const std::tuple<MenuItemType, EntityBase*>* entity, int menuIndex,
+      const std::tuple<MenuItemType, EntityBase*, std::string>* entity, int menuIndex,
       bool editing_menu_item) {
     MenuItemType menu_item_type = std::get<0>(*entity);
     switch (menu_item_type) {
@@ -108,7 +108,7 @@ class HomeThingMenuControls {
   }
 
   static bool selectLightDetail(
-      const std::tuple<MenuItemType, EntityBase*>* entity, int menuIndex,
+      const std::tuple<MenuItemType, EntityBase*, std::string>* entity, int menuIndex,
       bool editing_menu_item) {
     MenuItemType menu_item_type = std::get<0>(*entity);
     switch (menu_item_type) {

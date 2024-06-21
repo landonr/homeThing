@@ -85,7 +85,7 @@ class HomeThingMenuBase : public PollingComponent {
   bool buttonPressWakeUpDisplay();
   void idleMenu();
   bool selectLightEntity(
-      const std::tuple<MenuItemType, EntityBase*>* menu_item);
+      const std::tuple<MenuItemType, EntityBase*, std::string>* menu_item);
   bool upMenu();
   void rotaryScrollClockwise();
   void rotaryScrollCounterClockwise();
