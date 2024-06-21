@@ -314,8 +314,10 @@ homeThing:
     name: homeThing
     entities:
       - type: cover
+        name: "Desk"
         id: cover_megadesk
       - type: number
+        name: "Desk Height"
         id: desk_height_number
       - type: command
         name: "Feed cat"
