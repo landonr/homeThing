@@ -2,30 +2,37 @@ substitutions:
   launch_image_file: "https://github.com/landonr/homeThing/raw/main/docs/homeThingLogoWhite.svg"
   launch_image_size: "48x48"
   launch_image_type: "TRANSPARENT_BINARY"
+  weather_icon_size: "50x50"
 
 image:
   - id: launch_image
     file: $launch_image_file
     resize: $launch_image_size
     type: $launch_image_type
+  - file: mdi:weather-night
+    id: weather_clear
+    resize: $weather_icon_size
   - file: mdi:weather-cloudy
     id: weather_cloudy
-    resize: 50x50
+    resize: $weather_icon_size
   - file: mdi:weather-fog
     id: weather_fog
-    resize: 50x50
-  - file: mdi:weather-snowy
-    id: weather_snow
-    resize: 50x50
-  - file: mdi:weather-sunny
-    id: weather_sunny
-    resize: 50x50
+    resize: $weather_icon_size
+  - file: mdi:weather-hail
+    id: weather_hail
+    resize: $weather_icon_size
   - file: mdi:weather-rainy
     id: weather_rainy
-    resize: 50x50
-  - file: mdi:weather-night
-    id: weather_night
-    resize: 50x50
+    resize: $weather_icon_size
+  - file: mdi:weather-snowy
+    id: weather_snow
+    resize: $weather_icon_size
+  - file: mdi:weather-sunny
+    id: weather_sunny
+    resize: $weather_icon_size
+  - file: mdi:weather-windy
+    id: weather_windy
+    resize: $weather_icon_size
 
 sensor:
   - platform: homeassistant
