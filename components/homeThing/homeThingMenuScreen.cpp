@@ -155,9 +155,8 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #ifdef USE_FAN
         auto fanObject = static_cast<fan::Fan*>(std::get<1>(entity));
         ESP_LOGD(TAG, "fan state %d", fanObject->state);
-        MenuTitleLeftIcon state = fanObject->state
-                                      ? OnMenuTitleLeftIcon
-                                      : OffMenuTitleLeftIcon;
+        MenuTitleLeftIcon state =
+            fanObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
         menu_titles->push_back(new MenuTitleToggle(
             title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
 #endif
