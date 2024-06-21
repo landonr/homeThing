@@ -9,6 +9,10 @@ namespace homething_menu_base {
 
 std::string HomeThingMenuScreen::entity_name_at_index(int index) {
   auto entity = entities_[index];
+  auto entityName = std::get<2>(entity);
+  if (entityName != "") {
+    return entityName;
+  }
   switch (std::get<0>(entity)) {
     case MenuItemTypeNone:
     case MenuItemTypeTitle:
@@ -263,8 +267,8 @@ bool HomeThingMenuScreen::select_menu_hold(int index) {
   return false;
 }
 
-const std::tuple<MenuItemType, EntityBase*, std::string>* HomeThingMenuScreen::get_menu_item(
-    int index) {
+const std::tuple<MenuItemType, EntityBase*, std::string>*
+HomeThingMenuScreen::get_menu_item(int index) {
   if (show_name_) {
     // name isnt an entity
     index -= 1;

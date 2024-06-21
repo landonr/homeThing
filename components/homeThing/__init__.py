@@ -154,7 +154,7 @@ MENU_COMMAND_SCHEMA = cv.Schema(
 
 MENU_ENTITY_BASE_SCHEMA = cv.Schema(
     {
-        cv.Optional(CONF_NAME): cv.string,
+        cv.Optional(CONF_NAME, default=""): cv.string,
     }
 )
 
@@ -331,16 +331,18 @@ async def menu_screen_to_code(config):
         cg.add_define("SHOW_VERSION")
         cg.add(menu_screen.set_show_version(config[CONF_SHOW_VERSION]))
 
+    if CONF_NAME in config:
+        cg.add(menu_screen.set_name(config[CONF_NAME]))
     for conf in config.get(CONF_ENTITIES, []):
         if conf[CONF_TYPE] == CONF_SWITCH:
             new_switch = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_switch(new_switch))
+            cg.add(menu_screen.register_switch(new_switch, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_TEXT_SENSOR:
             new_text_sensor = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_text_sensor(new_text_sensor))
+            cg.add(menu_screen.register_text_sensor(new_text_sensor, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_LIGHT:
             new_light = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_light(new_light))
+            cg.add(menu_screen.register_light(new_light, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_COMMAND:
             cg.add_build_flag("-DUSE_COMMAND")
             service = cg.new_Pvariable(conf[CONF_ID])
@@ -349,19 +351,19 @@ async def menu_screen_to_code(config):
             for command in conf.get(CONF_COMMAND, []):
                 trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
                 await automation.build_automation(trigger, [], command)
-            cg.add(menu_screen.register_command(service))
+            cg.add(menu_screen.register_command(service, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_SENSOR:
             new_sensor = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_sensor(new_sensor))
+            cg.add(menu_screen.register_sensor(new_sensor, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_COVER:
             new_cover = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_cover(new_cover))
+            cg.add(menu_screen.register_cover(new_cover, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_NUMBER:
             new_number = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_number(new_number))
+            cg.add(menu_screen.register_number(new_number, conf[CONF_NAME]))
         elif conf[CONF_TYPE] == CONF_BUTTON:
             new_button = await cg.get_variable(conf[CONF_ID])
-            cg.add(menu_screen.register_button(new_button))
+            cg.add(menu_screen.register_button(new_button, conf[CONF_NAME]))
     return menu_screen
 
 MENU_IDS = [

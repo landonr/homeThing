@@ -83,70 +83,73 @@ class HomeThingMenuScreen {
       const std::tuple<MenuItemType, EntityBase*, std::string>* entity) {
     selected_entity_ = entity;
   }
-  const std::tuple<MenuItemType, EntityBase*, std::string>* get_selected_entity() {
+  const std::tuple<MenuItemType, EntityBase*, std::string>*
+  get_selected_entity() {
     return selected_entity_;
   }
   int get_entity_count() { return entities_.size(); }
   std::string entity_name_at_index(int index);
 
 #ifdef USE_SWITCH
-  void register_switch(switch_::Switch* new_switch) {
-    entities_.push_back(std::make_tuple(MenuItemTypeSwitch, new_switch, ""));
+  void register_switch(switch_::Switch* new_switch, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeSwitch, new_switch, name));
     new_switch->add_on_state_callback(
         [this, new_switch](bool state) { this->callback_.call(); });
   }
 #endif
 
 #ifdef USE_TEXT_SENSOR
-  void register_text_sensor(text_sensor::TextSensor* new_text_sensor) {
+  void register_text_sensor(text_sensor::TextSensor* new_text_sensor,
+                            std::string name) {
     entities_.push_back(
-        std::make_tuple(MenuItemTypeTextSensor, new_text_sensor, ""));
+        std::make_tuple(MenuItemTypeTextSensor, new_text_sensor, name));
     new_text_sensor->add_on_state_callback(
         [this, new_text_sensor](std::string state) { this->callback_.call(); });
   }
 #endif
 
 #ifdef USE_COMMAND
-  void register_command(MenuCommand* new_command) {
-    entities_.push_back(std::make_tuple(MenuItemTypeCommand, new_command, ""));
+  void register_command(MenuCommand* new_command, std::string name) {
+    entities_.push_back(
+        std::make_tuple(MenuItemTypeCommand, new_command, name));
   }
 #endif
 
 #ifdef USE_SENSOR
-  void register_sensor(sensor::Sensor* new_sensor) {
-    entities_.push_back(std::make_tuple(MenuItemTypeSensor, new_sensor, ""));
+  void register_sensor(sensor::Sensor* new_sensor, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeSensor, new_sensor, name));
     new_sensor->add_on_state_callback(
         [this, new_sensor](float state) { this->callback_.call(); });
   }
 #endif
 
 #ifdef USE_LIGHT
-  void register_light(light::LightState* new_light) {
-    entities_.push_back(std::make_tuple(MenuItemTypeLight, new_light, ""));
+  void register_light(light::LightState* new_light, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeLight, new_light, name));
     new_light->add_new_remote_values_callback(
         [this, new_light]() { this->callback_.call(); });
   }
 #endif
 
 #ifdef USE_COVER
-  void register_cover(cover::Cover* new_cover) {
-    entities_.push_back(std::make_tuple(MenuItemTypeCover, new_cover, ""));
+  void register_cover(cover::Cover* new_cover, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeCover, new_cover, name));
     new_cover->add_on_state_callback(
         [this, new_cover]() { this->callback_.call(); });
   }
 #endif
 
 #ifdef USE_NUMBER
-  void register_number(number::Number* new_number) {
-    entities_.push_back(std::make_tuple(MenuItemTypeNumber, new_number, ""));
+  void register_number(number::Number* new_number, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeNumber, new_number, name));
     new_number->add_on_state_callback(
         [this, new_number](float state) { this->callback_.call(); });
   }
 #endif
 
 #ifdef USE_BUTTON
-  void register_button(button::Button* new_button) {
-    entities_.push_back(std::make_tuple(MenuItemTypeButton, new_button, ""));
+  void register_button(button::Button* new_button, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeButton, new_button, name));
     new_button->add_on_press_callback(
         [this, new_button]() { this->callback_.call(); });
   }
@@ -158,7 +161,8 @@ class HomeThingMenuScreen {
   void menu_titles(std::vector<MenuTitleBase*>* menu_titles, bool show_name);
   bool select_menu(int index);
   bool select_menu_hold(int index);
-  const std::tuple<MenuItemType, EntityBase*, std::string>* get_menu_item(int index);
+  const std::tuple<MenuItemType, EntityBase*, std::string>* get_menu_item(
+      int index);
 
  private:
   bool show_name_ = false;
@@ -166,7 +170,8 @@ class HomeThingMenuScreen {
   bool show_version_ = false;
   std::string name_;
   std::vector<std::tuple<MenuItemType, EntityBase*, std::string>> entities_;
-  const std::tuple<MenuItemType, EntityBase*, std::string>* selected_entity_ = nullptr;
+  const std::tuple<MenuItemType, EntityBase*, std::string>* selected_entity_ =
+      nullptr;
   CallbackManager<void()> callback_;
   const char* const TAG = "homething.menu.screen";
 };
