@@ -53,7 +53,11 @@ void HomeThingAppWeather::display_condition(int xPos, int yPos,
 void HomeThingAppWeather::display_condition_image(
     int xPos, int yPos, const std::string& condition) {
   int newXPos = xPos - cloudy_image_->get_width() / 2 - 10;
-  if (condition == "cloudy") {
+  if (condition == "clear-night" || condition == "night") {
+    display_buffer_->image(newXPos, yPos, clear_image_,
+                           display::ImageAlign::TOP_CENTER,
+                           Color(255, 255, 255));
+  } else if (condition == "cloudy") {
     display_buffer_->image(newXPos, yPos, cloudy_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
@@ -61,7 +65,15 @@ void HomeThingAppWeather::display_condition_image(
     display_buffer_->image(newXPos, yPos, fog_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
-  } else if (condition == "snow") {
+  } else if (condition == "hail") {
+    display_buffer_->image(newXPos, yPos, hail_image_,
+                           display::ImageAlign::TOP_CENTER,
+                           Color(255, 255, 255));
+  } else if (condition == "rainy" || condition == "pouring") {
+    display_buffer_->image(newXPos, yPos, rainy_image_,
+                           display::ImageAlign::TOP_CENTER,
+                           Color(255, 255, 255));
+  } else if (condition == "snowy" || condition == "snowy-rainy") {
     display_buffer_->image(newXPos, yPos, snow_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
@@ -69,12 +81,16 @@ void HomeThingAppWeather::display_condition_image(
     display_buffer_->image(newXPos, yPos, sunny_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
-  } else if (condition == "rainy") {
-    display_buffer_->image(newXPos, yPos, rainy_image_,
+  } else if (condition == "windy" || condition == "windy-variant") {
+    display_buffer_->image(newXPos, yPos, windy_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
-  } else if (condition == "night") {
-    display_buffer_->image(newXPos, yPos, night_image_,
+  } else if (condition == "partly-cloudy") {
+    display_buffer_->image(newXPos, yPos, partly_cloudy_image_,
+                           display::ImageAlign::TOP_CENTER,
+                           Color(255, 255, 255));
+  } else if (condition == "lightning" || condition == "lightning-rainy") {
+    display_buffer_->image(newXPos, yPos, lightning_image_,
                            display::ImageAlign::TOP_CENTER,
                            Color(255, 255, 255));
   }
