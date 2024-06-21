@@ -1,11 +1,3 @@
-substitutions:
-  log_level: "INFO"
-
-logger:
-  level: ${log_level}
-
-# WiFi Configuration, uncomment and fill secrets.yaml with wifi_ssid and wifi_password to enable fast connect
-
 captive_portal:
 
 wifi:
@@ -22,6 +14,7 @@ wifi:
     ssid: "homeThing Fallback Hotspot"
 
 ota:
+  platform: esphome
 
 api:
   id: homeassistant_api_id
