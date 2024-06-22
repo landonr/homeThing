@@ -59,6 +59,21 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
 #endif
       break;
     }
+    case MenuItemTypeFan: {
+#ifdef USE_FAN
+      auto fan = static_cast<fan::Fan*>(std::get<1>(entity));
+      auto state = fan->state;
+      auto name =
+          fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
+      auto speed = to_string(static_cast<int>(fan->speed));
+      if (state) {
+        return speed + ": " + name;
+      } else {
+        return name;
+      }
+#endif
+      break;
+    }
   }
   return std::get<1>(entity)->get_name();
 }
@@ -136,6 +151,17 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #endif
         break;
       }
+      case MenuItemTypeFan: {
+#ifdef USE_FAN
+        auto fanObject = static_cast<fan::Fan*>(std::get<1>(entity));
+        ESP_LOGD(TAG, "fan state %d", fanObject->state);
+        MenuTitleLeftIcon state =
+            fanObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
+        menu_titles->push_back(new MenuTitleToggle(
+            title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+#endif
+        break;
+      }
       case MenuItemTypeNumber:
       case MenuItemTypeButton:
       case MenuItemTypeTextSensor:
@@ -188,6 +214,15 @@ bool HomeThingMenuScreen::select_menu(int index) {
       auto coverObject =
           static_cast<cover::Cover*>(std::get<1>(entities_[index]));
       coverObject->make_call().set_command_toggle().perform();
+      return true;
+#endif
+      break;
+    }
+    case MenuItemTypeFan: {
+#ifdef USE_FAN
+      ESP_LOGI(TAG, "selected fan %d", index);
+      auto fanObject = static_cast<fan::Fan*>(std::get<1>(entities_[index]));
+      fanObject->toggle().perform();
       return true;
 #endif
       break;

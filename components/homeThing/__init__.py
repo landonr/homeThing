@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome import automation
 import esphome.config_validation as cv
-from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image
+from esphome.components import display, binary_sensor, sensor, switch, light, text_sensor, number, cover, time, button, image, fan
 from esphome.components.light import LightState
 from esphome.const import  CONF_ID, CONF_TRIGGER_ID, CONF_MODE, CONF_NAME, CONF_TYPE, CONF_TIME_ID
 from esphome.components.homeThingDisplayState import homething_display_state_ns
@@ -55,6 +55,7 @@ CONF_ENTITIES = "entities"
 CONF_COVER = "cover"
 CONF_NUMBER = "number"
 CONF_BUTTON = "button"
+CONF_FAN = "fan"
 CONF_APPS = "apps"
 
 # battery settings
@@ -188,6 +189,11 @@ MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
         CONF_BUTTON: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(button.Button)
+            }
+        ),
+        CONF_FAN: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(fan.Fan)
             }
         ),
     },
@@ -356,6 +362,9 @@ async def menu_screen_to_code(config):
         elif conf[CONF_TYPE] == CONF_BUTTON:
             new_button = await cg.get_variable(conf[CONF_ID])
             cg.add(menu_screen.register_button(new_button))
+        elif conf[CONF_TYPE] == CONF_FAN:
+            new_fan = await cg.get_variable(conf[CONF_ID])
+            cg.add(menu_screen.register_fan(new_fan))
     return menu_screen
 
 MENU_IDS = [
