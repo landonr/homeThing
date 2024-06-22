@@ -5,10 +5,13 @@ substitutions:
   weather_icon_size: "50x50"
 
 image:
+  # included because only one image component can be referenced
+  # used for boot
   - id: launch_image
     file: $launch_image_file
     resize: $launch_image_size
     type: $launch_image_type
+  # Weather icons
   - file: mdi:weather-night
     id: weather_clear
     resize: $weather_icon_size
@@ -32,6 +35,12 @@ image:
     resize: $weather_icon_size
   - file: mdi:weather-windy
     id: weather_windy
+    resize: $weather_icon_size
+  - file: mdi:weather-partly-cloudy
+    id: weather_partly_cloudy
+    resize: $weather_icon_size
+  - file: mdi:weather-lightning
+    id: weather_lightning
     resize: $weather_icon_size
 
 sensor:

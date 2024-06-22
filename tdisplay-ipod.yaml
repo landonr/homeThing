@@ -149,10 +149,14 @@ homeThingAppWeather:
   images:
     cloudy: weather_cloudy
     fog: weather_fog
+    rainy: weather_rainy
     snow: weather_snow
     sunny: weather_sunny
-    rainy: weather_rainy
-    night: weather_night
+    clear: weather_clear
+    hail: weather_hail
+    windy: weather_windy
+    partly_cloudy: weather_partly_cloudy
+    lightning: weather_lightning
 
 homeThing:
   id: homeThingMenu
