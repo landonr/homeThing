@@ -172,11 +172,20 @@ sensor:
     attribute: humidity
 
 image:
+  - file: mdi:weather-night
+    id: weather_clear
+    resize: 50x50
   - file: mdi:weather-cloudy
     id: weather_cloudy
     resize: 50x50
   - file: mdi:weather-fog
     id: weather_fog
+    resize: 50x50
+  - file: mdi:weather-hail
+    id: weather_hail
+    resize: 50x50
+  - file: mdi:weather-rainy
+    id: weather_rainy
     resize: 50x50
   - file: mdi:weather-snowy
     id: weather_snow
@@ -184,13 +193,15 @@ image:
   - file: mdi:weather-sunny
     id: weather_sunny
     resize: 50x50
-  - file: mdi:weather-rainy
-    id: weather_rainy
+  - file: mdi:weather-windy
+    id: weather_windy
     resize: 50x50
-  - file: mdi:weather-night
-    id: weather_night
+  - file: mdi:weather-partly-cloudy
+    id: weather_partly_cloudy
     resize: 50x50
-
+  - file: mdi:weather-lightning
+    id: weather_lightning
+    resize: 50x50
     # Launch image is included with other images
   - id: launch_image
     file: $launch_image_file
@@ -241,10 +252,14 @@ homeThingAppWeather:
   images:
     cloudy: weather_cloudy
     fog: weather_fog
+    rainy: weather_rainy
     snow: weather_snow
     sunny: weather_sunny
-    rainy: weather_rainy
-    night: weather_night
+    clear: weather_clear
+    hail: weather_hail
+    windy: weather_windy
+    partly_cloudy: weather_partly_cloudy
+    lightning: weather_lightning
 
 ### HomeThing
 
