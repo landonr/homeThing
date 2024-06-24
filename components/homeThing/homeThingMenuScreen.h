@@ -161,8 +161,8 @@ class HomeThingMenuScreen {
 #endif
 
 #ifdef USE_FAN
-  void register_fan(fan::Fan* new_fan) {
-    entities_.push_back(std::make_tuple(MenuItemTypeFan, new_fan));
+  void register_fan(fan::Fan* new_fan, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeFan, new_fan, name));
     new_fan->add_on_state_callback(
         [this, new_fan]() { this->callback_.call(); });
   }

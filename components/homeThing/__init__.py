@@ -197,7 +197,7 @@ MENU_ENTITY_TYPED_SCHEMA = cv.typed_schema(
                 cv.GenerateID(CONF_ID): cv.use_id(button.Button)
             }
         ),
-        CONF_FAN: cv.Schema(
+        CONF_FAN: MENU_ENTITY_BASE_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(fan.Fan)
             }
