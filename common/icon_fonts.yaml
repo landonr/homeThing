@@ -27,6 +27,8 @@ font:
       '󰑗', # mdi-repeat-off
       '󰑘', # mdi-repeat-once
       '󰑖', # mdi-repeat
+      '󰈐', # mdi-fan
+      '󰠝', # mdi-fan-off
     ]  
   - file: "https://github.com/landonr/homeThing/raw/main/fonts/materialdesignicons-webfont.ttf"
     id: material_font_small
@@ -51,4 +53,6 @@ font:
       '󰑗', # mdi-repeat-off
       '󰑘', # mdi-repeat-once
       '󰑖', # mdi-repeat
+      '󰈐', # mdi-fan
+      '󰠝', # mdi-fan-off
     ]
