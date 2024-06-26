@@ -65,12 +65,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto state = fan->state;
       auto name =
           fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
-      auto speed = to_string(static_cast<int>(fan->speed));
-      if (state) {
-        return speed + ": " + name;
-      } else {
-        return name;
-      }
+      return name;
 #endif
       break;
     }
@@ -166,8 +161,15 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         ESP_LOGD(TAG, "fan state %d", fanObject->state);
         MenuTitleLeftIcon state =
             fanObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-        menu_titles->push_back(new MenuTitleToggle(
-            title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+        
+        if (fanObject->state) {
+          auto speed = to_string(static_cast<int>(fanObject->speed));
+          menu_titles->push_back(new MenuTitleToggle(
+              speed + ": " + title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+        } else {
+          menu_titles->push_back(new MenuTitleToggle(
+              title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+        }
 #endif
         break;
       }
