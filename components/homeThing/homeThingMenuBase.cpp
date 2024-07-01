@@ -223,7 +223,7 @@ bool HomeThingMenuBase::selectMenu() {
 }
 
 bool HomeThingMenuBase::selectLightEntity(
-    const std::tuple<MenuItemType, EntityBase*>* menu_item) {
+    const std::tuple<MenuItemType, EntityBase*, std::string>* menu_item) {
   MenuItemType menu_item_type = std::get<0>(*menu_item);
   ESP_LOGW(TAG, "selectLightEntity: %d type: %d", menuIndex, menu_item_type);
   if (menu_item_type == MenuItemTypeLight) {

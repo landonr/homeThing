@@ -9,6 +9,10 @@ namespace homething_menu_base {
 
 std::string HomeThingMenuScreen::entity_name_at_index(int index) {
   auto entity = entities_[index];
+  auto entityName = std::get<2>(entity);
+  if (entityName != "") {
+    return entityName;
+  }
   switch (std::get<0>(entity)) {
     case MenuItemTypeNone:
     case MenuItemTypeTitle:
@@ -40,12 +44,9 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
     case MenuItemTypeSensor: {
 #ifdef USE_SENSOR
       auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
-      auto state = to_string(static_cast<int>(sensor->get_state())).c_str();
-      if (sensor->get_name() != "") {
-        return state;
-      } else {
-        return state;
-      }
+      auto name = sensor->get_name() == "" ? sensor->get_object_id()
+                                           : sensor->get_name();
+      return name;
 #endif
       break;
     }
@@ -54,8 +55,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto number = static_cast<number::Number*>(std::get<1>(entity));
       auto name = number->get_name() == "" ? number->get_object_id()
                                            : number->get_name();
-      auto title = value_accuracy_to_string(number->state, 1) + ": " + name;
-      return title;
+      return name;
 #endif
       break;
     }
@@ -65,12 +65,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       auto state = fan->state;
       auto name =
           fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
-      auto speed = to_string(static_cast<int>(fan->speed));
-      if (state) {
-        return speed + ": " + name;
-      } else {
-        return name;
-      }
+      return name;
 #endif
       break;
     }
@@ -144,10 +139,19 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
         auto state = value_accuracy_to_string(sensor->get_state(),
                                               sensor->get_accuracy_decimals());
-        std::string stateString = sensor->get_name() + " " + state;
         menu_titles->push_back(
-            new MenuTitleBase(stateString.c_str(), "", NoMenuTitleRightIcon));
+            new MenuTitleBase(state + ": " + title, "", NoMenuTitleRightIcon));
 
+#endif
+        break;
+      }
+      case MenuItemTypeNumber: {
+#ifdef USE_NUMBER
+        auto number = static_cast<number::Number*>(std::get<1>(entity));
+        menu_titles->push_back(new MenuTitleBase(
+            value_accuracy_to_string(number->state, 1) + ": " + title, "",
+            NoMenuTitleRightIcon));
+        break;
 #endif
         break;
       }
@@ -157,12 +161,19 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         ESP_LOGD(TAG, "fan state %d", fanObject->state);
         MenuTitleLeftIcon state =
             fanObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-        menu_titles->push_back(new MenuTitleToggle(
-            title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+
+        if (fanObject->state) {
+          auto speed = to_string(static_cast<int>(fanObject->speed));
+          menu_titles->push_back(new MenuTitleToggle(
+              speed + ": " + title, fanObject->get_object_id(), state,
+              NoMenuTitleRightIcon));
+        } else {
+          menu_titles->push_back(new MenuTitleToggle(
+              title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+        }
 #endif
         break;
       }
-      case MenuItemTypeNumber:
       case MenuItemTypeButton:
       case MenuItemTypeTextSensor:
       case MenuItemTypeTitle:
@@ -294,8 +305,8 @@ bool HomeThingMenuScreen::select_menu_hold(int index) {
   return false;
 }
 
-const std::tuple<MenuItemType, EntityBase*>* HomeThingMenuScreen::get_menu_item(
-    int index) {
+const std::tuple<MenuItemType, EntityBase*, std::string>*
+HomeThingMenuScreen::get_menu_item(int index) {
   if (show_name_) {
     // name isnt an entity
     index -= 1;
