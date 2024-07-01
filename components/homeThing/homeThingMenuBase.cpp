@@ -111,6 +111,9 @@ void HomeThingMenuBase::draw_menu_screen() {
       active_app_->should_draw_app()) {
     active_app_->draw_app(menuIndex, &menu_titles);
     this->animation_->animating = active_app_->is_animating();
+    if (this->animation_->animating) {
+      this->animation_->tickAnimation();
+    }
     if (notifications_) {
       notifications_->drawNotifications();
     }
