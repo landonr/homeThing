@@ -61,6 +61,16 @@ class HomeThingMenuControls {
 #endif
         break;
       }
+      case MenuItemTypeSelect: {
+#ifdef USE_SELECT
+        if (editing_menu_item) {
+          auto select = static_cast<select::Select*>(std::get<1>(*entity));
+          select->make_call().select_previous(false).perform();
+          return true;
+        }
+#endif
+        break;
+      }
       default:
         break;
     }
@@ -96,6 +106,16 @@ class HomeThingMenuControls {
         if (editing_menu_item) {
           auto number = static_cast<number::Number*>(std::get<1>(*entity));
           number->make_call().number_increment(false).perform();
+          return true;
+        }
+#endif
+        break;
+      }
+      case MenuItemTypeSelect: {
+#ifdef USE_SELECT
+        if (editing_menu_item) {
+          auto select = static_cast<select::Select*>(std::get<1>(*entity));
+          select->make_call().select_next(false).perform();
           return true;
         }
 #endif

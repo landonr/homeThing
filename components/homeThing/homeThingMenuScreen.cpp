@@ -62,9 +62,17 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
     case MenuItemTypeFan: {
 #ifdef USE_FAN
       auto fan = static_cast<fan::Fan*>(std::get<1>(entity));
-      auto state = fan->state;
       auto name =
           fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
+      return name;
+#endif
+      break;
+    }
+    case MenuItemTypeSelect: {
+#ifdef USE_SELECT
+      auto select = static_cast<select::Select*>(std::get<1>(entity));
+      auto name = select->get_name() == "" ? select->get_object_id()
+                                           : select->get_name();
       return name;
 #endif
       break;
@@ -174,6 +182,16 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #endif
         break;
       }
+      case MenuItemTypeSelect: {
+#ifdef USE_SELECT
+        auto select = static_cast<select::Select*>(std::get<1>(entity));
+        auto state = select->state;
+        menu_titles->push_back(new MenuTitleBase(state + ": " + title,
+                                                 select->get_object_id(),
+                                                 NoMenuTitleRightIcon));
+#endif
+        break;
+      }
       case MenuItemTypeButton:
       case MenuItemTypeTextSensor:
       case MenuItemTypeTitle:
@@ -270,9 +288,8 @@ bool HomeThingMenuScreen::select_menu(int index) {
       } else if (get_selected_entity() == entity) {
         set_selected_entity(nullptr);
       }
-      return true;
 #endif
-      break;
+      return true;
     }
     case MenuItemTypeButton: {
 #ifdef USE_BUTTON
@@ -281,6 +298,18 @@ bool HomeThingMenuScreen::select_menu(int index) {
       button->press();
 #endif
       return false;
+    }
+    case MenuItemTypeSelect: {
+#ifdef USE_SELECT
+      ESP_LOGI(TAG, "selected select %d", index);
+      auto entity = &entities_[index];
+      if (get_selected_entity() == nullptr) {
+        set_selected_entity(entity);
+      } else if (get_selected_entity() == entity) {
+        set_selected_entity(nullptr);
+      }
+#endif
+      return true;
     }
   }
   ESP_LOGI(TAG, "select_menu: selected nothing index %d", index);

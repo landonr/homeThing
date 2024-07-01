@@ -40,7 +40,8 @@ enum MenuTitleType {
   SliderMenuTitleType,
   ToggleMenuTitleType,
   LightMenuTitleType,
-  SourceMenuTitleType
+  SourceMenuTitleType,
+  SelectMenuTitleType,
 };
 
 enum SliderSelectionState {

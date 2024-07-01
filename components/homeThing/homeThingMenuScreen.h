@@ -43,6 +43,10 @@
 #include "esphome/components/fan/fan.h"
 #endif
 
+#ifdef USE_SELECT
+#include "esphome/components/select/select.h"
+#endif
+
 namespace esphome {
 namespace homething_menu_base {
 
@@ -73,7 +77,8 @@ enum MenuItemType {
   MenuItemTypeNumber,
   MenuItemTypeCover,
   MenuItemTypeButton,
-  MenuItemTypeFan
+  MenuItemTypeFan,
+  MenuItemTypeSelect
 };
 
 class HomeThingMenuScreen {
@@ -165,6 +170,16 @@ class HomeThingMenuScreen {
     entities_.push_back(std::make_tuple(MenuItemTypeFan, new_fan, name));
     new_fan->add_on_state_callback(
         [this, new_fan]() { this->callback_.call(); });
+  }
+#endif
+
+#ifdef USE_SELECT
+  void register_select(select::Select* new_select, std::string name) {
+    entities_.push_back(std::make_tuple(MenuItemTypeSelect, new_select, name));
+    new_select->add_on_state_callback(
+        [this, new_select](std::string newValue, size_t num) {
+          this->callback_.call();
+        });
   }
 #endif
 
