@@ -9,14 +9,22 @@ namespace homething_menu_base {
 class MenuTitleToggle : public MenuTitleBase {
  public:
   MenuTitleLeftIcon leftIconState;
+  std::string value;
+  MenuTitleToggle(std::string newName, std::string newEntityId,
+                  std::string newValue, MenuTitleLeftIcon newLeftIconState,
+                  MenuTitleRightIcon newRightIconState,
+                  MenuTitleType newTitleType = ToggleMenuTitleType)
+      : MenuTitleBase{newName, newEntityId, newRightIconState, newTitleType, 1},
+        leftIconState(newLeftIconState),
+        value(newValue) {}
 
-  MenuTitleToggle(std::string new_name, std::string newEntityId,
+  MenuTitleToggle(std::string newName, std::string newEntityId,
                   MenuTitleLeftIcon newLeftIconState,
                   MenuTitleRightIcon newRightIconState,
                   MenuTitleType newTitleType = ToggleMenuTitleType)
-      : MenuTitleBase{new_name, newEntityId, newRightIconState, newTitleType,
-                      1},
-        leftIconState(newLeftIconState) {}
+      : MenuTitleBase{newName, newEntityId, newRightIconState, newTitleType, 1},
+        leftIconState(newLeftIconState),
+        value("") {}
   bool indentLine() const;
 };
 }  // namespace homething_menu_base

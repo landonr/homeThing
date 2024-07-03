@@ -148,7 +148,7 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         auto state = value_accuracy_to_string(sensor->get_state(),
                                               sensor->get_accuracy_decimals());
         menu_titles->push_back(
-            new MenuTitleBase(state + ": " + title, "", NoMenuTitleRightIcon));
+            new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
 
 #endif
         break;
@@ -156,10 +156,9 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
       case MenuItemTypeNumber: {
 #ifdef USE_NUMBER
         auto number = static_cast<number::Number*>(std::get<1>(entity));
-        menu_titles->push_back(new MenuTitleBase(
-            value_accuracy_to_string(number->state, 1) + ": " + title, "",
-            NoMenuTitleRightIcon));
-        break;
+        menu_titles->push_back(
+            new MenuTitleValue(title, "", NoMenuTitleRightIcon,
+                               value_accuracy_to_string(number->state, 1)));
 #endif
         break;
       }
@@ -173,7 +172,7 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         if (fanObject->state) {
           auto speed = to_string(static_cast<int>(fanObject->speed));
           menu_titles->push_back(new MenuTitleToggle(
-              speed + ": " + title, fanObject->get_object_id(), state,
+              title, fanObject->get_object_id(), speed, state,
               NoMenuTitleRightIcon));
         } else {
           menu_titles->push_back(new MenuTitleToggle(
@@ -186,9 +185,9 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #ifdef USE_SELECT
         auto select = static_cast<select::Select*>(std::get<1>(entity));
         auto state = select->state;
-        menu_titles->push_back(new MenuTitleBase(state + ": " + title,
+        menu_titles->push_back(new MenuTitleValue(title,
                                                  select->get_object_id(),
-                                                 NoMenuTitleRightIcon));
+                                                 NoMenuTitleRightIcon, state));
 #endif
         break;
       }

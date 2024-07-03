@@ -14,6 +14,7 @@
 #include "esphome/components/homeThingDisplayState/homeThingMenuTextHelpers.h"
 
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingMenuTitleValue.h"
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
@@ -77,10 +78,12 @@ class HomeThingMenuDisplay {
  private:
   HomeThingMenuBoot* boot_{nullptr};
   int scrollTop = 0;
+  void draw_menu_title_value(std::string value, int yPos,
+                             bool drawingScrollbar);
   bool draw_menu_titles(const std::vector<MenuTitleBase*>* menuTitles,
                         const int menuIndex, bool editing_menu_item);
   bool draw_menu_title(int menuState, int i, std::string title, int yPos,
-                       bool buttonSpace);
+                       bool buttonSpace, int valueLength);
   void drawScrollBar(int menuTitlesCount, int headerHeight, int menuIndex);
   void scrollMenuPosition(int menuIndex);
   int maxItems();
