@@ -541,6 +541,7 @@ void HomeThingMenuBase::buttonPressSelect() {
           return;
         }
 #endif
+        break;
       case customMenu:
         if (editing_menu_item) {
           // deselect light if selected and stay in lightsDetailMenu
