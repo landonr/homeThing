@@ -129,6 +129,9 @@ homeassistant_media_player: # media player menu
   id: media_group_component
   finished_loading:
     id: media_players_loaded_sensor
+  active_player: 
+    id: active_player
+    name: "${friendly_name} Active Player"
   media_players:
     - id: media_player_beam
       type: speaker
