@@ -7,7 +7,7 @@ output:
 light:
   - platform: monochromatic
     output: gpio38
-    name: "Backlight"
+    name: "${friendly_name} Backlight"
     id: backlight
     restore_mode: ALWAYS_ON
 
