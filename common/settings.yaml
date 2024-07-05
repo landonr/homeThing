@@ -8,12 +8,12 @@ sensor:
     
   - platform: copy # Reports the WiFi signal strength in %
     source_id: wifi_signal_db
-    name: "WiFi Signal %"
+    name: "WiFi Signal"
     id: wifi_signal_percent
     internal: True
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
+    unit_of_measurement: "%"
     entity_category: "diagnostic"
 
 text_sensor:

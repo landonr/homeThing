@@ -147,8 +147,11 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
         auto state = value_accuracy_to_string(sensor->get_state(),
                                               sensor->get_accuracy_decimals());
+        if (sensor->get_unit_of_measurement() != "") {
+          state = state + sensor->get_unit_of_measurement();
+        }
         menu_titles->push_back(
-            new MenuTitleBase(state + ": " + title, "", NoMenuTitleRightIcon));
+            new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
 
 #endif
         break;
@@ -156,10 +159,12 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
       case MenuItemTypeNumber: {
 #ifdef USE_NUMBER
         auto number = static_cast<number::Number*>(std::get<1>(entity));
-        menu_titles->push_back(new MenuTitleBase(
-            value_accuracy_to_string(number->state, 1) + ": " + title, "",
-            NoMenuTitleRightIcon));
-        break;
+        auto state = value_accuracy_to_string(number->state, 0);
+        if (number->traits.get_unit_of_measurement() != "") {
+          state = state + number->traits.get_unit_of_measurement();
+        }
+        menu_titles->push_back(
+            new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
 #endif
         break;
       }
@@ -171,10 +176,10 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
             fanObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
 
         if (fanObject->state) {
-          auto speed = to_string(static_cast<int>(fanObject->speed));
-          menu_titles->push_back(new MenuTitleToggle(
-              speed + ": " + title, fanObject->get_object_id(), state,
-              NoMenuTitleRightIcon));
+          auto speed = to_string(static_cast<int>(fanObject->speed)) + "%";
+          menu_titles->push_back(
+              new MenuTitleToggle(title, fanObject->get_object_id(), speed,
+                                  state, NoMenuTitleRightIcon));
         } else {
           menu_titles->push_back(new MenuTitleToggle(
               title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
@@ -186,9 +191,8 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #ifdef USE_SELECT
         auto select = static_cast<select::Select*>(std::get<1>(entity));
         auto state = select->state;
-        menu_titles->push_back(new MenuTitleBase(state + ": " + title,
-                                                 select->get_object_id(),
-                                                 NoMenuTitleRightIcon));
+        menu_titles->push_back(new MenuTitleValue(
+            title, select->get_object_id(), NoMenuTitleRightIcon, state));
 #endif
         break;
       }

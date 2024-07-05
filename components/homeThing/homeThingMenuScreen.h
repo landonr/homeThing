@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
+#include "esphome/components/homeThing/homeThingMenuTitleValue.h"
 #include "esphome/core/entity_base.h"
 
 #ifdef USE_SENSOR
