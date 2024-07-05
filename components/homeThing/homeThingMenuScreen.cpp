@@ -163,7 +163,8 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         if (number->traits.get_unit_of_measurement() != "") {
           state = state + number->traits.get_unit_of_measurement();
         }
-        menu_titles->push_back(new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
+        menu_titles->push_back(
+            new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
 #endif
         break;
       }
@@ -176,9 +177,9 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 
         if (fanObject->state) {
           auto speed = to_string(static_cast<int>(fanObject->speed)) + "%";
-          menu_titles->push_back(new MenuTitleToggle(
-              title, fanObject->get_object_id(), speed, state,
-              NoMenuTitleRightIcon));
+          menu_titles->push_back(
+              new MenuTitleToggle(title, fanObject->get_object_id(), speed,
+                                  state, NoMenuTitleRightIcon));
         } else {
           menu_titles->push_back(new MenuTitleToggle(
               title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
@@ -190,9 +191,8 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #ifdef USE_SELECT
         auto select = static_cast<select::Select*>(std::get<1>(entity));
         auto state = select->state;
-        menu_titles->push_back(new MenuTitleValue(title,
-                                                 select->get_object_id(),
-                                                 NoMenuTitleRightIcon, state));
+        menu_titles->push_back(new MenuTitleValue(
+            title, select->get_object_id(), NoMenuTitleRightIcon, state));
 #endif
         break;
       }

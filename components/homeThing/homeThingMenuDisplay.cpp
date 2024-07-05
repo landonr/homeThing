@@ -138,14 +138,14 @@ bool HomeThingMenuDisplay::draw_menu_titles(
              (*menuTitles)[i]->titleType);
     switch ((*menuTitles)[i]->titleType) {
       case BaseMenuTitleType:
-        animating =
-            draw_menu_title(menuState, i, titleName, yPos, false, 0) || animating;
+        animating = draw_menu_title(menuState, i, titleName, yPos, false, 0) ||
+                    animating;
         drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState, yPos);
         break;
       case SourceMenuTitleType:
 #ifdef USE_MEDIA_PLAYER_GROUP
-        animating =
-            draw_menu_title(menuState, i, titleName, yPos, false, 0) || animating;
+        animating = draw_menu_title(menuState, i, titleName, yPos, false, 0) ||
+                    animating;
 #endif
         break;
       case LightMenuTitleType: {
@@ -166,7 +166,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
         auto toggleTitle = static_cast<MenuTitleToggle*>((*menuTitles)[i]);
         if (toggleTitle != NULL) {
           animating = draw_menu_title(menuState, i, titleName, yPos,
-                                      toggleTitle->indentLine(), toggleTitle->value.length()) ||
+                                      toggleTitle->indentLine(),
+                                      toggleTitle->value.length()) ||
                       animating;
           if (toggleTitle->value != "") {
             draw_menu_title_value(toggleTitle->value, yPos,
@@ -212,7 +213,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       case ValueMenuTitleType: {
         auto valueTitle = static_cast<MenuTitleValue*>((*menuTitles)[i]);
         if (valueTitle != NULL) {
-          animating = draw_menu_title(menuState, i, titleName, yPos, false, valueTitle->value.length()) ||
+          animating = draw_menu_title(menuState, i, titleName, yPos, false,
+                                      valueTitle->value.length()) ||
                       animating;
           draw_menu_title_value(valueTitle->value, yPos,
                                 menuTitlesSize > maxItems() + 1);
@@ -224,7 +226,8 @@ bool HomeThingMenuDisplay::draw_menu_titles(
       case SelectMenuTitleType: {
         auto selectTitle = static_cast<MenuTitleValue*>((*menuTitles)[i]);
         if (selectTitle != NULL) {
-          animating = draw_menu_title(menuState, i, titleName, yPos, false, selectTitle->value.length()) ||
+          animating = draw_menu_title(menuState, i, titleName, yPos, false,
+                                      selectTitle->value.length()) ||
                       animating;
           drawRightTitleIcon(menuTitlesSize, rightIconState, i, menuState,
                              yPos);
