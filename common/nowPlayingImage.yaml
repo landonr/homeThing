@@ -1,7 +1,8 @@
 ### Online Media Player Image
 
-# home assistant sensor
-# - needs an image proxy docker running to resize the image 
+# Home Assistant Sensor
+#
+# * needs an image proxy docker running to resize the image *
 # - https://hub.docker.com/r/darthsim/imgproxy/
 # - home assisstant addon https://github.com/landonr/home-assistant-imgproxy
 #
@@ -15,8 +16,10 @@
 #           attributes:
 #             url: >
 #               {% set homeAssistantURL = "http://172.16.1.67:8123" %}
-#               {% set imageProxyURL = "http://172.16.1.23:8080/insecure/rs:fill:170:170/" %}
-#               {% set url = homeAssistantURL + state_attr(states.sensor.active_player.state, "entity_picture") %}
+#               {% set imageProxyURL = "http://172.16.1.67:8080/insecure/rs:fill:170:170/" %}
+#               # replace with your device name
+#               # active player sensor is exposed by the home assistant media player group component https://github.com/landonr/esphome-components/tree/main/components/homeassistant_media_player
+#               {% set url = homeAssistantURL + state_attr(states.sensor.s3_proto_active_player.state, "entity_picture") %}
 #               {% set base64url_encoded_url = (url | base64_encode) | replace('+', '-') | replace('/', '_') | replace('=', '') %}
 #               {{ imageProxyURL + base64url_encoded_url }}
 
@@ -41,7 +44,7 @@ text_sensor:
       - online_image.set_url:
           id: media_player_image
           # prepend http:// because it has trouble decoding the url otherwise
-          url: !lambda 'return ("https://" + x + ".png").c_str();'
+          url: !lambda 'return (x + ".png").c_str();'
 
 online_image:
   - url: ${online_image_initial_url}
