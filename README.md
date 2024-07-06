@@ -8,7 +8,7 @@
 
 A collection of Open Source Universal Remotes that run a custom menu system to integrate with your smart home
 
-- iPod style menu system for ESP32 devices focuesed on controlling media players, lights, hvac, window covers, etc
+- iPod style menu system for ESP32 devices focused on controlling smart home devices.
 - Open source, customizable, and 3D printable hardware specific for homeThing remotes
 - [ESPHome Components for controlling Home Assistant devices](https://github.com/landonr/esphome-components)
 
@@ -23,7 +23,7 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
 
 <div align="center">
 	<a href="https://youtu.be/5bx5w-n5c0Y">
-		<h3>Demo Video 🎬</h3><h3>Watch on YouTube</h3>
+		<h3>Demo Video - Watch on YouTube 🎬</h3>
 		<img src="https://img.youtube.com/vi/5bx5w-n5c0Y/0.jpg" alt="Demo Video" />
 	</a>
 </div>
