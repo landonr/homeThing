@@ -20,6 +20,7 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
  - [Discord](https://discord.gg/BX6ZtGKHTy) - support / chat with the community and the team
  - [Instagram](https://www.instagram.com/homething.io/) - Follow us on Instagram for updates and new products
+ - [Website](https://homething.io) - Check out our website for more information
 
 <div align="center">
 	<h3>
