@@ -22,7 +22,7 @@ homeThingAppNowPlaying:
 
 ### Notes
 
-- The `now_playing_image` component should be configured if you want to display an image for the currently playing media.
+- The `now_playing_image` component should be configured if you want to display an image for the currently playing media. [Now Playing image info](../../common/nowPlayingImage.yaml)
 - The bottom menu is useful for remotes with a limited number of buttons.
 
 ## Configuration Details

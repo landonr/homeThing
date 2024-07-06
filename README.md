@@ -8,31 +8,27 @@
 
 A collection of Open Source Universal Remotes that run a custom menu system to integrate with your smart home
 
-- iPod style menu system for controlling media players, lights, hvac, window covers, etc
+- iPod style menu system for ESP32 devices focuesed on controlling media players, lights, hvac, window covers, etc
 - Open source, customizable, and 3D printable hardware specific for homeThing remotes
+- [ESPHome Components for controlling Home Assistant devices](https://github.com/landonr/esphome-components)
+
+<div align="center">
+<h2><a href="https://homething.io/buy">Buy now on homeThing.io! Over 20 sold!</a></h2>
+</div>
 
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
  - [Discord](https://discord.gg/BX6ZtGKHTy) - support / chat with the community and the team
- 
-## Demo Video 🎬
+ - [Instagram](https://www.instagram.com/homething.io/) - Follow us on Instagram for updates and new products
+
 <div align="center">
 	<a href="https://youtu.be/5bx5w-n5c0Y">
-		<h3>Watch on YouTube</h3>
+		<h3>Demo Video 🎬</h3><h3>Watch on YouTube</h3>
 		<img src="https://img.youtube.com/vi/5bx5w-n5c0Y/0.jpg" alt="Demo Video" />
 	</a>
 </div>
 
 # Hardware 💪
-
-We made a couple of custom devices for running homeThing, but it can also run on almost any ESP32 such as,
-- M5Stack Fire
-- M5Stick C
-- Lilygo T-Display T4
-- Lilygo T-Display TTGO
-- Lilygo T-Display S3
-
-## homeThing Devices
 <table>
   <tr>
     <th>TDisplay homeThing</th>
@@ -106,6 +102,12 @@ We made a couple of custom devices for running homeThing, but it can also run on
   </tr>
 </table>
 
+We made a couple of custom devices for running homeThing, but it can also run on almost any ESP32 such as,
+- M5Stack Fire
+- M5Stick C
+- Lilygo T-Display T4
+- Lilygo T-Display TTGO
+- Lilygo T-Display S3
 # Menu Features 📝
 ## iPod classic style menu 
 |t-display demo|m5stack fire demo|lilygo T4 demo|
