@@ -22,10 +22,12 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
  - [Instagram](https://www.instagram.com/homething.io/) - Follow us on Instagram for updates and new products
 
 <div align="center">
+	<h3>
 	<a href="https://youtu.be/5bx5w-n5c0Y">
-		<h3>Demo Video - Watch on YouTube 🎬</h3>
 		<img src="https://img.youtube.com/vi/5bx5w-n5c0Y/0.jpg" alt="Demo Video" />
+		<br>Demo Video - Watch on YouTube 🎬
 	</a>
+	</h3>
 </div>
 
 # Hardware 💪
