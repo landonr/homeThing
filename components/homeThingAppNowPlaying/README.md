@@ -31,7 +31,7 @@ homeThingAppNowPlaying:
 
 - **id** *(Required, string)*: Manually specify the ID for code generation.
 - **display** *(Required)*: The display buffer to use.
-- **display_state** *(Required)*: The display state to use. [Display state info](https://github.com/landonr/homeThing/tree/main/components/homeThingDisplayState)
+- **display_state** *(Required)*: The display state to use. [Display state info](../homeThingDisplayState)
 - **media_player_group** *(Required)*: The ID of the `HomeAssistantMediaPlayerGroup` component to use. [Media player group info](https://github.com/landonr/esphome-components/tree/main/components/homeassistant_media_player)
-- **now_playing_image** *(Optional)*: The ID of the image to display for the currently playing media. [Now Playing image info](https://github.com/landonr/homeThing/blob/main/common/nowPlayingImage.yaml)
+- **now_playing_image** *(Optional)*: The ID of the image to display for the currently playing media. [Now Playing image info](../../common/nowPlayingImage.yaml)
 - **draw_bottom_menu** *(Optional, boolean)*: Whether to draw the bottom menu on the display. Defaults to `false`.
