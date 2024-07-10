@@ -6,15 +6,16 @@
 <a href="https://discord.gg/BX6ZtGKHTy"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
 
-A collection of Open Source Universal Remotes that run a custom menu system to integrate with your smart home
+homeThing is a collection of software and hardware for creating universal remotes that control smart home devices. There are 3 components that belong to homeThing: the case and circuit board, the menu system code, and the code to control smart home devices
+- <a href="#hardware-">Hardware specific for smart home remotes that's open source, customizable, and 3D printable.</a>
+- Menu system for ESP32 devices focused on controlling smart home devices similar to an iPod's menu.
+- [ESPHome Components for controlling Home Assistant devices.](https://github.com/landonr/esphome-components)
 
-- iPod style menu system for ESP32 devices focused on controlling smart home devices.
-- Open source, customizable, and 3D printable hardware specific for homeThing remotes
-- [ESPHome Components for controlling Home Assistant devices](https://github.com/landonr/esphome-components)
-
+<br>
 <div align="center">
-<h2><a href="https://homething.io/buy">Buy now on homeThing.io! Over 20 sold!</a></h2>
+	<h2><a href="https://homething.io/Buy">Buy now on homeThing.io! Over 20 sold!</a></h2>
 </div>
+<br>
 
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
@@ -32,10 +33,16 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
 </div>
 
 # Hardware 💪
+We designed the two remotes below to be ideal for controlling smart home devices without a touch screen. They are both battery-powered but can also be plugged into USB and left in one place. The first remote was based on a Lilygo TDisplay. We moved on to building the homeThing S3 because the original device had slow performance, lacked buttons, and had challenges with assembly.
 <table>
   <tr>
-    <th>TDisplay homeThing</th>
-    <th><a href="https://github.com/landonr/homeThing/tree/main/Case%20Design/tdisplay-s3">TDisplay S3 homeThing</a></th>
+    <th>
+	    <h3>TDisplay homeThing</h3>
+    </th>
+    <th>
+	    <h3>TDisplay S3 homeThing</h3>
+	    <a href="https://github.com/landonr/homeThing/tree/main/Case%20Design/tdisplay-s3">More Info</a><br>
+    </th>
   </tr>
   <tr>
     <td><img src="https://github.com/landonr/homeThing/assets/2607659/4054f110-6d8d-4764-8aab-d7287209cb47" width="400"/></td>
@@ -43,9 +50,13 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
 
   </tr>
   <tr>
+	  <td>Not available for purchase</td>
+	  <td><a href="https://homething.io/Buy">Buy fully assembled, ships within 3 business days from 🇨🇦</a></td>
+  </tr>
+  <tr>
     <td><a href="https://www.pcbway.com/project/shareproject/homeThing_V1_3_e3572f8f.html">Order Case from PCBWay</a></td>
     <td>
-      <a href="https://www.pcbway.com/project/shareproject/homeThing_S3_2b3ac3ac.html">Order from PCBWay</a>
+      <a href="https://www.pcbway.com/project/shareproject/homeThing_S3_2b3ac3ac.html">Order parts or fully assembled from PCBWay</a>
     </td>
   </tr>
   <tr>
@@ -60,46 +71,24 @@ A collection of Open Source Universal Remotes that run a custom menu system to i
   	<td>
 	<h4>Features</h4>
 	<ul>
-	<li>Low cost remote with minimal parts</li>
-	<li>Scroll wheel and 2 configurable buttons</li>
-	<li>USB-C Charging</li>
-	<li>3D Printable case with 3 parts</li>
+		<li>Based on Lilygo TTGo TDisplay, an ESP32 with integrated screen
+		<li>Low cost remote with minimal parts</li>
+		<li>Scroll wheel and 2 configurable buttons</li>
+		<li>USB-C Charging</li>
+		<li>3D Printable case with 3 parts</li>
 	</ul>
 	</td>
   	<td>
 	<h4>Features</h4>
 	<ul>
-	<li>Faster processor and larger display</li>
-	<li>Custom PCB for easier setup</li>
-	<li>IR Blaster for controlling infrared devices</li>
-	<li>Interal microphone for Voice Assistant</li>
-	<li>Scroll wheel and 5 configurable buttons</li>
-	<li>USB-C Charging</li>
-	<li>3D Printable case with 2 parts</li>
-	</ul>
-	</td>
-  </tr>
-  <tr>
-  	<td>
-	<h4>Parts</h4>
-	<ul>
-	<li><a href="https://www.adafruit.com/product/5001">Adafruit ANO Directional Navigation and Scroll Wheel Rotary Encoder</a></li>
-	<li><a href="https://www.adafruit.com/product/5221">Adafruit ANO Rotary Navigation Encoder Breakout PCB</a></li>
-	<li><a href="https://leeselectronic.com/en/product/88345-battery-rechargeable-li-poly-37v-1100mah-jst-zh.html">1100mah lipo</a></li>
-	</ul>
-	</td>
-  	<td>
-	<h4>Parts</h4>
-	<ul>
-	<li><a href="https://www.adafruit.com/product/5001">Adafruit ANO Directional Navigation and Scroll Wheel Rotary Encoder</a></li>
-	<li><a href="https://www.adafruit.com/product/5221">Adafruit ANO Rotary Navigation Encoder Breakout PCB</a></li>
-	<li><a href="https://www.adafruit.com/product/5221">Custom PCB</a></li>
-	<li><a href="https://www.aliexpress.us/item/32962426410.html">INMP441 Microphone</a></li>
-	<li><a href="https://leeselectronic.com/en/product/71446-ic-i-o-expander-for-i2c-8bit-pcf8574p.html">PCF8574 GPIO Extender</a></li>
-	<li><a href="https://www.aliexpress.com/item/32835179410.html">3.7V 7x20x50mm 700mAh Lipo</a></li>
-	<li><a href="https://leeselectronic.com/en/product/31231-tack-switch-6x6x10mm.html">10mm Push Button</a></li>
-	<li><a href="https://leeselectronic.com/en/product/6049-6049BOLTM25100PCS.html">M2.5x8mm screws</a></li>
-	<li><a href="https://leeselectronic.com/qc/product/7174-7174TRANSISTOR2N2222MPS2222ANPN5.html">2N2222 Transistor</a></li>
+		<li>Based on Lilygo TDisplay S3, an ESP32 S3 with integrated screen</li>
+		<li>Faster processor and larger display</li>
+		<li>Custom PCB for easier setup</li>
+		<li>IR Blaster for controlling infrared devices</li>
+		<li>Interal microphone for Voice Assistant</li>
+		<li>Scroll wheel and 5 configurable buttons</li>
+		<li>USB-C Charging</li>
+		<li>3D Printable case with 2 parts</li>
 	</ul>
 	</td>
   </tr>
@@ -111,8 +100,8 @@ We made a couple of custom devices for running homeThing, but it can also run on
 - Lilygo T-Display T4
 - Lilygo T-Display TTGO
 - Lilygo T-Display S3
-# Menu Features 📝
-## iPod classic style menu 
+# homeThing Menu 📝
+### ESPHome menu system that requires minimal config. Features apps which have custom UIs
 |t-display demo|m5stack fire demo|lilygo T4 demo|
 |--|--|--|
 |![Scroll Demo Gif](docs/scrollListSelectTDisplay.gif)|![Scroll List Fire Demo Gif](docs/m5stackFireDemo.gif)|![Lilygo T4 Demo](docs/t4Demo.gif)
@@ -127,7 +116,8 @@ We made a couple of custom devices for running homeThing, but it can also run on
 - Simple yaml configuration. all of the complicated code is included in other files 🛠
 - Header is always shown at the top with info about the current state
 
-## Now playing screen ⏯
+## Apps
+### Now playing screen ⏯
 <img src="docs/nowPlayingOverlay.png"/>
 <ul>
 <li>Control media players using the scroll wheel buttons</li>
@@ -138,12 +128,12 @@ We made a couple of custom devices for running homeThing, but it can also run on
 |--|--|
 |<ul><li>Control smart speakers like Sonos, Spotify, or Google Home</li><li>Change source from Spotify playlists, Sonos Favorites, and custom lists</li><li>Manage speaker groups</li></ul>|<ul><li>Menu navigation such as up, down, left, right, select (with scroll wheel)</li><li>Power, back, home, pause in second menu</li><li>Change source from tv source list</li><li>Optional soundbar support</li></ul>|
 
-## IR Remote
+### IR Remote
 <ul>
 <li>Custom UI and buttons to control infrared cat toys</li>
 </ul>
 
-## Games
+### Games
 <ul>
 <li>Snake</li>
 <li>Breakout</li>
@@ -157,7 +147,7 @@ We made a couple of custom devices for running homeThing, but it can also run on
 - Reddit post https://www.reddit.com/r/homeassistant/comments/x59dcp/i_built_an_ipod_style_esphome_remote_for_home/
 - Self Hosted - Episode 80 - Solving Whole Home Audio (around 30:00) https://selfhosted.show/80 
 
-# includes
+# Includes
 - <a href="https://esphome.io/">ESPHome</a>
 - <a href="https://github.com/be5invis/Iosevka">Iosevka Font</a>
 - [@ssieb](https://github.com/ssieb)'s <a href="https://github.com/ssieb/custom_components/tree/master/components/ip5306">IP5306 esphome component</a>
