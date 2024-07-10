@@ -25,16 +25,6 @@
 	- [Spotcast](https://github.com/fondberg/spotcast) - [(optional)](#spotcast-setup)
  	- Cairosvg, Pillow, Libmagic (optional)
 
-# Install guide
-1. [Install software](#1-install-esphome-on-your-hardware "Install")
-2. [Include homeThing](#2-include-the-homething-components-in-your-yaml "Include")
-3. [Setup Device](#3-setup-device "Setup Device")
-4. [Setup Home](#4-setup-your-home-config "Setup Home")
-5. [Setup Media Player Group](#5-set-up-the-media-player-group)
-6. [Setup homeThing](#6-set-up-the-homething-menu "Setup homeThing")
-7. [Upload](#7-install-on-your-device "Upload")
-8. [Connect](#8-add-the-device-to-home-assistant "Connect")
-9. **Done!**
 
 ### 1. Install ESPHome on your hardware
 [ESPHome install guide](https://esphome.io/guides/getting_started_hassio.html)
@@ -106,50 +96,14 @@ text_sensor:
     entity_id: "sensor.vancouver_forecast"
     name: "Weather"
     id: sensor_weather
-
-# sonos favorite source
-media_player_source_sonos:
-  id: sonos
-
-media_player:
-  - platform: homeassistant_media_player
-    name: Beam
-    entity_id: "media_player.beam"
-    id: media_player_beam
-    type: speaker
-    sources:
-      - id: sonos
-        type: sonos
-  - platform: homeassistant_media_player
-    name: TV
-    entity_id: "media_player.55_tcl_roku_tv"
-    id: media_player_tv
-    type: roku
-    soundbar:
-      speaker: media_player_beam
 ```
-### 5. Set up the media player group and now playing app
-```yaml
-# media player menu - replace with your IDs
-homeassistant_media_player:
-  id: media_group_component
-  media_players:
-    - id: media_player_beam
-      type: speaker
-    - id: media_player_tv
-      type: roku
-    commands: # you can add custom commands to the now playing menu
-      name: "group all"
-      command:
-        - homeassistant.service:
-            service: script.sonos_group_all
 
-homeThingAppNowPlaying:
-  id: now_playing
-  media_player_group: media_group_component
-  display: my_display
-  display_state: display_state_id
-```
+## 5. Music control setup *(Optional)*
+ - Set up a [Home Assistant media player](https://github.com/landonr/esphome-components/tree/main/components/homeassistant_media_player/media_player)
+
+ - Set up the [Media Player Group](https://github.com/landonr/esphome-components/tree/main/components/homeassistant_media_player)
+
+ - Set up the [Now Playing app](https://github.com/landonr/homeThing/tree/readme-update/components/homeThingAppNowPlaying)
 
 ### 6. Set up the homeThing menu
 
