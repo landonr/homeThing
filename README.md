@@ -6,7 +6,8 @@
 <a href="https://discord.gg/BX6ZtGKHTy"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
 
-homeThing is a collection of software and hardware for creating universal remotes that control smart home devices. There are 3 components that belong to homeThing: the case and circuit board, the menu system code, and the code to control smart home devices
+#### homeThing is a collection of software and hardware for creating universal remotes that control smart home devices.
+There are 3 components that belong to homeThing: the case and circuit board, the menu system code, and the code to control smart home devices
 - <a href="#hardware-">Hardware specific for smart home remotes that's open source, customizable, and 3D printable.</a>
 - <a href="#homething-menu-">Menu system for ESP32 devices focused on controlling smart home devices similar to an iPod's menu.</a>
 - [ESPHome Components for controlling Home Assistant devices.](https://github.com/landonr/esphome-components)
