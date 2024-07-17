@@ -160,6 +160,13 @@ binary_sensor:
       then:
         homething_menu.option: homeThingMenu
 
+i2c:
+  sda: $sda_pin
+  scl: $scl_pin
+  # scan: TRUE
+  id: i2cBusA
+  frequency: 100hz
+
 pcf8574:
   - id: 'pcf8574_hub'
     address: $pcf_address
