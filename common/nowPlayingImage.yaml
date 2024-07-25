@@ -30,6 +30,9 @@ substitutions:
   online_image_text_sensor_entity_id: "sensor.media_player_image_proxy_url"
   online_image_display_id: "my_display"
 
+http_request:
+  verify_ssl: false
+
 text_sensor:
   - platform: homeassistant
     id: ${online_image_text_sensor_id}
