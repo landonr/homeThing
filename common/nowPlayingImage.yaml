@@ -53,6 +53,7 @@ online_image:
   - url: ${online_image_initial_url}
     id: ${online_image_id}
     type: RGB565
+    format: PNG
     on_download_finished:
       - logger.log:
           level: debug
