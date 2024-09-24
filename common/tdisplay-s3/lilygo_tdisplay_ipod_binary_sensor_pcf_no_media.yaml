@@ -25,9 +25,6 @@ binary_sensor:
     name: $friendly_name Screen Left
     id: tdisplay_button_input_0
     internal: true
-    on_press:
-      then:
-        media_player_group.select_next_player: media_group_component
   - platform: gpio
     pin:
       number: $screen_right_pin
