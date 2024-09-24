@@ -164,7 +164,7 @@ i2c:
   sda: $sda_pin
   scl: $scl_pin
   # scan: TRUE
-  id: bus_a
+  id: i2cBusA
   frequency: 100hz
 
 pcf8574:
