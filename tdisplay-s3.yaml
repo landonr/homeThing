@@ -42,8 +42,6 @@ external_components:
       media_player_source_spotify,
       media_player_source_custom
     ]
-  - source: github://pr#4710 # for media player image
-    components: [ online_image ]
   
 packages: 
   # common
