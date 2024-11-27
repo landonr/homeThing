@@ -230,7 +230,8 @@ display:
     dc_pin: 27
     reset_pin: 33
     id: my_display
-    update_interval: 3600s 
+    update_interval: 3600s
+    invert_colors: false
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
