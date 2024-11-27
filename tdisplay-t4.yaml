@@ -284,6 +284,7 @@ display:
     reset_pin: 05
     update_interval: 3600s
     rotation: 270
+    invert_colors: false
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
