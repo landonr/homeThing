@@ -176,33 +176,53 @@ image:
   - file: mdi:weather-night
     id: weather_clear
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-cloudy
     id: weather_cloudy
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-fog
     id: weather_fog
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-hail
     id: weather_hail
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-rainy
     id: weather_rainy
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-snowy
     id: weather_snow
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-sunny
     id: weather_sunny
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-windy
     id: weather_windy
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-partly-cloudy
     id: weather_partly_cloudy
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
   - file: mdi:weather-lightning
     id: weather_lightning
     resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
     # Launch image is included with other images
   - id: launch_image
     file: $launch_image_file
