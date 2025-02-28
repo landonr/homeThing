@@ -4,10 +4,7 @@ esphome:
 api:
 
 esp32:
-  board: featheresp32
-  framework:
-    type: esp-idf
-    version: recommended
+  board: m5stack-fire
 
 logger:
   level: DEBUG

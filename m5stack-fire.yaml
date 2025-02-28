@@ -1,6 +1,7 @@
 esphome:
   name: fireremote
-  platform: ESP32
+
+esp32:
   board: m5stack-fire
 
 # WiFi Configuration, uncomment and fill secrets.yaml with wifi_ssid and wifi_password to enable fast connect

@@ -15,33 +15,43 @@ image:
   - file: mdi:weather-night
     id: weather_clear
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-cloudy
     id: weather_cloudy
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-fog
     id: weather_fog
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-hail
     id: weather_hail
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-rainy
     id: weather_rainy
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-snowy
     id: weather_snow
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-sunny
     id: weather_sunny
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-windy
     id: weather_windy
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-partly-cloudy
     id: weather_partly_cloudy
     resize: $weather_icon_size
+    type: BINARY
   - file: mdi:weather-lightning
     id: weather_lightning
     resize: $weather_icon_size
+    type: BINARY
 
 sensor:
   - platform: homeassistant
