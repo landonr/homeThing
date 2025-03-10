@@ -56,7 +56,6 @@ jobs:
         run: |
           echo "d2lmaV9ic3NpZDogIjFDOjg3OjJDOjcwOkMyOkMyIgp3aWZpX3NzaWQ6ICJzc2lkIgp3aWZpX3Bhc3N3b3JkOiAid2lmaXBhc3MiCndpZmlfZmFsbGJhY2tfcGFzc3dvcmQ6ICJ3aWZpZmFsbGJhY2twYXNzIgphcGlfZW5jcnlwdGlvbjogImFwaWVuY3J5cHRpb24iCm90YV9lbmNyeXB0aW9uOiAib3RhZW5jcnlwdGlvbiIK" | base64 --decode > secrets.yaml
       - name: Build esphome
-        uses: esphome/build-action@v2.0.1
+        uses: esphome/build-action@v6.0.0
         with:
-          # version: dev
           yaml_file: ${{ matrix.name }}
