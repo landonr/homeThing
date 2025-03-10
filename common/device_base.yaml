@@ -25,6 +25,14 @@ api:
       then:
       - lambda: |-
           id(homeThingMenu)->goToScreenFromString(screen_name);
+    - service: notify_homething
+      variables:
+        title: string
+        message: string
+        # type_str: string
+      then:
+        - lambda: |-
+            id(homeThingMenu)->addNotification(title, message, "", true);
 
 time:
   - platform: homeassistant
