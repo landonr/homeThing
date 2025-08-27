@@ -71,6 +71,7 @@ packages: # maybe modify: include default ipod controls
       common/m5stack-stickc/binary_sensor.yaml, # buttons
       common/m5stack-stickc/MiniEncoderC.yaml, # rotary encoder and built in led
       common/images.yaml, # boot screen image
+      common/logger.yaml, # logger
     ]
     refresh: 0s
 
