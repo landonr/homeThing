@@ -3,7 +3,6 @@ light:
     rgb_order: GRB
     pin: GPIO15
     num_leds: 10
-    rmt_channel: 1
     chipset: SK6812
     name: "${friendly_name} Remote Light"
     restore_mode: ALWAYS_OFF
