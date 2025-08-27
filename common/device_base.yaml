@@ -18,6 +18,7 @@ ota:
 
 api:
   id: homeassistant_api_id
+  homeassistant_states: true
   services:
     - service: goto_screen
       variables:
