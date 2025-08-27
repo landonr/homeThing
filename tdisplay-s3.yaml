@@ -52,6 +52,7 @@ packages:
   images: github://landonr/homeThing/common/images.yaml@main
   nowPlayingImage: github://landonr/homeThing/common/nowPlayingImage.yaml@main
   voice_assistant: github://landonr/homeThing/common/voice_assistant.yaml@main
+  logger: github://landonr/homeThing/common/logger.yaml@main
 
   # ipod
   battery: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_battery.yaml@main

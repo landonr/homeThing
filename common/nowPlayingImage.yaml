@@ -40,10 +40,10 @@ text_sensor:
     attribute: url
     on_value:
       then:
-      - logger.log:
-          level: debug
-          format: "new online_image %s"
-          args: [ 'x.c_str()' ]
+      # - logger.log:
+      #     level: debug
+      #     format: "new online_image %s"
+      #     args: [ 'x.c_str()' ]
       - online_image.set_url:
           id: media_player_image
           # prepend http:// because it has trouble decoding the url otherwise
@@ -55,10 +55,10 @@ online_image:
     type: RGB565
     format: PNG
     on_download_finished:
-      - logger.log:
-          level: debug
-          format: "new online_image downloaded %s"
-          args: [ 'id(${online_image_text_sensor_id}).state' ]
+      # - logger.log:
+      #     level: debug
+      #     format: "new online_image downloaded %s"
+      #     args: [ 'id(${online_image_text_sensor_id}).state' ]
       - component.update: ${online_image_display_id}
     on_error:
       - logger.log: "Could not download the online image"
