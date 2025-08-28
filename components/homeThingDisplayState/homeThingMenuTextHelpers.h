@@ -22,8 +22,7 @@ class HomeThingMenuTextHelpers {
                       float widthRatio);
   void drawTextMarquee(int xPos, int yPos, font::Font* font, Color color,
                        display::TextAlign alignment, std::string text,
-                       int animationTick,
-                       display::Display* display,
+                       int animationTick, display::Display* display,
                        float widthRatio);
 
  private:

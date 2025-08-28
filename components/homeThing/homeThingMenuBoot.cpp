@@ -57,9 +57,9 @@ int HomeThingMenuBoot::drawBootSequenceTitleRainbow(
             xPos - textWidth / 2 +
             (i * display_state_->get_font_large()->get_baseline() *
              display_state_->get_font_size_width_ratio());
-        display_->printf(
-            characterXPos, yPos, display_state_->get_font_large_heavy(), color,
-            display::TextAlign::TOP_LEFT, "%c", bootTitle[i]);
+        display_->printf(characterXPos, yPos,
+                         display_state_->get_font_large_heavy(), color,
+                         display::TextAlign::TOP_LEFT, "%c", bootTitle[i]);
       }
     }
   }
@@ -83,11 +83,11 @@ int HomeThingMenuBoot::drawBootSequenceLogo(int xPos, int imageYPos) {
     }
     auto color = Color(colorValue, colorValue, colorValue);
     display_->image(xPos, imageYPos, get_launch_image(),
-                           display::ImageAlign::TOP_CENTER, color);
+                    display::ImageAlign::TOP_CENTER, color);
   } else if (animationTick >= totalDuration) {
     int color = !display_state_->get_dark_mode() ? 0 : 255;
     display_->image(xPos, imageYPos, get_launch_image(),
-                           display::ImageAlign::TOP_CENTER);
+                    display::ImageAlign::TOP_CENTER);
   }
   return totalDuration;
 #endif
@@ -143,9 +143,9 @@ void HomeThingMenuBoot::drawBootSequenceLoadingBar(int yPosOffset,
                    display_state_->get_font_size_width_ratio() * 3;
   int totalBarWidth = display_->get_width() - iconMargin * 2;
   int barWidth = (totalBarWidth - 4) * progress;
-  int yPos = display_state_->getBottomLoadingBarYPosition(
-                 display_->get_height()) +
-             yPosOffset;
+  int yPos =
+      display_state_->getBottomLoadingBarYPosition(display_->get_height()) +
+      yPosOffset;
 
   display_->rectangle(
       iconMargin, yPos, totalBarWidth, barHeight,
@@ -199,10 +199,10 @@ BootMenuSkipState HomeThingMenuBoot::bootSequenceCanSkip(
 void HomeThingMenuBoot::drawBootSequenceSkipTitle(
     int xPos, int imageYPos, const MenuStates activeMenuState) {
   auto skip_state = bootSequenceCanSkip(activeMenuState);
-  int yPos = display_state_->getBottomLoadingBarYPosition(
-                 display_->get_height()) -
-             display_state_->get_margin_size() / 2 -
-             display_state_->get_font_small()->get_baseline();
+  int yPos =
+      display_state_->getBottomLoadingBarYPosition(display_->get_height()) -
+      display_state_->get_margin_size() / 2 -
+      display_state_->get_font_small()->get_baseline();
   switch (skip_state) {
     case BOOT_MENU_SKIP_STATE_NONE: {
       break;
@@ -238,8 +238,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
       display_state_->drawTextWrapped(
           xPos, yPos, display_state_->get_font_large_heavy(),
           display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "api connecting...", 4,
-          display_);
+          display::TextAlign::TOP_CENTER, "api connecting...", 4, display_);
       break;
     case BOOT_MENU_STATE_PLAYERS:
     case BOOT_MENU_STATE_COMPLETE: {
@@ -250,14 +249,12 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
         display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, playersLoadedString, 5,
-            display_);
+            display::TextAlign::TOP_CENTER, playersLoadedString, 5, display_);
       } else {
         display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_large_heavy(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, "api connected!", 4,
-            display_);
+            display::TextAlign::TOP_CENTER, "api connected!", 4, display_);
       }
 #endif
       break;
@@ -266,17 +263,16 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
       display_state_->drawTextWrapped(
           xPos, yPos, display_state_->get_font_large_heavy(),
           display_state_->get_color_palette()->get_accent_primary(),
-          display::TextAlign::TOP_CENTER, "wifi connecting...", 4,
-          display_);
+          display::TextAlign::TOP_CENTER, "wifi connecting...", 4, display_);
       break;
 #ifdef USE_CAPTIVE_PORTAL
     case BOOT_MENU_STATE_ACCESS_POINT: {
-      yPos = display_state_->get_margin_size() +
-             display_state_->drawTextWrapped(
-                 xPos, yPos, display_state_->get_font_large(),
-                 display_state_->get_color_palette()->get_accent_primary(),
-                 display::TextAlign::TOP_CENTER, "WIFI Access Point", 2,
-                 display_);
+      yPos =
+          display_state_->get_margin_size() +
+          display_state_->drawTextWrapped(
+              xPos, yPos, display_state_->get_font_large(),
+              display_state_->get_color_palette()->get_accent_primary(),
+              display::TextAlign::TOP_CENTER, "WIFI Access Point", 2, display_);
       if (wifi::global_wifi_component->has_ap()) {
         wifi::WiFiAP ap = wifi::global_wifi_component->get_ap();
         const std::string ssidText = ap.get_ssid();
@@ -289,8 +285,7 @@ int HomeThingMenuBoot::drawBootSequenceTitle(int xPos, int imageYPos,
         display_state_->drawTextWrapped(
             xPos, yPos, display_state_->get_font_medium(),
             display_state_->get_color_palette()->get_accent_primary(),
-            display::TextAlign::TOP_CENTER, "Not Available", 4,
-            display_);
+            display::TextAlign::TOP_CENTER, "Not Available", 4, display_);
       }
       break;
     }

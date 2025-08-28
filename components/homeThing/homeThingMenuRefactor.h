@@ -20,8 +20,7 @@ class HomeThingMenuRefactor {
   HomeThingMenuRefactor(
       display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state)
-      : display_(new_display),
-        display_state_(new_display_state) {}
+      : display_(new_display), display_state_(new_display_state) {}
   // move to menu items
   void drawGroupedBar(int yPos, bool extend);
   void drawLightSliderBar(int xPos, int yPos, int sliderHeight,

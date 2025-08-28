@@ -39,11 +39,9 @@ void HomeThingAppBreakout::reset() {
   // Set up the bricks
   brick_rows = 4;  // Number of rows of bricks
   brick_cols = 8;  // Number of columns of bricks
-  brick_width =
-      (display_->get_width() - margin * 2) / (brick_rows + margin);
+  brick_width = (display_->get_width() - margin * 2) / (brick_rows + margin);
 
-  brick_height =
-      (display_->get_height() - get_top_margin()) / brick_rows / 4;
+  brick_height = (display_->get_height() - get_top_margin()) / brick_rows / 4;
 
   // Initialize the bricks array (you may use a data structure like a 2D array)
   for (int row = 0; row < brick_rows; ++row) {
@@ -73,8 +71,8 @@ void HomeThingAppBreakout::draw_paddle() {
   Color paddle_color = display_state_->get_color_palette()->get_blue();
 
   // Draw the paddle rectangle on the display
-  display_->filled_rectangle(paddle_position_x, paddle_position_y,
-                                    paddle_width, paddle_height, paddle_color);
+  display_->filled_rectangle(paddle_position_x, paddle_position_y, paddle_width,
+                             paddle_height, paddle_color);
 }
 
 void HomeThingAppBreakout::draw_ball() {
@@ -83,7 +81,7 @@ void HomeThingAppBreakout::draw_ball() {
 
   // Draw the ball as a filled circle on the display
   display_->filled_circle(ball_position_x, ball_position_y, ball_radius,
-                                 ball_color);
+                          ball_color);
 }
 
 void HomeThingAppBreakout::draw_bricks() {
@@ -96,8 +94,7 @@ void HomeThingAppBreakout::draw_bricks() {
         Coordinate brick_position = calculate_brick_position(row, col);
         // Draw a rectangle for each active brick
         display_->filled_rectangle(brick_position.x, brick_position.y,
-                                          brick_width, brick_height,
-                                          brick_color);
+                                   brick_width, brick_height, brick_color);
       }
     }
   }
@@ -131,7 +128,7 @@ void HomeThingAppBreakout::draw_lives() {
 
   // Draw the lives on the display
   display_->printf(text_x, text_y, font, text_color,
-                          display::TextAlign::TOP_RIGHT, lives_text.c_str());
+                   display::TextAlign::TOP_RIGHT, lives_text.c_str());
 }
 
 void HomeThingAppBreakout::draw_game_over() {
@@ -191,8 +188,7 @@ void HomeThingAppBreakout::draw_starting() {
 }
 
 Coordinate HomeThingAppBreakout::get_display_bounds() {
-  int widthBounds =
-      (display_->get_width() - (margin * 2)) / displayScale;
+  int widthBounds = (display_->get_width() - (margin * 2)) / displayScale;
   int heightBounds = (display_->get_height() -
                       ((margin * 2) + display_state_->get_header_height())) /
                      displayScale;
@@ -297,8 +293,7 @@ void HomeThingAppBreakout::active_tick() {
   // Check for collisions with the walls (left, right, and top)
   if (ball_position_x <= 0 || ball_position_x >= display_->get_width() ||
       ball_position_y <= display_state_->get_header_height()) {
-    if (ball_position_x <= 0 ||
-        ball_position_x >= display_->get_width()) {
+    if (ball_position_x <= 0 || ball_position_x >= display_->get_width()) {
       ball_direction_x = -ball_direction_x;
     }
     if (ball_position_y <= display_state_->get_header_height()) {

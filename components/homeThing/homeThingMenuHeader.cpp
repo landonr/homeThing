@@ -16,14 +16,14 @@ void HomeThingMenuHeader::drawHeaderTitleWithString(std::string title, int xPos,
                                                     int yPosOffset) {
   int yPos = getHeaderTextYPos(yPosOffset);
   display_->printf(xPos, yPos, display_state_->get_font_small(),
-                          display_state_->primaryTextColor(), title.c_str());
+                   display_state_->primaryTextColor(), title.c_str());
 }
 
 int HomeThingMenuHeader::drawHeaderIcon(std::string title, int xPos,
                                         Color iconColor) {
   int yPos = getHeaderTextYPos(0);
   display_->printf(xPos, yPos, display_state_->get_font_material_small(),
-                          iconColor, title.c_str());
+                   iconColor, title.c_str());
   return xPos + display_state_->get_icon_size() +
          display_state_->get_margin_size() / 2;
 }
@@ -116,8 +116,7 @@ int HomeThingMenuHeader::drawHeaderTime(int oldXPos, int yPosOffset) {
                            display_state_->get_font_small()->get_baseline(),
                            timeString.length());
   display_->printf(xPos, yPos, display_state_->get_font_small(),
-                          display_state_->primaryTextColor(),
-                          timeString.c_str());
+                   display_state_->primaryTextColor(), timeString.c_str());
   return xPos - display_state_->get_margin_size() / 2;
 }
 #endif
@@ -133,13 +132,12 @@ int HomeThingMenuHeader::drawBattery(int oldXPos, int yPosOffset) {
   int capHeight = 6;
   int capWidth = 3;
   float xPos = oldXPos - batteryWidth;
-  display_->rectangle(
-      xPos, yPos, batteryWidth, batteryHeight,
-      display_state_->get_color_palette()->get_gray_dark());
-  display_->rectangle(
-      xPos + batteryWidth - 1, yPos + (batteryHeight / 2) - (capHeight / 2),
-      capWidth, capHeight,
-      display_state_->get_color_palette()->get_gray_dark());
+  display_->rectangle(xPos, yPos, batteryWidth, batteryHeight,
+                      display_state_->get_color_palette()->get_gray_dark());
+  display_->rectangle(xPos + batteryWidth - 1,
+                      yPos + (batteryHeight / 2) - (capHeight / 2), capWidth,
+                      capHeight,
+                      display_state_->get_color_palette()->get_gray_dark());
   if (get_battery_percent() <= 100 && !get_charging()) {
     display_->filled_rectangle(
         xPos + 1, yPos + 1, (batteryWidth * get_battery_percent() * 0.01) - 2,
@@ -159,8 +157,7 @@ void HomeThingMenuHeader::drawHeader(int yPosOffset,
       display_->get_width(), 1,
       display_state_->get_color_palette()->get_accent_primary());
   drawHeaderTitle(yPosOffset, activeMenuState);
-  int xPos =
-      display_->get_width() - display_state_->get_margin_size() / 2;
+  int xPos = display_->get_width() - display_state_->get_margin_size() / 2;
   xPos = drawBattery(xPos, yPosOffset);
 #ifdef USE_TIME
   xPos = drawHeaderTime(xPos, yPosOffset);

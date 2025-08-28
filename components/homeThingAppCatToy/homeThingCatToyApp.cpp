@@ -44,33 +44,30 @@ void HomeThingCatToyApp::draw_app(
 
   auto color = display_state_->get_color_palette()->get_pink();
   int yPos = display_->get_height() * 0.1;
-  display_->printf(display_->get_width() * 0.5, yPos, largeFont,
-                          color, display::TextAlign::TOP_CENTER, "Cat Toy!");
+  display_->printf(display_->get_width() * 0.5, yPos, largeFont, color,
+                   display::TextAlign::TOP_CENTER, "Cat Toy!");
 
   color = display_state_->get_color_palette()->get_red();
-  display_->printf((display_->get_width() * 0.5) + 1, yPos + 1,
-                          largeFont, color, display::TextAlign::TOP_CENTER,
-                          "Cat Toy!");
+  display_->printf((display_->get_width() * 0.5) + 1, yPos + 1, largeFont,
+                   color, display::TextAlign::TOP_CENTER, "Cat Toy!");
 
   yPos = display_->get_height() * 0.3;
   display_->printf(display_->get_width() * 0.5, yPos, largeFont,
-                          primaryTextColor, display::TextAlign::TOP_CENTER,
-                          "Scroll Right");
+                   primaryTextColor, display::TextAlign::TOP_CENTER,
+                   "Scroll Right");
 
   yPos = display_->get_height() * 0.4;
   display_->printf(display_->get_width() * 0.5, yPos, largeFont,
-                          primaryTextColor, display::TextAlign::TOP_CENTER,
-                          "Drive");
+                   primaryTextColor, display::TextAlign::TOP_CENTER, "Drive");
 
   yPos = display_->get_height() * 0.6;
   display_->printf(display_->get_width() * 0.5, yPos, largeFont,
-                          primaryTextColor, display::TextAlign::TOP_CENTER,
-                          "Scroll Left");
+                   primaryTextColor, display::TextAlign::TOP_CENTER,
+                   "Scroll Left");
 
   yPos = display_->get_height() * 0.7;
   display_->printf(display_->get_width() * 0.5, yPos, largeFont,
-                          primaryTextColor, display::TextAlign::TOP_CENTER,
-                          "Reverse");
+                   primaryTextColor, display::TextAlign::TOP_CENTER, "Reverse");
 }
 
 bool HomeThingCatToyApp::idleTick(int idleTime, int display_timeout) {

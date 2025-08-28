@@ -52,7 +52,7 @@ int HomeThingMenuNotifications::drawNotification(
 
   // Draw header filled rectangle
   display_->filled_rectangle(rectXPos, yPos, rectWidth, headerHeight,
-                                    mixedColor);
+                             mixedColor);
 
   // Wrap and draw text
   int textXPos = rectXPos + borderSize;

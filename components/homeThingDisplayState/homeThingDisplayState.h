@@ -147,8 +147,7 @@ class HomeThingDisplayState {
 
   void drawTextMarquee(int xPos, int yPos, font::Font* font, Color color,
                        display::TextAlign alignment, std::string text,
-                       int animationTick,
-                       display::Display* display) {
+                       int animationTick, display::Display* display) {
     text_helpers_->drawTextMarquee(xPos, yPos, font, color, alignment, text,
                                    animationTick, display,
                                    get_font_size_width_ratio());

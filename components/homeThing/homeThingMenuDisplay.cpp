@@ -49,13 +49,12 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
             display_state_->get_margin_size(),
         display_state_->get_color_palette()->get_accent_primary());
     display_->printf(xPos, textYPos, display_state_->get_font_medium(),
-                            display_state_->secondaryTextColor(),
-                            display::TextAlign::TOP_LEFT, "%s",
-                            marqueeTitle.c_str());
+                     display_state_->secondaryTextColor(),
+                     display::TextAlign::TOP_LEFT, "%s", marqueeTitle.c_str());
   } else {
     display_->printf(xPos, textYPos, display_state_->get_font_medium(),
-                            display_state_->primaryTextColor(),
-                            display::TextAlign::TOP_LEFT, "%s", title.c_str());
+                     display_state_->primaryTextColor(),
+                     display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
   return animating;
 }
@@ -71,15 +70,15 @@ void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
       display_state_->get_color_palette()->get_accent_primary();
   auto text_color = display_state_->primaryTextColor();
   display_->filled_rectangle(xPos - box_size_width / 2,
-                                    yPos - box_size_height / 2, box_size_width,
-                                    box_size_height, background_color);
+                             yPos - box_size_height / 2, box_size_width,
+                             box_size_height, background_color);
   display_->printf(xPos, yPos - text_font->get_baseline(), text_font,
-                          text_color, display::TextAlign::CENTER, "Locked,");
+                   text_color, display::TextAlign::CENTER, "Locked,");
   display_->printf(xPos, yPos, text_font, text_color,
-                          display::TextAlign::CENTER, "Press Option");
+                   display::TextAlign::CENTER, "Press Option");
   display_->printf(xPos, yPos + text_font->get_baseline(), number_font,
-                          text_color, display::TextAlign::CENTER, "%d/2",
-                          unlock_presses);
+                   text_color, display::TextAlign::CENTER, "%d/2",
+                   unlock_presses);
 }
 
 void HomeThingMenuDisplay::draw_menu_title_value(std::string value, int yPos,
@@ -100,12 +99,12 @@ void HomeThingMenuDisplay::draw_menu_title_value(std::string value, int yPos,
       backgroundColor);
 
   int textYPos = yPos + (display_state_->get_margin_size() / 4);
-  int textXPos = display_->get_width() -
-                 display_state_->get_margin_size() / 2 - scrollBarMargin;
+  int textXPos = display_->get_width() - display_state_->get_margin_size() / 2 -
+                 scrollBarMargin;
 
   display_->printf(textXPos, textYPos, display_state_->get_font_medium(),
-                          display_state_->secondaryTextColor(),
-                          display::TextAlign::TOP_RIGHT, "%s", value.c_str());
+                   display_state_->secondaryTextColor(),
+                   display::TextAlign::TOP_RIGHT, "%s", value.c_str());
 }
 
 bool HomeThingMenuDisplay::draw_menu_titles(
@@ -289,9 +288,8 @@ void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
         (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 +
         headerHeight;
     display_->filled_rectangle(
-        display_->get_width() - scrollBarWidth, headerHeight,
-        scrollBarWidth, screenHeight,
-        display_state_->get_color_palette()->get_gray_dark_2());
+        display_->get_width() - scrollBarWidth, headerHeight, scrollBarWidth,
+        screenHeight, display_state_->get_color_palette()->get_gray_dark_2());
     display_->filled_rectangle(
         display_->get_width() - scrollBarWidth + scrollBarMargin, yPos,
         scrollBarWidth - scrollBarMargin * 2, height - 1,
@@ -395,22 +393,22 @@ void HomeThingMenuDisplay::drawTitleImage(
   switch (titleState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
-      display_->printf(
-          xPos, yPos, display_state_->get_font_material_large(), color, "󰐊");
+      display_->printf(xPos, yPos, display_state_->get_font_material_large(),
+                       color, "󰐊");
       break;
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
-      display_->printf(
-          xPos, yPos, display_state_->get_font_material_large(), color, "󰏤");
+      display_->printf(xPos, yPos, display_state_->get_font_material_large(),
+                       color, "󰏤");
       break;
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
-      display_->printf(
-          xPos, yPos, display_state_->get_font_material_large(), color, "󰓛");
+      display_->printf(xPos, yPos, display_state_->get_font_material_large(),
+                       color, "󰓛");
       break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
-      display_->printf(
-          xPos, yPos, display_state_->get_font_material_large(), color, "󰽥");
+      display_->printf(xPos, yPos, display_state_->get_font_material_large(),
+                       color, "󰽥");
       break;
     default:
       break;

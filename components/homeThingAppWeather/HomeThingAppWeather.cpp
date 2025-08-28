@@ -55,44 +55,34 @@ void HomeThingAppWeather::display_condition_image(
   int newXPos = xPos - cloudy_image_->get_width() / 2 - 10;
   if (condition == "clear-night" || condition == "night") {
     display_->image(newXPos, yPos, clear_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "cloudy") {
     display_->image(newXPos, yPos, cloudy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "fog") {
-    display_->image(newXPos, yPos, fog_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, fog_image_, display::ImageAlign::TOP_CENTER,
+                    Color(255, 255, 255));
   } else if (condition == "hail") {
-    display_->image(newXPos, yPos, hail_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, hail_image_, display::ImageAlign::TOP_CENTER,
+                    Color(255, 255, 255));
   } else if (condition == "rainy" || condition == "pouring") {
     display_->image(newXPos, yPos, rainy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "snowy" || condition == "snowy-rainy") {
-    display_->image(newXPos, yPos, snow_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, snow_image_, display::ImageAlign::TOP_CENTER,
+                    Color(255, 255, 255));
   } else if (condition == "sunny") {
     display_->image(newXPos, yPos, sunny_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "windy" || condition == "windy-variant") {
     display_->image(newXPos, yPos, windy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "partly-cloudy") {
     display_->image(newXPos, yPos, partly_cloudy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "lightning" || condition == "lightning-rainy") {
     display_->image(newXPos, yPos, lightning_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   }
 }
 

@@ -45,13 +45,11 @@ void HomeThingMenuTextHelpers::drawTextMarquee(
     display::TextAlign alignment, std::string text, int animationTick,
     display::Display* display, float widthRatio) {
   // Adjust the number of characters to show in the marquee
-  const int marqueeLength =
-      getCharacterLimit(xPos, font->get_baseline(), alignment,
-                        display->get_width(), widthRatio);
+  const int marqueeLength = getCharacterLimit(
+      xPos, font->get_baseline(), alignment, display->get_width(), widthRatio);
   ;
   if (text.length() < marqueeLength) {
-    display->printf(xPos, yPos, font, color, alignment, "%s",
-                           text.c_str());
+    display->printf(xPos, yPos, font, color, alignment, "%s", text.c_str());
     return;
   }
   std::string spaceTitle = "   ";
@@ -98,18 +96,20 @@ void HomeThingMenuTextHelpers::drawTextMarquee(
 
   if (!marqueeTitle.empty()) {
     display->printf(xPos, yPos, font, color, alignment, "%s",
-                           marqueeTitle.c_str());
+                    marqueeTitle.c_str());
   }
 }
 
-int HomeThingMenuTextHelpers::drawTextWrapped(
-    int xPos, int yPos, font::Font* font, Color color,
-    display::TextAlign alignment, std::string text, int maxLines,
-    display::Display* display, float widthRatio) {
+int HomeThingMenuTextHelpers::drawTextWrapped(int xPos, int yPos,
+                                              font::Font* font, Color color,
+                                              display::TextAlign alignment,
+                                              std::string text, int maxLines,
+                                              display::Display* display,
+                                              float widthRatio) {
   int fontSize = font->get_baseline();
   unsigned line_begin = 0;
-  const unsigned per_line = getCharacterLimit(
-      xPos, fontSize, alignment, display->get_width(), widthRatio);
+  const unsigned per_line = getCharacterLimit(xPos, fontSize, alignment,
+                                              display->get_width(), widthRatio);
   ESP_LOGD(TAG, "drawTextWrapped: per_line1 %d text %s", per_line,
            text.c_str());
   unsigned linesDrawn = 0;

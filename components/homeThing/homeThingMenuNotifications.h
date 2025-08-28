@@ -21,8 +21,7 @@ class HomeThingMenuNotifications {
   HomeThingMenuNotifications(
       display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state)
-      : display_(new_display),
-        display_state_(new_display_state) {}
+      : display_(new_display), display_state_(new_display_state) {}
   void drawNotifications();
   int drawNotification(const Notification notification, int yPos);
   void addNotification(const std::string& title, const std::string& subtitle,

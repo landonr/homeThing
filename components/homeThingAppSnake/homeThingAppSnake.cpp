@@ -22,8 +22,7 @@ Coordinate HomeThingAppSnake::get_random_coordinate() {
 }
 
 Coordinate HomeThingAppSnake::get_display_bounds() {
-  int widthBounds =
-      (display_->get_width() - (margin * 2)) / displayScale;
+  int widthBounds = (display_->get_width() - (margin * 2)) / displayScale;
   int heightBounds = (display_->get_height() -
                       ((margin * 2) + display_state_->get_header_height())) /
                      displayScale;
@@ -71,10 +70,9 @@ void HomeThingAppSnake::draw_app_playing() {
   draw_resized_pixel(fruit_position_.x, fruit_position_.y, fruitColor);
 
   auto borderColor = display_state_->get_color_palette()->get_accent_primary();
-  display_->rectangle(
-      margin, margin + display_state_->get_header_height(),
-      get_display_bounds().x * displayScale,
-      get_display_bounds().y * displayScale, borderColor);
+  display_->rectangle(margin, margin + display_state_->get_header_height(),
+                      get_display_bounds().x * displayScale,
+                      get_display_bounds().y * displayScale, borderColor);
 }
 
 void HomeThingAppSnake::draw_app_starting() {

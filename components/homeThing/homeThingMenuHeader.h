@@ -38,8 +38,7 @@ class HomeThingMenuHeader {
   HomeThingMenuHeader(
       display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state)
-      : display_(new_display),
-        display_state_(new_display_state) {}
+      : display_(new_display), display_state_(new_display_state) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
   void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void set_battery_percent(sensor::Sensor* battery_percent) {
