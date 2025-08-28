@@ -236,7 +236,7 @@ CONFIG_SCHEMA =  cv.All(
         {
             cv.GenerateID(): cv.declare_id(HomeThingMenuBase),
             cv.Optional(CONF_NOTIFICATIONS, default={}): NOTIFICATIONS_SCHEMA,
-            cv.Required(CONF_DISPLAY): cv.use_id(display.DisplayBuffer),
+            cv.Required(CONF_DISPLAY): cv.use_id(display.Display),
             cv.Required(CONF_DISPLAY_STATE): cv.use_id(homething_display_state_ns.HomeThingDisplayState),
             cv.Optional(CONF_SETTINGS, default={}): MENU_SETTINGS_SCHEMA,
             cv.Optional(CONF_SLEEP_SWITCH): cv.use_id(switch.Switch),
@@ -302,8 +302,8 @@ MENU_BOOT_IDS = [
     CONF_LAUNCH_IMAGE
 ]
 
-async def menu_boot_to_code(config, display_buffer, display_state, menu_header):
-    menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display_buffer, display_state, menu_header)
+async def menu_boot_to_code(config, display, display_state, menu_header):
+    menu_boot = cg.new_Pvariable(config[CONF_BOOT][CONF_ID], display, display_state, menu_header)
     if CONF_LAUNCH_IMAGE in config[CONF_BOOT]:
         cg.add_build_flag("-DUSE_IMAGE")
     await ids_to_code(config[CONF_BOOT], menu_boot, MENU_BOOT_IDS)
@@ -318,19 +318,19 @@ async def battery_to_code(config, var):
     if CONF_BATTERY in config:
         await ids_to_code(config[CONF_BATTERY], var, BATTERY_IDS)
 
-async def menu_display_to_code(config, display_buffer, display_state):
+async def menu_display_to_code(config, display, display_state):
     menu_display_conf = config[CONF_MENU_DISPLAY]
 
-    refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display_buffer, display_state)
-    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display_buffer, display_state)
+    refactor = cg.new_Pvariable(menu_display_conf[CONF_REFACTOR], display, display_state)
+    menu_header = cg.new_Pvariable(menu_display_conf[CONF_HEADER], display, display_state)
     if CONF_TIME_ID in config[CONF_HEADER]:
         time_ = await cg.get_variable(config[CONF_HEADER][CONF_TIME_ID])
         cg.add(menu_header.set_time_id(time_))
     await battery_to_code(config, menu_header)
 
-    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display_buffer, display_state, refactor, menu_header)
+    menu_display = cg.new_Pvariable(menu_display_conf[CONF_ID], display, display_state, refactor, menu_header)
     if (CONF_BOOT in config):
-        menu_boot = await menu_boot_to_code(config, display_buffer, display_state, menu_header)
+        menu_boot = await menu_boot_to_code(config, display, display_state, menu_header)
         await ids_to_code(config, menu_boot, MENU_BOOT_IDS)
         cg.add(menu_display.set_boot(menu_boot))
     
@@ -390,16 +390,16 @@ MENU_IDS = [
 ]
 
 async def to_code(config):
-    display_buffer = await cg.get_variable(config[CONF_DISPLAY])
+    display = await cg.get_variable(config[CONF_DISPLAY])
     display_state = await cg.get_variable(config[CONF_DISPLAY_STATE])
-    menu_display = await menu_display_to_code(config, display_buffer, display_state)
+    menu_display = await menu_display_to_code(config, display, display_state)
 
     menu_settings = await menu_settings_to_code(config[CONF_SETTINGS])
 
     menu = cg.new_Pvariable(config[CONF_ID], menu_settings, menu_display)
     await cg.register_component(menu, config)
 
-    notifications = cg.new_Pvariable(config[CONF_NOTIFICATIONS][CONF_ID], display_buffer, display_state)
+    notifications = cg.new_Pvariable(config[CONF_NOTIFICATIONS][CONF_ID], display, display_state)
     cg.add(menu.register_notifications(notifications))
 
     if CONF_HOME_SCREEN in config:

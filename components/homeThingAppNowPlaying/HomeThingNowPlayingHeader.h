@@ -24,7 +24,7 @@ class HomeThingMenuNowPlayingHeader
   std::string get_header_title();
 
   int draw_header_details(
-      int xPos, int yPos, display::DisplayBuffer* display_buffer,
+      int xPos, int yPos, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state);
 
  protected:
@@ -33,15 +33,15 @@ class HomeThingMenuNowPlayingHeader
 
  private:
   int drawPlayPauseIcon(
-      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+      int oldXPos, int yPos, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state);
   int drawShuffle(
-      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+      int oldXPos, int yPos, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state);
-  int drawRepeat(int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+  int drawRepeat(int oldXPos, int yPos, display::Display* display,
                  homething_display_state::HomeThingDisplayState* display_state);
   int drawHeaderVolumeLevel(
-      int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+      int oldXPos, int yPos, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state);
   const char* const TAG = "homething.nowplaying.control.header";
   NowPlayingMenuState* menu_state_;

@@ -25,7 +25,7 @@ std::string HomeThingMenuNowPlayingHeader::get_header_title() {
 }
 
 int HomeThingMenuNowPlayingHeader::draw_header_details(
-    int xPos, int yPos, display::DisplayBuffer* display_buffer,
+    int xPos, int yPos, display::Display* display,
     homething_display_state::HomeThingDisplayState* display_state) {
   switch (*menu_state_) {
     case NOW_PLAYING_MENU_STATE_NOW_PLAYING:
@@ -33,14 +33,14 @@ int HomeThingMenuNowPlayingHeader::draw_header_details(
     default:
       return 0;
   }
-  xPos = xPos - drawPlayPauseIcon(xPos, yPos, display_buffer, display_state);
-  xPos = xPos - drawRepeat(xPos, yPos, display_buffer, display_state);
-  xPos = xPos - drawShuffle(xPos, yPos, display_buffer, display_state);
+  xPos = xPos - drawPlayPauseIcon(xPos, yPos, display, display_state);
+  xPos = xPos - drawRepeat(xPos, yPos, display, display_state);
+  xPos = xPos - drawShuffle(xPos, yPos, display, display_state);
   return xPos;
 }
 
 int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
-    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    int oldXPos, int yPos, display::Display* display,
     homething_display_state::HomeThingDisplayState* display_state) {
   int iconWidth =
       display_state->get_icon_size() + (display_state->get_margin_size() / 2);
@@ -54,7 +54,7 @@ int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
   switch (active_player->playerState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState: {
-      display_buffer->printf(
+      display->printf(
           xPos, yPos, display_state->get_font_material_small(),
           menuTitle.mediaSourceIconColor(
               display_state->get_color_palette()->get_accent_primary()),
@@ -62,21 +62,21 @@ int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
       break;
     }
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰏤");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰏤");
       break;
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰓛");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰓛");
       break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰽥");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰽥");
       break;
     default:
       return 0;
@@ -85,7 +85,7 @@ int HomeThingMenuNowPlayingHeader::drawPlayPauseIcon(
 }
 
 int HomeThingMenuNowPlayingHeader::drawShuffle(
-    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    int oldXPos, int yPos, display::Display* display,
     homething_display_state::HomeThingDisplayState* display_state) {
   if (!media_player_group_ || media_player_group_->active_player_ == NULL ||
       display_state->get_draw_shuffle() ==
@@ -107,14 +107,14 @@ int HomeThingMenuNowPlayingHeader::drawShuffle(
         display_state->get_icon_size() + (display_state->get_margin_size() / 2);
     int xPos = oldXPos - iconWidth + (display_state->get_margin_size() / 2);
     if (media_player_group_->mediaShuffling()) {
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰒝");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰒝");
     } else if (display_state->get_draw_shuffle() ==
                homething_display_state::DisplayIconEnabledState::ALWAYS) {
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰒞");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰒞");
     } else {
       return 0;
     }
@@ -124,7 +124,7 @@ int HomeThingMenuNowPlayingHeader::drawShuffle(
 }
 
 int HomeThingMenuNowPlayingHeader::drawRepeat(
-    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    int oldXPos, int yPos, display::Display* display,
     homething_display_state::HomeThingDisplayState* display_state) {
   if (display_state->get_draw_repeat() ==
           homething_display_state::DisplayIconEnabledState::OFF ||
@@ -146,23 +146,23 @@ int HomeThingMenuNowPlayingHeader::drawRepeat(
   int xPos = oldXPos - iconWidth + (display_state->get_margin_size() / 2);
   switch (media_player_group_->get_repeat_mode()) {
     case homeassistant_media_player::MediaPlayerRepeatMode::ALL:
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰑖");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰑖");
       break;
     case homeassistant_media_player::MediaPlayerRepeatMode::ONE:
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰑘");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰑘");
       break;
     case homeassistant_media_player::MediaPlayerRepeatMode::OFF:
       if (display_state->get_draw_repeat() !=
           homething_display_state::DisplayIconEnabledState::ALWAYS) {
         return 0;
       }
-      display_buffer->printf(
-          xPos, yPos, display_state->get_font_material_small(),
-          display_state->get_color_palette()->get_accent_primary(), "󰑗");
+      display->printf(xPos, yPos, display_state->get_font_material_small(),
+                      display_state->get_color_palette()->get_accent_primary(),
+                      "󰑗");
       break;
     default:
       return 0;
@@ -171,7 +171,7 @@ int HomeThingMenuNowPlayingHeader::drawRepeat(
 }
 
 int HomeThingMenuNowPlayingHeader::drawHeaderVolumeLevel(
-    int oldXPos, int yPos, display::DisplayBuffer* display_buffer,
+    int oldXPos, int yPos, display::Display* display,
     homething_display_state::HomeThingDisplayState* display_state) {
   if (media_player_group_ == nullptr ||
       media_player_group_->active_player_ == nullptr) {
@@ -181,10 +181,10 @@ int HomeThingMenuNowPlayingHeader::drawHeaderVolumeLevel(
     return 0;
   }
   int xPos = oldXPos - display_state->get_margin_size() / 2;
-  display_buffer->printf(xPos, yPos, display_state->get_font_small(),
-                         display_state->primaryTextColor(),
-                         display::TextAlign::TOP_RIGHT, "%.0f%%",
-                         media_player_group_->getVolumeLevel());
+  display->printf(xPos, yPos, display_state->get_font_small(),
+                  display_state->primaryTextColor(),
+                  display::TextAlign::TOP_RIGHT, "%.0f%%",
+                  media_player_group_->getVolumeLevel());
   return 24;
 }
 }  // namespace homething_menu_now_playing

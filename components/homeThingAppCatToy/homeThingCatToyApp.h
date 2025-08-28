@@ -16,7 +16,7 @@ class HomeThingCatToyAppHeader
   std::string get_header_title() { return "Cat Toy"; }
 
   int draw_header_details(
-      int xPos, int yPos, display::DisplayBuffer* display_buffer,
+      int xPos, int yPos, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state,
       homething_display_state::HomeThingMenuTextHelpers* text_helpers) {
     return 0;

@@ -22,9 +22,8 @@ Coordinate HomeThingAppSnake::get_random_coordinate() {
 }
 
 Coordinate HomeThingAppSnake::get_display_bounds() {
-  int widthBounds =
-      (display_buffer_->get_width() - (margin * 2)) / displayScale;
-  int heightBounds = (display_buffer_->get_height() -
+  int widthBounds = (display_->get_width() - (margin * 2)) / displayScale;
+  int heightBounds = (display_->get_height() -
                       ((margin * 2) + display_state_->get_header_height())) /
                      displayScale;
   return Coordinate(widthBounds, heightBounds);
@@ -55,7 +54,7 @@ void HomeThingAppSnake::draw_resized_pixel(int coordinateX, int coordinateY,
   int y = coordinateY * displayScale;
   for (int i = 0; i < displayScale; ++i) {
     for (int j = 0; j < displayScale; ++j) {
-      display_buffer_->draw_pixel_at(
+      display_->draw_pixel_at(
           x + i + margin, y + j + margin + display_state_->get_header_height(),
           color);
     }
@@ -71,10 +70,9 @@ void HomeThingAppSnake::draw_app_playing() {
   draw_resized_pixel(fruit_position_.x, fruit_position_.y, fruitColor);
 
   auto borderColor = display_state_->get_color_palette()->get_accent_primary();
-  display_buffer_->rectangle(
-      margin, margin + display_state_->get_header_height(),
-      get_display_bounds().x * displayScale,
-      get_display_bounds().y * displayScale, borderColor);
+  display_->rectangle(margin, margin + display_state_->get_header_height(),
+                      get_display_bounds().x * displayScale,
+                      get_display_bounds().y * displayScale, borderColor);
 }
 
 void HomeThingAppSnake::draw_app_starting() {
@@ -83,23 +81,23 @@ void HomeThingAppSnake::draw_app_starting() {
   auto primaryTextColor =
       display_state_->get_color_palette()->get_accent_primary();
 
-  int yPos = display_buffer_->get_height() * 0.1;
+  int yPos = display_->get_height() * 0.1;
   std::string text = "Snake!";
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, largeFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, largeFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
   int topScore = 10;
   text = "Top Score: " + std::to_string(topScore);
-  yPos = display_buffer_->get_height() * 0.4;
+  yPos = display_->get_height() * 0.4;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 
   text = "Center to start. Up to escape.";
-  yPos = display_buffer_->get_height() * 0.6;
+  yPos = display_->get_height() * 0.6;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 }
 
 void HomeThingAppSnake::draw_app_game_over() {
@@ -108,29 +106,29 @@ void HomeThingAppSnake::draw_app_game_over() {
   auto primaryTextColor =
       display_state_->get_color_palette()->get_accent_primary();
 
-  int yPos = display_buffer_->get_height() * 0.1;
+  int yPos = display_->get_height() * 0.1;
   std::string text = "Game Over!";
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, largeFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, largeFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 
-  yPos = display_buffer_->get_height() * 0.3;
+  yPos = display_->get_height() * 0.3;
   text = "Score: " + std::to_string(score);
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
   int topScore = 10;
   text = "Top Score: " + std::to_string(topScore);
-  yPos = display_buffer_->get_height() * 0.4;
+  yPos = display_->get_height() * 0.4;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 
   text = "Center to continue";
-  yPos = display_buffer_->get_height() * 0.6;
+  yPos = display_->get_height() * 0.6;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 }
 
 void HomeThingAppSnake::draw_app(

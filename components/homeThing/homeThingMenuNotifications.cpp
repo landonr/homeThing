@@ -28,21 +28,21 @@ int HomeThingMenuNotifications::drawNotification(
   int borderSize = 2;
   int padding = display_state_->get_margin_size();
   int maxLines = 4;  // Maximum lines allowed
-  int rectWidth = display_buffer_->get_width() - (2 * borderSize);
+  int rectWidth = display_->get_width() - (2 * borderSize);
   int font_small_height = display_state_->get_font_small()->get_height();
   int rectHeight = (maxLines - 1) * font_small_height + padding;
   int headerHeight = display_state_->get_font_medium()->get_height() + padding;
   rectHeight += headerHeight + padding;
-  int rectXPos = (display_buffer_->get_width() - rectWidth) / 2;
+  int rectXPos = (display_->get_width() - rectWidth) / 2;
 
   // Draw outer rectangle
-  display_buffer_->filled_rectangle(
+  display_->filled_rectangle(
       rectXPos - borderSize, yPos - borderSize, rectWidth + (2 * borderSize),
       rectHeight + (2 * borderSize),
       display_state_->get_color_palette()->get_gray_dark_2());
 
   // Draw inner filled rectangle
-  display_buffer_->filled_rectangle(
+  display_->filled_rectangle(
       rectXPos, yPos, rectWidth, rectHeight,
       display_state_->get_color_palette()->get_accent_primary());
 
@@ -51,8 +51,8 @@ int HomeThingMenuNotifications::drawNotification(
       display_state_->get_color_palette()->get_accent_primary(), 0.85f);
 
   // Draw header filled rectangle
-  display_buffer_->filled_rectangle(rectXPos, yPos, rectWidth, headerHeight,
-                                    mixedColor);
+  display_->filled_rectangle(rectXPos, yPos, rectWidth, headerHeight,
+                             mixedColor);
 
   // Wrap and draw text
   int textXPos = rectXPos + borderSize;
@@ -61,27 +61,27 @@ int HomeThingMenuNotifications::drawNotification(
   display_state_->drawTextWrapped(
       textXPos, textYPos, display_state_->get_font_medium(),
       display_state_->primaryTextColor(), display::TextAlign::LEFT,
-      notification.title, 1, display_buffer_);
+      notification.title, 1, display_);
 
   textYPos += headerHeight;
 
   if (!notification.subtitle.empty()) {
     // textYPos += display_state_->get_font_small()->get_height() + padding;
-    // display_buffer_->printf(textXPos, textYPos,
+    // display_->printf(textXPos, textYPos,
     //                         display_state_->get_font_small(),
     //                         display_state_->primaryTextColor(),
     //                         display::TextAlign::LEFT, notification.subtitle.c_str());
     textYPos = display_state_->drawTextWrapped(
         textXPos, textYPos, display_state_->get_font_small(),
         display_state_->primaryTextColor(), display::TextAlign::LEFT,
-        notification.subtitle, maxLines, display_buffer_);
+        notification.subtitle, maxLines, display_);
   }
 
   if (!notification.message.empty()) {
     display_state_->drawTextWrapped(
         textXPos, textYPos, display_state_->get_font_small(),
         display_state_->primaryTextColor(), display::TextAlign::LEFT,
-        notification.message, maxLines, display_buffer_);
+        notification.message, maxLines, display_);
   }
 
   return yPos + rectHeight;

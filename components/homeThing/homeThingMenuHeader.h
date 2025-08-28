@@ -27,7 +27,7 @@ class HomeThingMenuHeaderSource {
  public:
   virtual std::string get_header_title() { return "xx"; }
   virtual int draw_header_details(
-      int xPos, int yPosOffset, display::DisplayBuffer* display_buffer,
+      int xPos, int yPosOffset, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state) {
     return 0;
   }
@@ -36,10 +36,9 @@ class HomeThingMenuHeaderSource {
 class HomeThingMenuHeader {
  public:
   HomeThingMenuHeader(
-      display::DisplayBuffer* new_display_buffer,
+      display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state)
-      : display_buffer_(new_display_buffer),
-        display_state_(new_display_state) {}
+      : display_(new_display), display_state_(new_display_state) {}
   void drawHeader(int yPosOffset, const MenuStates activeMenuState);
   void draw_menu_header(HomeThingMenuHeaderSource* header_source);
   void set_battery_percent(sensor::Sensor* battery_percent) {
@@ -87,7 +86,7 @@ class HomeThingMenuHeader {
   int drawHeaderTime(int oldXPos, int yPosOffset);
 #endif
 
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   sensor::Sensor* battery_percent_{nullptr};
 #ifdef USE_BINARY_SENSOR

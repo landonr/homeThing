@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
@@ -37,10 +37,10 @@ namespace homething_menu_base {
 class HomeThingMenuDisplay {
  public:
   HomeThingMenuDisplay(
-      display::DisplayBuffer* display_buffer,
+      display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state,
       HomeThingMenuRefactor* refactor, HomeThingMenuHeader* header)
-      : display_buffer_(display_buffer),
+      : display_(display),
         display_state_(display_state),
         refactor_(refactor),
         header_(header) {}
@@ -92,7 +92,7 @@ class HomeThingMenuDisplay {
   void drawRightTitleIcon(int menuTitleSize, MenuTitleRightIcon iconState,
                           int i, int menuState, int yPos);
 
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuRefactor* refactor_{nullptr};
   HomeThingMenuHeader* header_{nullptr};

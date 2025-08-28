@@ -25,13 +25,13 @@ bool HomeThingAppWeather::should_draw_app() {
 void HomeThingAppWeather::display_temperature(int xPos, int yPos,
                                               float temperature) {
   // Display temperature icon
-  // display_buffer_->drawIcon(10, 10, temperature_icon_data, temperature_icon_width, temperature_icon_height, display_state_->get_color_palette()->get_accent_primary());
+  // display_->drawIcon(10, 10, temperature_icon_data, temperature_icon_width, temperature_icon_height, display_state_->get_color_palette()->get_accent_primary());
   // Draw temperature information
   auto state = "Temperature: " + to_string(static_cast<int>(temperature)) + "C";
   display_state_->drawTextWrapped(
       xPos, yPos, display_state_->get_font_medium(),
       display_state_->get_color_palette()->get_accent_primary(),
-      display::TextAlign::TOP_CENTER, state.c_str(), 2, display_buffer_);
+      display::TextAlign::TOP_CENTER, state.c_str(), 2, display_);
 }
 
 void HomeThingAppWeather::display_humidity(int xPos, int yPos, float humidity) {
@@ -39,7 +39,7 @@ void HomeThingAppWeather::display_humidity(int xPos, int yPos, float humidity) {
   display_state_->drawTextWrapped(
       xPos, yPos, display_state_->get_font_medium(),
       display_state_->get_color_palette()->get_accent_primary(),
-      display::TextAlign::TOP_CENTER, state.c_str(), 2, display_buffer_);
+      display::TextAlign::TOP_CENTER, state.c_str(), 2, display_);
 }
 
 void HomeThingAppWeather::display_condition(int xPos, int yPos,
@@ -47,59 +47,49 @@ void HomeThingAppWeather::display_condition(int xPos, int yPos,
   display_state_->drawTextWrapped(
       xPos, yPos, display_state_->get_font_medium(),
       display_state_->get_color_palette()->get_accent_primary(),
-      display::TextAlign::CENTER_LEFT, condition, 2, display_buffer_);
+      display::TextAlign::CENTER_LEFT, condition, 2, display_);
 }
 
 void HomeThingAppWeather::display_condition_image(
     int xPos, int yPos, const std::string& condition) {
   int newXPos = xPos - cloudy_image_->get_width() / 2 - 10;
   if (condition == "clear-night" || condition == "night") {
-    display_buffer_->image(newXPos, yPos, clear_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, clear_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "cloudy") {
-    display_buffer_->image(newXPos, yPos, cloudy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, cloudy_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "fog") {
-    display_buffer_->image(newXPos, yPos, fog_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, fog_image_, display::ImageAlign::TOP_CENTER,
+                    Color(255, 255, 255));
   } else if (condition == "hail") {
-    display_buffer_->image(newXPos, yPos, hail_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, hail_image_, display::ImageAlign::TOP_CENTER,
+                    Color(255, 255, 255));
   } else if (condition == "rainy" || condition == "pouring") {
-    display_buffer_->image(newXPos, yPos, rainy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, rainy_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "snowy" || condition == "snowy-rainy") {
-    display_buffer_->image(newXPos, yPos, snow_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, snow_image_, display::ImageAlign::TOP_CENTER,
+                    Color(255, 255, 255));
   } else if (condition == "sunny") {
-    display_buffer_->image(newXPos, yPos, sunny_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, sunny_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "windy" || condition == "windy-variant") {
-    display_buffer_->image(newXPos, yPos, windy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, windy_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "partly-cloudy") {
-    display_buffer_->image(newXPos, yPos, partly_cloudy_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, partly_cloudy_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   } else if (condition == "lightning" || condition == "lightning-rainy") {
-    display_buffer_->image(newXPos, yPos, lightning_image_,
-                           display::ImageAlign::TOP_CENTER,
-                           Color(255, 255, 255));
+    display_->image(newXPos, yPos, lightning_image_,
+                    display::ImageAlign::TOP_CENTER, Color(255, 255, 255));
   }
 }
 
 void HomeThingAppWeather::draw_app(
     int menuIndex,
     const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
-  int centerX = display_buffer_->get_width() / 2;
+  int centerX = display_->get_width() / 2;
   int imageXPos = centerX;
   int imageYPos = display_state_->get_header_height() + 2;
   int textXPos = centerX;
