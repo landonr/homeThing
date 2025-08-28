@@ -35,7 +35,7 @@ bool HomeThingCatToyApp::should_draw_app() {
 void HomeThingCatToyApp::draw_app(
     int menuIndex,
     const std::vector<homething_menu_base::MenuTitleBase*>* active_menu) {
-  if (display_buffer_ == nullptr) {
+  if (display_ == nullptr) {
     return;
   }
   auto largeFont = display_state_->get_font_large();
@@ -43,32 +43,32 @@ void HomeThingCatToyApp::draw_app(
       display_state_->get_color_palette()->get_accent_primary();
 
   auto color = display_state_->get_color_palette()->get_pink();
-  int yPos = display_buffer_->get_height() * 0.1;
-  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+  int yPos = display_->get_height() * 0.1;
+  display_->printf(display_->get_width() * 0.5, yPos, largeFont,
                           color, display::TextAlign::TOP_CENTER, "Cat Toy!");
 
   color = display_state_->get_color_palette()->get_red();
-  display_buffer_->printf((display_buffer_->get_width() * 0.5) + 1, yPos + 1,
+  display_->printf((display_->get_width() * 0.5) + 1, yPos + 1,
                           largeFont, color, display::TextAlign::TOP_CENTER,
                           "Cat Toy!");
 
-  yPos = display_buffer_->get_height() * 0.3;
-  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+  yPos = display_->get_height() * 0.3;
+  display_->printf(display_->get_width() * 0.5, yPos, largeFont,
                           primaryTextColor, display::TextAlign::TOP_CENTER,
                           "Scroll Right");
 
-  yPos = display_buffer_->get_height() * 0.4;
-  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+  yPos = display_->get_height() * 0.4;
+  display_->printf(display_->get_width() * 0.5, yPos, largeFont,
                           primaryTextColor, display::TextAlign::TOP_CENTER,
                           "Drive");
 
-  yPos = display_buffer_->get_height() * 0.6;
-  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+  yPos = display_->get_height() * 0.6;
+  display_->printf(display_->get_width() * 0.5, yPos, largeFont,
                           primaryTextColor, display::TextAlign::TOP_CENTER,
                           "Scroll Left");
 
-  yPos = display_buffer_->get_height() * 0.7;
-  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos, largeFont,
+  yPos = display_->get_height() * 0.7;
+  display_->printf(display_->get_width() * 0.5, yPos, largeFont,
                           primaryTextColor, display::TextAlign::TOP_CENTER,
                           "Reverse");
 }

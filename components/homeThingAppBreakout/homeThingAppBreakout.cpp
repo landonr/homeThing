@@ -22,9 +22,9 @@ void HomeThingAppBreakout::reset() {
 
   // Set up the paddle
   paddle_width = 30;  // Adjust the paddle width as needed
-  paddle_position_x = (display_buffer_->get_width() - paddle_width) / 2;
+  paddle_position_x = (display_->get_width() - paddle_width) / 2;
   paddle_position_y =
-      display_buffer_->get_height() - paddle_height - get_bottom_margin();
+      display_->get_height() - paddle_height - get_bottom_margin();
 
   // Set up the ball
   ball_radius = 4;  // Adjust the ball size as needed
@@ -40,10 +40,10 @@ void HomeThingAppBreakout::reset() {
   brick_rows = 4;  // Number of rows of bricks
   brick_cols = 8;  // Number of columns of bricks
   brick_width =
-      (display_buffer_->get_width() - margin * 2) / (brick_rows + margin);
+      (display_->get_width() - margin * 2) / (brick_rows + margin);
 
   brick_height =
-      (display_buffer_->get_height() - get_top_margin()) / brick_rows / 4;
+      (display_->get_height() - get_top_margin()) / brick_rows / 4;
 
   // Initialize the bricks array (you may use a data structure like a 2D array)
   for (int row = 0; row < brick_rows; ++row) {
@@ -73,7 +73,7 @@ void HomeThingAppBreakout::draw_paddle() {
   Color paddle_color = display_state_->get_color_palette()->get_blue();
 
   // Draw the paddle rectangle on the display
-  display_buffer_->filled_rectangle(paddle_position_x, paddle_position_y,
+  display_->filled_rectangle(paddle_position_x, paddle_position_y,
                                     paddle_width, paddle_height, paddle_color);
 }
 
@@ -82,7 +82,7 @@ void HomeThingAppBreakout::draw_ball() {
   Color ball_color = display_state_->get_color_palette()->get_yellow();
 
   // Draw the ball as a filled circle on the display
-  display_buffer_->filled_circle(ball_position_x, ball_position_y, ball_radius,
+  display_->filled_circle(ball_position_x, ball_position_y, ball_radius,
                                  ball_color);
 }
 
@@ -95,7 +95,7 @@ void HomeThingAppBreakout::draw_bricks() {
       if (bricks[row][col]) {
         Coordinate brick_position = calculate_brick_position(row, col);
         // Draw a rectangle for each active brick
-        display_buffer_->filled_rectangle(brick_position.x, brick_position.y,
+        display_->filled_rectangle(brick_position.x, brick_position.y,
                                           brick_width, brick_height,
                                           brick_color);
       }
@@ -108,7 +108,7 @@ void HomeThingAppBreakout::draw_score() {
   auto font = display_state_->get_font_medium();
   Color text_color = display_state_->get_color_palette()->get_white();
   int text_x = 10;
-  int text_y = display_buffer_->get_height() - get_bottom_margin();
+  int text_y = display_->get_height() - get_bottom_margin();
 
   // Convert the score integer to a string
   std::string score_text = "Score: " + std::to_string(score);
@@ -116,21 +116,21 @@ void HomeThingAppBreakout::draw_score() {
   // Draw the score on the display
   display_state_->drawTextWrapped(text_x, text_y, font, text_color,
                                   display::TextAlign::TOP_LEFT, score_text, 1,
-                                  display_buffer_);
+                                  display_);
 }
 
 void HomeThingAppBreakout::draw_lives() {
   // Determine font, color, and position for the lives display
   auto font = display_state_->get_font_medium();
   Color text_color = display_state_->get_color_palette()->get_white();
-  int text_x = display_buffer_->get_width() - 10;
-  int text_y = display_buffer_->get_height() - get_bottom_margin();
+  int text_x = display_->get_width() - 10;
+  int text_y = display_->get_height() - get_bottom_margin();
 
   // Convert the lives integer to a string
   std::string lives_text = "Lives: " + std::to_string(lives);
 
   // Draw the lives on the display
-  display_buffer_->printf(text_x, text_y, font, text_color,
+  display_->printf(text_x, text_y, font, text_color,
                           display::TextAlign::TOP_RIGHT, lives_text.c_str());
 }
 
@@ -138,26 +138,26 @@ void HomeThingAppBreakout::draw_game_over() {
   // Determine font, color, and position for the "Game Over" message
   auto font = display_state_->get_font_large();
   Color text_color = display_state_->get_color_palette()->get_red();
-  int text_x = display_buffer_->get_width() / 2;
-  int text_y = display_buffer_->get_height() / 2;
+  int text_x = display_->get_width() / 2;
+  int text_y = display_->get_height() / 2;
 
   // Display the "Game Over" message
   display_state_->drawTextWrapped(text_x, text_y, font, text_color,
                                   display::TextAlign::TOP_CENTER, "Game Over",
-                                  2, display_buffer_);
+                                  2, display_);
 }
 
 void HomeThingAppBreakout::draw_win() {
   // Determine font, color, and position for the "You Win!" message
   auto font = display_state_->get_font_large();
   Color text_color = display_state_->get_color_palette()->get_green();
-  int text_x = display_buffer_->get_width() / 2;
-  int text_y = display_buffer_->get_height() / 2;
+  int text_x = display_->get_width() / 2;
+  int text_y = display_->get_height() / 2;
 
   // Display the "You Win!" message
   display_state_->drawTextWrapped(text_x, text_y, font, text_color,
                                   display::TextAlign::TOP_CENTER, "You Win!", 2,
-                                  display_buffer_);
+                                  display_);
 }
 
 void HomeThingAppBreakout::draw_starting() {
@@ -165,35 +165,35 @@ void HomeThingAppBreakout::draw_starting() {
   auto primaryTextColor =
       display_state_->get_color_palette()->get_accent_primary();
 
-  int yPos = display_buffer_->get_height() * 0.1;
+  int yPos = display_->get_height() * 0.1;
   std::string text = "Breakout!";
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 
   text = "Controls:";
-  yPos = display_buffer_->get_height() * 0.4;
+  yPos = display_->get_height() * 0.4;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 
   text = "Rotate knob to move paddle";
-  yPos = display_buffer_->get_height() * 0.6;
+  yPos = display_->get_height() * 0.6;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 
   text = "Press button to start";
-  yPos = display_buffer_->get_height() * 0.8;
+  yPos = display_->get_height() * 0.8;
   display_state_->drawTextWrapped(
-      display_buffer_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
-      display::TextAlign::TOP_CENTER, text, 3, display_buffer_);
+      display_->get_width() * 0.5, yPos, mediumFont, primaryTextColor,
+      display::TextAlign::TOP_CENTER, text, 3, display_);
 }
 
 Coordinate HomeThingAppBreakout::get_display_bounds() {
   int widthBounds =
-      (display_buffer_->get_width() - (margin * 2)) / displayScale;
-  int heightBounds = (display_buffer_->get_height() -
+      (display_->get_width() - (margin * 2)) / displayScale;
+  int heightBounds = (display_->get_height() -
                       ((margin * 2) + display_state_->get_header_height())) /
                      displayScale;
   return Coordinate(widthBounds, heightBounds);
@@ -224,7 +224,7 @@ void HomeThingAppBreakout::draw_resized_pixel(int coordinateX, int coordinateY,
   int y = coordinateY * displayScale;
   for (int i = 0; i < displayScale; ++i) {
     for (int j = 0; j < displayScale; ++j) {
-      display_buffer_->draw_pixel_at(
+      display_->draw_pixel_at(
           x + i + margin, y + j + margin + display_state_->get_header_height(),
           color);
     }
@@ -295,10 +295,10 @@ void HomeThingAppBreakout::active_tick() {
   }
 
   // Check for collisions with the walls (left, right, and top)
-  if (ball_position_x <= 0 || ball_position_x >= display_buffer_->get_width() ||
+  if (ball_position_x <= 0 || ball_position_x >= display_->get_width() ||
       ball_position_y <= display_state_->get_header_height()) {
     if (ball_position_x <= 0 ||
-        ball_position_x >= display_buffer_->get_width()) {
+        ball_position_x >= display_->get_width()) {
       ball_direction_x = -ball_direction_x;
     }
     if (ball_position_y <= display_state_->get_header_height()) {
@@ -333,7 +333,7 @@ void HomeThingAppBreakout::active_tick() {
   }
 
   // Check for game over conditions
-  if (ball_position_y >= display_buffer_->get_height() && !collision_occurred) {
+  if (ball_position_y >= display_->get_height() && !collision_occurred) {
     // Ball went below the paddle, player loses a life
     lives -= 1;
     if (lives <= 0) {
@@ -341,9 +341,9 @@ void HomeThingAppBreakout::active_tick() {
       game_state_ = GAME_STATE_GAME_OVER;
     } else {
       // Reset the ball and paddle positions
-      ball_position_x = display_buffer_->get_width() / 2;
-      ball_position_y = display_buffer_->get_height() / 2;
-      paddle_position_x = (display_buffer_->get_width() - paddle_width) / 2;
+      ball_position_x = display_->get_width() / 2;
+      ball_position_y = display_->get_height() / 2;
+      paddle_position_x = (display_->get_width() - paddle_width) / 2;
     }
 
     collision_occurred = true;
@@ -386,8 +386,8 @@ HomeThingAppBreakout::rotaryScrollClockwise(int rotary) {
   paddle_position_x += paddleSpeed;
 
   // Ensure the paddle stays within the display boundaries
-  if (paddle_position_x + paddle_width > display_buffer_->get_width()) {
-    paddle_position_x = display_buffer_->get_width() - paddle_width;
+  if (paddle_position_x + paddle_width > display_->get_width()) {
+    paddle_position_x = display_->get_width() - paddle_width;
   }
   return homething_menu_app::NavigationCoordination::NavigationCoordinationNone;
 }

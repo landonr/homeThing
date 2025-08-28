@@ -1,9 +1,5 @@
 esphome:
   name: "tdisplay-s3"
-  platformio_options:
-    board_build.f_flash: 80000000L
-    board_build.partitions: default_16MB.csv
-    board_build.arduino.memory_type: qio_opi
   on_boot: 
     then:
     - delay: 0.5s
@@ -16,7 +12,7 @@ esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   framework:
-    type: arduino
+    type: esp-idf
   flash_size: 16MB
 
 external_components:
@@ -378,8 +374,28 @@ homeThing:
         - id: reset_switch
           type: switch
 
+spi:
+  type: octal
+  clk_pin: 8
+  data_pins:
+    - 39
+    - 40
+    - 41
+    - 42
+    - ignore_strapping_warning: true
+      number: 45
+    - ignore_strapping_warning: true
+      number: 46
+    - 47
+    - 48
+
+psram:
+  speed: 80MHz
+  mode: octal
+
 display:
-  - platform: tdisplays3
+  - platform: mipi_spi
+    model: t-display-s3
     id: my_display
     rotation: 180
     update_interval: 60s

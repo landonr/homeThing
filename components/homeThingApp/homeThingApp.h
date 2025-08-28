@@ -79,8 +79,8 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
 
   virtual bool is_animating() { return false; }
 
-  void set_display_buffer(display::DisplayBuffer* display_buffer) {
-    display_buffer_ = display_buffer;
+  void set_display(display::Display* display) {
+    display_ = display;
   }
 
   void set_display_state(
@@ -90,7 +90,7 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
 
  protected:
   homething_menu_base::HomeThingMenuHeaderSource* header_source_{nullptr};
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
 
  private:

@@ -1,7 +1,7 @@
 
 #pragma once
 #include <string>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingMenuTitleSlider.h"
 #include "esphome/components/homeThing/homeThingMenuTitleToggle.h"
@@ -18,9 +18,9 @@ namespace homething_menu_base {
 class HomeThingMenuRefactor {
  public:
   HomeThingMenuRefactor(
-      display::DisplayBuffer* new_display_buffer,
+      display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state)
-      : display_buffer_(new_display_buffer),
+      : display_(new_display),
         display_state_(new_display_state) {}
   // move to menu items
   void drawGroupedBar(int yPos, bool extend);
@@ -43,7 +43,7 @@ class HomeThingMenuRefactor {
   void drawArrow(int yPos, int menuTitlesCount, int maxItems);
 
  private:
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   const char* const TAG = "homething.menu.refactor";
 };

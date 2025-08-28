@@ -41,15 +41,15 @@ display::TextAlign HomeThingMenuNowPlaying::text_align_for_circle_position(
 void HomeThingMenuNowPlaying::drawCircleOptionMenu(
     std::vector<CircleOptionMenuItem> supported_features) {
   int y_pos =
-      (display_buffer_->get_height() - display_state_->get_header_height());
+      (display_->get_height() - display_state_->get_header_height());
   int radius;
-  if (display_buffer_->get_height() > display_buffer_->get_width()) {
-    radius = display_buffer_->get_width() * 0.25;
+  if (display_->get_height() > display_->get_width()) {
+    radius = display_->get_width() * 0.25;
   } else {
     radius = y_pos * 0.4;
   }
   y_pos = (y_pos * 0.5) + display_state_->get_header_height();
-  display_buffer_->circle(display_buffer_->get_width() * 0.5, y_pos, radius,
+  display_->circle(display_->get_width() * 0.5, y_pos, radius,
                           display_state_->get_color_palette()->get_gray());
 
   for (auto& feature : supported_features) {
@@ -77,8 +77,8 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
 
     ESP_LOGD(TAG, "drawCircleOptionMenu: %s: %f %f", title.c_str(),
              coordinate.x, coordinate.y);
-    display_buffer_->printf(
-        (display_buffer_->get_width() / 2) + coordinate.x, y_pos + coordinate.y,
+    display_->printf(
+        (display_->get_width() / 2) + coordinate.x, y_pos + coordinate.y,
         display_state_->get_font_small(), display_state_->primaryTextColor(),
         text_alignment, title.c_str());
   }
@@ -87,38 +87,38 @@ void HomeThingMenuNowPlaying::drawCircleOptionMenu(
 void HomeThingMenuNowPlaying::drawNowPlayingSelectMenu(
     const std::vector<homething_menu_base::MenuTitleBase*>* menu_titles,
     int menu_index) {
-  int yPos = display_buffer_->get_height() - display_state_->get_margin_size() -
+  int yPos = display_->get_height() - display_state_->get_margin_size() -
              display_state_->get_font_large()->get_baseline();
   auto menuTitlesSize = menu_titles->size();
   if (menuTitlesSize < 1 || menu_index >= menuTitlesSize) {
     return;
   }
-  display_buffer_->printf(display_buffer_->get_width() * 0.5, yPos,
+  display_->printf(display_->get_width() * 0.5, yPos,
                           display_state_->get_font_large(),
                           display_state_->primaryTextColor(),
                           display::TextAlign::TOP_CENTER,
                           (*menu_titles)[menu_index]->get_name().c_str());
   if (menu_index + 1 < menuTitlesSize) {
-    display_buffer_->printf(display_buffer_->get_width() * 0.85, yPos,
+    display_->printf(display_->get_width() * 0.85, yPos,
                             display_state_->get_font_small(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER,
                             (*menu_titles)[menu_index + 1]->get_name().c_str());
   } else {
-    display_buffer_->printf(
-        display_buffer_->get_width() * 0.85, yPos,
+    display_->printf(
+        display_->get_width() * 0.85, yPos,
         display_state_->get_font_small(), display_state_->primaryTextColor(),
         display::TextAlign::TOP_CENTER, (*menu_titles)[0]->get_name().c_str());
   }
   if (menu_index - 1 >= 0) {
-    display_buffer_->printf(display_buffer_->get_width() * 0.15, yPos,
+    display_->printf(display_->get_width() * 0.15, yPos,
                             display_state_->get_font_small(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER,
                             (*menu_titles)[menu_index - 1]->get_name().c_str());
   } else {
-    display_buffer_->printf(
-        display_buffer_->get_width() * 0.15, yPos,
+    display_->printf(
+        display_->get_width() * 0.15, yPos,
         display_state_->get_font_small(), display_state_->primaryTextColor(),
         display::TextAlign::TOP_CENTER,
         (*menu_titles)[menuTitlesSize - 1]->get_name().c_str());
@@ -163,9 +163,9 @@ bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
     return true;
   }
   int yPos = startYPos;
-  int xPos = display_buffer_->get_width() / 2;
+  int xPos = display_->get_width() / 2;
   if (media_player_group_->mediaTitleString().size() == 0) {
-    display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
+    display_->printf(display_->get_width() / 2, yPos,
                             display_state_->get_font_large(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER, "Nothing!");
@@ -173,7 +173,7 @@ bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
   } else if (media_player_group_->active_player_->playerState ==
              homeassistant_media_player::RemotePlayerState::
                  PowerOffRemotePlayerState) {
-    display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
+    display_->printf(display_->get_width() / 2, yPos,
                             display_state_->get_font_large(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_CENTER, "Power Off");
@@ -182,7 +182,7 @@ bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
     display_state_->drawTextMarquee(
         xPos, yPos, display_state_->get_font_small(),
         display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-        media_player_group_->mediaTitleString(), tick, display_buffer_);
+        media_player_group_->mediaTitleString(), tick, display_);
 
     yPos += display_state_->get_font_small()->get_height() +
             display_state_->get_margin_size();
@@ -190,7 +190,7 @@ bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
     display_state_->drawTextMarquee(
         xPos, yPos, display_state_->get_font_medium(),
         display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-        media_player_group_->mediaSubtitleString(), tick, display_buffer_);
+        media_player_group_->mediaSubtitleString(), tick, display_);
 
     yPos += display_state_->get_font_small()->get_height() +
             display_state_->get_margin_size();
@@ -198,7 +198,7 @@ bool HomeThingMenuNowPlaying::drawMediaTextAndStop(int startYPos) {
     display_state_->drawTextMarquee(
         xPos, yPos, display_state_->get_font_small(),
         display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER,
-        media_player_group_->mediaAlbumString(), tick, display_buffer_);
+        media_player_group_->mediaAlbumString(), tick, display_);
   }
   return false;
 }
@@ -209,12 +209,12 @@ void HomeThingMenuNowPlaying::drawImage() {
     return;
   }
   int imageHeight = now_playing_image_->get_height();
-  int imageXPos = display_buffer_->get_width() / 2;
+  int imageXPos = display_->get_width() / 2;
   int imageYPos = getBottomBarYPosition() - imageHeight - 1;
-  display_buffer_->image(imageXPos, imageYPos, now_playing_image_,
+  display_->image(imageXPos, imageYPos, now_playing_image_,
                          display::ImageAlign::TOP_CENTER);
 
-  display_buffer_->line(0, imageYPos - 1, display_buffer_->get_width(),
+  display_->line(0, imageYPos - 1, display_->get_width(),
                         imageYPos - 1, display_state_->primaryTextColor());
 }
 #endif
@@ -223,14 +223,14 @@ void HomeThingMenuNowPlaying::drawBottomText() {
   int textYPos = getBottomBarYPosition() +
                  display_state_->get_font_small()->get_height() +
                  display_state_->get_margin_size() * 3;
-  int xPos = display_buffer_->get_width() / 2;
+  int xPos = display_->get_width() / 2;
   std::string text = media_player_group_->mediaPlaylistString().length() > 0
                          ? media_player_group_->mediaPlaylistString()
                          : media_player_group_->queuePositionString();
   display_state_->drawTextWrapped(
       xPos, textYPos, display_state_->get_font_small(),
       display_state_->primaryTextColor(), display::TextAlign::TOP_CENTER, text,
-      1, display_buffer_);
+      1, display_);
 }
 
 void HomeThingMenuNowPlaying::drawBottomBar(HomeThingOptionMenu* option_menu) {
@@ -238,7 +238,7 @@ void HomeThingMenuNowPlaying::drawBottomBar(HomeThingOptionMenu* option_menu) {
       homeassistant_media_player::RemotePlayerMediaSource::
           TVRemotePlayerMediaSource) {
     int yPos = getBottomBarYPosition();
-    display_buffer_->line(0, yPos - 1, display_buffer_->get_width(), yPos - 1,
+    display_->line(0, yPos - 1, display_->get_width(), yPos - 1,
                           display_state_->primaryTextColor());
     if (option_menu && option_menu->type == volumeOptionMenu) {
       drawVolumeOptionMenu();
@@ -266,7 +266,7 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
   int textWidth = (display_state_->get_font_small()->get_baseline() *
                    display_state_->get_font_size_width_ratio() * 5) +
                   display_state_->get_margin_size() / 2;
-  int totalBarWidth = display_buffer_->get_width() - textWidth * 2;
+  int totalBarWidth = display_->get_width() - textWidth * 2;
   int barWidth = 0;
   if (mediaDuration > 0 && mediaPosition > 0) {
     barWidth = (totalBarWidth - 4) * (static_cast<double>(mediaPosition) /
@@ -274,22 +274,22 @@ void HomeThingMenuNowPlaying::drawMediaDuration() {
   }
 
   int yPos = getBottomBarYPosition() + display_state_->get_margin_size() * 2;
-  display_buffer_->rectangle(textWidth, yPos, totalBarWidth, barHeight,
+  display_->rectangle(textWidth, yPos, totalBarWidth, barHeight,
                              display_state_->primaryTextColor());
-  display_buffer_->filled_rectangle(
+  display_->filled_rectangle(
       textWidth + barMargin * 2, yPos + barMargin * 2, barWidth,
       barHeight - 2 - barMargin * 2, display_state_->primaryTextColor());
 
   int textYPos = yPos - display_state_->get_font_small()->get_baseline() * 0.1;
   std::string mediaDurationSeconds = secondsToString(mediaDuration);
   std::string mediaPositionSeconds = secondsToString(mediaPosition);
-  display_buffer_->printf(display_state_->get_margin_size(), textYPos,
+  display_->printf(display_state_->get_margin_size(), textYPos,
                           display_state_->get_font_small(),
                           display_state_->primaryTextColor(),
                           display::TextAlign::TOP_LEFT, "%d:%s",
                           mediaPosition / 60, mediaPositionSeconds.c_str());
-  display_buffer_->printf(
-      display_buffer_->get_width() - display_state_->get_margin_size(),
+  display_->printf(
+      display_->get_width() - display_state_->get_margin_size(),
       textYPos, display_state_->get_font_small(),
       display_state_->primaryTextColor(), display::TextAlign::TOP_RIGHT,
       "%d:%s", mediaDuration / 60, mediaDurationSeconds.c_str());
@@ -300,24 +300,24 @@ void HomeThingMenuNowPlaying::drawVolumeOptionMenu() {
   int barHeight = display_state_->get_font_small()->get_baseline();
   int iconMargin = display_state_->get_font_small()->get_baseline() *
                    display_state_->get_font_size_width_ratio() * 3;
-  int totalBarWidth = display_buffer_->get_width() - iconMargin * 2;
+  int totalBarWidth = display_->get_width() - iconMargin * 2;
   int barWidth =
       (totalBarWidth - 4) * (media_player_group_->getVolumeLevel() / 100);
   int yPos = getBottomBarYPosition() + display_state_->get_margin_size() * 3;
-  display_buffer_->printf(
+  display_->printf(
       iconMargin / 2 - display_state_->get_icon_size() / 2, yPos + 1,
       display_state_->get_font_material_small(),
       display_state_->get_color_palette()->get_accent_primary(), "󰕿");
-  display_buffer_->printf(
-      display_buffer_->get_width() - iconMargin / 2 -
+  display_->printf(
+      display_->get_width() - iconMargin / 2 -
           display_state_->get_icon_size() / 2,
       yPos + 1, display_state_->get_font_material_small(),
       display_state_->get_color_palette()->get_accent_primary(), "󰕾");
 
-  display_buffer_->rectangle(
+  display_->rectangle(
       iconMargin, yPos, totalBarWidth, barHeight,
       display_state_->get_color_palette()->get_accent_primary());
-  display_buffer_->filled_rectangle(
+  display_->filled_rectangle(
       iconMargin + barMargin * 2, yPos + barMargin * 2, barWidth,
       barHeight - 2 - barMargin * 2,
       display_state_->get_color_palette()->get_accent_primary());
@@ -343,18 +343,18 @@ bool HomeThingMenuNowPlaying::drawOptionMenuAndStop(
     case playingNewSourceMenu: {
       int yPos = display_state_->get_header_height() +
                  display_state_->get_margin_size();
-      display_buffer_->printf(display_buffer_->get_width() / 2, yPos,
+      display_->printf(display_->get_width() / 2, yPos,
                               display_state_->get_font_medium(),
                               display_state_->primaryTextColor(),
                               display::TextAlign::TOP_CENTER, "Playing...");
       yPos = yPos + display_state_->get_margin_size() +
              display_state_->get_font_medium()->get_baseline();
       display_state_->drawTextWrapped(
-          display_buffer_->get_width() / 2, yPos,
+          display_->get_width() / 2, yPos,
           display_state_->get_font_medium(),
           display_state_->get_color_palette()->get_accent_primary(),
           display::TextAlign::TOP_CENTER,
-          media_player_group_->get_new_source_name(), 0, display_buffer_);
+          media_player_group_->get_new_source_name(), 0, display_);
       return true;
     }
   }
@@ -371,7 +371,7 @@ std::string HomeThingMenuNowPlaying::secondsToString(int seconds) {
 }
 
 int HomeThingMenuNowPlaying::getBottomBarYPosition() {
-  int barYPosition = display_buffer_->get_height();
+  int barYPosition = display_->get_height();
   barYPosition -= (display_state_->get_font_small()->get_height() * 2) +
                   (display_state_->get_margin_size() * 2);
   if (draw_bottom_menu_) {

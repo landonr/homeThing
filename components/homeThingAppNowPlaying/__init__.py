@@ -31,9 +31,9 @@ async def to_code(config):
     media_players = await cg.get_variable(config[CONF_MEDIA_PLAYERS])
     cg.add(var.set_media_player_group(media_players))
 
-    display_buffer = await cg.get_variable(config[CONF_DISPLAY])
+    display = await cg.get_variable(config[CONF_DISPLAY])
     display_state = await cg.get_variable(config[CONF_DISPLAY_STATE])
-    cg.add(var.set_now_playing_display(display_buffer, display_state, media_players))
+    cg.add(var.set_now_playing_display(display, display_state, media_players))
     cg.add(var.set_draw_bottom_menu(config[CONF_DRAW_BOTTOM_MENU]))
     
     if CONF_NOW_PLAYING_IMAGE in config:

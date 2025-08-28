@@ -11,7 +11,7 @@
 #include "esphome/components/image/image.h"
 #endif
 
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
@@ -22,12 +22,12 @@ namespace homething_menu_now_playing {
 class HomeThingMenuNowPlaying {
  public:
   HomeThingMenuNowPlaying(
-      display::DisplayBuffer* new_display_buffer,
+      display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_media_player_group,
       bool new_draw_bottom_menu)
-      : display_buffer_(new_display_buffer),
+      : display_(new_display),
         display_state_(new_display_state),
         media_player_group_(new_media_player_group),
         draw_bottom_menu_(new_draw_bottom_menu) {}
@@ -51,7 +51,7 @@ class HomeThingMenuNowPlaying {
   void resetTick() { tick = -5; }
 
  private:
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
       media_player_group_{nullptr};

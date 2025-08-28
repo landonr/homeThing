@@ -43,14 +43,14 @@ int HomeThingMenuTextHelpers::getTextWidth(int fontSize, int characterCount,
 void HomeThingMenuTextHelpers::drawTextMarquee(
     int xPos, int yPos, font::Font* font, Color color,
     display::TextAlign alignment, std::string text, int animationTick,
-    display::DisplayBuffer* display_buffer, float widthRatio) {
+    display::Display* display, float widthRatio) {
   // Adjust the number of characters to show in the marquee
   const int marqueeLength =
       getCharacterLimit(xPos, font->get_baseline(), alignment,
-                        display_buffer->get_width(), widthRatio);
+                        display->get_width(), widthRatio);
   ;
   if (text.length() < marqueeLength) {
-    display_buffer->printf(xPos, yPos, font, color, alignment, "%s",
+    display->printf(xPos, yPos, font, color, alignment, "%s",
                            text.c_str());
     return;
   }
@@ -97,7 +97,7 @@ void HomeThingMenuTextHelpers::drawTextMarquee(
   }
 
   if (!marqueeTitle.empty()) {
-    display_buffer->printf(xPos, yPos, font, color, alignment, "%s",
+    display->printf(xPos, yPos, font, color, alignment, "%s",
                            marqueeTitle.c_str());
   }
 }
@@ -105,11 +105,11 @@ void HomeThingMenuTextHelpers::drawTextMarquee(
 int HomeThingMenuTextHelpers::drawTextWrapped(
     int xPos, int yPos, font::Font* font, Color color,
     display::TextAlign alignment, std::string text, int maxLines,
-    display::DisplayBuffer* display_buffer, float widthRatio) {
+    display::Display* display, float widthRatio) {
   int fontSize = font->get_baseline();
   unsigned line_begin = 0;
   const unsigned per_line = getCharacterLimit(
-      xPos, fontSize, alignment, display_buffer->get_width(), widthRatio);
+      xPos, fontSize, alignment, display->get_width(), widthRatio);
   ESP_LOGD(TAG, "drawTextWrapped: per_line1 %d text %s", per_line,
            text.c_str());
   unsigned linesDrawn = 0;
@@ -138,8 +138,7 @@ int HomeThingMenuTextHelpers::drawTextWrapped(
              "Printing: xPos %d, yPos %d, font %p, color, alignment, "
              "%s + %u",
              xPos, yPos, font, text.c_str(), linesDrawn);
-    // Display the line using display_buffer->printf() with the substring.
-    display_buffer->printf(xPos, yPos, font, color, alignment, line.c_str());
+    display->printf(xPos, yPos, font, color, alignment, line.c_str());
 
     yPos = yPos + fontSize;  // Increment yPos.
     ++linesDrawn;

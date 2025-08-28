@@ -4,7 +4,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuHeader.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"
@@ -54,10 +54,10 @@ class HomeThingMenuBootAnimationConfig {
 class HomeThingMenuBoot {
  public:
   HomeThingMenuBoot(
-      display::DisplayBuffer* new_display_buffer,
+      display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state,
       HomeThingMenuHeader* new_header)
-      : display_buffer_(new_display_buffer),
+      : display_(new_display),
         display_state_(new_display_state),
         header_(new_header) {}
   bool drawBootSequence(const MenuStates activeMenuState);
@@ -101,7 +101,7 @@ class HomeThingMenuBoot {
                             const MenuStates activeMenuState);
 
   BootMenuState get_boot_menu_state();
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   HomeThingMenuAnimation* animation_{nullptr};
   HomeThingMenuHeader* header_{nullptr};

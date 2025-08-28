@@ -5,7 +5,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/homeThing/homeThingMenuAnimation.h"
 #include "esphome/components/homeThing/homeThingMenuBoot.h"
 #include "esphome/components/homeThing/homeThingMenuControls.h"

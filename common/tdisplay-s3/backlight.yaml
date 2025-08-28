@@ -1,20 +1,21 @@
 output:
   - platform: ledc
     pin: GPIO38
-    id: gpio38
+    id: backlight_output
     frequency: 2000
 
 light:
   - platform: monochromatic
-    output: gpio38
+    output: backlight_output
     name: "${friendly_name} Backlight"
     id: backlight
     restore_mode: ALWAYS_ON
+    default_transition_length: 0s
 
-switch: # needed to turn on backlight while plugged into battery
-  - platform: gpio
-    pin: GPIO15
-    name: "BacklightBattery"
-    id: backlightBattery
-    internal: true
-    restore_mode: ALWAYS_ON
+# switch: # needed to turn on backlight while plugged into battery
+#   - platform: gpio
+#     pin: GPIO15
+#     name: "BacklightBattery"
+#     id: backlightBattery
+#     internal: true
+#     restore_mode: ALWAYS_ON

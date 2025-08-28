@@ -64,12 +64,12 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
 
   // display
   void set_now_playing_display(
-      display::DisplayBuffer* new_display_buffer,
+      display::Display* new_display,
       homething_display_state::HomeThingDisplayState* new_display_state,
       homeassistant_media_player::HomeAssistantMediaPlayerGroup*
           new_media_player_group) {
     now_playing_display_ = new HomeThingMenuNowPlaying(
-        new_display_buffer, new_display_state, new_media_player_group,
+        new_display, new_display_state, new_media_player_group,
         get_draw_bottom_menu());
     circle_menu_->set_draw_bottom_menu(get_draw_bottom_menu());
   }

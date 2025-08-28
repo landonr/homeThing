@@ -14,7 +14,7 @@ class HomeThingAppWeatherHeader
   std::string get_header_title() { return "Weather"; }
 
   int draw_header_details(
-      int xPos, int yPos, display::DisplayBuffer* display_buffer,
+      int xPos, int yPos, display::Display* display,
       homething_display_state::HomeThingDisplayState* display_state,
       homething_display_state::HomeThingMenuTextHelpers* text_helpers) {
     return 0;
@@ -59,8 +59,8 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
   }
   HomeThingMenuHeaderSource* header_source_ = new HomeThingAppWeatherHeader();
 
-  void set_display_buffer(display::DisplayBuffer* display_buffer) {
-    display_buffer_ = display_buffer;
+  void set_display(display::Display* display) {
+    display_ = display;
   }
 
   void set_display_state(
@@ -129,7 +129,7 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
   text_sensor::TextSensor* condition_sensor_{nullptr};
 
   // display
-  display::DisplayBuffer* display_buffer_{nullptr};
+  display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
   float temperature_icon_width = 48;
 

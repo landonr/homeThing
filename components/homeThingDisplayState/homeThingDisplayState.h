@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/homeThingDisplayState/homeThingColorPalette.h"
 #ifdef USE_IMAGE
@@ -139,18 +139,18 @@ class HomeThingDisplayState {
 
   int drawTextWrapped(int xPos, int yPos, font::Font* font, Color color,
                       display::TextAlign alignment, std::string text,
-                      int maxLines, display::DisplayBuffer* display_buffer) {
+                      int maxLines, display::Display* display) {
     return text_helpers_->drawTextWrapped(xPos, yPos, font, color, alignment,
-                                          text, maxLines, display_buffer,
+                                          text, maxLines, display,
                                           get_font_size_width_ratio());
   }
 
   void drawTextMarquee(int xPos, int yPos, font::Font* font, Color color,
                        display::TextAlign alignment, std::string text,
                        int animationTick,
-                       display::DisplayBuffer* display_buffer) {
+                       display::Display* display) {
     text_helpers_->drawTextMarquee(xPos, yPos, font, color, alignment, text,
-                                   animationTick, display_buffer,
+                                   animationTick, display,
                                    get_font_size_width_ratio());
   }
 

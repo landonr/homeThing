@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
 #include "esphome/core/color.h"
 
@@ -18,12 +18,12 @@ class HomeThingMenuTextHelpers {
   int getTextWidth(int fontSize, int characterCount, float widthRatio);
   int drawTextWrapped(int xPos, int yPos, font::Font* font, Color color,
                       display::TextAlign alignment, std::string text,
-                      int maxLines, display::DisplayBuffer* display_buffer,
+                      int maxLines, display::Display* display,
                       float widthRatio);
   void drawTextMarquee(int xPos, int yPos, font::Font* font, Color color,
                        display::TextAlign alignment, std::string text,
                        int animationTick,
-                       display::DisplayBuffer* display_buffer,
+                       display::Display* display,
                        float widthRatio);
 
  private:

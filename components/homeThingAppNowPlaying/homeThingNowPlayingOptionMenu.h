@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "esphome/components/display/display_buffer.h"
+#include "esphome/components/display/display.h"
 #include "esphome/components/homeThing/homeThingMenuTitle.h"
 #include "esphome/components/homeThing/homeThingOptionMenu.h"
 #include "esphome/components/homeThingDisplayState/homeThingDisplayState.h"

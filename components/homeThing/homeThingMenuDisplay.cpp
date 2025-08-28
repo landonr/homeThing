@@ -27,7 +27,7 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
     int characterHeight = display_state_->get_font_medium()->get_baseline();
     int characterLimit = display_state_->getCharacterLimit(
         xPos, characterHeight, display::TextAlign::TOP_LEFT,
-        display_buffer_->get_width());
+        display_->get_width());
     ESP_LOGD(TAG, "characterLimit %d, title %d height %d", characterLimit,
              title.length(), characterHeight);
 
@@ -43,17 +43,17 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
       // animation_->marqueeTick(title.length());
     }
     std::string marqueeTitle = title.erase(0, marqueePositionMaxed);
-    display_buffer_->filled_rectangle(
-        0, yPos, display_buffer_->get_width(),
+    display_->filled_rectangle(
+        0, yPos, display_->get_width(),
         display_state_->get_font_medium()->get_baseline() +
             display_state_->get_margin_size(),
         display_state_->get_color_palette()->get_accent_primary());
-    display_buffer_->printf(xPos, textYPos, display_state_->get_font_medium(),
+    display_->printf(xPos, textYPos, display_state_->get_font_medium(),
                             display_state_->secondaryTextColor(),
                             display::TextAlign::TOP_LEFT, "%s",
                             marqueeTitle.c_str());
   } else {
-    display_buffer_->printf(xPos, textYPos, display_state_->get_font_medium(),
+    display_->printf(xPos, textYPos, display_state_->get_font_medium(),
                             display_state_->primaryTextColor(),
                             display::TextAlign::TOP_LEFT, "%s", title.c_str());
   }
@@ -61,23 +61,23 @@ bool HomeThingMenuDisplay::draw_menu_title(int menuState, int i,
 }
 
 void HomeThingMenuDisplay::draw_lock_screen(int unlock_presses) {
-  double yPos = display_buffer_->get_height() / 2;
-  double xPos = display_buffer_->get_width() / 2;
-  double box_size_height = display_buffer_->get_height() * 0.6;
-  double box_size_width = display_buffer_->get_width() * 0.8;
+  double yPos = display_->get_height() / 2;
+  double xPos = display_->get_width() / 2;
+  double box_size_height = display_->get_height() * 0.6;
+  double box_size_width = display_->get_width() * 0.8;
   auto text_font = display_state_->get_font_large();
   auto number_font = display_state_->get_font_large_heavy();
   auto background_color =
       display_state_->get_color_palette()->get_accent_primary();
   auto text_color = display_state_->primaryTextColor();
-  display_buffer_->filled_rectangle(xPos - box_size_width / 2,
+  display_->filled_rectangle(xPos - box_size_width / 2,
                                     yPos - box_size_height / 2, box_size_width,
                                     box_size_height, background_color);
-  display_buffer_->printf(xPos, yPos - text_font->get_baseline(), text_font,
+  display_->printf(xPos, yPos - text_font->get_baseline(), text_font,
                           text_color, display::TextAlign::CENTER, "Locked,");
-  display_buffer_->printf(xPos, yPos, text_font, text_color,
+  display_->printf(xPos, yPos, text_font, text_color,
                           display::TextAlign::CENTER, "Press Option");
-  display_buffer_->printf(xPos, yPos + text_font->get_baseline(), number_font,
+  display_->printf(xPos, yPos + text_font->get_baseline(), number_font,
                           text_color, display::TextAlign::CENTER, "%d/2",
                           unlock_presses);
 }
@@ -91,8 +91,8 @@ void HomeThingMenuDisplay::draw_menu_title_value(std::string value, int yPos,
   auto backgroundColor = display_state_->get_dark_mode()
                              ? display_state_->get_color_palette()->get_black()
                              : display_state_->get_color_palette()->get_white();
-  display_buffer_->filled_rectangle(
-      display_buffer_->get_width() - textWidth - scrollBarMargin -
+  display_->filled_rectangle(
+      display_->get_width() - textWidth - scrollBarMargin -
           display_state_->get_margin_size() * 2,
       yPos, textWidth + display_state_->get_margin_size() * 2,
       display_state_->get_font_medium()->get_baseline() +
@@ -100,10 +100,10 @@ void HomeThingMenuDisplay::draw_menu_title_value(std::string value, int yPos,
       backgroundColor);
 
   int textYPos = yPos + (display_state_->get_margin_size() / 4);
-  int textXPos = display_buffer_->get_width() -
+  int textXPos = display_->get_width() -
                  display_state_->get_margin_size() / 2 - scrollBarMargin;
 
-  display_buffer_->printf(textXPos, textYPos, display_state_->get_font_medium(),
+  display_->printf(textXPos, textYPos, display_state_->get_font_medium(),
                           display_state_->secondaryTextColor(),
                           display::TextAlign::TOP_RIGHT, "%s", value.c_str());
 }
@@ -248,7 +248,7 @@ bool HomeThingMenuDisplay::draw_menu_titles(
 
 void HomeThingMenuDisplay::draw_background() {
   if (!display_state_->get_dark_mode()) {
-    display_buffer_->fill(display_state_->get_color_palette()->get_white());
+    display_->fill(display_state_->get_color_palette()->get_white());
   }
 }
 
@@ -283,17 +283,17 @@ void HomeThingMenuDisplay::drawScrollBar(int menuTitlesCount, int headerHeight,
   int scrollBarMargin = 1;
   int scrollBarWidth = display_state_->get_scroll_bar_width();
   if (menuTitlesCount > maxItems() + 1) {
-    double screenHeight = display_buffer_->get_height() - headerHeight;
+    double screenHeight = display_->get_height() - headerHeight;
     double height = maxItems() * (screenHeight / menuTitlesCount);
     double yPos =
         (((screenHeight - height) / (menuTitlesCount - 1)) * menuIndex) + 1 +
         headerHeight;
-    display_buffer_->filled_rectangle(
-        display_buffer_->get_width() - scrollBarWidth, headerHeight,
+    display_->filled_rectangle(
+        display_->get_width() - scrollBarWidth, headerHeight,
         scrollBarWidth, screenHeight,
         display_state_->get_color_palette()->get_gray_dark_2());
-    display_buffer_->filled_rectangle(
-        display_buffer_->get_width() - scrollBarWidth + scrollBarMargin, yPos,
+    display_->filled_rectangle(
+        display_->get_width() - scrollBarWidth + scrollBarMargin, yPos,
         scrollBarWidth - scrollBarMargin * 2, height - 1,
         display_state_->get_color_palette()->get_accent_primary());
   }
@@ -315,7 +315,7 @@ void HomeThingMenuDisplay::scrollMenuPosition(const int menuIndex) {
 
 int HomeThingMenuDisplay::maxItems() {
   int maxItems =
-      ((display_buffer_->get_height() - display_state_->get_header_height()) /
+      ((display_->get_height() - display_state_->get_header_height()) /
        (display_state_->get_font_medium()->get_baseline() +
         display_state_->get_margin_size())) -
       1;
@@ -395,21 +395,21 @@ void HomeThingMenuDisplay::drawTitleImage(
   switch (titleState) {
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
-      display_buffer_->printf(
+      display_->printf(
           xPos, yPos, display_state_->get_font_material_large(), color, "󰐊");
       break;
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
-      display_buffer_->printf(
+      display_->printf(
           xPos, yPos, display_state_->get_font_material_large(), color, "󰏤");
       break;
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
-      display_buffer_->printf(
+      display_->printf(
           xPos, yPos, display_state_->get_font_material_large(), color, "󰓛");
       break;
     case homeassistant_media_player::RemotePlayerState::
         PowerOffRemotePlayerState:
-      display_buffer_->printf(
+      display_->printf(
           xPos, yPos, display_state_->get_font_material_large(), color, "󰽥");
       break;
     default:
