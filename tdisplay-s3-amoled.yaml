@@ -1,0 +1,370 @@
+esphome:
+  name: "tdisplay-s3-amoled"
+  platformio_options:
+    build_unflags: -Werror=all
+    board_build.flash_mode: dio
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: esp-idf
+  flash_size: 16MB
+
+external_components:
+  - source: github://landonr/homeThing@main #update_to_head_ref
+  # - source:      
+  #     type: local
+  #     path: components
+    refresh: 0s
+    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying, homeThingAppSnake, homeThingAppBreakout, homeThingAppWeather]
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_component,
+      homeassistant_media_player,
+      media_player_source,
+      media_player_source_sonos,
+      media_player_source_spotify,
+      media_player_source_custom
+    ]
+  
+packages:
+  # common
+  device_base: !include common/device_base.yaml
+#   device_base: github://landonr/homeThing/common/device_base.yaml@main
+  fonts: github://landonr/homeThing/common/fonts.yaml@main
+  icon_fonts: github://landonr/homeThing/common/icon_fonts.yaml@main
+  settings: github://landonr/homeThing/common/settings.yaml@main
+  images: github://landonr/homeThing/common/images.yaml@main
+  nowPlayingImage: github://landonr/homeThing/common/nowPlayingImage.yaml@main
+  voice_assistant: github://landonr/homeThing/common/voice_assistant.yaml@main
+  logger: github://landonr/homeThing/common/logger.yaml@main
+
+  # ipod
+  battery: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_battery.yaml@main
+  sleep: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_sleep.yaml@main
+  rotary: github://landonr/homeThing/common/ipod/lilygo_tdisplay_ipod_rotary.yaml@main
+
+  #tdisplay s3
+  binary_sensors: github://landonr/homeThing/common/tdisplay-s3/lilygo_tdisplay_ipod_binary_sensor_pcf.yaml@main
+
+substitutions:
+  friendly_name: "homeThing S3"
+  rotary_pin_a: "10"
+  rotary_pin_b: "11"
+  medium_font_size: "16"
+  battery_pin: "4"
+  sda_pin: "44"
+  scl_pin: "43"
+
+  # common/nowPlayingImage.yaml
+  online_image_id: "media_player_image"
+  online_image_initial_url: "http://172.16.1.23:8080/insecure/rs:fill:170:170/"
+  online_image_text_sensor_id: "entity_picture"
+  online_image_text_sensor_entity_id: "sensor.beam_picture_proxy"
+  online_image_display_id: "my_display"
+
+light:
+  - platform: homeassistant_component
+    id: light_all_lights
+    entity_id: light.all_lights
+    name: All Lights
+
+### Media Players
+
+media_player_source_sonos: # sonos favorite source
+  id: sonos
+
+media_player: # home assistant media players
+  - platform: homeassistant_media_player
+    name: Beam
+    entity_id: "media_player.beam"
+    id: media_player_beam
+    type: speaker
+    sources:
+      - id: sonos
+        type: sonos
+  - platform: homeassistant_media_player
+    name: TV
+    entity_id: "media_player.55_tcl_roku_tv"
+    id: media_player_tv
+    type: roku
+    soundbar:
+      speaker: media_player_beam
+
+homeassistant_media_player: # media player menu
+  id: media_group_component
+  finished_loading:
+    id: media_players_loaded_sensor
+  active_player: 
+    id: active_player
+    name: "${friendly_name} Active Player"
+  media_players:
+    - id: media_player_beam
+      type: speaker
+    - id: media_player_tv
+      type: roku
+
+homeThingAppNowPlaying:
+  display: my_display
+  display_state: display_state_id
+  id: now_playing
+  media_player_group: media_group_component
+  now_playing_image: media_player_image
+
+### Covers / Smart Desk
+
+number: # home assistant number
+  - platform: homeassistant_component
+    entity_id: number.desk_height_cm
+    name: desk height
+    id: desk_height_number
+    min_value: 61.0
+    max_value: 105.0
+    step: 1
+
+cover: # home assistant cover
+  - platform: homeassistant_component
+    entity_id: "cover.megadesk_cover"
+    name: "Megadesk"
+    id: cover_megadesk
+
+### Weather
+
+sensor:
+  - platform: homeassistant
+    id: weather_temperature
+    entity_id: weather.accuweather
+    attribute: temperature
+  - platform: homeassistant
+    id: weather_humidity
+    entity_id: weather.accuweather
+    attribute: humidity
+
+image:
+  - file: mdi:weather-night
+    id: weather_clear
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-cloudy
+    id: weather_cloudy
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-fog
+    id: weather_fog
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-hail
+    id: weather_hail
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-rainy
+    id: weather_rainy
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-snowy
+    id: weather_snow
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-sunny
+    id: weather_sunny
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-windy
+    id: weather_windy
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-partly-cloudy
+    id: weather_partly_cloudy
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+  - file: mdi:weather-lightning
+    id: weather_lightning
+    resize: 50x50
+    type: grayscale
+    transparency: alpha_channel
+    # Launch image is included with other images
+  - id: launch_image
+    file: $launch_image_file
+    resize: $launch_image_size
+    type: $launch_image_type
+
+### Games
+
+homeThingAppSnake:
+  id: snake
+  display: my_display
+  display_state: display_state_id
+
+homeThingAppBreakout:
+  id: breakout
+  display: my_display
+  display_state: display_state_id
+
+### IR Blaster
+
+remote_transmitter:
+  pin: GPIO13
+  # Infrared remotes use a 50% carrier signal
+  carrier_duty_percent: 50%
+  id: infrared
+
+text_sensor:
+  - platform: homeassistant
+    entity_id: "sensor.weather_condition"
+    name: "Weather state"
+    id: weather_state
+
+### Weather App
+
+homeThingAppWeather:
+  id: weather
+  display: my_display
+  display_state: display_state_id
+  temperature_sensor: weather_temperature
+  humidity_sensor: weather_humidity
+  condition_sensor: weather_state
+  images:
+    cloudy: weather_cloudy
+    fog: weather_fog
+    rainy: weather_rainy
+    snow: weather_snow
+    sunny: weather_sunny
+    clear: weather_clear
+    hail: weather_hail
+    windy: weather_windy
+    partly_cloudy: weather_partly_cloudy
+    lightning: weather_lightning
+
+### HomeThing
+
+color: # setup primary accent color
+  - id: my_primary_accent
+    red_int: 75
+    green_int: 45
+    blue_int: 210
+
+homeThingDisplayState:
+  id: display_state_id
+  colors:
+    accent_primary: my_primary_accent
+  draw_battery_level: true
+  font_small: small_font
+  font_medium: medium_font
+  font_large: large_font
+  font_large_heavy: large_heavy_font
+  font_material_large: material_font_large
+  font_material_small: material_font_small
+
+homeThing:
+  id: homeThingMenu
+  apps: 
+    - now_playing
+    - breakout
+    - snake
+    - weather
+  battery:
+    battery_percent: battery_percent
+    charging: charging
+  boot:
+    api_connected: api_connected
+    media_players_loaded: media_players_loaded_sensor
+    launch_image: launch_image
+  display: my_display
+  header:
+    time_id: esptime
+  display_state: display_state_id
+  on_redraw:
+    then:
+      component.update: my_display
+  settings:
+    sleep_after: 3600
+    display_timeout_while_charging: 30
+    idle_app: now_playing
+    max_brightness: 0.5
+  sleep_switch: sleep_toggle
+  home_screen:
+    name: homeThing
+    entities:
+      - type: cover
+        name: "Desk"
+        id: cover_megadesk
+      - type: number
+        name: "Desk Height"
+        id: desk_height_number
+  screens:
+    - name: Lights Screen
+      entities:
+        - id: light_all_lights
+          type: light
+        - type: command
+          name: "Color scene"
+          command:
+            - homeassistant.service:
+                service: script.colors
+        - type: command
+          name: "Lights off"
+          command:
+            - homeassistant.service:
+                service: script.off_script
+    - name: Settings Screen
+      show_version: True
+      entities:
+        - id: restart_switch
+          type: switch
+        - id: wifi_ssid
+          type: text_sensor
+        - id: wifi_signal_percent
+          type: sensor
+        - id: wifi_ip
+          type: text_sensor
+        - id: reset_switch
+          type: switch
+
+spi:
+  id: quad_spi
+  type: quad
+  clk_pin: 47
+  data_pins:
+    - 18
+    - 7
+    - 48
+    - 5
+
+psram:
+  mode: octal
+
+display:
+  - platform: qspi_dbi
+    model: RM67162
+    id: my_display
+    data_rate: 80MHz
+    dimensions:
+      height: 240
+      width: 536
+    transform:
+      mirror_x: true
+      swap_xy: true
+    color_order: rgb
+    brightness: 255
+    cs_pin: 6
+    reset_pin: 17
+    enable_pin: 38
+    update_interval: 60s
+    rotation: 90
+    lambda: |-
+      id(homeThingMenu)->draw_menu_screen();
+      return;
