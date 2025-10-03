@@ -348,23 +348,11 @@ psram:
   mode: octal
 
 display:
-  - platform: qspi_dbi
-    model: RM67162
+  - platform: mipi_spi
+    model: t-display-s3-amoled
     id: my_display
-    data_rate: 80MHz
-    dimensions:
-      height: 240
-      width: 536
-    transform:
-      mirror_x: true
-      swap_xy: true
-    color_order: rgb
-    brightness: 255
-    cs_pin: 6
-    reset_pin: 17
-    enable_pin: 38
     update_interval: 60s
-    rotation: 90
+    rotation: 180
     lambda: |-
       id(homeThingMenu)->draw_menu_screen();
       return;
