@@ -19,7 +19,7 @@ wifi:
     ssid: "homeThing Fallback Hotspot"
 
 external_components:
-  - source: github://landonr/homeThing
+  - source: github://landonr/homeThing@main #update_to_head_ref
       # type: local
       # path: components
     refresh: 0s

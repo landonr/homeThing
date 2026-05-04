@@ -21,7 +21,7 @@ external_components:
       type: git
       url: https://github.com/ssieb/custom_components
     components: [ ip5306 ]
-  - source: github://landonr/homeThing
+  - source: github://landonr/homeThing@main #update_to_head_ref
       # type: local
       # path: components
     refresh: 0s
