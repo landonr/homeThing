@@ -27,53 +27,53 @@ MENU_ACTION_SCHEMA = automation.maybe_simple_id(
 )
 
 # Menu Button Actions
-@automation.register_action("homething_menu.up", UpAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.up", UpAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_up_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.down", DownAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.down", DownAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_down_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.left", LeftAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.left", LeftAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_left_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.right", RightAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.right", RightAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_right_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.select", SelectAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.select", SelectAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_select_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.scroll_clockwise", ScrollClockwiseAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.scroll_clockwise", ScrollClockwiseAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_scroll_clockwise_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.scroll_counter_clockwise", ScrollCounterClockwiseAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.scroll_counter_clockwise", ScrollCounterClockwiseAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_scroll_counter_clockwise_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
 # Menu Navigation Actions
-@automation.register_action("homething_menu.back", BackAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.back", BackAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_back_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.option", OptionAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.option", OptionAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_option_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
-@automation.register_action("homething_menu.home", HomeAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.home", HomeAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_home_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
@@ -94,7 +94,7 @@ ADD_NOTIFICATION_SCHEMA = cv.Schema(
     }
 )
 
-@automation.register_action("homething_menu.add_notification", AddNotificationAction, ADD_NOTIFICATION_SCHEMA)
+@automation.register_action("homething_menu.add_notification", AddNotificationAction, ADD_NOTIFICATION_SCHEMA, synchronous=False)
 async def menu_add_notification_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_arg, paren)
@@ -112,7 +112,7 @@ async def menu_add_notification_to_code(config, action_id, template_arg, args):
 
     return var
 
-@automation.register_action("homething_menu.clear_notifications", ClearNotificationsAction, MENU_ACTION_SCHEMA)
+@automation.register_action("homething_menu.clear_notifications", ClearNotificationsAction, MENU_ACTION_SCHEMA, synchronous=False)
 async def menu_clear_notifications_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)

@@ -140,7 +140,7 @@ class HomeThingMenuControls {
               1 + supportsColorTemperature(light) + supportsColor(light);
           if (menuIndex > index) {
             auto effect = light->get_effects()[menuIndex - index - 1];
-            light->turn_on().set_effect(effect->get_name()).perform();
+            light->turn_on().set_effect(effect->get_name().c_str()).perform();
             return true;
           }
         }

@@ -160,8 +160,9 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
 #ifdef USE_NUMBER
         auto number = static_cast<number::Number*>(std::get<1>(entity));
         auto state = value_accuracy_to_string(number->state, 0);
-        if (number->traits.get_unit_of_measurement() != "") {
-          state = state + number->traits.get_unit_of_measurement();
+        auto unit = number->get_unit_of_measurement_ref();
+        if (!unit.empty()) {
+          state = state + unit.c_str();
         }
         menu_titles->push_back(
             new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
