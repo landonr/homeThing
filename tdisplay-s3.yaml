@@ -24,13 +24,14 @@ external_components:
   #     type: local
   #     path: components
     refresh: 0s
-    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying, homeThingAppSnake, homeThingAppCatToy, homeThingAppBreakout, homeThingAppWeather, homeassistant_component]
+    components: [homeThing, homeThingDisplayState, homeThingApp, homeThingAppNowPlaying, homeThingAppSnake, homeThingAppCatToy, homeThingAppBreakout, homeThingAppWeather]
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: main
+      ref: 30683662669f337b58b9908e64030a47db7fcb5b
     refresh: 0s
     components: [
+      homeassistant_component,
       homeassistant_media_player,
       media_player_source,
       media_player_source_sonos,
