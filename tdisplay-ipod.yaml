@@ -15,9 +15,7 @@ esp32:
   board: featheresp32
 
 external_components:
-  - source:
-      type: git
-      url: https://github.com/landonr/homeThing
+  - source: github://landonr/homeThing@main #update_to_head_ref
       # type: local
       # path: components
     refresh: 0s
@@ -25,7 +23,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: main
+      ref: 86f45b0605d575b7a9ff5427a89a651fe13c0862
     refresh: 0s
     components: [
       homeassistant_component,
@@ -38,6 +36,7 @@ external_components:
 
 packages: # maybe modify: include default ipod controls
   # common
+  images_weather: !include common/images-weather.yaml
   device_base: github://landonr/homeThing/common/device_base_light.yaml@main
   
   # needs to be updated to above format
@@ -53,7 +52,7 @@ packages: # maybe modify: include default ipod controls
       common/fonts.yaml, # default font
       common/icon_fonts.yaml, # material icons
       common/settings.yaml, # settings screen
-      common/images-weather.yaml, # weather images
+      # common/images-weather.yaml, # weather images
     ]
     refresh: 0s
 

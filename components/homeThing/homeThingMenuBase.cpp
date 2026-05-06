@@ -12,14 +12,16 @@ void HomeThingMenuBase::setup() {
     this->update_display();
   });
 
-  this->animation_->animationTick->add_on_state_callback(
-      [this](float state) { this->displayUpdateDebounced(); });
+  this->animation_->animationTick->add_on_state_callback([this](float) {
+    this->set_timeout("animation_redraw", 100,
+                      [this]() { this->displayUpdateDebounced(); });
+  });
 
   display_update_tick_ = new sensor::Sensor();
-  auto filter = new sensor::DebounceFilter(17);
-  display_update_tick_->add_filter(filter);
-  this->display_update_tick_->add_on_state_callback(
-      [this](float state) { this->displayUpdateDebounced(); });
+  this->display_update_tick_->add_on_state_callback([this](float) {
+    this->set_timeout("display_update_redraw", 17,
+                      [this]() { this->displayUpdateDebounced(); });
+  });
 
 #ifdef USE_HOMETHING_APP
   for (auto menu_app : menu_apps_) {

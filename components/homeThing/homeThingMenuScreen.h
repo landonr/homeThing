@@ -82,7 +82,11 @@ enum MenuItemType {
   MenuItemTypeSelect
 };
 
-class HomeThingMenuScreen {
+class HomeThingMenuScreen
+#ifdef USE_LIGHT
+    : public light::LightRemoteValuesListener
+#endif
+{
  public:
   explicit HomeThingMenuScreen(std::string name) : name_(name) {}
   void set_name(std::string name) { name_ = name; }
@@ -135,10 +139,11 @@ class HomeThingMenuScreen {
 #endif
 
 #ifdef USE_LIGHT
+  void on_light_remote_values_update() override { this->callback_.call(); }
+
   void register_light(light::LightState* new_light, std::string name) {
     entities_.push_back(std::make_tuple(MenuItemTypeLight, new_light, name));
-    new_light->add_new_remote_values_callback(
-        [this, new_light]() { this->callback_.call(); });
+    new_light->add_remote_values_listener(this);
   }
 #endif
 
