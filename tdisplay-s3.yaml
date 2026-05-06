@@ -28,7 +28,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/landonr/esphome-components
-      ref: 86f45b0605d575b7a9ff5427a89a651fe13c0862
+      ref: main
     refresh: 0s
     components: [
       homeassistant_component,
