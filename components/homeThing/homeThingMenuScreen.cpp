@@ -1,5 +1,7 @@
 #include "homeThingMenuScreen.h"
 
+#include "esphome/components/homeThing/homeThingEntityHelpers.h"
+
 #ifdef USE_LIGHT
 #include "esphome/components/homeThing/homeThingMenuTitleLight.h"
 #endif
@@ -38,13 +40,13 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
       if (command->get_name() != "") {
         return command->get_name();
       } else {
-        return command->get_object_id();
+        return entity_object_id(command);
       }
     }
     case MenuItemTypeSensor: {
 #ifdef USE_SENSOR
       auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
-      auto name = sensor->get_name() == "" ? sensor->get_object_id()
+      auto name = sensor->get_name() == "" ? entity_object_id(sensor)
                                            : sensor->get_name();
       return name;
 #endif
@@ -53,7 +55,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
     case MenuItemTypeNumber: {
 #ifdef USE_NUMBER
       auto number = static_cast<number::Number*>(std::get<1>(entity));
-      auto name = number->get_name() == "" ? number->get_object_id()
+      auto name = number->get_name() == "" ? entity_object_id(number)
                                            : number->get_name();
       return name;
 #endif
@@ -63,7 +65,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
 #ifdef USE_FAN
       auto fan = static_cast<fan::Fan*>(std::get<1>(entity));
       auto name =
-          fan->get_name() == "" ? fan->get_object_id() : fan->get_name();
+          fan->get_name() == "" ? entity_object_id(fan) : fan->get_name();
       return name;
 #endif
       break;
@@ -71,7 +73,7 @@ std::string HomeThingMenuScreen::entity_name_at_index(int index) {
     case MenuItemTypeSelect: {
 #ifdef USE_SELECT
       auto select = static_cast<select::Select*>(std::get<1>(entity));
-      auto name = select->get_name() == "" ? select->get_object_id()
+      auto name = select->get_name() == "" ? entity_object_id(select)
                                            : select->get_name();
       return name;
 #endif
@@ -127,7 +129,7 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
                                       ? OffMenuTitleLeftIcon
                                       : OnMenuTitleLeftIcon;
         menu_titles->push_back(new MenuTitleToggle(
-            title, coverObject->get_object_id(), state, NoMenuTitleRightIcon));
+            title, entity_object_id(coverObject), state, NoMenuTitleRightIcon));
         break;
 #endif
       }
@@ -137,18 +139,20 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         ESP_LOGD(TAG, "switch state %d", switchObject->state);
         MenuTitleLeftIcon state =
             switchObject->state ? OnMenuTitleLeftIcon : OffMenuTitleLeftIcon;
-        menu_titles->push_back(new MenuTitleToggle(
-            title, switchObject->get_object_id(), state, NoMenuTitleRightIcon));
+        menu_titles->push_back(
+            new MenuTitleToggle(title, entity_object_id(switchObject), state,
+                                NoMenuTitleRightIcon));
 #endif
         break;
       }
       case MenuItemTypeSensor: {
 #ifdef USE_SENSOR
         auto sensor = static_cast<sensor::Sensor*>(std::get<1>(entity));
-        auto state = value_accuracy_to_string(sensor->get_state(),
-                                              sensor->get_accuracy_decimals());
-        if (sensor->get_unit_of_measurement() != "") {
-          state = state + sensor->get_unit_of_measurement();
+        auto state = value_accuracy_string(sensor->get_state(),
+                                           sensor->get_accuracy_decimals());
+        auto unit = sensor->get_unit_of_measurement_ref();
+        if (!unit.empty()) {
+          state = state + unit.c_str();
         }
         menu_titles->push_back(
             new MenuTitleValue(title, "", NoMenuTitleRightIcon, state));
@@ -159,7 +163,7 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
       case MenuItemTypeNumber: {
 #ifdef USE_NUMBER
         auto number = static_cast<number::Number*>(std::get<1>(entity));
-        auto state = value_accuracy_to_string(number->state, 0);
+        auto state = value_accuracy_string(number->state, 0);
         auto unit = number->get_unit_of_measurement_ref();
         if (!unit.empty()) {
           state = state + unit.c_str();
@@ -179,11 +183,11 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         if (fanObject->state) {
           auto speed = to_string(static_cast<int>(fanObject->speed)) + "%";
           menu_titles->push_back(
-              new MenuTitleToggle(title, fanObject->get_object_id(), speed,
+              new MenuTitleToggle(title, entity_object_id(fanObject), speed,
                                   state, NoMenuTitleRightIcon));
         } else {
           menu_titles->push_back(new MenuTitleToggle(
-              title, fanObject->get_object_id(), state, NoMenuTitleRightIcon));
+              title, entity_object_id(fanObject), state, NoMenuTitleRightIcon));
         }
 #endif
         break;
@@ -193,7 +197,7 @@ void HomeThingMenuScreen::menu_titles(std::vector<MenuTitleBase*>* menu_titles,
         auto select = static_cast<select::Select*>(std::get<1>(entity));
         auto state = select->state;
         menu_titles->push_back(new MenuTitleValue(
-            title, select->get_object_id(), NoMenuTitleRightIcon, state));
+            title, entity_object_id(select), NoMenuTitleRightIcon, state));
 #endif
         break;
       }

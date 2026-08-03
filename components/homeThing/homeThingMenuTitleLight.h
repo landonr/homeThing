@@ -3,6 +3,7 @@
 #ifdef USE_LIGHT
 #include <string>
 #include <vector>
+#include "esphome/components/homeThing/homeThingEntityHelpers.h"
 #include "esphome/components/homeThing/homeThingMenuTitleSlider.h"
 #include "esphome/components/homeThing/homeThingMenuTitleToggle.h"
 #include "esphome/components/homeassistant_component/LightExtensions.h"
@@ -54,20 +55,20 @@ static void lightTitleItems(light::LightState* light,
         !is_on ? 0
                : static_cast<int>(light->remote_values.get_brightness() * 255);
     menu_titles->push_back(
-        new MenuTitleSlider("Brightness", "%%", light->get_object_id(), 0,
+        new MenuTitleSlider("Brightness", "%%", entity_object_id(light), 0,
                             MAX_BRIGHTNESS, brightness, 0, 100));
   }
   if (supportsColorTemperature(light)) {
     auto max_mireds = light->get_traits().get_max_mireds();
     auto min_mireds = light->get_traits().get_min_mireds();
     menu_titles->push_back(new MenuTitleSlider(
-        "Temperature", "K", light->get_object_id(), min_mireds, max_mireds,
+        "Temperature", "K", entity_object_id(light), min_mireds, max_mireds,
         light->remote_values.get_color_temperature(), 1000000 / min_mireds,
         1000000 / max_mireds));
   }
   if (supportsColor(light)) {
     menu_titles->push_back(new MenuTitleSlider("Color", "",
-                                               light->get_object_id(), 0, 360,
+                                               entity_object_id(light), 0, 360,
                                                get_hsv_color(light), 0, 360));
   }
   if (light->supports_effects()) {
