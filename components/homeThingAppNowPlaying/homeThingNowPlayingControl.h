@@ -98,9 +98,6 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
 
   // state callback
   bool has_state_callback() { return true; }
-  void add_on_state_callback(std::function<void()>&& callback) {
-    this->callback_.add(std::move(callback));
-  }
 
  protected:
   homeassistant_media_player::HomeAssistantMediaPlayerGroup*
@@ -112,7 +109,6 @@ class HomeThingMenuNowPlayingControl : public homething_menu_app::HomeThingApp {
 
  private:
   const char* const TAG = "homething.nowplaying.control";
-  CallbackManager<void()> callback_;
 
   // controls
   void select_media_player_feature(

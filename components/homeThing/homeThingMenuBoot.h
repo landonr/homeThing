@@ -76,8 +76,9 @@ class HomeThingMenuBoot {
     return get_boot_menu_state() == BOOT_MENU_STATE_COMPLETE;
   }
 
-  void add_on_state_callback(std::function<void()>&& callback) {
-    this->callback_.add(std::move(callback));
+  template <typename F>
+  void add_on_state_callback(F&& callback) {
+    this->callback_.add(std::forward<F>(callback));
   }
 
 #ifdef USE_IMAGE

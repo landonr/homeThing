@@ -42,7 +42,10 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   virtual void reset_menu() {}
   virtual void set_app_menu_index(int app_menu_index) {}
   virtual bool has_state_callback() { return false; }
-  virtual void add_on_state_callback(std::function<void()>&& callback) {}
+  template <typename F>
+  void add_on_state_callback(F&& callback) {
+    this->state_callback_.add(std::forward<F>(callback));
+  }
 
   // buttons
   virtual NavigationCoordination rotaryScrollClockwise(int rotary) {
@@ -87,6 +90,7 @@ class HomeThingApp : public homething_menu_base::HomeThingMenuHeaderSource,
   }
 
  protected:
+  CallbackManager<void()> state_callback_{};
   homething_menu_base::HomeThingMenuHeaderSource* header_source_{nullptr};
   display::Display* display_{nullptr};
   homething_display_state::HomeThingDisplayState* display_state_{nullptr};
