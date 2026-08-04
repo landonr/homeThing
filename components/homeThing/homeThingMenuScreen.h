@@ -54,8 +54,9 @@ namespace homething_menu_base {
 class MenuCommand : public EntityBase {
  public:
   void on_command() { this->on_command_callbacks_.call(); }
-  void add_on_command_callback(std::function<void()>&& callback) {
-    this->on_command_callbacks_.add(std::move(callback));
+  template <typename F>
+  void add_on_command_callback(F&& callback) {
+    this->on_command_callbacks_.add(std::forward<F>(callback));
   }
 
   std::string get_name() const { return name_; }
@@ -189,8 +190,9 @@ class HomeThingMenuScreen
   }
 #endif
 
-  void add_on_state_callback(std::function<void()>&& callback) {
-    this->callback_.add(std::move(callback));
+  template <typename F>
+  void add_on_state_callback(F&& callback) {
+    this->callback_.add(std::forward<F>(callback));
   }
   void menu_titles(std::vector<MenuTitleBase*>* menu_titles, bool show_name);
   bool select_menu(int index);

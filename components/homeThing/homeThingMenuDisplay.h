@@ -71,8 +71,9 @@ class HomeThingMenuDisplay {
   bool boot_complete();
   BootMenuSkipState bootSequenceCanSkip(const MenuStates activeMenuState);
 
-  void add_on_state_callback(std::function<void()>&& callback) {
-    this->callback_.add(std::move(callback));
+  template <typename F>
+  void add_on_state_callback(F&& callback) {
+    this->callback_.add(std::forward<F>(callback));
   }
 
  private:

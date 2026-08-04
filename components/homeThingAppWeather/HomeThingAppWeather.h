@@ -70,7 +70,6 @@ class HomeThingAppWeather : public homething_menu_app::HomeThingApp {
 
   // state callback
   bool has_state_callback() { return false; }
-  void add_on_state_callback(std::function<void()>&& callback) {}
 
   // sensors
   void set_temperature_sensor(sensor::Sensor* temperature_sensor) {

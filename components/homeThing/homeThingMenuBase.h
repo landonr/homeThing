@@ -105,8 +105,9 @@ class HomeThingMenuBase : public PollingComponent {
   // create service for this with input select options
   void goToScreenFromString(std::string screenName);
   void displayUpdateDebounced();
-  void add_on_redraw_callback(std::function<void()>&& cb) {
-    this->on_redraw_callbacks_.add(std::move(cb));
+  template <typename F>
+  void add_on_redraw_callback(F&& cb) {
+    this->on_redraw_callbacks_.add(std::forward<F>(cb));
   }
 
  private:

@@ -17,7 +17,7 @@ void HomeThingMenuNowPlayingControl::set_media_player_group(
            media_player_group_ == nullptr);
   media_player_group_ = media_player_group;
   media_player_group_->add_on_state_callback(
-      [this](media_player::MediaPlayerState) { this->callback_.call(); });
+      [this](media_player::MediaPlayerState) { this->state_callback_.call(); });
   header_source_ =
       new HomeThingMenuNowPlayingHeader(media_player_group, &menu_state_);
 }
