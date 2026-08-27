@@ -14,7 +14,7 @@ There are 3 components that belong to homeThing: the case and circuit board, the
 
 <br>
 <div align="center">
-	<h2><a href="https://homething.io/Buy">Buy now on homeThing.io! Over 20 sold!</a></h2>
+	<h2><a href="https://github.com/landonr/homething-c6">Check out the next-generation homeThing C6</a></h2>
 </div>
 <br>
 
