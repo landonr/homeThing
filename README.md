@@ -1,10 +1,19 @@
 
 <h1 align = "center">homeThing Remote ⚙️</h1>
-<h5 align = "center">(esphome remote)</h1>
+<h5 align = "center">(esphome remote)</h5>
 <p align="center">
-<a href="https://github.com/landonr/esphome-remote/stargazers"><img src="https://img.shields.io/github/stars/landonr/esphome-remote?style=for-the-badge"/></a>
+<a href="https://github.com/landonr/homeThing/stargazers"><img src="https://img.shields.io/github/stars/landonr/homeThing?style=for-the-badge"/></a>
 <a href="https://discord.gg/BX6ZtGKHTy"><img src="https://img.shields.io/discord/1021434469917413498?style=for-the-badge"/></a>
 </p>
+
+
+<br>
+<div align="center">
+	<h2>This project is no longer in active development</h2>
+	<p>The homeThing S3 can still be <a href="https://www.pcbway.com/project/shareproject/homeThing_S3_2b3ac3ac.html">ordered fully assembled from PCBWay</a>. The code, case files, and PCB files stay here for anyone who wants to build their own.</p>
+	<h3>The successor is <a href="https://github.com/landonr/homething-c6">homeThing C6</a></h3><p>a universal remote with a scroll wheel. It has no screen, better battery life, and also sponsored by PCBWay.</p>
+</div>
+<hr>
 
 #### homeThing is a collection of software and hardware for creating universal remotes that control smart home devices.
 There are 3 components that belong to homeThing: the case and circuit board, the menu system code, and the code to control smart home devices
@@ -12,16 +21,10 @@ There are 3 components that belong to homeThing: the case and circuit board, the
 - <a href="#homething-menu-">Menu system for ESP32 devices focused on controlling smart home devices similar to an iPod's menu.</a>
 - [ESPHome Components for controlling Home Assistant devices.](https://github.com/landonr/esphome-components)
 
-<br>
-<div align="center">
-	<h2><a href="https://github.com/landonr/homething-c6">Check out the next-generation homeThing C6</a></h2>
-</div>
-<br>
-
 ### Learn More
  - [Get Started](GettingStarted.md) - Learn how to build your own remote
  - [Discord](https://discord.gg/BX6ZtGKHTy) - support / chat with the community and the team
- - [Instagram](https://www.instagram.com/homething.io/) - Follow us on Instagram for updates and new products
+ - [Instagram](https://www.instagram.com/homething.io/) - Follow along on Instagram
  - [Website](https://homething.io) - Check out our website for more information
 
 <div align="center">
@@ -34,7 +37,7 @@ There are 3 components that belong to homeThing: the case and circuit board, the
 </div>
 
 # Hardware 💪
-We designed the two remotes below to be ideal for controlling smart home devices without a touch screen. They are both battery-powered but can also be plugged into USB and left in one place. The first remote was based on a Lilygo TDisplay. We moved on to building the homeThing S3 because the original device had slow performance, lacked buttons, and had challenges with assembly.
+We designed the two remotes below to be ideal for controlling smart home devices without a touch screen. They are both battery-powered but can also be plugged into USB and left in one place. The first remote was based on a Lilygo TDisplay. We moved on to the homeThing S3 because the original device had slow performance, lacked buttons, and had challenges with assembly. Neither is in active development anymore; work has moved to [homeThing C6](https://github.com/landonr/homething-c6).
 <table>
   <tr>
     <th>
@@ -52,13 +55,17 @@ We designed the two remotes below to be ideal for controlling smart home devices
   </tr>
   <tr>
 	  <td>Not available for purchase</td>
-	  <td><a href="https://homething.io/Buy">Buy fully assembled, ships within 3 business days from 🇨🇦</a></td>
+	  <td>No longer developed, still available fully assembled from PCBWay</td>
   </tr>
   <tr>
     <td><a href="https://www.pcbway.com/project/shareproject/homeThing_V1_3_e3572f8f.html">Order Case from PCBWay</a></td>
     <td>
       <a href="https://www.pcbway.com/project/shareproject/homeThing_S3_2b3ac3ac.html">Order parts or fully assembled from PCBWay</a>
     </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>Sold: 27 assembled, 32 PCBs, 10 cases</td>
   </tr>
   <tr>
     <td><a href="https://github.com/landonr/homeThing/tree/main/Case%20Design">Case 3D Files</a></td>
@@ -86,7 +93,7 @@ We designed the two remotes below to be ideal for controlling smart home devices
 		<li>Faster processor and larger display</li>
 		<li>Custom PCB for easier setup</li>
 		<li>IR Blaster for controlling infrared devices</li>
-		<li>Interal microphone for Voice Assistant</li>
+		<li>Internal microphone for Voice Assistant</li>
 		<li>Scroll wheel and 5 configurable buttons</li>
 		<li>USB-C Charging</li>
 		<li>3D Printable case with 2 parts</li>
@@ -98,9 +105,10 @@ We designed the two remotes below to be ideal for controlling smart home devices
 We made a couple of custom devices for running homeThing, but it can also run on almost any ESP32 such as,
 - M5Stack Fire
 - M5Stick C
-- Lilygo T-Display T4
+- Lilygo T4
 - Lilygo T-Display TTGO
 - Lilygo T-Display S3
+- Lilygo T-Display S3 AMOLED
 # homeThing Menu 📝
 ### ESPHome menu system that requires minimal config. Features apps which have custom UIs
 |t-display demo|m5stack fire demo|lilygo T4 demo|
@@ -158,10 +166,8 @@ We made a couple of custom devices for running homeThing, but it can also run on
 
 <img src="https://freight.cargo.site/w/800/i/a931690205c27162476213b8bcc171585aad9d84d65cdc121ca425e813114121/0x0.png" data-caption="PCBWay Logo" data-no-zoom="">
 
-## [PCBWay](https://pcbway.com/g/Xymq6O "PCBWay") sponsors 3D Printing and PCB assembly costs on this project during the prototyping phase! 
-If you are interested in their awesome fabrication services please check them out.&nbsp; They offer 
-
-3D prototyping,&nbsp;PCB design and assembly, as well as CNC metal fabrication.&nbsp; Costs are reasonable and the quality is as good as it gets.&nbsp; Thank you PCBWay for sponsoring us and other fun projects!<br><br>
+## [PCBWay](https://pcbway.com/g/Xymq6O "PCBWay") sponsored 3D Printing and PCB assembly costs on this project during the prototyping phase, and also sponsors [homeThing C6](https://github.com/landonr/homething-c6)!
+If you are interested in their awesome fabrication services please check them out. They offer 3D prototyping, PCB design and assembly, as well as CNC metal fabrication. Costs are reasonable and the quality is as good as it gets. Thank you PCBWay for sponsoring us and other fun projects!<br><br>
 
 ## [cargo](https://cargo.site/ "cargo.site") sponsors our website!
 
