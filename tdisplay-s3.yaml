@@ -87,6 +87,8 @@ light: # home assistant lights
     rgb_order: RGB
     pin: GPIO43
     num_leds: 42
+    # S3 default (192) takes all TX RMT memory and starves the IR remote_transmitter
+    rmt_symbols: 96
     name: "${friendly_name} Strip Light"
     restore_mode: RESTORE_DEFAULT_OFF
     id: strip_light
